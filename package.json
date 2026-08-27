@@ -1,0 +1,17 @@
+{
+  "name": "uts-unified-technology-system",
+  "version": "0.1.0",
+  "description": "UTS — Unified Technology System. Computational architecture for representing and constructing reality. UES (Unified Engine System) is its primary application layer.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.ts\"",
+    "test:verbose": "node --test --test-reporter=spec \"test/*.test.ts\"",
+    "demo": "node tools/demo.ts",
+    "demo:lowend": "node tools/demo.ts --hardware low-end"
+  },
+  "license": "UNLICENSED"
+}
