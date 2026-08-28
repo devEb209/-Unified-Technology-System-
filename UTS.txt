@@ -1,0 +1,3824 @@
+UTS — UNIFIED TECHNOLOGY SYSTEM
+
+PROMPT 1/4 — CONTEXTO ABSOLUTO, VISÃO E AUDITORIA
+
+Você está entrando em um projeto que já passou por várias fases de concepção e desenvolvimento.
+
+Este é o PRIMEIRO de quatro prompts que serão enviados em sequência.
+
+Não trate esta mensagem como uma tarefa isolada. Ela estabelece o contexto-base que deverá permanecer ativo durante os próximos prompts.
+
+1. A REGRA MAIS IMPORTANTE
+
+O projeto possui versões antigas de ideias, nomes e arquiteturas.
+
+Você deve trabalhar SEMPRE com a versão mais recente das decisões.
+
+Não ressuscite conceitos antigos simplesmente porque aparecem no histórico, código ou documentação.
+
+Quando encontrar versões conflitantes:
+
+1. identifique a versão mais recente;
+2. preserve a decisão mais recente;
+3. considere a versão anterior obsoleta;
+4. não misture as duas sem justificativa.
+
+O objetivo não é reconstruir o projeto como ele era.
+
+O objetivo é FINALIZAR o projeto como ele foi definido em sua versão mais avançada.
+
+---
+
+2. O QUE ESTAMOS CONSTRUINDO
+
+O nome atual do sistema maior é:.
+
+UTS — Unified Technology System
+
+A UTS não é simplesmente:
+
+- uma engine;
+- uma IA;
+- um jogo;
+- um simulador;
+- um renderer;
+- ou uma ferramenta de desenvolvimento.
+
+Ela representa uma arquitetura tecnológica muito maior.
+
+A visão fundamental é:
+
+«CONSTRUIR UMA REPRESENTAÇÃO COMPUTACIONAL DA REALIDADE.»
+
+A criação de jogos é uma aplicação extremamente importante dessa arquitetura, mas NÃO é o objetivo máximo.
+
+A UTS deve fornecer os fundamentos para construir, representar, simular, compreender e operar sistemas que correspondam aos aspectos da realidade.
+
+Isso inclui tanto aquilo que já foi explicitamente definido quanto aquilo que ainda não foi mencionado.
+
+---
+
+3. "CONSTRUIR A REALIDADE" — O QUE ISSO SIGNIFICA
+
+Não interprete essa frase como a alegação de que um computador literalmente recriará o universo físico em todos os níveis simultaneamente.
+
+O objetivo é desenvolver uma arquitetura computacional capaz de representar a realidade de forma funcional, hierárquica, adaptativa e extremamente abrangente.
+
+A UTS deve buscar representar os princípios, relações, estados, comportamentos, fenômenos e estruturas necessários para produzir uma realidade computacional coerente.
+
+Portanto:
+
+não limite a arquitetura aos exemplos fornecidos neste prompt.
+
+Se existir algum fenômeno, relação, estrutura ou conceito da realidade que ainda não tenha sido citado, ele também deve ser considerado dentro da visão da UTS.
+
+---
+
+4. RRW
+
+Um conceito fundamental da versão mais recente da arquitetura é:
+
+RRW
+
+RRW deve ser entendido como um fundamento para a representação da realidade.
+
+A regra central é:
+
+«RRW deve abranger TUDO DA REALIDADE.»
+
+Não apenas:
+
+- terreno;
+- água;
+- clima;
+- luz;
+- objetos;
+- seres vivos;
+- NPCs;
+- sociedades.
+
+Tudo.
+
+Isso inclui fenômenos e conceitos ainda não mencionados.
+
+Não transforme RRW em uma lista fechada de sistemas.
+
+Ele deve ser extensível à medida que novos aspectos da realidade forem descobertos, definidos ou necessários.
+
+---
+
+5. RRW NÃO É UMA SIMPLES BIBLIOTECA DE ASSETS
+
+RRW não deve significar simplesmente armazenar modelos 3D de coisas existentes no mundo.
+
+A realidade não é apenas aparência.
+
+A representação deve poder compreender aspectos como:
+
+- estrutura;
+- comportamento;
+- relações;
+- causalidade;
+- estado;
+- transformação;
+- interação;
+- percepção;
+- dinâmica;
+- contexto;
+- dependências;
+- emergência;
+- informação.
+
+A representação visual é apenas uma manifestação possível.
+
+---
+
+6. A UTS COMO SISTEMA UNIFICADO
+
+A UTS deve permitir que diferentes subsistemas compartilhem uma representação coerente.
+
+Em vez de criar sistemas completamente isolados, devemos buscar integração entre:
+
+- realidade;
+- informação;
+- IA;
+- simulação;
+- mundo;
+- entidades;
+- física;
+- comportamento;
+- gráficos;
+- áudio;
+- sociedade;
+- economia;
+- ambiente;
+- ferramentas;
+- otimização;
+- dados.
+
+A arquitetura deve permitir que um sistema compreenda informações produzidas por outro.
+
+---
+
+7. SINGULARITY AI
+
+Dentro da UTS existe a visão da:
+
+Singularity AI
+
+Ela deve ser a inteligência capaz de trabalhar sobre a arquitetura.
+
+Ela não deve ser reduzida a um chatbot.
+
+Sua função é:
+
+- compreender objetivos;
+- planejar;
+- decompor problemas;
+- escolher estratégias;
+- utilizar modelos;
+- utilizar ferramentas;
+- utilizar agentes;
+- consultar memória;
+- construir;
+- testar;
+- verificar;
+- corrigir;
+- otimizar;
+- evoluir.
+
+---
+
+8. SINGULARITY CORE
+
+O núcleo de orquestração da Singularity AI é o:
+
+Singularity Core
+
+Ele coordena:
+
+- planejamento;
+- roteamento;
+- seleção de modelos;
+- seleção de ferramentas;
+- agentes especializados;
+- memória;
+- execução;
+- verificação;
+- fallback;
+- integração.
+
+A arquitetura deve permanecer independente de um único modelo ou provedor.
+
+---
+
+9. MODELOS
+
+A arquitetura original considerou o Puter.js como uma forma de acessar diferentes modelos.
+
+Puter NÃO deve ser confundido com a inteligência da UTS.
+
+Ele é uma camada/provedor de acesso.
+
+A arquitetura deve ser desacoplada de qualquer fornecedor específico.
+
+Existem conceitos de:
+
+- Model Registry;
+- Provider Registry;
+- Tool Registry;
+- Agent Registry;
+- Memory System.
+
+Também foram definidos tiers conceituais de modelos:
+
+- S++;
+- S+;
+- S;
+- A+;
+- A;
+- B;
+- C.
+
+Com o conceito de:
+
+Main Model — S++
+
+Mas a arquitetura deve selecionar modelos de acordo com a tarefa.
+
+---
+
+10. MEMÓRIA
+
+A inteligência deve trabalhar com diferentes tipos de memória.
+
+Conceitos já estabelecidos:
+
+- message;
+- conversation;
+- short-term;
+- long-term;
+- user;
+- project;
+- preferences;
+- decisions.
+
+A memória deve permitir continuidade e compreensão do estado do projeto.
+
+---
+
+11. AGENTES
+
+A UTS pode utilizar agentes especializados.
+
+Exemplos:
+
+- programação;
+- arquitetura;
+- IA;
+- gráficos;
+- realidade;
+- mundo;
+- física;
+- NPC;
+- otimização;
+- testes;
+- verificação.
+
+O Singularity Core coordena esses agentes.
+
+---
+
+12. UES
+
+Dentro da UTS existe:
+
+UES — Unified Engine System
+
+A UES é o grande sistema de engine destinado a construir e executar mundos, experiências e simulações.
+
+Ela pode criar jogos completos.
+
+Mas:
+
+UES ≠ UTS.
+
+A UES é uma parte/aplicação extremamente importante da UTS.
+
+A UTS é maior.
+
+---
+
+13. UES COMO APLICAÇÃO DA REALIDADE
+
+A UES deve utilizar os princípios da UTS para permitir:
+
+- mundos;
+- jogos;
+- simulações;
+- ambientes;
+- entidades;
+- NPCs;
+- sociedades;
+- economia;
+- física;
+- gráficos;
+- comportamento;
+- IA;
+- ferramentas.
+
+A ideia é que uma realidade computacional possa ser construída e então utilizada para diferentes experiências.
+
+---
+
+14. TESE DOS D
+
+Outro fundamento central é a:
+
+TESE DOS D
+
+IMPORTANTE:
+
+"D" NÃO significa dimensão física.
+
+Também não significa simplesmente matemática abstrata.
+
+Os D são:
+
+«CAMADAS / CONCEITOS FUNCIONAIS utilizados para atingir objetivos da arquitetura.»
+
+Eles descrevem diferentes níveis ou formas de representação, integração, abstração e funcionamento.
+
+Os valores podem ser fracionários.
+
+Exemplos conceituais:
+
+- D.x;
+- D.x.25;
+- D.x.5;
+- D.x.75.
+
+Não interprete esses valores como dimensões físicas.
+
+---
+
+15. D COMO ARQUITETURA FUNCIONAL
+
+A Tese dos D deve ajudar a responder:
+
+- o que precisa ser representado?
+- com que nível de fidelidade?
+- por qual método?
+- quais sistemas influenciam isso?
+- quais relações existem?
+- o que pode ser abstraído?
+- o que precisa ser materializado?
+- o que pode emergir?
+- qual representação é mais eficiente?
+
+Os D devem ter consequências práticas.
+
+Não devem ser apenas nomes.
+
+---
+
+16. D-O15
+
+O D-O15 é a camada de:
+
+OTIMIZAÇÃO
+
+Mas não deve ser entendido como simplesmente:
+
+"reduzir qualidade".
+
+A ideia é encontrar a melhor representação/processamento possível para atingir o resultado necessário.
+
+D-O15 deve considerar:
+
+- CPU;
+- GPU;
+- memória;
+- armazenamento;
+- rede;
+- IA;
+- simulação;
+- rendering;
+- streaming;
+- cache;
+- LOD;
+- paralelização;
+- frequência de atualização;
+- relevância;
+- contexto;
+- distância;
+- prioridade;
+- representação.
+
+---
+
+17. PRINCÍPIO DO D-O15
+
+A pergunta não deve ser:
+
+«"Como calculamos tudo?"»
+
+A pergunta deve ser:
+
+«"Qual é a melhor maneira de representar e calcular aquilo que realmente precisa existir neste momento?"»
+
+Isso permite lidar com sistemas muito maiores que aquilo que seria possível simular de forma ingênua.
+
+---
+
+18. NÃO SIMULAR TUDO BRUTALMENTE
+
+A UTS/UES não deve tentar representar cada elemento em máxima resolução o tempo inteiro.
+
+Pode utilizar:
+
+- abstração;
+- proceduralidade;
+- streaming;
+- representação semântica;
+- níveis de detalhe;
+- aproximações;
+- cache;
+- estados;
+- modelos;
+- regras;
+- emergência.
+
+Quando algo se torna relevante, sua representação pode aumentar.
+
+---
+
+19. O MUNDO REAL COMO FUNDAMENTO
+
+A UTS deve buscar inspiração na forma como a própria realidade funciona.
+
+Não apenas copiar aparência.
+
+É necessário compreender:
+
+- relações;
+- processos;
+- sistemas;
+- causalidade;
+- adaptação;
+- comportamento;
+- organização;
+- transformação;
+- percepção;
+- interação.
+
+A arquitetura deve permitir que esses princípios sejam computados.
+
+---
+
+20. OBJETIVO DESTA PRIMEIRA ETAPA
+
+NÃO comece ainda uma implementação gigantesca.
+
+Primeiro:
+
+1. examine o repositório;
+2. examine todos os arquivos relevantes;
+3. examine a arquitetura atual;
+4. procure a documentação existente;
+5. procure a Tese dos D;
+6. procure RRW;
+7. procure D-O15;
+8. procure UES;
+9. procure Singularity AI;
+10. procure referências a Puter/modelos;
+11. procure commits relevantes;
+12. identifique o que realmente existe.
+
+Uma referência anterior importante é:
+
+"arena/01a02b9e-singularity-ai"
+
+E também:
+
+"PromptTeseDosD.TXT"
+
+Caso existam no ambiente, examine-os.
+
+---
+
+21. AUDITORIA
+
+Ao final desta etapa, estabeleça:
+
+IMPLEMENTADO
+
+O que realmente funciona.
+
+PARCIAL
+
+O que existe mas está incompleto.
+
+DEFINIDO
+
+O que foi arquiteturalmente estabelecido mas ainda não está implementado.
+
+AUSENTE
+
+O que precisa ser criado.
+
+OBSOLETO
+
+O que pertence a versões antigas e não deve ser reutilizado.
+
+CONFLITANTE
+
+O que precisa ser corrigido para ficar alinhado à arquitetura atual.
+
+---
+
+22. REGRA FINAL DO PROMPT 1
+
+Não reduza a visão para "uma engine de jogos".
+
+Não reduza RRW a uma lista de objetos.
+
+Não trate D como dimensões físicas.
+
+Não trate D-O15 como simples redução de qualidade.
+
+Não trate Singularity AI como apenas um chatbot.
+
+Não trate Puter como a própria IA.
+
+Não confunda UES com UTS.
+
+E principalmente:
+
+NÃO INVENTE QUE ALGO ESTÁ IMPLEMENTADO.
+
+Analise o estado real.
+
+O próximo prompt continuará a partir dessa auditoria.
+
+UTS — UNIFIED TECHNOLOGY SYSTEM
+
+PROMPT 2/4 — TESE DOS D, RRW E ARQUITETURA PROFUNDA
+
+Este é o segundo prompt de quatro.
+
+Você já recebeu o contexto-base.
+
+Agora devemos transformar a visão em uma arquitetura técnica coerente.
+
+A regra continua:
+
+USE A VERSÃO MAIS RECENTE DAS DECISÕES.
+
+Não volte para arquiteturas antigas.
+
+---
+
+1. OBJETIVO DESTA ETAPA
+
+Agora conecte:
+
+UTS + RRW + Tese dos D + D máximo + D-O15 + Singularity AI + UES
+
+em uma arquitetura coerente.
+
+Não trate cada conceito como uma ilha.
+
+Eles devem formar um sistema.
+
+---
+
+2. RRW COMO REPRESENTAÇÃO UNIVERSAL
+
+RRW deve representar:
+
+TUDO DA REALIDADE.
+
+Isso é uma regra aberta e extensível.
+
+Não existe uma lista fechada dizendo:
+
+"RRW representa somente X, Y e Z."
+
+Se um aspecto da realidade ainda não foi citado, a arquitetura deve permitir incorporá-lo.
+
+RRW deve poder representar:
+
+- entidades;
+- objetos;
+- ambientes;
+- processos;
+- fenômenos;
+- estados;
+- relações;
+- eventos;
+- comportamentos;
+- estruturas;
+- transformações;
+- sistemas;
+- informações;
+- e qualquer outra categoria necessária.
+
+---
+
+3. REPRESENTAÇÃO MULTINÍVEL
+
+A realidade deve poder possuir diferentes níveis de representação.
+
+Exemplo conceitual:
+
+Uma pessoa pode existir como:
+
+- presença distante;
+- entidade sem detalhes;
+- organismo;
+- personagem;
+- indivíduo com memória;
+- agente com comportamento;
+- entidade completamente relevante ao jogador.
+
+Não significa que todas essas representações precisam coexistir na mesma resolução.
+
+A arquitetura deve permitir transformação entre níveis.
+
+---
+
+4. MATERIALIZAÇÃO
+
+Um princípio importante é:
+
+«REPRESENTAR ABSTRATAMENTE QUANDO POSSÍVEL E MATERIALIZAR QUANDO NECESSÁRIO.»
+
+Isso deve ser tratado como arquitetura, não como truque.
+
+A materialização pode ocorrer por:
+
+- proximidade;
+- relevância;
+- interação;
+- percepção;
+- necessidade do sistema;
+- importância narrativa;
+- necessidade física;
+- necessidade computacional.
+
+---
+
+5. DE-MATERIALIZAÇÃO / ABSTRAÇÃO
+
+Quando algo deixa de ser relevante, a representação pode voltar para um estado mais abstrato.
+
+Mas isso não deve apagar informação importante.
+
+O estado deve ser preservado quando necessário.
+
+Assim:
+
+abstração → materialização → interação → abstração
+
+pode acontecer continuamente.
+
+---
+
+6. CAUSALIDADE
+
+A representação não deve guardar somente estados finais.
+
+Quando necessário, deve considerar:
+
+- causa;
+- efeito;
+- dependência;
+- sequência;
+- contexto;
+- transformação.
+
+Isso é importante para criar uma realidade coerente.
+
+---
+
+7. EMERGÊNCIA
+
+Quando apropriado, comportamentos complexos devem surgir de sistemas mais fundamentais.
+
+Exemplo:
+
+Em vez de programar milhares de acontecimentos específicos, fornecer:
+
+- regras;
+- agentes;
+- recursos;
+- necessidades;
+- relações;
+- ambiente;
+
+e permitir que acontecimentos emerjam.
+
+Isso é diferente de gerar aleatoriamente.
+
+---
+
+8. TESE DOS D
+
+Os D devem funcionar como uma estrutura para organizar esses níveis.
+
+Cada D deve possuir função operacional.
+
+Para cada D relevante, determine:
+
+1. objetivo;
+2. problema resolvido;
+3. representação;
+4. dados utilizados;
+5. sistemas afetados;
+6. integração;
+7. custo;
+8. otimização;
+9. resultado observável.
+
+Se uma definição histórica contradizer a definição mais recente, preserve a mais recente.
+
+---
+
+9. D MÁXIMO
+
+Existe um conceito de D máximo já estabelecido anteriormente.
+
+Não invente uma nova definição para substituí-lo.
+
+Recupere a definição mais recente existente no projeto/documentação.
+
+Se ela estiver disponível no repositório, trate-a como referência principal.
+
+O D máximo deve representar o nível mais avançado da estrutura atualmente definida.
+
+---
+
+10. D-O15
+
+D-O15 deve funcionar em conjunto com os demais D.
+
+Ele deve poder analisar:
+
+- importância;
+- resolução necessária;
+- frequência;
+- representação;
+- custo;
+- dependências;
+- hardware disponível.
+
+E escolher estratégias.
+
+---
+
+11. OTIMIZAÇÃO SEM DESTRUIR O RESULTADO
+
+A otimização correta não é:
+
+"faça menos".
+
+É:
+
+«"obtenha o mesmo ou praticamente o mesmo resultado necessário utilizando uma representação/processamento mais eficiente."»
+
+Isso pode envolver mudar:
+
+- frequência;
+- precisão;
+- representação;
+- algoritmo;
+- armazenamento;
+- atualização;
+- resolução;
+- materialização.
+
+---
+
+12. HARDWARE ADAPTATIVO
+
+A arquitetura deve adaptar sua carga ao hardware.
+
+Um PC fraco não deve simplesmente receber a mesma carga de um PC de alto desempenho.
+
+O sistema deve descobrir:
+
+- capacidade;
+- gargalos;
+- recursos disponíveis;
+
+e ajustar a execução.
+
+---
+
+13. SINGULARITY AI + RRW
+
+A Singularity AI deve ser capaz de compreender RRW.
+
+Isso significa que a IA não deve trabalhar apenas com arquivos e texto.
+
+Ela deve poder raciocinar sobre:
+
+- entidades;
+- sistemas;
+- relações;
+- estados;
+- mundo;
+- comportamento;
+- objetivos;
+- processos.
+
+---
+
+14. IA CONSTRUINDO A REALIDADE
+
+Fluxo conceitual:
+
+USUÁRIO
+↓
+OBJETIVO
+↓
+SINGULARITY CORE
+↓
+INTERPRETAÇÃO
+↓
+DECOMPOSIÇÃO
+↓
+TESE DOS D
+↓
+RRW
+↓
+SELEÇÃO DE REPRESENTAÇÕES
+↓
+AGENTES / MODELOS
+↓
+CONSTRUÇÃO
+↓
+VERIFICAÇÃO
+↓
+D-O15
+↓
+RESULTADO
+
+---
+
+15. UES
+
+A UES deve utilizar essa arquitetura.
+
+Ela deve conseguir transformar a representação da realidade em uma experiência executável.
+
+Isso inclui:
+
+- mundo;
+- entidades;
+- gameplay;
+- física;
+- NPCs;
+- sociedades;
+- economia;
+- ambiente;
+- gráficos;
+- áudio;
+- IA;
+- ferramentas.
+
+---
+
+16. NMN
+
+O sistema:
+
+NMN — Natural Mindset of NPCs
+
+deve ser tratado como uma aplicação dos princípios da realidade.
+
+NPCs devem considerar:
+
+- identidade;
+- objetivos;
+- necessidades;
+- memória;
+- relações;
+- conhecimento;
+- contexto;
+- percepção;
+- experiências;
+- ambiente;
+- consequências.
+
+Não utilizar somente scripts rígidos.
+
+---
+
+17. SOCIEDADE
+
+Uma sociedade pode ser representada por:
+
+- indivíduos;
+- grupos;
+- relações;
+- recursos;
+- instituições;
+- economia;
+- cultura;
+- regras;
+- acontecimentos.
+
+O nível de detalhe pode mudar conforme relevância.
+
+---
+
+18. MUNDO VIVO
+
+O mundo deve possuir dinâmica própria.
+
+O jogador não precisa ser o centro computacional de tudo.
+
+Sistemas podem continuar evoluindo de forma abstrata quando não estão em foco.
+
+---
+
+19. GRÁFICOS
+
+A representação visual deve derivar da realidade representada.
+
+Não criar gráficos como sistema completamente separado.
+
+A renderização deve interpretar:
+
+- materiais;
+- iluminação;
+- ambiente;
+- entidades;
+- atmosfera;
+- fenômenos;
+- estados.
+
+---
+
+20. REAL LIFE
+
+O conceito de Real Life deve utilizar princípios da realidade para melhorar a representação visual e ambiental.
+
+Não significa copiar fisicamente o universo.
+
+Significa representar os fenômenos relevantes de forma coerente.
+
+---
+
+21. API GRÁFICA
+
+A UES possui a visão de uma camada gráfica própria.
+
+Ela deve funcionar como abstração da UES.
+
+Backends como Vulkan, DirectX ou OpenGL podem existir abaixo dela quando necessário.
+
+Não faça a arquitetura depender diretamente de um único backend.
+
+---
+
+22. FÍSICA
+
+Física deve ser integrada à realidade representada.
+
+Considere:
+
+- colisões;
+- movimento;
+- forças;
+- ambiente;
+- materiais;
+- entidades;
+- interação.
+
+Não simule tudo em máxima precisão sem necessidade.
+
+---
+
+23. WORLD SEMANTIC MAPPING
+
+O mundo pode possuir camadas semânticas como:
+
+- terreno;
+- heightfield;
+- biome;
+- declive;
+- ambiente;
+- recursos;
+- entidades.
+
+Mas essas categorias são exemplos, não limite.
+
+---
+
+24. DADOS REAIS
+
+A arquitetura pode utilizar dados reais quando apropriado.
+
+Exemplos:
+
+- mapas;
+- heightmaps;
+- geografia;
+- dados ambientais.
+
+Mas dados externos devem ser transformados em representação funcional da UTS.
+
+Não simplesmente importados como arquivos gigantes.
+
+---
+
+25. RESULTADO DESTA ETAPA
+
+Depois desta etapa, a arquitetura deve estar clara.
+
+Você deve saber:
+
+- quais sistemas existem;
+- como se relacionam;
+- quais D atuam em cada sistema;
+- como RRW representa esses sistemas;
+- onde D-O15 intervém;
+- como Singularity AI manipula a arquitetura;
+- como a UES materializa tudo.
+
+Então devemos passar para implementação.
+
+Não fique indefinidamente produzindo teoria.
+
+A teoria existe para orientar código real.
+
+UTS — UNIFIED TECHNOLOGY SYSTEM
+
+PROMPT 3/4 — IMPLEMENTAÇÃO REAL E INTEGRAÇÃO
+
+Agora começa a etapa de construção.
+
+Os dois prompts anteriores estabeleceram contexto e arquitetura.
+
+A partir daqui, o objetivo principal é:
+
+IMPLEMENTAR.
+
+Não transforme esta etapa em mais uma sessão de brainstorming.
+
+---
+
+1. REGRA PRINCIPAL
+
+Construa a arquitetura definida nos prompts anteriores utilizando o código real do projeto.
+
+Não crie uma demonstração falsa.
+
+Não crie apenas interfaces vazias.
+
+Não substitua implementação por comentários.
+
+Não marque como concluído aquilo que não funciona.
+
+---
+
+2. PRIMEIRO: UTILIZE A AUDITORIA
+
+Comece pelo estado real encontrado anteriormente.
+
+Classifique:
+
+- existente;
+- parcial;
+- ausente;
+- obsoleto;
+- conflitante.
+
+Depois estabeleça a ordem de implementação.
+
+---
+
+3. IMPLEMENTAÇÃO PROGRESSIVA
+
+Trabalhe por dependências.
+
+Primeiro implemente as fundações necessárias.
+
+Depois:
+
+- representação;
+- sistemas;
+- integração;
+- IA;
+- UES;
+- ferramentas;
+- otimização;
+- verificação.
+
+Não tente construir tudo como um bloco monolítico.
+
+---
+
+4. RRW
+
+Implemente RRW como uma arquitetura realmente extensível.
+
+Ele deve conseguir representar diferentes aspectos da realidade sem estar limitado a uma lista rígida.
+
+Priorize uma estrutura capaz de representar:
+
+- entidades;
+- propriedades;
+- estados;
+- relações;
+- eventos;
+- processos;
+- comportamentos;
+- dependências;
+- contexto.
+
+A arquitetura deve permitir expansão futura.
+
+---
+
+5. TESE DOS D
+
+Os D relevantes devem possuir implementação real.
+
+Não basta colocar:
+
+"D-O15 = optimization"
+
+em um arquivo.
+
+A lógica do D deve realmente influenciar a execução.
+
+Cada camada deve ter função verificável.
+
+---
+
+6. D-O15
+
+Implemente D-O15 como sistema de otimização real.
+
+Ele deve poder analisar o custo dos sistemas e escolher estratégias adequadas.
+
+Quando possível, utilize:
+
+- LOD;
+- streaming;
+- cache;
+- atualização adaptativa;
+- paralelização;
+- representação hierárquica;
+- abstração;
+- prioridade;
+- relevância;
+- processamento sob demanda.
+
+Não reduza qualidade automaticamente.
+
+---
+
+7. REPRESENTAÇÃO ADAPTATIVA
+
+Implemente mecanismos para permitir:
+
+abstrato → detalhado
+
+e
+
+detalhado → abstrato
+
+sem perder o estado necessário.
+
+Isso deve ser uma parte real da arquitetura.
+
+---
+
+8. SINGULARITY CORE
+
+Implemente ou finalize o núcleo de orquestração.
+
+Ele deve poder:
+
+- receber objetivo;
+- interpretar;
+- planejar;
+- selecionar modelo;
+- selecionar ferramenta;
+- selecionar agente;
+- executar;
+- verificar;
+- corrigir.
+
+---
+
+9. MODEL REGISTRY
+
+Finalize a arquitetura de modelos.
+
+Ela deve permitir múltiplos provedores/modelos.
+
+Não acople o sistema permanentemente ao Puter.
+
+Puter pode ser um provider.
+
+---
+
+10. AGENT REGISTRY
+
+Permita agentes especializados.
+
+O sistema deve conseguir determinar qual agente é apropriado para cada tarefa.
+
+---
+
+11. MEMORY
+
+Finalize a memória necessária para manter:
+
+- projeto;
+- decisões;
+- contexto;
+- estado;
+- histórico relevante.
+
+---
+
+12. UES
+
+Agora aplique tudo isso à UES.
+
+A UES deve poder utilizar a representação RRW e a Tese dos D para construir mundos e experiências.
+
+---
+
+13. MUNDO
+
+Implemente a base do mundo:
+
+- espaço;
+- entidades;
+- ambiente;
+- terreno;
+- semântica;
+- streaming;
+- representação adaptativa.
+
+Depois evolua para sistemas mais complexos.
+
+---
+
+14. NPC / NMN
+
+Implemente o NMN de forma integrada.
+
+NPCs devem possuir arquitetura para:
+
+- memória;
+- objetivos;
+- necessidades;
+- relações;
+- contexto;
+- percepção;
+- decisão;
+- comportamento.
+
+Evite criar apenas árvores de diálogo.
+
+---
+
+15. SOCIEDADE / ECONOMIA
+
+Implemente sistemas capazes de representar:
+
+- população;
+- grupos;
+- recursos;
+- produção;
+- consumo;
+- relações;
+- economia;
+- eventos.
+
+Use representação abstrata quando indivíduos não forem relevantes.
+
+---
+
+16. GRÁFICOS
+
+Integre o renderer com a representação do mundo.
+
+A camada gráfica deve interpretar a realidade representada.
+
+Implemente o necessário para:
+
+- materiais;
+- iluminação;
+- ambiente;
+- entidades;
+- sombras;
+- atmosfera;
+- shaders;
+- efeitos.
+
+---
+
+17. REAL LIFE
+
+Aplique o conceito Real Life de maneira funcional.
+
+Não apenas como nome.
+
+Ele deve influenciar como aspectos visuais/ambientais são representados.
+
+---
+
+18. PROFILING
+
+Implemente profiling real.
+
+O sistema deve poder descobrir gargalos.
+
+Analise:
+
+- CPU;
+- GPU;
+- memória;
+- sistemas;
+- IA;
+- física;
+- rendering;
+- streaming;
+- NPCs.
+
+Essas informações devem poder alimentar D-O15.
+
+---
+
+19. TESTES
+
+Cada grande sistema implementado deve possuir testes.
+
+Teste:
+
+- unidade;
+- integração;
+- comportamento;
+- falhas;
+- desempenho.
+
+Não espere até o final para testar tudo.
+
+---
+
+20. QUALIDADE
+
+Prefira:
+
+- modularidade;
+- interfaces claras;
+- baixo acoplamento;
+- extensibilidade;
+- tratamento de erros;
+- logs;
+- validação;
+- código legível.
+
+Não faça atalhos que criem dívida arquitetural desnecessária.
+
+---
+
+21. MAIOR LOTE SEGURO
+
+Quando uma sequência de implementação puder ser feita com segurança, faça um lote significativo.
+
+Não faça apenas uma alteração minúscula e pare.
+
+Mas também não faça alterações gigantes sem testar.
+
+Use:
+
+implementar → testar → integrar → corrigir → continuar.
+
+---
+
+22. REGRA CONTRA PLACEHOLDERS
+
+Placeholders podem existir temporariamente durante desenvolvimento.
+
+Mas não devem ser apresentados como sistemas finalizados.
+
+Se algo ainda for mock:
+
+chame de mock.
+
+Se algo ainda for protótipo:
+
+chame de protótipo.
+
+Se algo estiver funcional:
+
+demonstre/valide.
+
+---
+
+23. OBJETIVO
+
+Ao terminar esta etapa, o projeto deve possuir uma implementação significativamente mais próxima da arquitetura final.
+
+Não apenas documentação.
+
+Não apenas diagramas.
+
+Não apenas código experimental.
+
+CÓDIGO REAL.
+
+Continue implementando até atingir o maior estado funcional seguro possível.
+
+O próximo prompt será a auditoria e finalização absoluta.
+
+UTS — UNIFIED TECHNOLOGY SYSTEM
+
+PROMPT 4/4 — AUDITORIA FINAL, TESTES, OTIMIZAÇÃO E CONCLUSÃO
+
+Este é o quarto e último prompt.
+
+Agora não existe mais uma etapa posterior de "entendimento".
+
+O objetivo é levar o projeto ao maior estado funcional possível.
+
+---
+
+1. AUDITORIA COMPLETA
+
+Reanalise todo o projeto.
+
+Compare:
+
+VISÃO DEFINIDA
+
+contra
+
+IMPLEMENTAÇÃO REAL.
+
+Procure:
+
+- sistemas ausentes;
+- sistemas incompletos;
+- bugs;
+- incompatibilidades;
+- código morto;
+- placeholders;
+- mocks;
+- duplicações;
+- dependências quebradas;
+- inconsistências;
+- gargalos;
+- falhas de integração.
+
+---
+
+2. RRW
+
+Verifique se RRW realmente funciona como fundamento abrangente.
+
+Pergunte:
+
+- é extensível?
+- consegue representar entidades?
+- estados?
+- relações?
+- eventos?
+- processos?
+- fenômenos?
+- sistemas?
+- contexto?
+- transformações?
+
+E principalmente:
+
+RRW está limitado artificialmente a uma lista de exemplos?
+
+Se estiver, corrija.
+
+RRW deve ser capaz de abranger TUDO DA REALIDADE, inclusive categorias ainda não definidas.
+
+---
+
+3. TESE DOS D
+
+Verifique se os D possuem função real.
+
+Para cada D implementado:
+
+- existe lógica?
+- existe integração?
+- existe efeito observável?
+- existe relação com o objetivo?
+
+Remova nomenclatura vazia.
+
+---
+
+4. D MÁXIMO
+
+Verifique se a implementação está alinhada com a definição mais recente do D máximo.
+
+Não substitua a definição por uma interpretação antiga.
+
+---
+
+5. D-O15
+
+Teste o D-O15.
+
+Meça:
+
+- custo;
+- desempenho;
+- memória;
+- processamento;
+- qualidade;
+- escalabilidade.
+
+Verifique se ele está realmente fazendo otimização inteligente.
+
+Não aceite "otimizado" sem medição.
+
+---
+
+6. TESTE DE ESCALA
+
+Teste diferentes níveis de carga.
+
+Por exemplo:
+
+- pequeno;
+- médio;
+- grande;
+- extremo quando possível.
+
+Observe como a representação adaptativa reage.
+
+---
+
+7. TESTE DE HARDWARE
+
+Quando possível, valide comportamento em diferentes níveis de capacidade.
+
+A arquitetura deve ser adaptativa.
+
+---
+
+8. SINGULARITY AI
+
+Teste o fluxo:
+
+OBJETIVO
+↓
+INTERPRETAÇÃO
+↓
+PLANEJAMENTO
+↓
+MODELO
+↓
+AGENTE
+↓
+FERRAMENTA
+↓
+EXECUÇÃO
+↓
+VERIFICAÇÃO
+↓
+CORREÇÃO.
+
+Procure pontos onde o sistema depende excessivamente de intervenção manual.
+
+---
+
+9. UES
+
+Teste a UES como sistema integrado.
+
+Ela deve conseguir utilizar:
+
+- RRW;
+- D;
+- D-O15;
+- mundo;
+- IA;
+- entidades;
+- gráficos;
+- simulação.
+
+---
+
+10. NMN
+
+Teste NPCs em situações diferentes.
+
+Verifique se:
+
+- memória funciona;
+- objetivos funcionam;
+- relações funcionam;
+- contexto funciona;
+- comportamento é adaptativo;
+- decisões não dependem exclusivamente de scripts fixos.
+
+---
+
+11. MUNDO VIVO
+
+Teste se o mundo continua possuindo estado e evolução fora do foco direto do jogador.
+
+Quando o nível de detalhe diminui, o estado importante não pode desaparecer.
+
+---
+
+12. GRÁFICOS
+
+Verifique:
+
+- renderer;
+- materiais;
+- iluminação;
+- sombras;
+- ambiente;
+- shaders;
+- streaming;
+- LOD;
+- integração com o mundo.
+
+A qualidade deve ser preservada dentro das limitações de hardware.
+
+---
+
+13. PROFILING FINAL
+
+Execute profiling.
+
+Encontre os maiores gargalos.
+
+Corrija primeiro os gargalos de maior impacto.
+
+Depois execute profiling novamente.
+
+---
+
+14. TESTES DE REGRESSÃO
+
+Toda correção importante deve ser seguida por testes para garantir que sistemas anteriores não quebraram.
+
+---
+
+15. SEGURANÇA ARQUITETURAL
+
+Verifique se nenhuma otimização ou refatoração destruiu:
+
+- extensibilidade;
+- modularidade;
+- representação;
+- integração;
+- qualidade.
+
+---
+
+16. ELIMINAR DÍVIDA DESNECESSÁRIA
+
+Quando houver:
+
+- código morto;
+- duplicação;
+- abstração inútil;
+- implementação temporária;
+
+corrija ou remova quando isso for seguro.
+
+---
+
+17. DOCUMENTAÇÃO
+
+Atualize a documentação para refletir o estado REAL.
+
+Não documente intenções como se fossem funcionalidades prontas.
+
+Separe claramente:
+
+- funcional;
+- parcial;
+- experimental;
+- futuro.
+
+---
+
+18. VERIFICAÇÃO FINAL DA VISÃO
+
+Faça uma última comparação:
+
+UTS
+
+É realmente tratada como arquitetura maior?
+
+RRW
+
+É uma representação aberta e abrangente da realidade?
+
+Tese dos D
+
+Possui função operacional?
+
+D máximo
+
+Está preservado conforme a definição mais recente?
+
+D-O15
+
+É uma camada real de otimização inteligente?
+
+Singularity AI
+
+É capaz de orquestrar modelos, agentes, ferramentas e memória?
+
+UES
+
+Utiliza esses fundamentos para construir mundos e experiências?
+
+---
+
+19. NÃO REDUZIR O PROJETO
+
+Não conclua:
+
+"é apenas uma engine."
+
+A UES é uma aplicação importante.
+
+A UTS é maior.
+
+A finalidade geral continua sendo:
+
+CONSTRUIR UMA REALIDADE COMPUTACIONAL.
+
+---
+
+20. NÃO EXAGERAR O ESTADO
+
+Também não faça o contrário.
+
+Não declare:
+
+"construímos a realidade inteira"
+
+se o código ainda não implementa isso.
+
+A visão pode ser extremamente ampla.
+
+A implementação deve ser descrita honestamente.
+
+---
+
+21. ÚLTIMA REGRA
+
+Se ainda existirem componentes fundamentais faltando:
+
+IMPLEMENTE-OS.
+
+Se existirem bugs:
+
+CORRIJA-OS.
+
+Se existirem gargalos:
+
+OTIMIZE-OS.
+
+Se houver integração incompleta:
+
+INTEGRE.
+
+Se uma arquitetura estiver errada:
+
+REFATORE.
+
+Se tudo estiver funcional:
+
+VALIDE.
+
+Não pare apenas porque o projeto ficou grande.
+
+Pare quando atingir o maior estado funcional, integrado, testado e coerente possível dentro das limitações reais do ambiente.
+
+---
+
+22. RESULTADO FINAL ESPERADO
+
+Ao concluir, forneça um relatório objetivo contendo:
+
+1. o que foi implementado;
+2. o que foi corrigido;
+3. o que foi otimizado;
+4. o que foi testado;
+5. quais sistemas estão funcionais;
+6. quais ainda são parciais;
+7. quais limitações reais permanecem;
+8. quais próximos passos são tecnicamente inevitáveis.
+
+Mas o relatório NÃO substitui a implementação.
+
+PRIMEIRO CONSTRUA.
+
+DEPOIS VALIDE.
+
+DEPOIS RELATE.
+
+A UTS deve continuar evoluindo como uma arquitetura para representar e construir a realidade computacional.
+
+A UES deve continuar sendo uma das principais aplicações dessa arquitetura.
+
+A Tese dos D deve permanecer como fundamento funcional.
+
+RRW deve permanecer abrangente.
+
+D-O15 deve permanecer como mecanismo de otimização inteligente.
+
+E a Singularity AI deve ser capaz de operar sobre todo esse ecossistema.
+
+FINALIZE.
+
+PROMPT 6/6 — RRW COMPLETO + RENDERER + PERCEPÇÃO ESPACIAL + FRONTEIRA 2
+
+Você terminou o Ciclo 2 com 95/95 testes e o commit "a7a6722".
+
+Agora NÃO faça outra auditoria conceitual.
+
+NÃO pergunte qual deve ser a arquitetura.
+
+NÃO reconstrua conceitos.
+
+NÃO substitua as definições já estabelecidas por interpretações próprias.
+
+A arquitetura abaixo é a direção canônica para esta etapa.
+
+Seu trabalho agora é:
+
+IMPLEMENTAR.
+
+A UTS continua sendo o sistema maior.
+
+A UES é a engine/sistema de execução de mundos dentro dela.
+
+O objetivo não é criar simplesmente "uma engine gráfica".
+
+O objetivo é começar a transformar a realidade representada pelo RRW em uma realidade visual e computável, mantendo toda a arquitetura anterior.
+
+---
+
+1. PRINCÍPIO CENTRAL
+
+A cadeia deve ser:
+
+UTS
+↓
+RRW
+↓
+Tese dos D
+↓
+D-O15
+↓
+UES
+↓
+manifestação visual
+↓
+Renderer/GPU
+
+O renderer NÃO deve possuir a lógica da realidade.
+
+Ele deve manifestar visualmente uma realidade que já foi construída/interpretada pelos sistemas superiores.
+
+Portanto:
+
+REPRESENTAÇÃO ≠ RENDERIZAÇÃO
+
+RRW representa.
+
+UES executa/orquestra.
+
+D-O15 decide quanto precisa ser processado/materializado.
+
+Renderer manifesta.
+
+GPU executa a manifestação gráfica.
+
+---
+
+2. RRW — IMPLEMENTAR COMO REPRESENTAÇÃO GERAL
+
+O RRW não deve ser tratado como uma lista fixa de objetos de jogo.
+
+Ele é uma representação aberta, extensível e multinível da realidade computacional.
+
+Deve poder representar:
+
+- entidades;
+- propriedades;
+- componentes;
+- relações;
+- processos;
+- eventos;
+- causalidade;
+- estados;
+- informações;
+- sistemas;
+- fenômenos;
+- estruturas espaciais;
+- estruturas não espaciais;
+- entidades individuais;
+- agregados;
+- estados abstratos;
+- estados materializados.
+
+Não crie uma arquitetura fechada como:
+
+RRW = personagens + objetos + terreno
+
+Isso destruiria o propósito.
+
+A representação precisa permitir novos domínios sem reescrever o núcleo.
+
+---
+
+3. RRW MULTINÍVEL
+
+Uma mesma realidade pode possuir diferentes níveis de representação.
+
+Exemplo:
+
+Uma população distante pode ser representada como:
+
+PopulationAggregate
+
+Enquanto uma pessoa relevante pode existir como:
+
+IndividualEntity
+
+Quando necessário, a representação pode aumentar de resolução.
+
+Quando deixa de ser necessária, pode voltar à abstração.
+
+A transformação:
+
+ABSTRAÇÃO → MATERIALIZAÇÃO
+
+e:
+
+MATERIALIZAÇÃO → ABSTRAÇÃO
+
+deve preservar estado.
+
+Nunca trate abstração como apagar entidades.
+
+---
+
+4. ESTADO PRESERVADO
+
+Ao materializar novamente algo que estava abstrato, preserve tudo que for semanticamente necessário:
+
+- identidade;
+- estado;
+- posição quando existente;
+- relações;
+- memória;
+- processos;
+- eventos relevantes;
+- causalidade;
+- recursos;
+- evolução temporal.
+
+A representação deve continuar sendo a mesma realidade em outro nível de detalhe.
+
+---
+
+5. CAUSALIDADE
+
+Continue usando causalidade verificável.
+
+Eventos devem possuir relações causais reais.
+
+Não permita:
+
+event A
+↓
+event B
+
+quando A nunca aconteceu.
+
+Toda causa precisa ser verificável.
+
+Preserve a cadeia causal durante:
+
+- abstração;
+- materialização;
+- streaming;
+- persistência;
+- evolução.
+
+---
+
+6. PROCESSOS
+
+Processos também devem sobreviver à mudança de resolução.
+
+Um processo pode ser:
+
+detalhado
+
+quando está em foco,
+
+ou:
+
+abstrato
+
+quando está distante.
+
+Porém, sua evolução não deve simplesmente parar.
+
+Exemplo:
+
+Uma fábrica distante não precisa simular cada trabalhador individualmente.
+
+Pode evoluir como:
+
+produção agregada
+consumo agregado
+estoque
+demanda
+falhas
+eventos
+
+Se posteriormente for materializada, a representação detalhada deve partir do estado correto produzido pela abstração.
+
+---
+
+7. RRW ESPACIAL + NÃO ESPACIAL
+
+Não restrinja RRW ao espaço físico.
+
+Ele deve suportar simultaneamente:
+
+espacial
+
+- mundo;
+- terreno;
+- entidades;
+- posições;
+- distância;
+- regiões;
+- ambiente.
+
+não espacial
+
+- informação;
+- conhecimento;
+- relações;
+- economia;
+- sociedade;
+- processos;
+- comunicação;
+- eventos;
+- causalidade.
+
+Isso já foi demonstrado conceitualmente no teste de domínio não espacial.
+
+Agora preserve essa propriedade durante a evolução.
+
+---
+
+8. RRW → FRAME
+
+A visualização deve ser derivada da representação.
+
+Não faça:
+
+Renderer → inventa estado visual
+
+Faça:
+
+RRW
+ ↓
+estado relevante
+ ↓
+UES
+ ↓
+D-O15
+ ↓
+nível de materialização
+ ↓
+Frame
+ ↓
+Renderer
+
+O "Frame" deve ser uma descrição visual derivada do estado real representado.
+
+---
+
+9. RENDERER — PRÓXIMO SALTO
+
+Agora implemente um backend gráfico real.
+
+A abstração atual:
+
+RendererBackend
+
+deve permanecer.
+
+Não acople o RRW à API gráfica.
+
+A primeira implementação pode ser:
+
+WebGL2
+
+por ser adequada para portabilidade e para demonstrar o pipeline visual.
+
+Depois a arquitetura deve permitir outros backends, incluindo Vulkan.
+
+Não transforme WebGL2 em dependência conceitual da UTS.
+
+---
+
+10. O QUE O RENDERER DEVE RECEBER
+
+O renderer deve receber o "Frame" produzido pela UES.
+
+O Frame já deve representar coisas como:
+
+- geometria;
+- materiais;
+- iluminação;
+- atmosfera;
+- sombras;
+- LOD;
+- ambiente;
+- estado visual relevante.
+
+O renderer deve traduzir isso para a GPU.
+
+Não deve recalcular a realidade inteira.
+
+---
+
+11. PIPELINE GRÁFICO
+
+Implemente progressivamente:
+
+RRW
+ ↓
+World/UES state
+ ↓
+visual extraction
+ ↓
+D-O15
+ ↓
+LOD/materialization
+ ↓
+Frame
+ ↓
+RendererBackend
+ ↓
+GPU
+ ↓
+imagem
+
+Comece com uma cena mínima real:
+
+- terreno;
+- céu;
+- iluminação;
+- entidades;
+- câmera;
+- materiais;
+- sombras básicas;
+- ambiente.
+
+Depois evolua.
+
+---
+
+12. TERRENO
+
+Use a representação de terreno já existente.
+
+O renderer deve conseguir transformar:
+
+Heightfield
++
+biome
++
+environment
++
+material
+
+em geometria/material visual.
+
+Não crie um segundo sistema de mundo independente.
+
+O terreno visual deve ser manifestação do RRW/UES.
+
+---
+
+13. LOD
+
+O LOD não deve ser apenas uma técnica gráfica.
+
+Ele deve trabalhar junto com a representação.
+
+Exemplo:
+
+muito próximo
+→ alta materialização
+
+próximo
+→ materialização intermediária
+
+distante
+→ representação simplificada
+
+muito distante
+→ abstração
+
+O D-O15 decide quanto detalhe é necessário considerando:
+
+- relevância;
+- distância;
+- hardware;
+- orçamento;
+- pressão;
+- importância da entidade;
+- atividade;
+- foco.
+
+---
+
+14. D-O15 + RENDERER
+
+O D-O15 deve participar da decisão.
+
+Não faça:
+
+Renderer tenta desenhar tudo
+↓
+GPU fica sobrecarregada
+↓
+FPS cai
+
+Faça:
+
+D-O15
+↓
+mede pressão
+↓
+analisa relevância
+↓
+decide nível necessário
+↓
+materializa somente o necessário
+↓
+Frame
+↓
+GPU
+
+O objetivo é:
+
+REPRESENTAÇÃO ADEQUADA EM VEZ DE FORÇA BRUTA.
+
+---
+
+15. RAIO DE MATERIALIZAÇÃO ADAPTATIVO
+
+O sistema já possui raio adaptativo.
+
+Agora conecte esse conceito ao pipeline visual.
+
+O raio não deve ser simplesmente:
+
+distância fixa
+
+Ele deve poder responder a:
+
+- hardware;
+- pressão;
+- foco;
+- velocidade;
+- relevância;
+- densidade;
+- atividade.
+
+Uma cidade importante pode exigir mais detalhe que uma região vazia.
+
+Um evento importante pode aumentar temporariamente a prioridade de materialização.
+
+---
+
+16. FRONTEIRA 2 — PERCEPÇÃO ESPACIAL
+
+Agora implemente a segunda fronteira identificada:
+
+PERCEPÇÃO ESPACIAL INDEXADA.
+
+O gargalo atual medido foi aproximadamente:
+
+500 NPCs → ~27 ms/tick
+2000 NPCs → ~216 ms/tick
+
+A causa dominante identificada é percepção O(n) por NPC.
+
+Não resolva isso simplesmente reduzindo a quantidade de NPCs.
+
+Resolva arquiteturalmente.
+
+---
+
+17. ÍNDICE ESPACIAL
+
+Implemente uma estrutura espacial para consultas rápidas.
+
+Preferencialmente uma:
+
+Spatial Grid / Uniform Grid
+
+como primeira implementação.
+
+A arquitetura deve permitir posteriormente:
+
+- quadtree;
+- k-d tree;
+- outras estruturas.
+
+Mas não complique desnecessariamente a primeira versão.
+
+---
+
+18. COMO FUNCIONARÁ
+
+Em vez de:
+
+NPC A
+→ verifica todos os NPCs
+
+NPC B
+→ verifica todos os NPCs
+
+NPC C
+→ verifica todos os NPCs
+
+faça:
+
+NPC A
+↓
+consulta célula espacial
+↓
+células vizinhas
+↓
+candidatos próximos
+↓
+filtragem por distância/percepção
+
+Assim, a percepção deixa de depender diretamente de todos os NPCs do mundo.
+
+---
+
+19. INDEXAÇÃO DINÂMICA
+
+Quando uma entidade mudar de posição:
+
+oldCell
+↓
+remove
+↓
+newCell
+↓
+insert
+
+O índice deve permanecer sincronizado.
+
+Não mantenha uma cópia de posição que possa divergir silenciosamente do RRW.
+
+O RRW continua sendo a fonte de verdade.
+
+---
+
+20. PERCEPÇÃO
+
+A consulta espacial deve ser apenas a primeira etapa.
+
+Depois aplique:
+
+- distância;
+- campo de percepção;
+- materialização;
+- relevância;
+- estado;
+- obstáculos quando disponíveis;
+- nível de detalhe.
+
+Exemplo:
+
+Spatial Query
+↓
+Distance Filter
+↓
+Perception Filter
+↓
+Materialization/LOD
+↓
+Relevant Entities
+↓
+NPC Decision
+
+---
+
+21. INTEGRAÇÃO COM NMN
+
+O NMN não deve saber qual estrutura espacial está sendo usada.
+
+Ele deve pedir algo conceitualmente como:
+
+perceive(position, perceptionModel)
+
+E receber entidades relevantes.
+
+Isso mantém:
+
+NMN
+
+desacoplado de:
+
+SpatialGrid
+
+---
+
+22. D-O15 + PERCEPÇÃO
+
+O D-O15 deve poder controlar a resolução da percepção.
+
+Exemplo:
+
+Sob folga:
+
+percepção completa
+
+Sob pressão:
+
+percepção reduzida
+
+Sob pressão extrema:
+
+percepção coarse/abstrata
+
+Mas:
+
+NÃO DESCARTE A REALIDADE.
+
+Apenas altere a resolução operacional.
+
+---
+
+23. IMPORTANTE: NÃO QUEBRE A CAUSALIDADE
+
+Se uma decisão de NPC acontecer por causa de algo percebido:
+
+a causa precisa continuar verificável.
+
+Exemplo:
+
+fire.detected
+↓
+npc.flee
+
+O sistema deve conseguir explicar por que o NPC tomou aquela decisão.
+
+---
+
+24. ESCALA
+
+Depois da Spatial Grid:
+
+teste pelo menos:
+
+500 NPCs
+2000 NPCs
+5000 NPCs
+10000 NPCs
+
+Quando possível.
+
+Compare:
+
+antes
+
+percepção O(n)
+
+depois
+
+percepção indexada.
+
+Não faça claim de escala sem medir.
+
+Mostre:
+
+- ms/tick;
+- número de candidatos consultados;
+- número de entidades realmente percebidas;
+- memória do índice;
+- custo de atualização;
+- custo total.
+
+---
+
+25. NÃO OTIMIZE SOMENTE O BENCHMARK
+
+A otimização precisa funcionar no mundo real da UES.
+
+Teste:
+
+- NPCs parados;
+- NPCs em movimento;
+- cidades densas;
+- áreas vazias;
+- entidades abstraídas;
+- entidades materializadas;
+- streaming;
+- mudança de foco;
+- clima/eventos.
+
+---
+
+26. TESTES DE INVARIANTES
+
+Adicione testes garantindo:
+
+- RRW continua fonte de verdade;
+- índice espacial não altera identidade;
+- materialização preserva estado;
+- abstração preserva estado;
+- percepção continua determinística;
+- causalidade continua válida;
+- NPCs continuam evoluindo;
+- scheduler continua respeitando orçamento;
+- D-O15 continua podendo deferir sem descartar.
+
+---
+
+27. TESTE DE REGRESSÃO
+
+Os:
+
+95/95 testes atuais
+
+devem continuar passando.
+
+Depois acrescente os novos testes.
+
+Objetivo:
+
+95 + novos testes = todos passando
+
+Não remova testes antigos apenas para fazer a suíte passar.
+
+---
+
+28. PERFORMANCE
+
+Use o "PerfMeter" existente.
+
+Não introduza benchmarks falsos ou estimativas.
+
+Meça realmente:
+
+- percepção;
+- índice espacial;
+- materialização;
+- render extraction;
+- frame generation;
+- renderer;
+- scheduler;
+- custo total.
+
+---
+
+29. GPU — PRIMEIRA META
+
+Não tente implementar um renderer AAA completo em uma etapa.
+
+Primeira meta:
+
+UMA CENA REAL GERADA PELA UES E DESENHADA PELA GPU.
+
+Ela deve provar:
+
+RRW
+→ UES
+→ Frame
+→ RendererBackend
+→ WebGL2
+→ tela
+
+O mundo visualizado precisa ser derivado do estado da UES.
+
+---
+
+30. NÃO CRIE UM "MUNDO FAKE" PARA O DEMO
+
+Não faça uma cena WebGL2 independente apenas para dizer que o renderer funciona.
+
+O teste precisa utilizar dados reais do sistema.
+
+Exemplo:
+
+World
+→ chunks
+→ terrain
+→ NPCs
+→ environment
+→ RealLife
+→ Frame
+→ WebGL2
+
+Assim o renderer realmente prova a integração.
+
+---
+
+31. REAL LIFE
+
+Continue expandindo o sistema "RealLife".
+
+As regras existentes:
+
+- chuva;
+- wetness;
+- vento;
+- poeira;
+- tempestade;
+- iluminação;
+
+são apenas exemplos.
+
+O sistema deve permanecer aberto para novos fenômenos.
+
+A visualização desses fenômenos deve ser derivada do estado representado.
+
+---
+
+32. REALIDADE TEMPORAL
+
+A cena não deve ser apenas estática.
+
+O renderer deve acompanhar:
+
+- passagem do tempo;
+- ciclo dia/noite;
+- clima;
+- mudanças ambientais;
+- movimento;
+- evolução dos NPCs.
+
+O frame deve ser atualizado a partir da realidade em evolução.
+
+---
+
+33. CÂMERA E FOCO
+
+A câmera deve alimentar o conceito de foco.
+
+O que está:
+
+na câmera
+perto da câmera
+relevante para a câmera
+
+pode receber maior resolução.
+
+Mas a câmera não deve ser o único determinante.
+
+Eventos, importância e causalidade também podem justificar materialização.
+
+---
+
+34. ARQUITETURA DE DEPENDÊNCIAS
+
+Preserve a inversão de dependência:
+
+RRW
+não conhece Renderer
+
+NMN
+não conhece SpatialGrid
+
+UES
+orquestra
+
+D-O15
+decide/adapta
+
+Renderer
+consome Frame
+
+Nenhuma camada inferior deve começar a controlar a realidade superior.
+
+---
+
+35. COMPATIBILIDADE
+
+Continue mantendo:
+
+- Node 22;
+- zero dependências desnecessárias no núcleo;
+- testes determinísticos;
+- provider de IA desacoplado;
+- renderer desacoplado.
+
+Se uma dependência gráfica for necessária para o backend WebGL2, isole-a no backend.
+
+---
+
+36. DOCUMENTAÇÃO
+
+Atualize:
+
+docs/canonical/
+
+com:
+
+- arquitetura RRW → Frame → Renderer;
+- pipeline visual;
+- materialização visual;
+- LOD integrado;
+- Spatial Grid;
+- percepção indexada;
+- métricas;
+- decisões;
+- limitações.
+
+Não altere o canon para justificar uma implementação.
+
+---
+
+37. CRITÉRIO DE SUCESSO
+
+Esta etapa só está completa quando existir evidência de:
+
+RRW
+
+representação aberta e multinível.
+
+D-O15
+
+controle adaptativo do nível de processamento/materialização.
+
+UES
+
+extração de estado visual.
+
+Renderer
+
+backend GPU real.
+
+GPU
+
+cena real da UES renderizada.
+
+Percepção
+
+Spatial Grid funcionando.
+
+NMN
+
+usando percepção indexada sem conhecer a implementação espacial.
+
+Escala
+
+benchmark comparativo real.
+
+Causalidade
+
+continua íntegra.
+
+Persistência
+
+continua íntegra.
+
+Testes
+
+95 anteriores + novos testes passando.
+
+---
+
+38. ORDEM DE IMPLEMENTAÇÃO
+
+Não tente fazer tudo simultaneamente.
+
+Use esta sequência:
+
+FASE A
+
+Spatial Grid.
+
+FASE B
+
+Integração com percepção/NMN.
+
+FASE C
+
+Benchmark de escala.
+
+FASE D
+
+Visual extraction aprimorado.
+
+FASE E
+
+WebGL2 RendererBackend.
+
+FASE F
+
+Terrain + entidades + iluminação.
+
+FASE G
+
+LOD/materialização integrado ao D-O15.
+
+FASE H
+
+RealLife visual.
+
+FASE I
+
+Integração completa.
+
+FASE J
+
+Testes + profiling + documentação.
+
+---
+
+39. PRINCÍPIO FINAL
+
+Não transforme a UTS em:
+
+«"mais uma engine que tenta renderizar muitos objetos."»
+
+O diferencial arquitetural é:
+
+«a realidade é representada primeiro; o sistema decide qual resolução dessa realidade é necessária; e a renderização é apenas uma manifestação dessa representação.»
+
+Portanto:
+
+REALIDADE REPRESENTADA
+        ↓
+RESOLUÇÃO NECESSÁRIA
+        ↓
+D-O15
+        ↓
+MATERIALIZAÇÃO
+        ↓
+FRAME
+        ↓
+GPU
+
+E paralelamente:
+
+ENTIDADES
+↓
+ÍNDICE ESPACIAL
+↓
+PERCEPÇÃO EFICIENTE
+↓
+NMN
+↓
+DECISÃO
+↓
+AÇÃO
+↓
+EVENTO
+↓
+CAUSALIDADE
+↓
+EVOLUÇÃO DA REALIDADE
+
+Esses dois fluxos precisam coexistir.
+
+Não construa um simulador separado e um renderer separado.
+
+Construa uma única realidade computacional, com diferentes níveis de representação e diferentes manifestações.
+
+---
+
+EXECUTE AGORA.
+
+Não faça apenas o plano.
+
+Não pare para explicar o que pretende fazer.
+
+Implemente incrementalmente.
+
+Depois:
+
+1. rode os 95 testes;
+2. rode os novos testes;
+3. rode os demos;
+4. faça profiling;
+5. compare a percepção antes/depois;
+6. valide a renderização GPU;
+7. valide materialização/abstração;
+8. valide causalidade;
+9. valide persistência;
+10. documente;
+11. faça commit;
+12. faça push.
+
+No relatório final, mostre números reais.
+
+Estruture:
+
+IMPLEMENTED
+
+PERFORMANCE
+
+GPU
+
+SPATIAL PERCEPTION
+
+INTEGRATION
+
+TESTS
+
+LIMITATIONS
+
+NEXT FRONTIER
+
+Não declare vitória sobre aquilo que ainda não foi implementado.
+
+Mas também não trate a arquitetura como uma simples engine gráfica.
+
+A UTS ESTÁ CONSTRUINDO A BASE COMPUTACIONAL DA REALIDADE.
+
+Agora transforme a representação em manifestação.
+::
+
+40. SISTEMAS PARCIAIS — TRANSFORMAR EM SISTEMAS REAIS
+
+O relatório anterior identificou sistemas que ainda estão parciais.
+
+NÃO os trate como detalhes secundários.
+
+Eles fazem parte da evolução necessária da UTS.
+
+Os três principais são:
+
+1. Renderer GPU;
+2. LLM externo real;
+3. Persistência em I/O real.
+
+A implementação deve transformar progressivamente cada um deles em um sistema funcional real, mantendo as abstrações já construídas.
+
+---
+
+41. LLM EXTERNO REAL — PROVIDER DE PRODUÇÃO
+
+Atualmente existe:
+
+HeuristicProvider
+PuterProvider
+
+O HeuristicProvider não é LLM.
+
+O PuterProvider é opcional/browser-only.
+
+Agora prepare a arquitetura para um:
+
+ExternalLLMProvider
+
+real.
+
+A arquitetura deve continuar:
+
+Singularity AI
+      ↓
+Singularity Core
+      ↓
+ProviderRegistry
+      ↓
+ExternalLLMProvider
+      ↓
+modelo externo
+
+O Core NÃO deve saber qual empresa/modelo está sendo usado.
+
+---
+
+42. ABSTRAÇÃO DO PROVIDER
+
+Crie um contrato suficientemente geral para providers reais:
+
+generate()
+stream()
+capabilities()
+cost()
+availability()
+
+conforme a arquitetura atual exigir.
+
+O provider deve informar capacidades como:
+
+- texto;
+- raciocínio;
+- código;
+- visão;
+- contexto;
+- ferramentas;
+- structured output;
+- etc.
+
+Não faça o Core depender de um modelo específico.
+
+---
+
+43. SELEÇÃO DE MODELO
+
+O ModelRegistry já existe.
+
+Agora faça o processo real:
+
+objetivo
+↓
+requisitos
+↓
+capacidades necessárias
+↓
+ModelRegistry
+↓
+ProviderRegistry
+↓
+modelo adequado
+↓
+execução
+
+A escolha não deve ser:
+
+«"sempre usar o modelo mais poderoso".»
+
+Ela deve considerar:
+
+- capacidade;
+- custo;
+- latência;
+- disponibilidade;
+- tarefa;
+- hardware;
+- contexto.
+
+---
+
+44. FALLBACK
+
+Se o LLM externo falhar:
+
+External LLM
+↓
+falha
+↓
+fallback
+↓
+outro provider/modelo
+
+O sistema não deve simplesmente quebrar.
+
+O Singularity Core deve continuar controlando o fluxo.
+
+---
+
+45. SEGURANÇA DO PROVIDER
+
+Nunca coloque API keys diretamente no código.
+
+Use configuração segura.
+
+Não grave secrets na memória persistente da UTS.
+
+Não inclua chaves em:
+
+- testes;
+- commits;
+- logs;
+- snapshots;
+- documentação.
+
+---
+
+46. TESTE DO LLM
+
+Não dependa exclusivamente de um LLM real para os testes determinísticos.
+
+Mantenha:
+
+mock provider
+heuristic provider
+
+para testes.
+
+Adicione testes de integração separados para provider externo.
+
+Assim:
+
+Core
+
+continua testável mesmo offline.
+
+---
+
+47. LLM + SINGULARITY CORE
+
+O LLM não deve substituir o Core.
+
+O fluxo continua sendo:
+
+usuário
+↓
+objetivo
+↓
+Singularity Core
+↓
+planejamento
+↓
+seleção de agente
+↓
+seleção de modelo
+↓
+LLM
+↓
+resultado
+↓
+verificação
+↓
+correção
+↓
+execução
+↓
+memória
+
+O LLM é uma capacidade utilizada pelo sistema.
+
+Não é a arquitetura inteira.
+
+---
+
+48. LLM + UES
+
+Demonstre uma integração real.
+
+Exemplo:
+
+objetivo:
+"criar uma pequena vila próxima a um rio"
+
+Fluxo:
+
+Singularity AI
+↓
+planeja
+↓
+seleciona agente
+↓
+modelo externo gera plano estruturado
+↓
+Core valida
+↓
+UES executa
+↓
+RRW cria entidades
+↓
+sociedade evolui
+↓
+mundo visualiza
+
+O resultado deve entrar no RRW por interfaces estruturadas.
+
+Não permita que texto livre do LLM altere arbitrariamente o estado interno.
+
+---
+
+49. PERSISTÊNCIA — I/O REAL
+
+A serialização JSON já existe.
+
+Agora transforme:
+
+serializeUes()
+restoreUes()
+
+em persistência real.
+
+Crie uma camada de armazenamento desacoplada:
+
+Persistence
+   ↓
+StorageBackend
+
+Permita backends como:
+
+MemoryStorage
+FileStorage
+
+e futuramente:
+
+DatabaseStorage
+CloudStorage
+
+---
+
+50. SAVE/LOAD
+
+Implemente:
+
+save()
+load()
+
+com:
+
+- RRW;
+- mundo;
+- entidades;
+- processos;
+- causalidade;
+- RNG;
+- relógio;
+- NPCs;
+- sociedade;
+- economia;
+- memória;
+- scheduler;
+- configurações relevantes.
+
+---
+
+51. VERSIONAMENTO
+
+Snapshots precisam possuir versão.
+
+Exemplo conceitual:
+
+{
+  schemaVersion: 1,
+  engineVersion: "...",
+  ...
+}
+
+Crie uma estratégia de migração:
+
+snapshot antigo
+↓
+migration
+↓
+schema atual
+↓
+restore
+
+Não permita que uma mudança futura de estrutura simplesmente destrua saves antigos.
+
+---
+
+52. INTEGRIDADE DO SAVE
+
+Ao salvar, valide invariantes.
+
+Ao carregar:
+
+load
+↓
+parse
+↓
+validate
+↓
+migrate
+↓
+restore
+↓
+validate novamente
+
+Se o snapshot estiver corrompido ou incompatível:
+
+não inicialize silenciosamente uma realidade vazia.
+
+Retorne erro explícito.
+
+---
+
+53. PERSISTÊNCIA DETERMINÍSTICA
+
+Continue preservando o RNG.
+
+Um teste importante:
+
+Estado A
+↓
+save
+↓
+load
+↓
+Estado B
+
+Depois:
+
+A evolui N ticks
+B evolui N ticks
+
+Resultado:
+
+A == B
+
+quando executados em condições determinísticas equivalentes.
+
+---
+
+54. RENDERER GPU — SISTEMA REAL
+
+O renderer parcial deve agora deixar de ser apenas:
+
+Null
+Text
+
+e receber:
+
+WebGL2Renderer
+
+implementando o contrato "RendererBackend".
+
+A implementação deve possuir:
+
+- contexto GPU;
+- buffers;
+- shaders;
+- câmera;
+- geometria;
+- materiais;
+- iluminação;
+- depth;
+- render loop;
+- resize;
+- recursos GPU;
+- limpeza/destruição.
+
+---
+
+55. FRAME → GPU
+
+Não crie uma segunda fonte de verdade.
+
+Faça:
+
+Frame
+↓
+GPU preparation
+↓
+GPU resources
+↓
+draw
+
+O Frame continua vindo da UES.
+
+---
+
+56. RECURSOS GPU
+
+Evite recriar tudo a cada frame.
+
+Separe:
+
+static resources
+dynamic resources
+
+Por exemplo:
+
+Static
+
+- terrain topology;
+- materiais;
+- shaders.
+
+Dynamic
+
+- transforms;
+- iluminação;
+- entidades;
+- clima;
+- câmera.
+
+Use atualização incremental quando possível.
+
+---
+
+57. RENDERIZAÇÃO DO TERRENO
+
+O terreno deve nascer dos dados reais da UES:
+
+Heightfield
+↓
+terrain extraction
+↓
+mesh
+↓
+material
+↓
+GPU
+
+Não faça um terreno falso apenas para testar WebGL.
+
+---
+
+58. ENTIDADES
+
+Entidades RRW relevantes devem poder gerar representação visual.
+
+Exemplo:
+
+RRW Entity
+↓
+visual component
+↓
+renderable
+↓
+transform
+↓
+GPU
+
+Entidades abstratas não precisam necessariamente gerar geometria individual.
+
+Isso é justamente onde a integração com D-O15 entra.
+
+---
+
+59. ABSTRAÇÃO VISUAL
+
+Uma entidade pode possuir:
+
+individual representation
+
+ou:
+
+aggregate representation
+
+dependendo do nível necessário.
+
+Exemplo:
+
+1000 pessoas distantes:
+
+population mass / aggregate
+
+20 pessoas próximas:
+
+individual representations
+
+O renderer não decide isso sozinho.
+
+A decisão nasce da UES/D-O15/RRW
+
+---
+
+60. REAL LIFE → GPU
+
+As regras do RealLife devem gerar estado visual.
+
+Exemplo:
+
+rain
+↓
+wetness
+↓
+material/frame
+↓
+GPU
+
+wind + dryness
+↓
+dust
+↓
+frame
+↓
+GPU
+
+storm
+↓
+lighting/environment
+↓
+frame
+↓
+GPU
+
+A regra causal deve continuar existindo na representação.
+
+---
+
+61. RENDERER NÃO É O FIM
+
+O primeiro WebGL2 renderer não precisa ser AAA.
+
+Ele precisa provar:
+
+A REALIDADE DA UES PODE SER MATERIALIZADA VISUALMENTE.
+
+Depois disso, evolua:
+
+- iluminação;
+- sombras;
+- atmosfera;
+- materiais;
+- água;
+- vegetação;
+- partículas;
+- animação;
+- pós-processamento;
+- terreno;
+- instancing;
+- streaming visual;
+- GPU culling.
+
+Cada avanço deve continuar consumindo a realidade da UTS.
+
+---
+
+62. D-O15 + GPU
+
+O D-O15 deve poder controlar:
+
+- quantidade de entidades materializadas;
+- LOD;
+- distância;
+- resolução de terreno;
+- frequência de atualização;
+- partículas;
+- sombras;
+- efeitos;
+- qualidade de materiais;
+- densidade visual.
+
+Sempre com base em:
+
+medição
++
+relevância
++
+orçamento
+
+Nunca faça degradação aleatória.
+
+---
+
+63. ESCALA GPU
+
+Quando o renderer estiver funcional, crie benchmarks.
+
+Teste diferentes quantidades de:
+
+- entidades;
+- terreno;
+- materiais;
+- sombras;
+- efeitos.
+
+Meça:
+
+- frame time;
+- CPU time;
+- GPU time quando disponível;
+- memória;
+- número de draw calls.
+
+Use esses dados para alimentar decisões futuras do D-O15.
+
+---
+
+64. INTEGRAÇÃO TOTAL
+
+No final desta etapa deve existir uma demonstração semelhante a:
+
+USER
+ ↓
+SINGULARITY AI
+ ↓
+LLM/PROVIDER
+ ↓
+SINGULARITY CORE
+ ↓
+RRW
+ ↓
+WORLD + NMN + SOCIETY
+ ↓
+D-O15
+ ↓
+MATERIALIZATION
+ ↓
+FRAME
+ ↓
+WEBGL2
+ ↓
+GPU
+ ↓
+VISUAL REALITY
+
+Enquanto simultaneamente:
+
+Spatial Grid
+ ↓
+Perception
+ ↓
+NMN
+ ↓
+Actions
+ ↓
+Events
+ ↓
+Causality
+ ↓
+World evolution
+
+E:
+
+Save
+ ↓
+Snapshot
+ ↓
+Storage
+ ↓
+Load
+ ↓
+Same Reality
+
+Tudo deve continuar sendo uma única arquitetura.
+
+---
+
+65. ORDEM ATUALIZADA DE IMPLEMENTAÇÃO
+
+Execute nesta ordem:
+
+FASE A
+
+Spatial Grid.
+
+FASE B
+
+Percepção indexada + NMN.
+
+FASE C
+
+Benchmarks de escala.
+
+FASE D
+
+Persistence StorageBackend + FileStorage.
+
+FASE E
+
+Versionamento/migração de snapshots.
+
+FASE F
+
+Provider externo real.
+
+FASE G
+
+Integração LLM → Singularity Core → UES.
+
+FASE H
+
+Visual extraction.
+
+FASE I
+
+WebGL2 RendererBackend.
+
+FASE J
+
+Terrain + entidades + câmera.
+
+FASE K
+
+LOD + materialização + D-O15.
+
+FASE L
+
+RealLife visual.
+
+FASE M
+
+Integração completa.
+
+FASE N
+
+Profiling.
+
+FASE O
+
+Testes.
+
+FASE P
+
+Documentação.
+
+FASE Q
+
+Commit + push.
+
+---
+
+66. DEFINIÇÃO DE "PARCIAL" VS "FUNCIONAL"
+
+Não use:
+
+«"tem uma classe"»
+
+como evidência de implementação.
+
+Um sistema é funcional quando existe:
+
+interface
++
+implementação
++
+integração
++
+teste
++
+uso real
+
+Por exemplo:
+
+Provider externo
+
+Não basta existir "ExternalLLMProvider.ts".
+
+Ele precisa:
+
+receber solicitação
+→ chamar provider
+→ receber resposta
+→ retornar estrutura
+→ ser usado pelo Core
+→ ser verificado
+
+Renderer
+
+Não basta existir "WebGL2Renderer.ts".
+
+Ele precisa:
+
+receber Frame real
+→ preparar GPU
+→ renderizar
+→ produzir imagem
+
+Storage
+
+Não basta serializar JSON.
+
+Precisa:
+
+save
+→ arquivo
+→ load
+→ restore
+→ continuar simulação
+
+---
+
+67. REGRA FINAL DOS SISTEMAS PARCIAIS
+
+Não marque como:
+
+COMPLETO
+
+até existir evidência.
+
+Use:
+
+PLANNED
+PARTIAL
+FUNCTIONAL
+VALIDATED
+
+Isso deve aparecer na documentação.
+
+A meta desta etapa é transformar os sistemas parciais relevantes em:
+
+FUNCTIONAL + VALIDATED
+
+sem quebrar os sistemas anteriores.
+
+
+COMECE PELO RENDERER DO ZERO. NÃO TEM NADA AINDA, COMECE FAZENDO TODO O RRW ATÉ TERMINAR COMPLETAMENTE DO JEITO QUE PEDI!!!
