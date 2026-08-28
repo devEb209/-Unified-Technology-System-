@@ -164,6 +164,12 @@ load:   parse → checksum → migrate (schemaVersion) → restore → validate 
 
 ## 7. Regras de dependência (inversão preservada)
 
+**Nativo primeiro (ADR-018):** todo sistema nasce da pergunta "como isso
+funciona nativamente na UTS/UES?"; dependência externa só quando inevitável
+e sempre atrás de interface própria (RHI → WebGL2 do browser; providers →
+Puter/LLM API; StorageBackend → FileStorage do OS). Wrapper que controla
+tudo não passa na revisão.
+
 ```
 RRW      não conhece Renderer, NMN nem SpatialGrid
 NMN      não conhece SpatialGrid (usa world.perceive)

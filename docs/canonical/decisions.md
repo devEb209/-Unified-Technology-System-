@@ -104,11 +104,41 @@ podem ser orquestrados pela UES como qualquer experiência.
 ## ADR-018 — FILOSOFIA NATIVA (regra permanente)
 A UTS/UES é construída **do zero** sempre que tecnicamente possível e
 justificável: renderer, RHI/abstração gráfica, gerenciamento de recursos GPU,
-materiais, iluminação, shadow mapping, instancing, culling, streaming, física,
-áudio, storage, comunicação, ferramentas, pipelines, runtime. Dependência
-externa apenas para o inevitável (driver de GPU, OS, protocolo/serviço
-deliberadamente consumido — GitHub, Puter, LLM API) e sempre **isolada atrás
-de interface própria**. Nada de coleção de wrappers.
+materiais, iluminação, shadow mapping, instancing, culling, LOD, streaming,
+física, áudio, sistemas de mundo, sistemas de simulação, storage, ferramentas,
+pipelines, integração AI, comunicação entre módulos, sistemas de runtime.
+
+**PRINCÍPIO ARQUITETURAL** — todo sistema é pensado primeiro como:
+"como isso deveria funcionar **nativamente** dentro da UTS/UES?" e somente
+depois: "existe dependência externa **inevitável** para uma camada
+específica?". Se existir (driver de GPU, OS, protocolo/serviço deliberadamente
+consumido — GitHub, Puter, LLM API), é **isolada atrás de interface própria**.
+A questão nunca foi "nunca usar código externo": é que a UTS/UES deve possuir
+sua própria implementação e arquitetura em tudo que está dentro do escopo que
+podemos controlar. Nunca uma coleção de wrappers.
+
+**Camadas nativas (forma canônica):**
+```
+UTS Audio    → nossa API → nosso mixer → nosso spatializer →
+               nossos eventos (D-11) → backend de dispositivo (inevitável)
+UTS Renderer → nossa arquitetura (Frame) → nossos materiais/lighting/
+               culling/streaming/instancing/sombras → RHI próprio →
+               backend gráfico (WebGL2 do browser — inevitável) → GPU
+UTS Storage  → nossa API StorageBackend → UTS-DB próprio (journal/tx/
+               índices/compaction) → FileSystem do OS (inevitável)
+UTS AI       → nosso Core (objetivo→plano→executar→verificar→corrigir) →
+               nosso ModelRegistry/AgentRegistry/ToolRegistry → provider
+               externo isolado (Puter/LLM API — inevitável)
+```
+
+**"Podemos criar → devemos criar" (cumprido nativamente):** física
+(`src/physics/physics.js`), áudio espacial/síntese (`src/audio/*`),
+shadow mapping (`shaders.js`+`webgl2.js` PCF 3×3), instancing (12
+floats/instância), RHI (`render/rhi.js`), DatabaseStorage (`persistence/utsdb.js`
+— camada e implementação controladas pela UTS), orchestration de LLM
+(`singularity/core.js`+`model.js`+`agents.js` — registry, fallback, structured
+output validado). **Inevitável, não recriamos:** driver de GPU, sistema
+operacional, serviço externo deliberadamente consumido.
 
 Cada implementação nativa deve: (1) ter arquitetura própria; (2) API/contrato
 próprio; (3) integrar-se aos sistemas existentes; (4) ser testável isoladamente;
