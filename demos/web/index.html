@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UTS — Unified Technology System :: UES / RRW / D-O15 / WebGL2</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #05070d; color: #cfe3ff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow: hidden; }
+  #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .panel { position: fixed; backdrop-filter: blur(6px); background: rgba(8, 14, 28, 0.72);
+    border: 1px solid rgba(90, 140, 255, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; }
+  #hud { top: 12px; left: 12px; min-width: 290px; line-height: 1.55; }
+  #hud b { color: #8fd0ff; font-weight: 600; }
+  #singularity { bottom: 12px; left: 12px; width: 430px; max-width: calc(100vw - 24px); }
+  #controls { top: 12px; right: 12px; text-align: right; }
+  button, input[type=text] {
+    font: inherit; background: #0d1730; color: #cfe3ff; border: 1px solid #2b4a8a;
+    border-radius: 6px; padding: 5px 9px; cursor: pointer;
+  }
+  button:hover { background: #16244d; }
+  #objective { width: 300px; }
+  #log { max-height: 180px; overflow: auto; margin-top: 8px; white-space: pre-wrap; color: #9fb8e8; }
+  .ok { color: #7fe3a0; } .bad { color: #ff8f8f; }
+  h1 { font-size: 13px; margin: 0 0 6px; color: #8fd0ff; letter-spacing: 0.08em; }
+  .bar { height: 6px; background: #101c3a; border-radius: 3px; overflow: hidden; margin: 3px 0 8px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg,#2b6cff,#8fd0ff); width: 0%; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div class="panel" id="hud">
+  <h1>UTS :: RRW → D → D-O15 → UES → FRAME → WEBGL2</h1>
+  <div>tick <b id="s-tick">0</b> · fps <b id="s-fps">–</b> · draw calls <b id="s-draw">–</b></div>
+  <div>NPCs <b id="s-npc">0</b> (mat <b id="s-mat">0</b> / par <b id="s-par">0</b>) · patches <b id="s-pat">0</b> · agregados <b id="s-agg">0</b></div>
+  <div>clima <b id="s-weather">–</b> · chuva <b id="s-rain">0</b> · molhado <b id="s-wet">0</b> · vento <b id="s-wind">0</b> · poeira <b id="s-dust">0</b></div>
+  <div>percepção <b id="s-perc">full</b> · eventos causais <b id="s-ev">0</b></div>
+  <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
+  <div class="bar"><i id="s-pressurebar"></i></div>
+  <div style="color:#7d8db3">arraste = orbitar · roda = zoom</div>
+</div>
+
+<div class="panel" id="controls">
+  <button id="w-clear">limpar</button>
+  <button id="w-rain">chuva</button>
+  <button id="w-storm">tempestade</button>
+  <button id="w-dust">poeira</button>
+  <button id="fire">raio/fogo</button>
+  <button id="save">save</button>
+  <button id="load">load</button>
+</div>
+
+<div class="panel" id="singularity">
+  <h1>SINGULARITY AI</h1>
+  <form id="objform">
+    <input id="objective" type="text" placeholder='objetivo: "criar uma pequena vila próxima a um rio chamada Vila Aurora"' />
+    <button>executar</button>
+  </form>
+  <div id="log">o núcleo interpreta objetivos, planeja, seleciona agentes/modelos, executa ferramentas validadas e verifica o resultado.</div>
+</div>
+
+<script type="module">
+  import { createUTS, WebGL2Renderer, TextRenderer } from '../../src/index.js';
+
+  const canvas = document.getElementById('gl');
+  const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } });
+  const { ues, core, world, rrw, do15, clock, tese } = uts;
+
+  // ---- bootstrap a reality through the Singularity Core (same path as tests)
+  const report = await core.processObjective('criar uma pequena vila próxima a um rio chamada Vila Aurora');
+  logLine(`objetivo executado: intent=${report.interpretation.intent} provider=${report.chosen.provider} ok=${report.ok} ${report.ok ? '✓' : '✗'}`);
+
+  // ---- GPU backend: real WebGL2 (this IS the Frame -> GPU chain)
+  let gl;
+  try {
+    gl = canvas.getContext('webgl2', { antialias: true });
+    if (!gl) throw new Error('WebGL2 not available');
+  } catch (e) {
+    logLine(`WebGL2 indisponível: ${e.message}`, true);
+  }
+  const renderer = new WebGL2Renderer(gl, { canvas });
+  renderer.init();
+
+  // ---- camera orbit
+  let drag = null;
+  canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener('pointermove', e => {
+    if (!drag) return;
+    ues.camera.yaw -= (e.clientX - drag.x) * 0.005;
+    ues.camera.pitch = Math.max(-0.1, Math.min(1.2, ues.camera.pitch + (e.clientY - drag.y) * 0.004));
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  canvas.addEventListener('pointerup', () => { drag = null; });
+  canvas.addEventListener('wheel', e => {
+    const dir = [Math.sin(ues.camera.yaw), 0, Math.cos(ues.camera.yaw)];
+    const k = e.deltaY > 0 ? 1.08 : 0.92;
+    ues.camera.pos = [
+      ues.camera.pos[0] + dir[0] * (k - 1) * -60,
+      Math.max(6, Math.min(220, ues.camera.pos[1] * k)),
+      ues.camera.pos[2] + dir[2] * (k - 1) * -60,
+    ];
+    e.preventDefault();
+  }, { passive: false });
+
+  // ---- controls
+  const $ = id => document.getElementById(id);
+  $('w-clear').onclick = () => world.setWeather('clear');
+  $('w-rain').onclick = () => world.setWeather('rain');
+  $('w-storm').onclick = () => world.setWeather('storm');
+  $('w-dust').onclick = () => world.setWeather('dust');
+  $('fire').onclick = () => world.strikeLightning([ues.camera.pos[0] + 20, 0, ues.camera.pos[2]]);
+  $('save').onclick = async () => {
+    const { save, MemoryStorage } = await import('../../src/persistence/snapshot.js');
+    const { MemoryStorage: MS } = await import('../../src/persistence/storage.js');
+    const store = (window.__utsStore ??= new MS());
+    await save(store, 'slot1', uts);
+    logLine('save: realidade serializada (RRW+RNG+clock+memória) → slot1');
+  };
+  $('load').onclick = async () => {
+    const { load } = await import('../../src/persistence/snapshot.js');
+    const { MemoryStorage: MS } = await import('../../src/persistence/storage.js');
+    const store = (window.__utsStore ??= new MS());
+    try {
+      const restored = await load(store, 'slot1');
+      window.__restored = restored;
+      logLine(`load: schema ${restored.version} restaurado (em window.__restored) — RNG/causalidade preservados`);
+    } catch (e) {
+      logLine(`load falhou (correto para dados inválidos): ${e.message}`, true);
+    }
+  };
+
+  // ---- Singularity objective form
+  $('objform').addEventListener('submit', async e => {
+    e.preventDefault();
+    const objective = $('objective').value.trim();
+    if (!objective) return;
+    logLine(`▶ objetivo: ${objective}`);
+    try {
+      const r = await core.processObjective(objective);
+      logLine(`  interpretação: ${r.interpretation.intent} ${JSON.stringify(r.interpretation.params)} (${r.chosen.provider}/${r.chosen.model})`);
+      for (const v of r.verifications) logLine(`  verificação ${v.check}: ${v.ok ? 'OK' : 'FAIL'}`, !v.ok);
+      logLine(`  resultado: ${r.ok ? '✓ verificado' : '✗ falhou'}`, !r.ok);
+    } catch (err) {
+      logLine(`  erro: ${err.message}`, true);
+    }
+  });
+
+  function logLine(msg, bad = false) {
+    const el = $('log');
+    el.innerHTML += `\n<span class="${bad ? 'bad' : 'ok'}">${msg.replace(/</g, '&lt;')}</span>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // ---- main loop: UES tick -> Frame -> WebGL2
+  let last = performance.now(), fps = 60, frameCount = 0;
+  function loop(now) {
+    const dt = Math.min(0.1, (now - last) / 1000);
+    last = now;
+    // fixed-step simulation (tick rate 20/s)
+    ues.tick(1 / 20);
+
+    const frame = ues.renderFrame();
+    const { drawCalls } = renderer.render(frame);
+
+    if (++frameCount % 10 === 0) {
+      fps = Math.round(1000 / Math.max(0.1, now - (loop._t ?? now)) * 10);
+      loop._t = now;
+      $('s-tick').textContent = world.clock.tick;
+      $('s-fps').textContent = fps;
+      $('s-draw').textContent = drawCalls;
+      $('s-npc').textContent = rrw.count('npc');
+      $('s-mat').textContent = frame.stats.npcsMaterialized;
+      $('s-par').textContent = frame.stats.npcsPartial;
+      $('s-pat').textContent = frame.stats.patches;
+      $('s-agg').textContent = frame.stats.aggregates;
+      $('s-weather').textContent = frame.environment.weather;
+      $('s-rain').textContent = frame.environment.rain.toFixed(2);
+      $('s-wet').textContent = frame.environment.wetness.toFixed(2);
+      $('s-wind').textContent = frame.environment.wind.toFixed(2);
+      $('s-dust').textContent = frame.environment.dust.toFixed(2);
+      $('s-perc').textContent = frame.stats.perceptionResolution;
+      $('s-ev').textContent = rrw.stats.events;
+      $('s-pressure').textContent = do15.pressure.toFixed(2);
+      $('s-pressurebar').style.width = `${Math.round(do15.pressure * 100)}%`;
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+</script>
+</body>
+</html>
