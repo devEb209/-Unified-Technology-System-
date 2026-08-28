@@ -3,7 +3,7 @@
 // RHI/culling/shadows/instancing/materials/lighting/streaming/physics/audio
 // (WAV rendered by OUR synth) / UTS-DB persistence / comm — all UTS-native.
 
-import { createUTS, createPlatform, AudioDirector, encodeWav, MemoryDevice, createAutosave, UTSDB, MemoryJournal } from '../src/index.js';
+import { createUTS, createPlatform, AudioDirector, encodeWav, MemoryDevice, createAutosave, ChunkCache, MusicDirector, UTSDB, MemoryJournal } from '../src/index.js';
 import { NullRenderer, TextRenderer } from '../src/index.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -104,6 +104,63 @@ const rec = adb.get('checkpoints', `cp:${saved2.tick}`);
 await adb.put('checkpoints', `cp:${saved2.tick}`, { ...rec, data: rec.data.slice(0, 30) + '####' + rec.data.slice(34) });
 const rec2 = await autosave.recover();
 console.log(`[autosave] checkpoints @${saved.tick}+@${saved2.tick} (${(saved.bytes / 1024).toFixed(0)}KB, ${saved.ratio.toFixed(1)}x gzip, ${saved.ms.toFixed(1)}ms) | crash no mais novo -> recuperado @${rec2.restoredTick} | pulados: ${rec2.skipped.map(x => x.tick).join(',') || 'nenhum'}`);
+
+// ---- OUR physics rotation + joints: a hanging chain holds its lengths
+{
+  const chainWorld = uts.world;
+  chainWorld.terrain.height = (() => { const orig = chainWorld.terrain.height.bind(chainWorld.terrain); return (x, z) => -60; })();
+  const anchor = chainWorld.physics.addBody({ pos: [200, 30, 200], radius: 0.4, pinned: true, label: 'anchor' });
+  const links = [anchor];
+  for (let i = 0; i < 3; i++) {
+    const l = chainWorld.physics.addBody({ pos: [200, 30 - (i + 1) * 1.5, 200], radius: 0.4, mass: 0.5, label: 'link' });
+    chainWorld.physics.addJoint(links[i].id, l.id, { rest: 1.5 });
+    links.push(l);
+  }
+  for (let i = 0; i < 240; i++) chainWorld.physics.step(1 / 60, { tick: i });
+  let maxErr = 0;
+  for (let i = 0; i < 3; i++) {
+    const pa = chainWorld.rrw.getComponent(links[i].id, 'spatial');
+    const pb = chainWorld.rrw.getComponent(links[i + 1].id, 'spatial');
+    maxErr = Math.max(maxErr, Math.abs(Math.hypot(pb.pos[0] - pa.pos[0], pb.pos[1] - pa.pos[1], pb.pos[2] - pa.pos[2]) - 1.5));
+  }
+  console.log(`[joints] corrente de 3 elos pendurada 240 passos -> erro máx de comprimento ${maxErr.toFixed(4)}u (relações RRW: ${chainWorld.physics.joints.length})`);
+}
+
+// ---- OUR adaptive music: the storm writes the score
+{
+  const md = new MusicDirector({ seed: 'genesis', tese: uts.tese });
+  const mdev = new MemoryDevice().open({ sr: uts.do15.strategy.audioSr });
+  const musicDir = new AudioDirector({ tese: uts.tese, do15: uts.do15 });
+  const mstream = musicDir.openStream({ seed: 'genesis-music' });
+  for (let i = 0; i < 80; i++) {
+    const f = uts.ues.renderFrame();
+    md.scheduleInto(mstream, f, { seconds: 0.1, voiceBudget: uts.do15.strategy.audioVoices });
+    musicDir.pumpStream(f, { seconds: 0.1 });
+    const c = mstream.pump(f, { seconds: 0.1, listener: { pos: f.camera.pos, yaw: f.camera.yaw } });
+    mdev.write(c);
+  }
+  const cat = mdev.concat();
+  const mw = encodeWav(cat);
+  await writeFile('demos/out/genesis-music.wav', mw);
+  const rms = Math.sqrt(cat.left.reduce((s2, v) => s2 + v * v, 0) / cat.left.length);
+  console.log(`[music] modo=${md._lastMode} compassos=${md.stats.bars} notas=${md.stats.notes} rms=${rms.toFixed(3)} -> demos/out/genesis-music.wav (${(mw.length / 1024).toFixed(0)}KB)`);
+}
+
+// ---- OUR persistent chunk cache: second pass = zero resample
+{
+  const cdb = new UTSDB({ journal: new MemoryJournal() });
+  await cdb.open();
+  const cache = new ChunkCache(cdb);
+  uts.world.streaming.cache = cache;
+  uts.world.streaming.resident.clear();
+  uts.world.streaming.update(uts.ues.camera.pos, { radius: 220, budgetMs: 1e9 });
+  const firstLoaded = uts.world.streaming.report().loaded;
+  uts.world.streaming.resident.clear();
+  uts.world.streaming.update(uts.ues.camera.pos, { radius: 220, budgetMs: 1e9 });
+  await cache.flush();
+  const rep = cache.report();
+  console.log(`[cache] 1a passada: ${firstLoaded} chunks amostrados · 2a passada: ${rep.hits} HITS (0 resample) · ${(rep.bytes / 1024).toFixed(0)}KB · flush atômico ok`);
+}
 
 console.log('[tese] camadas sem efeito observado nesta cena:', withoutEffect.length ? withoutEffect.join(',') : '(nenhuma)');
 console.log('\n=== GÊNESIS COMPLETO: a realidade representada é a única verdade ===\n');

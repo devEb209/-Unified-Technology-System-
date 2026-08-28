@@ -47,7 +47,9 @@
 | **Shadow mapping próprio** (depth pass + PCF 3×3, FBO 1024) | **FUNCTIONAL** | pipeline GL mockado; fallback honesto sem FBO |
 | **Instancing próprio** (12 floats/instância, batches por material) | **FUNCTIONAL** | path instanciado + fallback por-entidade testados |
 | **Streaming + LOD geométrico COMPLETO** (residência 24/16/8, histerese anti-flicker, skirts anti-fenda, impostores, budgetMs) | **FUNCTIONAL** | skirts provam-se > fenda T-junction medida; histerese: ≤2 mudanças sob jitter na fronteira; impostores 6 vértices/bioma dominante; limiar 150/120/90 u por D-O15 (auditável); determinismo preservado |
-| **Física nativa** (corpos=props RRW, impactos causais, sleep, raycast, broadphase) | **FUNCTIONAL** | cadeia de impacto verificável; D-O15 coarse reduz taxa de passos (medido) |
+| **Física nativa** (corpos=props RRW, impactos causais, **rotação com inércia/torque**, **juntas de distância como relações RRW (PBD)**, pinned, sleep angular, raycast, broadphase) | **FUNCTIONAL** | spin por contato tangencial (determinístico); corrente pendurada: erro máx 0.0097u em 240 passos; **física sobrevive a save/load** (reattach do RRW, A==B após restore+60 passos) |
+| **Binaural nativo** (ITD 0.65ms + ILD head-shadow) | **FUNCTIONAL** | orelha próxima ouve ANTES (atraso fracionário próprio); orelha sombreada mais baixa E mais escura (zcr medido); fogo no stream é estéreo posicional |
+| **Música procedural adaptativa** (modos por tensão, beat grid absoluto, 4 camadas) | **FUNCTIONAL** | mesma evolução de mundo = mesmas notas (determinismo); tempestade+fogo → modo tenso, mais camadas, bpm ↑; mudanças só em fronteira de compasso; orçamento D-O15 corta camadas |
 | **Áudio nativo COMPLETO** (synth/spatial/mixer/AudioDirector + AudioStream contínuo + devices) | **FUNCTIONAL** | stream sem emendas (pior |Δ|=0.011); playback real no browser (botão 🔊 do demo) + WAV; trovão com lockout temporal; fogo espacial em loop; SR/vozes (22050/16000/11025 · 8/5/3) governadas por D-O15 com mudanças medidas |
 | **UTS-DB** (journal append-only, replay, tx, índices, compaction, torn-tail) | **FUNCTIONAL** | `test/genesis-db-comm.test.js`; corrupção no meio falha alto |
 | **Comm** (rotas, timeouts, pub/sub entre módulos) | **FUNCTIONAL** | rotas ask/research.validate/system.status na plataforma |
@@ -57,6 +59,7 @@
 | ExternalLLMProvider (OpenAI-compatível, generate/stream) | **FUNCTIONAL\*** | *\*validado contra fetch mock; contra API real requer `OPENAI_API_KEY` — nunca commitado* |
 | PuterProvider (browser, access-layer) | **FUNCTIONAL\*** | *\*detectado/validado via globalRef injetado; requer browser com Puter* |
 | Persistence (save/load, checksum, versão, migração, File/Memory) | **FUNCTIONAL** | corrupção falha alto; A==B após restore+ticks |
+| **Cache LRU de terreno persistido** (UTS-DB, flush atômico em tx) | **FUNCTIONAL** | byte-exato vs amostragem fresca (prova de pureza); 2a passada = hits sem resample; sobrevive a restart (journal); LRU sob orçamento de bytes com evictions contados |
 | **Autosave/checkpoint journaling** (gzip no UTS-DB, retenção, crash recovery) | **FUNCTIONAL** | 9.9× compressão medida; checkpoint mais novo corrompido → recupera o anterior COM razão; zero válido = erro alto; save nunca bloqueia tick (host-side); A==B após recover+ticks |
 | Física avançada (ragdoll, juntas, rotação completa de corpos) | **PARTIAL** | solver de translação/impactos/sleep nativo; juntas/rotação livre PLANNED |
 | Busca web real (provider HTTP para research) | **PLANNED** | interface SearchProvider pronta (mock funcional) |
@@ -74,8 +77,9 @@
    rotação livre, juntas e ragdoll são PLANNED.
 4. Terreno estático por (chunk,res) — deformação ao vivo ainda não existe.
 5. Áudio no Node sai como WAV/pacer (sem device de som nativo sem deps);
-   playback ao vivo é no browser (WebAudioDevice). Spatialização estéreo
-   simples (ganho+pan); HRTF/convolução PLANNED.
+   playback ao vivo é no browser (WebAudioDevice). Binaural ITD+ILD próprio;
+   pinna/convolução (HRTF completa) PLANNED. Música: camadas pad/bass/arp/
+   pulse sintetizadas — instrumentos expressivos PLANNED.
 6. `world.set_weather` etc. mudam clima via cadeia causal; a máquina orgânica
    é estocástica por RNG — testes que exigem clima fixo rigam o RNG.
 7. Benchmarks dependem do host; sementes e contagens são determinísticas.
@@ -83,9 +87,9 @@
 
 ## Próximas fronteiras (ordem técnica — UMA por vez, terminada antes da seguinte)
 
-1. Streaming assíncrono de chunks (workers) + cache LRU de terreno persistido
-   no UTS-DB; depois, deltas por-entidade via cauda de eventos RRW.
-2. Rotação completa de corpos + juntas na PhysicsWorld.
+1. Streaming assíncrono de chunks (workers) + deltas por-entidade via cauda
+   de eventos RRW.
+2. Rotação 3D livre (quaternions) + juntas de dobradiça na PhysicsWorld.
 3. LLM real no loop (chave via env) com structured output validado pelo Core.
-4. Spatialização avançada (HRTF/convolução própria) sobre o AudioStream.
+4. HRTF completa (pinna/convolução própria) sobre o AudioStream binaural.
 5. Fade impostor↔malha (cross-fade no shader próprio).

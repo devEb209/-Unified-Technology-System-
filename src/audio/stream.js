@@ -16,7 +16,7 @@
 // (strategy.audioVoices) — measured adaptation, never random degradation.
 
 import { RNG } from '../core/rng.js';
-import { spatialize } from './spatial.js';
+import { spatialize, renderBinaural } from './spatial.js';
 
 const AMBIENCE_GAIN = { full: 0.32, reduced: 0.4, coarse: 0.5 };
 // how long the ambience envelope takes to follow a change (seconds)
@@ -42,6 +42,15 @@ export class AudioStream {
   }
 
   setSynth(synth) { this.synth = synth; return this; }
+
+  /** public scheduling API (music, tools, future systems): place a
+   *  deterministic voice at an ABSOLUTE stream time `at` (seconds). */
+  schedule(samples, { gain = 1, pan = 0, at = null, key = null } = {}) {
+    if (at == null) at = this.t;
+    if (at < this.t) at = this.t; // the past is gone — schedule now, honestly
+    this.voices.push({ samples, sr: this.sr, gain, pan, at, end: at + samples.length / this.sr, key });
+    return this;
+  }
 
   /** D-O15 sample-rate change — timeline is in seconds, so voices survive */
   setRate(sr) {
@@ -115,19 +124,26 @@ export class AudioStream {
       this._lastShot.set(shot.name, from);
     }
 
-    // fire crackle: loops while the light exists; gain/pan from spatialize
+    // fire crackle: loops while the light exists — rendered BINAURALLY
+    // (our ITD+ILD head model): the crackle comes FROM where the fire is.
     for (const light of frame?.lights?.points ?? []) {
       if (light.kind !== 'fire') continue;
-      const sp = spatialize({ emitterPos: light.pos, listener, refDist: 8 });
       const key = 'fire:' + light.sourceId;
       const alive = this.voices.some(v => v.key === key && v.end > this.t);
-      if (!sp.audible || alive) continue;
+      const probe = spatialize({ emitterPos: light.pos, listener, refDist: 8 });
+      if (!probe.audible || alive) continue;
       const loop = (this._crackleLoop.get(light.sourceId) ?? 0) + 1;
       this._crackleLoop.set(light.sourceId, loop);
       const samples = this.synth?.fireCrackle({ sr: this.sr, dur: FIRE_CRACKLE_DUR, seed: `${light.sourceId}:${loop}` });
       if (!samples) continue;
+      const bin = renderBinaural(samples, { emitterPos: light.pos, listener, sr: this.sr, refDist: 8 });
+      if (!bin.audible) continue;
       const at = from + 0.01;
-      this.voices.push({ samples, sr: this.sr, gain: 0.5 * sp.gain * (light.intensity ?? 1), pan: sp.pan, at, end: at + samples.length / this.sr, key });
+      this.voices.push({
+        samplesL: bin.left, samplesR: bin.right, sr: this.sr,
+        gain: 0.5 * (light.intensity ?? 1), pan: 0,
+        at, end: at + samples.length / this.sr, key,
+      });
     }
 
     // D-O15 voice cap: ambience bed + newest voices win; farthest/oldest drop
@@ -158,18 +174,19 @@ export class AudioStream {
     for (const v of this.voices) {
       const start = Math.round((v.at - from) * this.sr);
       if (start >= n) { survivors.push(v); continue; } // entirely future
-      const gl = v.gain * Math.cos(((v.pan + 1) * Math.PI) / 4);
-      const gr = v.gain * Math.sin(((v.pan + 1) * Math.PI) / 4);
+      const stereo = v.samplesL != null; // binaural voices carry their own ears
+      const gl = stereo ? v.gain : v.gain * Math.cos(((v.pan + 1) * Math.PI) / 4);
+      const gr = stereo ? v.gain : v.gain * Math.sin(((v.pan + 1) * Math.PI) / 4);
+      const mono = stereo ? null : v.samples;
       const step = v.sr / this.sr; // D-O15 rate change: voices resample by step
       let mixed = false;
-      for (let i = 0; i < v.samples.length; i++) {
+      for (let i = 0; i < (stereo ? v.samplesL.length : v.samples.length); i++) {
         const j = start + Math.round(i * step);
         if (j >= n) break;
         if (j < 0) continue;
         mixed = true;
-        const s = v.samples[i];
-        left[j] += s * gl;
-        right[j] += s * gr;
+        left[j] += (stereo ? v.samplesL[i] : mono[i]) * gl;
+        right[j] += (stereo ? v.samplesR[i] : mono[i]) * gr;
       }
       if (mixed) voices++;
       if (v.end > to) survivors.push(v); // consumed ones drop; loops re-schedule on the next pump

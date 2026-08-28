@@ -56,6 +56,9 @@ export { RendererError } from './render/rhi.js';
 export * as Persistence from './persistence/snapshot.js';
 export { MemoryStorage, FileStorage } from './persistence/storage.js';
 export { AutosaveManager, AutosaveError, createAutosave } from './persistence/autosave.js';
+export { ChunkCache } from './persistence/chunk-cache.js';
+export { renderBinaural } from './audio/spatial.js';
+export { MusicDirector, worldTension, MODES } from './audio/music.js';
 
 // UTS PLATFORM (UTS = platform · UES = engine inside the platform)
 export { UTSPlatform, createPlatform, MemorySearchProvider } from './platform/platform.js';

@@ -7,13 +7,14 @@
 import { dist2 } from '../core/math.js';
 
 export class StreamingSystem {
-  constructor({ world, perf = null, tese = null } = {}) {
+  constructor({ world, perf = null, tese = null, cache = null } = {}) {
     this.world = world;
     this.perf = perf;
     this.tese = tese;
+    this.cache = cache; // OUR ChunkCache (optional): resample-free residency
     /** key -> {key, cx, cz, res, state: 'pending'|'ready', priority, bytes} */
     this.resident = new Map();
-    this.stats = { loaded: 0, evicted: 0, scheduled: 0, budgetExhausted: 0, resChanges: 0 };
+    this.stats = { loaded: 0, evicted: 0, scheduled: 0, budgetExhausted: 0, resChanges: 0, cacheHits: 0 };
     this.maxResident = 128;
   }
 
@@ -82,7 +83,16 @@ export class StreamingSystem {
     for (const entry of this.resident.values()) {
       if (entry.state !== 'pending') continue;
       if ((now() - t0) > budgetMs) { this.stats.budgetExhausted++; break; }
-      const patch = this.world.terrain.sampleChunk(entry.cx, entry.cz, entry.res);
+      // OUR persistent cache first: a hit reuses the chunk WITHOUT resampling
+      // (sampling is pure — byte-exact equality is proven by tests).
+      let patch = this.cache?.get(entry.cx, entry.cz, entry.res) ?? null;
+      if (patch) this.stats.cacheHits++;
+      else {
+        patch = this.world.terrain.sampleChunk(entry.cx, entry.cz, entry.res);
+        this.cache?.put(entry.cx, entry.cz, entry.res, {
+          heights: patch.heights, biomes: patch.biomes, step: patch.step,
+        });
+      }
       entry.patch = {
         heights: patch.heights, biomes: patch.biomes,
         res: patch.res, step: patch.step,

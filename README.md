@@ -45,7 +45,7 @@ Em paralelo, o fluxo cognitivo:
 ## Quick start
 
 ```bash
-npm test              # 185/185 testes determinísticos
+npm test              # 200/200 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
@@ -89,12 +89,12 @@ src/d/              Tese dos D + D-O15
 src/spatial/        SpatialGrid (índice derivado)
 src/nmn/            Natural Mindset of NPCs
 src/world/          terreno, RealLife, sociedade/economia, streaming, World
-src/physics/        PhysicsWorld nativa (corpos=props RRW, impactos causais)
-src/audio/          synth/spatial/mixer + AudioStream contínuo + devices (playback próprio)
+src/physics/        PhysicsWorld nativa (impactos causais, rotação, juntas PBD)
+src/audio/          synth/spatial (binaural) + música adaptativa + stream contínuo + devices
 src/ues/            scheduler, frame, orquestrador
 src/singularity/    Core, providers, modelos, agentes, tools, memória
 src/render/         RHI, culling, materiais, iluminação, shaders, WebGL2 GÊNESIS, Null/Text
-src/persistence/    storage + snapshots + UTS-DB (journal/tx) + autosave (gzip/recovery)
+src/persistence/    storage + snapshots + UTS-DB + autosave (gzip/recovery) + chunk-cache (LRU)
 src/core/comm.js    Comm (rotas/timeouts/pub-sub entre módulos)
 test/               160 testes (node:test, zero deps)
 bench/              percepção (brute vs grid) + frame

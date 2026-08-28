@@ -170,6 +170,8 @@ export function restoreState(state, opts = {}) {
     if (sp && e.kind !== 'settlement') entries.push([e.id, sp.pos[0], sp.pos[2]]);
   }
   world.grid.rebuild(entries);
+  // physics bodies + joints are RRW state: rebuild the derived solver caches
+  world.physics.reattach();
 
   return { rng, clock, bus, tese, do15, perf, rrw, world, ues, core, version: ENGINE_VERSION };
 }
