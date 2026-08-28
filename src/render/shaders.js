@@ -53,6 +53,7 @@ uniform vec3 uSkyBottom; uniform float uFog; uniform float uWetness;
 uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
+uniform float uAlpha;
 out vec4 fragColor;
 float shadowSample(vec3 wp, float ndl){
   if (uShadowOn < 0.5) return 1.0;
@@ -88,7 +89,7 @@ void main(){
   col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
   float dcam = length(vPos-uCamPos);
   col = mix(col, uSkyBottom, clamp(1.0-exp(-dcam*uFog*0.008),0.0,0.9));
-  fragColor = vec4(col,1.0);
+  fragColor = vec4(col, uAlpha);
 }`;
 
 export const ENTITY_INST_VS = `#version 300 es
@@ -117,6 +118,7 @@ uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
+uniform float uAlpha;
 out vec4 fragColor;
 float shadowSample(vec3 wp, float ndl){
   if (uShadowOn < 0.5) return 1.0;
@@ -155,6 +157,7 @@ void main(){
   col += albedo * emissive * 1.5;
   float dcam = length(vWorld-uCamPos);
   col = mix(col, uSkyBottom, clamp(1.0-exp(-dcam*uFog*0.008),0.0,0.9));
+  fragColor = vec4(col, uAlpha);
   fragColor = vec4(col,1.0);
 }`;
 
@@ -179,3 +182,42 @@ in float vAlpha;
 uniform vec3 uColor;
 out vec4 fragColor;
 void main(){ if (vAlpha<0.5) discard; fragColor = vec4(uColor,0.55); }`;
+
+export const WATER_VS = `#version 300 es
+layout(location=0) in vec3 aPos; // xz world, y ignored (rebuilt as waves)
+uniform mat4 uVP; uniform float uTime; uniform float uSeaLevel; uniform float uWind;
+out vec3 vPos; out float vWave;
+void main(){
+  float w = sin(aPos.x*0.11 + uTime*1.9)*0.5 + cos(aPos.z*0.13 - uTime*1.3)*0.35
+          + sin((aPos.x+aPos.z)*0.05 + uTime*0.7)*0.4;
+  float amp = 0.22 + uWind*0.5;
+  float y = uSeaLevel + w*amp;
+  vPos = vec3(aPos.x, y, aPos.z);
+  vWave = w;
+  gl_Position = uVP*vec4(vPos,1.0);
+}`;
+
+export const WATER_FS = `#version 300 es
+precision highp float;
+in vec3 vPos; in float vWave;
+uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
+uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
+uniform float uWetness; uniform float uAlpha;
+out vec4 fragColor;
+void main(){
+  vec3 view = normalize(uCamPos - vPos);
+  // wave normal from the same field the vertex shader used (cheap derivative)
+  vec3 n = normalize(vec3(-cos(vPos.x*0.11)*0.06, 1.0, cos(vPos.z*0.13)*0.05));
+  float fres = pow(1.0 - clamp(dot(view, n), 0.0, 1.0), 3.0);
+  vec3 deep = vec3(0.05, 0.14, 0.22) * (0.7 + uAmbient);
+  vec3 shallow = vec3(0.12, 0.32, 0.42) * (0.7 + uAmbient);
+  vec3 col = mix(deep, shallow, clamp(vWave*0.5 + 0.5, 0.0, 1.0));
+  float spec = pow(max(dot(reflect(-uSunDir, n), view), 0.0), 90.0);
+  col += uSunColor * spec * 0.9;
+  col = mix(col, uSkyBottom, fres*0.65);
+  col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
+  float dc = length(uCamPos - vPos);
+  col = mix(col, uSkyBottom, clamp(1.0-exp(-dc*uFog*0.008),0.0,0.9));
+  fragColor = vec4(col, uAlpha);
+}
+`;

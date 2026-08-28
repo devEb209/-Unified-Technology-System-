@@ -9,7 +9,7 @@
 
 import {
   SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS,
-  SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS,
+  SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS,
 } from './shaders.js';
 import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh } from './mesh.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
@@ -118,6 +118,7 @@ export class WebGL2Renderer {
       terrain: this.programCache.get('terrain', TERRAIN_VS, TERRAIN_FS),
       entity: this.programCache.get('entity', ENTITY_INST_VS, ENTITY_FS),
       points: this.programCache.get('points', POINTS_VS, POINTS_FS),
+      water: this.programCache.get('water', WATER_VS, WATER_FS),
     };
     if (this.caps.fbo) {
       this.programs.shadow = this.programCache.get('shadow', SHADOW_VS, SHADOW_FS);
@@ -138,6 +139,13 @@ export class WebGL2Renderer {
     for (let i = 0; i < 500; i++) seeds[i] = (i + 0.5) / 500;
     this.rainHandle = this.createBuffer(seeds, { dynamic: true });
     this.rainBuffer = this.rainHandle.meta.gl;
+
+    // water quad (world-space xz around the camera; y rebuilt as waves)
+    const W = 900;
+    this.waterHandle = this.createBuffer(new Float32Array([
+      -W, 0, -W,  W, 0, -W,  W, 0, W,
+      -W, 0, -W,  W, 0, W,  -W, 0, W,
+    ]), { dynamic: true });
 
     // shadow target (OUR depth pass): only when the device supports FBOs
     this.shadow = null;
@@ -173,14 +181,32 @@ export class WebGL2Renderer {
       const lod = patch.lod ?? 'mesh';
       const key = `${patch.id}:${patch.res}:${patch.version}:${lod}`;
       current.add(key);
+      if (lod === 'fade') current.add(key + ':imp'); // fade impostor survives the sweep
       if (this.terrainBuffers.has(key)) continue;
       // GÊNESIS-LOD: distant chunks are IMPOSTORS (one quad, dominant biome);
       // near chunks are skirted meshes — cracks between rings are impossible.
-      const mesh = lod === 'impostor'
-        ? buildImpostorMesh({ ...patch })
-        : buildTerrainMesh({ ...patch, size: patch.size });
+      // 'fade' chunks get BOTH: the mesh + a lifted impostor that dissolves in.
+      let mesh, count;
+      if (lod === 'impostor') {
+        mesh = buildImpostorMesh({ ...patch });
+        count = mesh.count;
+      } else if (lod === 'fade') {
+        mesh = buildTerrainMesh({ ...patch, size: patch.size });
+        const h = this.createBuffer(mesh.data);
+        this.terrainBuffers.set(key, { handle: h, count: mesh.count, lod: 'mesh' });
+        const imp = buildImpostorMesh({ ...patch });
+        const lifted = Float32Array.from(imp.data);
+        for (let v = 0; v < imp.count; v++) lifted[v * 7 + 1] += 1.5; // above the real mesh
+        const hi = this.createBuffer(lifted);
+        this.terrainBuffers.set(key + ':imp', { handle: hi, count: imp.count, lod: 'fade-imp' });
+        this.stats.uploads += 2;
+        continue;
+      } else {
+        mesh = buildTerrainMesh({ ...patch, size: patch.size });
+        count = mesh.count;
+      }
       const h = this.createBuffer(mesh.data); // single RHI-tracked upload
-      this.terrainBuffers.set(key, { handle: h, count: mesh.count, lod });
+      this.terrainBuffers.set(key, { handle: h, count, lod });
       this.stats.uploads++;
     }
     for (const [key, res] of [...this.terrainBuffers]) {
@@ -359,16 +385,39 @@ export class WebGL2Renderer {
     gl.uniform1f(terr.u.uFog, env.fog);
     gl.uniform1f(terr.u.uWetness, env.wetness);
     gl.uniform3f(terr.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
+    if (terr.u.uAlpha) gl.uniform1f(terr.u.uAlpha, 1);
     for (const patch of frame.terrain.patches) {
       const lod = patch.lod ?? 'mesh';
       const key = `${patch.id}:${patch.res}:${patch.version}:${lod}`;
-      const res = this.terrainBuffers.get(key);
-      if (!res) continue;
-      this._bind(terr, res.handle.meta.gl, 7, { normals: true, biome: true });
-      gl.drawArrays(gl.TRIANGLES, 0, res.count);
+      const res = this.terrainBuffers.get(lod === 'fade' ? key : key) ?? this.terrainBuffers.get(key);
+      const entry = res ?? this.terrainBuffers.get(key);
+      if (!entry) continue;
+      this._bind(terr, entry.handle.meta.gl, 7, { normals: true, biome: true });
+      gl.drawArrays(gl.TRIANGLES, 0, entry.count);
       drawCalls++;
       if (lod === 'impostor') this.stats.impostors++;
-      this.stats.terrainTris += res.count / 3;
+      this.stats.terrainTris += entry.count / 3;
+    }
+    // ---- impostor cross-fade pass (alpha dissolves the mesh away)
+    const fadeMeta = frame.terrain.impostorAfter ?? 150;
+    const fadeLen = frame.terrain.fade ?? 50;
+    const fading = (frame.terrain.patches ?? []).filter(p => p.lod === 'fade');
+    if (fading.length > 0) {
+      gl.enable(gl.BLEND);
+      if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      for (const patch of fading) {
+        const key = `${patch.id}:${patch.res}:${patch.version}:fade:imp`;
+        const entry = this.terrainBuffers.get(key);
+        if (!entry) continue;
+        const a = Math.min(1, Math.max(0, ((patch.dist ?? fadeMeta) - fadeMeta) / fadeLen));
+        if (terr.u.uAlpha) gl.uniform1f(terr.u.uAlpha, a);
+        this._bind(terr, entry.handle.meta.gl, 7, { normals: true, biome: true });
+        gl.drawArrays(gl.TRIANGLES, 0, entry.count);
+        drawCalls++;
+        this.stats.fadePasses = (this.stats.fadePasses ?? 0) + 1;
+      }
+      if (terr.u.uAlpha) gl.uniform1f(terr.u.uAlpha, 1);
+      gl.disable(gl.BLEND);
     }
 
     // ---- entities: OUR instanced path (fallback: per-entity draws)
@@ -402,6 +451,34 @@ export class WebGL2Renderer {
         drawCalls++;
         this.stats.instances++;
       }
+    }
+
+    // ---- water: OUR animated sea (GPU waves, fresnel, sun specular)
+    const seaLevel = frame.terrain?.seaLevel;
+    if (seaLevel != null && this.waterHandle) {
+      const wat = this.programs.water;
+      gl.useProgram(wat.prog);
+      gl.uniformMatrix4fv(wat.u.uVP, false, vp);
+      gl.uniform1f(wat.u.uTime, (frame.time ?? 0) % 1000);
+      gl.uniform1f(wat.u.uSeaLevel, seaLevel);
+      gl.uniform1f(wat.u.uWind, frame.environment.wind ?? 0);
+      gl.uniform3f(wat.u.uSunDir, frame.lights.sun.dir[0], frame.lights.sun.dir[1], frame.lights.sun.dir[2]);
+      gl.uniform3f(wat.u.uSunColor, frame.lights.sun.color[0], frame.lights.sun.color[1], frame.lights.sun.color[2]);
+      gl.uniform1f(wat.u.uAmbient, frame.lights.sun.ambient);
+      gl.uniform3f(wat.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);
+      gl.uniform1f(wat.u.uFog, env.fog);
+      gl.uniform1f(wat.u.uWetness, env.wetness);
+      gl.uniform3f(wat.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
+      gl.uniform1f(wat.u.uAlpha, 0.8);
+      gl.enable(gl.BLEND);
+      if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      this._bind(wat, this.waterHandle.meta.gl, 3, { normals: false });
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+      drawCalls++;
+      this.stats.waterDraws = (this.stats.waterDraws ?? 0) + 1;
     }
 
     // ---- precipitation (phenomena from represented state)
@@ -475,6 +552,7 @@ export class WebGL2Renderer {
     this.shadow = null;
     this.quad = null;
     this.rainBuffer = null;
+    this.waterHandle = null;
     this._instanceBuffer = null;
     this._instanceHandle = null;
     this.initialized = false;

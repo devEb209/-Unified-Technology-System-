@@ -23,13 +23,13 @@ test('webgl2: rejects non-GL contexts loudly', async () => {
   assert.throws(() => new WebGL2Renderer(null), RendererError);
 });
 
-test('webgl2: compiles 4 programs, renders sky+terrain+entities, counts draw calls', async () => {
+test('webgl2: compiles 5 programs (sky/terrain/entity/points/water), renders the world, counts draw calls', async () => {
   const gl = makeGL();
   const { frame } = await makeScene();
   const r = new WebGL2Renderer(gl);
   r.init();
   const { drawCalls } = r.render(frame);
-  assert.equal(gl._programs.length, 4);
+  assert.equal(gl._programs.length, 5);
   const arrays = gl._calls.filter(c => c[0] === 'drawArrays');
   assert.equal(arrays.length, drawCalls);
   // sky (1) + terrain patches + VISIBLE entities (our culling skips the rest) (+ rain when raining)

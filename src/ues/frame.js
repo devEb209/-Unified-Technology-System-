@@ -24,10 +24,11 @@ export function extractFrame(ues, perf = null) {
     budgetMs: (strategy?.perceptionResolution ?? 'full') === 'coarse' ? 1 : 2.5,
   });
   const patches = [];
-  let meshPatches = 0, impostorPatches = 0;
+  let meshPatches = 0, impostorPatches = 0, fades = 0;
   const cs = world.terrain.chunkSize;
   const radius = strategy?.terrainRadius ?? 220;
   const impostorAfter = strategy?.terrainImpostorAfter ?? 150; // D-O15: LOD quality tier
+  const IMPOSTOR_FADE = 50; // cross-fade band (u): mesh dissolves into impostor
   const c0x = Math.floor((cam.pos[0] - radius) / cs), c1x = Math.floor((cam.pos[0] + radius) / cs);
   const c0z = Math.floor((cam.pos[2] - radius) / cs), c1z = Math.floor((cam.pos[2] + radius) / cs);
   for (let cx = c0x; cx <= c1x && patches.length < 64; cx++) {
@@ -38,8 +39,9 @@ export function extractFrame(ues, perf = null) {
       const entry = world.streaming.getPatch(cx, cz, 24) ?? world.streaming.getPatch(cx, cz, 16) ?? world.streaming.getPatch(cx, cz, 8);
       if (!entry) continue; // not resident yet — the stream decides, we never fake
       const d = Math.sqrt(dist2(ccx, ccz, cam.pos[0], cam.pos[2]));
-      const lod = d > impostorAfter ? 'impostor' : 'mesh';
-      if (lod === 'impostor') impostorPatches++; else meshPatches++;
+      // GÊNESIS-LOD: 3 tiers — mesh | fade (mesh + dissolving impostor) | impostor
+      const lod = d > impostorAfter + IMPOSTOR_FADE ? 'impostor' : (d > impostorAfter ? 'fade' : 'mesh');
+      if (lod === 'impostor') impostorPatches++; else if (lod === 'fade') fades++; else meshPatches++;
       patches.push({
         id: `${cx}:${cz}`, x0: cx * cs, z0: cz * cs, size: cs,
         res: entry.res, heights: entry.patch.heights, biomes: entry.patch.biomes,
@@ -95,14 +97,14 @@ export function extractFrame(ues, perf = null) {
     tick: world.clock.tick,
     time: world.clock.time,
     camera: { ...cam },
-    terrain: { patches, seaLevel: world.terrain.seaLevel, chunkSize: cs },
+    terrain: { patches, seaLevel: world.terrain.seaLevel, chunkSize: cs, impostorAfter, fade: IMPOSTOR_FADE },
     entities, aggregates,
     lights: world.lighting.collect(world, cam.pos, strategy),
     environment: { ...world.environment },
     audio: world.reallife.audioState(),
     stats: {
       patches: patches.length,
-      terrain: { meshes: meshPatches, impostors: impostorPatches },
+      terrain: { meshes: meshPatches, impostors: impostorPatches, fades },
       entities: entities.length,
       aggregates: aggregates.length,
       npcsMaterialized: rrw.query({ kind: 'npc', materialization: 'full' }).length,

@@ -122,7 +122,7 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
   assert.equal(r.caps.instanced, true, 'mock device advertises instancing');
   assert.equal(r.caps.fbo, true);
   assert.ok(r.shadow, 'shadow target created on FBO-capable device');
-  assert.equal(programs.length, 5, 'sky+terrain+entity+points+shadow programs');
+  assert.equal(programs.length, 6, 'sky+terrain+entity+points+shadow+water programs');
 
   const frame = uts.ues.renderFrame();
   assert.ok(frame.lights.points.length >= 1, 'frame carries OUR point lights');

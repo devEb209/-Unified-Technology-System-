@@ -108,12 +108,13 @@ test('frame: lod is marked by distance — near = mesh, far = impostor; stats ar
   uts.ues.moveCamera([480, 40, 480]);
   uts.world.streaming.update([480, 40, 480], { radius: 220, budgetMs: 1e9 });
   const near = uts.ues.renderFrame();
-  assert.equal(near.stats.terrain.meshes + near.stats.terrain.impostors, near.terrain.patches.length);
   for (const p of near.terrain.patches) {
-    assert.equal(p.lod, p.dist > (uts.do15.strategy.terrainImpostorAfter ?? 150) ? 'impostor' : 'mesh');
+    const A = uts.do15.strategy.terrainImpostorAfter ?? 150, F = near.terrain.fade ?? 50;
+    assert.equal(p.lod, p.dist > A + F ? 'impostor' : (p.dist > A ? 'fade' : 'mesh'));
   }
   const nearCount = near.stats.terrain.meshes;
   assert.ok(nearCount > 0, 'something near is a mesh');
+  assert.equal(near.stats.terrain.meshes + near.stats.terrain.impostors + near.stats.terrain.fades, near.terrain.patches.length, '3 tiers partition every patch');
 
   // walk 200u away: most patches beyond impostorAfter become impostors
   uts.ues.moveCamera([480 + 200, 40, 480]);
@@ -122,10 +123,14 @@ test('frame: lod is marked by distance — near = mesh, far = impostor; stats ar
   assert.ok(far.stats.terrain.impostors > 0, 'far terrain becomes impostors');
   // THE invariant: every patch beyond impostorAfter is an impostor, none inside
   const after = uts.do15.strategy.terrainImpostorAfter ?? 150;
+  const fadeLen = far.terrain.fade ?? 50;
   for (const p of far.terrain.patches) {
-    assert.equal(p.lod, p.dist > after ? 'impostor' : 'mesh', `lod honors the tier at d=${p.dist.toFixed(0)}`);
+    const want = p.dist > after + fadeLen ? 'impostor' : (p.dist > after ? 'fade' : 'mesh');
+    assert.equal(p.lod, want, `lod honors the 3-tier at d=${p.dist.toFixed(0)}`);
   }
-  assert.ok(far.stats.terrain.impostors >= 10, `many impostors at 200u (${far.stats.terrain.impostors})`);
+  // everything beyond A is at least FADING into an impostor
+  assert.ok(far.stats.terrain.impostors + far.stats.terrain.fades >= 10,
+    `many impostor-band patches at 200u (${far.stats.terrain.impostors}+${far.stats.terrain.fades})`);
 });
 
 test('renderer: impostor buffers are tiny and keyed separately; stats count them exactly', async () => {
@@ -137,7 +142,12 @@ test('renderer: impostor buffers are tiny and keyed separately; stats count them
   const r = new WebGL2Renderer(gl);
   const { drawCalls } = r.render(frame);
   assert.ok(r.stats.impostors > 0, 'this scene has impostors');
-  assert.equal(drawCalls, 1 + frame.terrain.patches.length + (frame.entities.length - r.stats.culled), 'sky + every patch + visible entities');
+  const fades = (frame.terrain.patches.filter(p => p.lod === 'fade')).length;
+  const water = frame.terrain.seaLevel != null ? 1 : 0;
+  assert.equal(drawCalls, 1 + frame.terrain.patches.length + fades + water + (frame.entities.length - r.stats.culled),
+    'sky + every patch + fade impostors + water + visible entities');
+  assert.ok(r.stats.waterDraws === water, 'water draw is counted');
+  if (fades > 0) assert.ok(r.stats.fadePasses === fades, 'fade pass draws each fading impostor once');
   for (const p of frame.terrain.patches) {
     const lod = p.lod ?? 'mesh';
     const entry = r.terrainBuffers.get(`${p.id}:${p.res}:${p.version}:${lod}`);

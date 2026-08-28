@@ -43,6 +43,15 @@
   <div style="color:#7d8db3">arraste = orbitar · roda = zoom</div>
 </div>
 
+<div class="panel" id="ai-panel">
+  <div style="color:#8fd0ff;font-weight:600">IA · crie seu mundo</div>
+  <div style="display:flex;gap:6px;margin-top:6px">
+    <input id="goal-input" placeholder="ex.: crie uma vila chamada Vale perto de um rio" style="flex:1;background:#0a0f1e;border:1px solid #2a3a5f;color:#dfe7ff;padding:4px 8px;border-radius:6px;font:inherit" />
+    <button id="goal-go">criar</button>
+  </div>
+  <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
+</div>
+
 <div class="panel" id="controls">
   <button id="w-audio">🔊 áudio</button>
   <button id="w-clear">limpar</button>
@@ -155,6 +164,28 @@
     el.scrollTop = el.scrollHeight;
   }
 
+
+  // ---- AI-first: the user describes the world; the Singularity Core
+  // (interpret -> plan -> tools -> verify) makes it REAL in the live scene.
+  $('goal-go').addEventListener('click', async () => {
+    const txt = $('goal-input').value.trim();
+    if (!txt) return;
+    $('goal-go').disabled = true;
+    const log = $('goal-log');
+    log.textContent += '> ' + txt + '\n';
+    try {
+      const r = await core.processObjective(txt);
+      const steps = (r?.executed ?? []).map(x => '  • ' + (x.tool ?? x.kind) + (x.error ? ' ✗ ' + String(x.error).slice(0, 40) : ' ✓')).join('\n');
+      log.textContent += `  [${r?.intent ?? '?'} · ${r?.chosen?.provider ?? '?'}/${r?.chosen?.model ?? '?'}]\n`
+        + (steps ? steps + '\n' : '')
+        + `  = ${r?.ok ? 'REALIDADE CRIADA ✓' : 'falhou (ver logs)'}${r?.corrections?.length ? ' · correções: ' + r.corrections.length : ''}\n`;
+      log.scrollTop = log.scrollHeight;
+    } catch (err) {
+      log.textContent += '  erro: ' + (err.message ?? err) + '\n';
+    }
+    $('goal-go').disabled = false;
+  });
+  $('goal-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('goal-go').click(); });
 
   // ---- OUR live audio (D-11): AudioStream -> WebAudioDevice (the only
   // external inevitability: the browser's audio hardware). Toggle on user

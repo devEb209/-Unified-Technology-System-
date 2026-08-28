@@ -6,11 +6,12 @@
 
 ## Estado geral
 
-- **160/160 testes** passando (`npm test`), determinísticos, zero dependências
+- **200/200 testes** passando (`npm test`), determinísticos, zero dependências
   de runtime (132 pré-Gênesis + 28 novos dos sistemas nativos).
 - **GÊNESIS (ADR-018)**: renderer/RHI/culling/materiais/iluminação/shadow
   mapping/instancing/streaming/física/áudio/UTS-DB/Comm — todos nativos, do
   zero, com testes próprios (`test/genesis-*.test.js`).
+- **Painel de progresso até o GÊNESIS completo: `progress.md` (89%)**
 - **UTS = PLATAFORMA funcional** (AI-first, serviços, apps, research, github,
   projetos duráveis, comm) · **UES = ENGINE funcional** dentro dela (mundos
   vivos, frames, pipeline WebGL2 GÊNESIS, experiências por manifesto).
