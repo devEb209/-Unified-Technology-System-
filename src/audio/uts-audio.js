@@ -27,10 +27,24 @@ export class AudioDirector {
     return SR_BY_RESOLUTION[res] ?? 22050;
   }
 
-  /** synthesize a thunder clap (noise burst, lowpassed, long decay) */
-  thunder({ sr, seed = 'thunder' }) {
+  /** synthesize a thunder clap (noise burst, lowpassed, long decay).
+   *  deep=true = D-O15 RE-REPRESENTATION (never just quieter): a distant or
+   *  shadowed strike arrives LATE and rolls as a long dark rumble — that is
+   *  what distance does to thunder in reality (HF dies on the way). */
+  thunder({ sr, seed = 'thunder', deep = false }) {
+    if (deep) {
+      const raw = renderNoise({ dur: 3.4, gain: 1.0, sr, seed: seed + '-deep', lp: 110 });
+      return applyDecay(raw, { tau: 1.5, sr });
+    }
     const raw = renderNoise({ dur: 2.0, gain: 1.0, sr, seed, lp: 220 });
     return applyDecay(raw, { tau: 0.55, sr });
+  }
+
+  /** impact thud — loudness follows the REAL kinetic energy of the hit */
+  impact({ sr, seed = 'thud', power = 1 }) {
+    const p = Math.max(0.05, Math.min(1, power));
+    const raw = renderNoise({ dur: 0.16 + 0.1 * p, gain: 0.85 * Math.sqrt(p), sr, seed: seed + '-i', lp: 240 + 260 * p });
+    return applyDecay(raw, { tau: 0.1 + 0.06 * p, sr });
   }
 
   fireCrackle({ sr, dur = 1.0, seed = 'crackle' }) {
@@ -120,10 +134,20 @@ export class AudioDirector {
       }
     }
 
-    // spatial one-shots (thunder) — position = world flash => from the sky
+    // spatial one-shots — REAL sources arriving through ACOUSTICS (delay =
+    // speed of sound, gain = spreading+air+shadow, deep = D-O15 re-representation)
     for (const shot of audio.oneShots) {
+      const ac = shot.acoustic ?? null;
+      const deep = ac ? (ac.dist > 120 || ac.occlusion > 0.4) : false;
+      if (ac && !ac.audible && !deep) continue; // beyond the acoustic horizon
       if (shot.name === 'thunder') {
-        mixer.add(this.thunder({ sr }), { gain: 0.9, at: 0.02 });
+        const arrivalGain = ac ? Math.min(1, Math.max(0.05, ac.gain)) : 1;
+        mixer.add(this.thunder({ sr, deep }), { gain: 0.9 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
+        voices++;
+      } else if (shot.name === 'impact') {
+        const arrivalGain = ac ? Math.min(1, Math.max(0, ac.gain)) : 1;
+        if (arrivalGain <= 0.02) continue; // honestly inaudible
+        mixer.add(this.impact({ sr, power: shot.power ?? 1 }), { gain: 0.75 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
         voices++;
       }
     }
@@ -133,8 +157,10 @@ export class AudioDirector {
       if (light.kind !== 'fire') continue;
       const sp = spatialize({ emitterPos: light.pos, listener, refDist: 8 });
       if (!sp.audible) continue;
+      const acG = light.acoustic ? Math.max(0, Math.min(1, light.acoustic.gain)) : 1;
+      if (acG <= 0.02) continue; // deep acoustic shadow: honestly inaudible
       const crackle = this.fireCrackle({ sr, dur: Math.min(seconds, 1.5), seed: light.sourceId });
-      mixer.add(crackle, { gain: 0.5 * sp.gain * light.intensity, pan: sp.pan, at: 0 });
+      mixer.add(crackle, { gain: 0.5 * sp.gain * light.intensity * acG, pan: sp.pan, at: 0 });
       voices++;
     }
 

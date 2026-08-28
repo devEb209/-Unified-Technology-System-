@@ -92,6 +92,27 @@ export function extractFrame(ues, perf = null) {
     aggregates.push({ id, pos: sp.pos, radius: 6 + Math.min(20, Math.sqrt(s.pop)), density: s.pop, material, color: material.albedo });
   }
 
+  // ---- REALITY CHAIN for the Frame: sources first, then HOW THEY ARRIVE
+  const lights = world.lighting.collect(world, cam.pos, strategy);
+  const audioState = world.reallife.audioState();
+  // ACOUSTICS (pressure-wave reality): every sound source gets its arrival
+  // truth at the listener — geometric spreading, air absorption (humidity!),
+  // terrain acoustic shadow, and the FINITE speed of sound (delay).
+  if (world.acoustics) {
+    const ac = world.acoustics;
+    const hum = world.atmosphere?.state.humidity;
+    for (const l of lights.points ?? []) {
+      if (l.kind !== 'fire') continue;
+      l.acoustic = ac.propagate({ source: l.pos, listener: cam.pos, power: Math.max(0.35, l.intensity ?? 1), humidity: hum });
+    }
+    for (const shot of audioState.oneShots ?? []) {
+      if (!shot.pos) continue;
+      // emitted power: thunder is ENORMOUS (audible for km), a thud is local
+      const emitted = shot.name === 'thunder' ? 25 : 6 * (shot.power ?? 1);
+      shot.acoustic = ac.propagate({ source: shot.pos, listener: cam.pos, power: emitted, humidity: hum });
+    }
+  }
+
   const frame = {
     version: 2,
     tick: world.clock.tick,
@@ -99,7 +120,8 @@ export function extractFrame(ues, perf = null) {
     camera: { ...cam },
     terrain: { patches, seaLevel: world.terrain.seaLevel, chunkSize: cs, impostorAfter, fade: IMPOSTOR_FADE },
     entities, aggregates,
-    lights: world.lighting.collect(world, cam.pos, strategy),
+    lights,
+    audio: audioState,
     // vegetation is REALITY (ecology population), materialized under D-O15:
     // identity preserved, budget applied to COUNT only
     vegetation: world.ecology
@@ -108,7 +130,6 @@ export function extractFrame(ues, perf = null) {
     // surface water around the camera (the film IS the data; renderers read it)
     water: world.hydrology ? world.hydrology.sample(cam.pos[0], cam.pos[2]) : null,
     environment: { ...world.environment },
-    audio: world.reallife.audioState(),
     stats: {
       patches: patches.length,
       terrain: { meshes: meshPatches, impostors: impostorPatches, fades },

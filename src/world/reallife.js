@@ -67,6 +67,7 @@ export class RealLife {
       tick: w.clock.tick,
     });
     env.flash = 1;
+    this.lastStrike = { pos: [...pos], tick: w.clock.tick }; // acoustic source (delay = d/343)
     if (w.rng.chance(this.igniteChance)) {
       this.igniteFire(pos, strikeId);
     }
@@ -225,18 +226,28 @@ export class RealLife {
       this.fireAnchors.delete(k);
     }
   }
-  /** audio channel state for the Frame (D-11) — derived from represented state */
+  /** audio channel state for the Frame (D-11) — derived from represented state.
+   *  ADR-019: one-shots are REAL acoustic sources (pos + power) — the
+   *  ACOUSTICS phenomenon computes how they arrive at the listener. */
   audioState() {
-    const env = this.world.environment;
-    const night = this.world.clock.isNight;
+    const w = this.world;
+    const env = w.environment;
+    const night = w.clock.isNight;
     let ambience = night ? 'crickets' : 'birds';
     if (env.weather === 'storm') ambience = 'storm';
     else if (env.rain > 0.2) ambience = 'rain';
     else if (env.dust > 0.3) ambience = 'wind';
     else if (env.wind > 0.5) ambience = 'wind';
     const oneShots = [];
-    if (env.flash > 0.6) oneShots.push({ name: 'thunder' });
-    this.world.tese?.touch('D-11', `ambience=${ambience} oneShots=${oneShots.length}`, this.world.clock.tick);
+    if (env.flash > 0.6 && this.lastStrike) {
+      oneShots.push({ name: 'thunder', pos: this.lastStrike.pos, power: 1 });
+    }
+    // impacts are sound: recent physics impacts emit thuds with real energy
+    for (const im of w.physics.recentImpacts ?? []) {
+      if (w.clock.tick - im.tick > 1) continue; // only fresh ones (sound fades in ms)
+      oneShots.push({ name: 'impact', pos: im.pos, power: Math.min(1, im.energy / 120), key: im.key });
+    }
+    w.tese?.touch('D-11', `ambience=${ambience} oneShots=${oneShots.length}`, w.clock.tick);
     return { ambience, oneShots };
   }
 }

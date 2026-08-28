@@ -111,17 +111,31 @@ export class AudioStream {
 
   /** schedule one-shots + spatial fire loops from the represented Frame */
   _scheduleFromFrame(frame, { from, listener, voiceCap }) {
-    // thunder with temporal lockout (a storm flashes over several ticks)
+    // ---- ACOUSTIC ARRIVAL (ADR-019): each one-shot is a real source in the
+    // world; frame.acoustics computed HOW it arrives (spread, air, terrain
+    // shadow, finite speed). The audio layer materializes that arrival.
     for (const shot of frame?.audio?.oneShots ?? []) {
-      const last = this._lastShot.get(shot.name);
-      if (last != null && from - last < (SHOT_LOCKOUT[shot.name] ?? 1.0)) continue;
+      const lockKey = shot.key ?? shot.name;
+      const last = this._lastShot.get(lockKey);
+      if (last != null && from - last < (SHOT_LOCKOUT[shot.name] ?? (shot.name === 'impact' ? 0.12 : 1.0))) continue;
+      const ac = shot.acoustic ?? null;
+      // D-O15 re-representation: far/hidden thunder is NOT dropped — it
+      // arrives late and rolls deep (that's reality); truly beyond the
+      // acoustic horizon it fades to silence honestly.
+      const deep = ac ? (ac.dist > 120 || ac.occlusion > 0.4) : false;
+      if (ac && !ac.audible && !deep) { this._lastShot.set(lockKey, from); continue; }
       const samples = shot.name === 'thunder'
-        ? this.synth?.thunder({ sr: this.sr })
-        : null;
+        ? this.synth?.thunder({ sr: this.sr, deep })
+        : shot.name === 'impact'
+          ? this.synth?.impact({ sr: this.sr, power: shot.power ?? 1 })
+          : null;
       if (!samples) continue;
-      const at = from + 0.02;
-      this.voices.push({ samples, sr: this.sr, gain: 0.9, pan: 0, at, end: at + samples.length / this.sr, key: shot.name });
-      this._lastShot.set(shot.name, from);
+      const at = from + 0.02 + (ac?.delay ?? 0); // THE SPEED OF SOUND IS FINITE
+      const arrivalGain = ac ? Math.min(1, Math.max(deep ? 0.05 : 0.0, ac.gain)) : 1;
+      const base = shot.name === 'thunder' ? 0.9 : 0.75;
+      this.voices.push({ samples, sr: this.sr, gain: base * arrivalGain, pan: 0, at,
+                         end: at + samples.length / this.sr, key: lockKey });
+      this._lastShot.set(lockKey, from);
     }
 
     // fire crackle: loops while the light exists — rendered BINAURALLY
@@ -138,10 +152,12 @@ export class AudioStream {
       if (!samples) continue;
       const bin = renderBinaural(samples, { emitterPos: light.pos, listener, sr: this.sr, refDist: 8 });
       if (!bin.audible) continue;
+      const acG = light.acoustic ? Math.max(0, Math.min(1, light.acoustic.gain)) : 1;
+      if (acG <= 0.02) continue; // deep acoustic shadow: the fire is honestly inaudible
       const at = from + 0.01;
       this.voices.push({
         samplesL: bin.left, samplesR: bin.right, sr: this.sr,
-        gain: 0.5 * (light.intensity ?? 1), pan: 0,
+        gain: 0.5 * (light.intensity ?? 1) * acG, pan: 0,
         at, end: at + samples.length / this.sr, key,
       });
     }

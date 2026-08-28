@@ -10,6 +10,14 @@ import { dist2 } from '../core/math.js';
 
 export const GRAVITY = -22; // slightly heroic, tuned for gameplay-scale worlds
 
+// REAL MATERIALS: density (mass from volume), hardness (deformation
+// resistance), toughness (impact energy the material absorbs without damage)
+export const MATERIALS = {
+  rock: { density: 2.6, hardness: 0.85, toughness: 60 },
+  wood: { density: 0.7, hardness: 0.4, toughness: 18 },
+  ice:  { density: 0.92, hardness: 0.18, toughness: 7 },
+};
+
 export class PhysicsWorld {
   constructor({ world, tese = null } = {}) {
     this.world = world;
@@ -17,7 +25,8 @@ export class PhysicsWorld {
     /** entityId -> body */
     this.bodies = new Map();
     this.cellSize = 6;
-    this.stats = { steps: 0, contacts: 0, impacts: 0, sleeps: 0, torques: 0 };
+    this.stats = { steps: 0, contacts: 0, impacts: 0, sleeps: 0, torques: 0, deformations: 0 };
+    this.recentImpacts = [];  // acoustic sources (pos+energy+tick), consumed by audioState
     this.substeps = 2;
     /** joint cache — the truth lives in RRW relations of type 'joint'; this is derived */
     this.joints = [];
@@ -66,13 +75,17 @@ export class PhysicsWorld {
 
   /** create a dynamic body as an RRW entity (physics + spatial components) */
   addBody({
-    pos, vel = [0, 0, 0], radius = 0.6, mass = 1,
+    pos, vel = [0, 0, 0], radius = 0.6, mass = null,
     restitution = 0.35, friction = 0.7, causeEvent = null, label = 'rock',
-    omega = 0, pinned = false,
+    omega = 0, pinned = false, material = 'rock',
   }) {
+    // REALITY: mass comes from the MATERIAL's density and the body's volume
+    // (rock is heavy, wood is light); deformation behavior follows the material.
+    const mat = MATERIALS[material] ?? MATERIALS.rock;
+    const m = mass ?? Math.max(0.2, mat.density * (4 / 3) * Math.PI * radius ** 3 / 4);
     // planar rotation (yaw) with disc inertia — matches OUR renderer's
     // instance transform; full 3D ragdoll rotation stays PLANNED (honest)
-    const inertia = 0.4 * mass * radius * radius;
+    const inertia = 0.4 * m * radius * radius;
     const ent = this.world.rrw.createEntity({
       kind: 'prop',
       materialization: 'full',
@@ -81,8 +94,8 @@ export class PhysicsWorld {
       pos: [pos[0], pos[1] ?? 0, pos[2]],
       yaw: 0,
       components: {
-        physics: { vel: [...vel], radius, mass, restitution, friction, asleep: false, causeEvent,
-                   omega, inertia, spinFriction: 0.9, pinned },
+        physics: { vel: [...vel], radius, mass: m, restitution, friction, asleep: false, causeEvent,
+                   omega, inertia, spinFriction: 0.9, pinned, material, deformation: 0 },
       },
     });
     this.world.grid.update(ent.id, pos[0], pos[2]);
@@ -94,17 +107,42 @@ export class PhysicsWorld {
     this.bodies.delete(id);
   }
 
+  /**
+   * An impact converts KINETIC ENERGY (½mv²) into deformation, sound and
+   * heat — the body's story is written ON the body as persistent state
+   * (RRW physics component), never on a prop scoreboard.
+   */
   _impact(body, speed, tick) {
     this.stats.impacts++;
-    const hz = this.world.rrw.getComponent(body.id, 'physics');
-    this.world.rrw.emitEvent({
+    const rrw = this.world.rrw;
+    const ph = rrw.getComponent(body.id, 'physics');
+    const sp = rrw.getComponent(body.id, 'spatial');
+    const energy = 0.5 * (ph.mass ?? 1) * speed * speed;            // joules (scaled world)
+    // ---- DEFORMATION: energy above the material's toughness permanently
+    // changes the body (restitution decays, wear accumulates). Hard rock
+    // shrugs off hits that shatter ice.
+    const mat = MATERIALS[ph.material ?? 'rock'];
+    let deformed = 0;
+    if (energy > mat.toughness) {
+      deformed = Math.min(0.7, ((energy - mat.toughness) / mat.toughness) * 0.3) * (1 - mat.hardness * 0.85);
+      ph.deformation = Math.min(1, (ph.deformation ?? 0) + deformed);
+      ph.restitution = Math.max(0.04, ph.restitution * (1 - 0.35 * deformed)); // damaged bodies bounce less
+      this.stats.deformations = (this.stats.deformations ?? 0) + 1;
+    }
+    rrw.emitEvent({
       type: 'physics.impact',
       subject: body.id,
-      cause: hz?.causeEvent ?? null, // verifiable chain back to the origin
-      data: { speed: +speed.toFixed(2), pos: [...this.world.rrw.getComponent(body.id, 'spatial').pos] },
+      cause: ph?.causeEvent ?? null, // verifiable chain back to the origin
+      data: { speed: +speed.toFixed(2), energy: +energy.toFixed(1), deformed: +deformed.toFixed(3),
+              deformation: +(ph.deformation ?? 0).toFixed(3), pos: [...sp.pos] },
       tick,
     });
-    this.tese?.touch('D-2', `physics.impact speed=${speed.toFixed(1)}`, tick);
+    // ---- SOUND energy is real: recent impacts become audible one-shots
+    // (reallife.audioState converts them through ACOUSTICS — distance, shadow)
+    this.recentImpacts = this.recentImpacts ?? [];
+    this.recentImpacts.push({ pos: [...sp.pos], energy, tick, key: `${body.id}:${this.stats.impacts}` });
+    if (this.recentImpacts.length > 8) this.recentImpacts.shift();
+    this.tese?.touch('D-2', `physics.impact energy=${energy.toFixed(1)}`, tick);
   }
 
   /** one fixed step: integrate + collide (ground + sphere-sphere) */
@@ -285,6 +323,6 @@ export class PhysicsWorld {
   }
 
   report() {
-    return { ...this.stats, bodies: this.bodies.size };
+    return { ...this.stats, bodies: this.bodies.size, recentImpacts: this.recentImpacts.length };
   }
 }

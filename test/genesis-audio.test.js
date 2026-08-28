@@ -54,7 +54,8 @@ async function frameWith(kind, seed = 'audio') {
   const uts = createUTS({ seed });
   if (kind === 'storm') {
     uts.world.setWeather('storm');
-    uts.world.environment.flash = 1; // thunder one-shot in frame.audio
+    // ADR-019: thunder needs a REAL strike (flash without a strike is fake)
+    uts.world.strikeLightning([uts.ues.camera.pos[0] + 30, 0, uts.ues.camera.pos[2]]);
   }
   uts.ues.run(3);
   const frame = uts.ues.renderFrame();

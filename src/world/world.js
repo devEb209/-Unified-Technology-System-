@@ -11,6 +11,7 @@ import { Atmosphere } from './phenomena/atmosphere.js';
 import { Hydrology } from './phenomena/hydrology.js';
 import { Combustion } from './phenomena/combustion.js';
 import { Ecology } from './phenomena/ecology.js';
+import { Acoustics } from './phenomena/acoustics.js';
 import { MaterialLibrary } from '../render/materials.js';
 import { LightSystem } from '../render/lighting.js';
 import { StreamingSystem } from './streaming.js';
@@ -42,11 +43,13 @@ export class World {
     };
 
     this.reallife = new RealLife({ world: this });
+    this._lastRainEventId = null;
     // ---- REALITY PHENOMENA (ADR-019: the world models reality, not tricks)
     this.atmosphere = new Atmosphere();                       // air → sky IS scattering
     this.hydrology = new Hydrology({ world: this });          // water as substance
     this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
     this.ecology = new Ecology({ world: this });              // vegetation as population
+    this.acoustics = new Acoustics({ world: this });          // sound as pressure wave
     this.materials = new MaterialLibrary();     // OUR material system
     this.lighting = new LightSystem();          // OUR lights (sun + phenomena)
     this.streaming = new StreamingSystem({ world: this, perf: null, tese }); // OUR residency
@@ -75,6 +78,7 @@ export class World {
   phenomenaSnapshot() {
     return {
       atmosphere: { state: { ...this.atmosphere.state } },
+      acoustics: this.acoustics.snapshot(),
       hydrology: this.hydrology.snapshot(),
       combustion: this.combustion.snapshot(),
       ecology: this.ecology.snapshot(),
@@ -87,6 +91,7 @@ export class World {
   phenomenaRestore(s) {
     if (!s) return;
     if (s.atmosphere) Object.assign(this.atmosphere.state, s.atmosphere.state ?? {});
+    if (s.acoustics) this.acoustics.restore(s.acoustics);
     if (s.hydrology) this.hydrology.restore(s.hydrology);
     if (s.combustion) this.combustion.restore(s.combustion);
     if (s.ecology) this.ecology.restore(s.ecology);
@@ -258,15 +263,33 @@ export class World {
     this.tese?.touch('D-5', `weather=${this.environment.weather} wet=${this.environment.wetness.toFixed(2)}`, this.clock.tick);
   }
 
-  /** ecology: resource regrowth (D-9) — only when the layer is active */
+  /** ecology: resource regrowth (D-9) — FOOD IS CLIMATE: bushes regrow from
+   *  SOIL WATER (hydrology), and drought kills them. Hunger now has a sky. */
   updateEcology(dt) {
     if (!this.tese?.isEnabled('D-9')) return;
+    const soilWet = this.hydrology?.soil.wetness ?? this.environment.wetness;
     for (const id of this.rrw.query({ kind: 'bush' }).concat(this.rrw.query({ kind: 'tree' }))) {
       const r = this.rrw.getComponent(id, 'resource');
-      if (!r || r.amount >= r.cap) continue;
+      if (!r) continue;
+      // ---- drought kills food (persistent, causal, eventful)
+      if (r.amount > 0 && soilWet < 0.06) {
+        r.amount = Math.max(0, r.amount - 0.004 * dt * 10);
+        if (r.amount === 0) {
+          this.rrw.emitEvent({
+            type: 'ecology.food.withered', subject: id, cause: env_lastRainEvent(this) ?? null,
+            data: { pos: this.rrw.getComponent(id, 'spatial')?.pos ?? null, soilWet: +soilWet.toFixed(2) },
+            tick: this.clock.tick,
+          });
+          this.tese?.touch('D-9', `food ${id} withered (soil ${soilWet.toFixed(2)})`, this.clock.tick);
+        }
+        continue;
+      }
+      if (r.amount >= r.cap) continue;
       if (r.depletedAt == null) r.depletedAt = this.clock.tick;
       if (this.clock.tick - r.depletedAt > r.regrowDelay) {
-        r.amount = Math.min(r.cap, r.amount + 0.02 * dt * 10);
+        // wet soil = fast regrowth; dry soil = the bush struggles
+        const rate = 0.02 * (0.15 + 0.85 * soilWet);
+        r.amount = Math.min(r.cap, r.amount + rate * dt * 10);
         if (r.amount >= r.cap) { r.amount = r.cap; r.depletedAt = null; }
         this.tese?.touch('D-9', `resource ${id} regrew to ${r.amount.toFixed(2)}`, this.clock.tick);
       }
@@ -395,4 +418,10 @@ export class World {
     }
     return patch;
   }
+}
+
+/** causal link for food withering: the CURRENT weather regime is the cause */
+function env_lastRainEvent(world) {
+  const w = world.environment.weather;
+  return (w === 'rain' || w === 'storm') ? null : (world.environment.lastWeatherEventId ?? null);
 }

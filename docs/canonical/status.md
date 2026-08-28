@@ -125,3 +125,25 @@
 (quad d'água fixo = limitação conhecida), chão queimado não muda a cor do
 terreno, acústica sem oclusão (R2), fogo sem partículas próprias (usa
 luzes), árvores como point-sprites (malha própria em rodada futura).
+
+
+## R2 — FENÔMENOS II (esta rodada)
+
+- `src/world/phenomena/acoustics.js` — FUNCTIONAL: som é onda de pressão.
+  Atraso = d/343 s (velocidade FINITA — trovão chega depois do flash),
+  espalhamento geométrico, absorção do ar (umidade aumenta), SOMBRA
+  ACÚSTICA por terreno (marcha na linha fonte-ouvinte: atrás da serra o
+  som chega fraco e abafado). Frame anexa a verdade de chegada a cada
+  fonte; as duas vias de áudio (stream contínuo e renderFrameAudio)
+  materializam. D-O15 RE-REPRESENTA: trovão longe/oculto = rumble grave
+  longo, nunca só volume cortado.
+- `src/physics/physics.js` EVOLUIDO — energia cinética real (½mv²) no
+  evento de impacto; MATERIAIS (rocha 2.6g/cm³ dura, madeira leve, gelo
+  frágil) com massa = densidade×volume; deformação PERSISTENTE acima da
+  tenacidade (restituição cai, amassado sobrevive save/load via RRW);
+  impactos recentes viram fontes acústicas (thud com energia real).
+- Comida é CLIMA — `updateEcology`: bushes regrow do AGUA DO SOLO
+  (hidrologia); seca mata comida com evento `ecology.food.withered`
+  causal. Fome agora tem céu.
+- Testes: 219/219 (9 novos: velocidade do som, sombra acústica, umidade,
+  energia/materiais, amassado persistente, chegada tardia, comida-clima).

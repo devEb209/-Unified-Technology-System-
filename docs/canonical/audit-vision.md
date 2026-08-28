@@ -44,12 +44,16 @@
   logístico dirigido por sol×água do solo; sementes, competição, morte por
   fogo/seca/idade; madeira morta vira combustível — ciclo fechado com
   combustão). Renderer materializa a população sob D-O15.
-- **Acústica**: binaural (ITD/ILD) e música adaptativa são fortes, mas não
-  há propagação/oclusão/absorção — o som atravessa montanhas. **(R2)**
+- ✅ **R2: Acústica** — `world/phenomena/acoustics.js`: som é onda de
+  pressão com atraso FINITO (d/343), absorção do ar (umidade!), sombra
+  acústica de terreno (atrás da serra: fraco e abafado). Trovão longe =
+  rumble grave (re-representação D-O15, não corte). O som NÃO atravessa
+  mais montanhas.
 - **Física**: mecânica sólida (impactos causais, rotação, juntas PBD), sem
   energia acumulada, deformação, materiais, fluidos.
 - **D-O15 em áudio/partículas**: corta CONTAGEM (voices, densidade) em vez
-  de RE-REPRESENTAR (ex.: trovão longe → rumble grave persistente).
+  de RE-REPRESENTAR — **trovão longe → rumble grave JÁ RESOLVIDO no R2**;
+  falta fogo longe (brilho no horizonte) e partículas.
 - **Streaming**: cache LRU persistido existe mas é opcional; sem workers.
 
 ## C) Onde caiu em mentalidade de engine tradicional (confissão honesta)
