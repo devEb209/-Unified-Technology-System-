@@ -100,3 +100,29 @@ A UES é engine geral: experiências são manifests (`world-sim`, `app`) com
 rulesets que ligam/desligam sistemas do engine — gêneros são configurações,
 não engines novas. Apps rodam na infraestrutura da plataforma (AppHost) e
 podem ser orquestrados pela UES como qualquer experiência.
+
+## ADR-018 — FILOSOFIA NATIVA (regra permanente)
+A UTS/UES é construída **do zero** sempre que tecnicamente possível e
+justificável: renderer, RHI/abstração gráfica, gerenciamento de recursos GPU,
+materiais, iluminação, shadow mapping, instancing, culling, streaming, física,
+áudio, storage, comunicação, ferramentas, pipelines, runtime. Dependência
+externa apenas para o inevitável (driver de GPU, OS, protocolo/serviço
+deliberadamente consumido — GitHub, Puter, LLM API) e sempre **isolada atrás
+de interface própria**. Nada de coleção de wrappers.
+
+Cada implementação nativa deve: (1) ter arquitetura própria; (2) API/contrato
+próprio; (3) integrar-se aos sistemas existentes; (4) ser testável isoladamente;
+(5) ter testes de integração; (6) ser mensurável; (7) respeitar D-O15
+(adaptação medida, nunca degradação aleatória); (8) respeitar RRW (o estado/causalidade
+vive no RRW, única fonte da verdade); (9) respeitar o scheduler da UES;
+(10) ser independente de UI. Limitações são eliminadas implementando, não
+plugando soluções prontas. Rótulos honestos (PLANNED/PARTIAL/FUNCTIONAL)
+continuam obrigatórios.
+
+GÊNESIS é a primeira onda dessa filosofia: RHI (`src/render/rhi.js`),
+culling/matérias/iluminação próprios, streaming de terreno com residência por
+anel de LOD, física de corpos com causalidade no RRW, áudio sintetizado
+espacializado (encodeWav próprio), UTS-DB (journal append-only com replay,
+transações, índices, compaction), Comm (rotas/timeouts/eventos entre módulos)
+e o pipeline WebGL2 GÊNESIS (shadow mapping PCF 3×3, instancing 12
+floats/instância, 4 point lights, precipitação).

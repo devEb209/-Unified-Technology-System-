@@ -45,9 +45,10 @@ Em paralelo, o fluxo cognitivo:
 ## Quick start
 
 ```bash
-npm test              # 128/128 testes determinísticos
+npm test              # 160/160 testes determinísticos (128 + 28 Gênesis)
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
+node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
 npm run demo          # demo WebGL2 no browser (http://localhost:8080)
 npm run bench         # percepção (500→10000 NPCs) + frame extraction
 ```
@@ -87,15 +88,18 @@ src/rrw/            Reality Representation Weave (fonte da verdade)
 src/d/              Tese dos D + D-O15
 src/spatial/        SpatialGrid (índice derivado)
 src/nmn/            Natural Mindset of NPCs
-src/world/          terreno, RealLife, sociedade/economia, World
+src/world/          terreno, RealLife, sociedade/economia, streaming, World
+src/physics/        PhysicsWorld nativa (corpos=props RRW, impactos causais)
+src/audio/          synth/spatial/mixer/AudioDirector (encodeWav próprio)
 src/ues/            scheduler, frame, orquestrador
 src/singularity/    Core, providers, modelos, agentes, tools, memória
-src/render/         backends Null/Text/WebGL2 (+shaders/mesh/mat)
-src/persistence/    storage (Memory/File) + snapshots versionados
-test/               115 testes (node:test, zero deps)
+src/render/         RHI, culling, materiais, iluminação, shaders, WebGL2 GÊNESIS, Null/Text
+src/persistence/    storage (Memory/File) + snapshots versionados + UTS-DB (journal/tx)
+src/core/comm.js    Comm (rotas/timeouts/pub-sub entre módulos)
+test/               160 testes (node:test, zero deps)
 bench/              percepção (brute vs grid) + frame
-demos/              CLI + browser (WebGL2)
-docs/canonical/     arquitetura, decisões (ADR), status honesto
+demos/              CLI + browser (WebGL2) + GÊNESIS
+docs/canonical/     arquitetura, decisões (ADR-013..018), status honesto
 ```
 
 ## Exemplo mínimo

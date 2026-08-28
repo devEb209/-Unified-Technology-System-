@@ -4,7 +4,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createUTS } from '../src/index.js';
-import { WebGL2Renderer, RendererError } from '../src/render/webgl2.js';
+import { WebGL2Renderer } from '../src/render/webgl2.js';
+import { RendererError } from '../src/render/rhi.js'; // RHI owns the error taxonomy (Gênesis)
 
 const C = {
   VERTEX_SHADER: 1, FRAGMENT_SHADER: 2, COMPILE_STATUS: 3, LINK_STATUS: 4,
@@ -53,6 +54,7 @@ function makeGL({ failCompile = false } = {}) {
     viewport: (x, y, w, h) => calls.push(['viewport', w, h]),
     useProgram: (p) => calls.push(['useProgram', p?.id]),
     uniformMatrix4fv: (loc, t, m) => calls.push(['uniformMatrix4fv', loc?.name]),
+    uniform1i: (loc, v) => calls.push(['uniform1i', loc?.name, v]), // shadow sampler binding (Gênesis)
     uniform3f: (loc, ...v) => calls.push(['uniform3f', loc?.name, v]),
     uniform1f: (loc, v) => calls.push(['uniform1f', loc?.name, v]),
     vertexAttribPointer: () => calls.push(['vertexAttribPointer']),
@@ -88,9 +90,11 @@ test('webgl2: compiles 4 programs, renders sky+terrain+entities, counts draw cal
   assert.equal(gl._programs.length, 4);
   const arrays = gl._calls.filter(c => c[0] === 'drawArrays');
   assert.equal(arrays.length, drawCalls);
-  // sky (1) + terrain patches + entities + aggregates (+ rain when raining)
-  assert.ok(drawCalls >= 1 + frame.terrain.patches.length + frame.entities.length);
-  assert.ok(gl._calls.some(c => c[0] === 'clearColor'), 'clear color from sky bottom');
+  // sky (1) + terrain patches + VISIBLE entities (our culling skips the rest) (+ rain when raining)
+  const drawnEntities = frame.entities.length - r.stats.culled;
+  assert.ok(drawCalls >= 1 + frame.terrain.patches.length + drawnEntities,
+    `sky+terrain+visible entities (culled ${r.stats.culled}, drew ${drawCalls})`);
+  assert.equal(frame.entities.length - drawnEntities, r.stats.culled, 'culled accounting is exact');
   const clear = gl._calls.find(c => c[0] === 'clearColor');
   assert.deepEqual(clear[1].slice(0, 3), frame.environment.skyBottom);
 });

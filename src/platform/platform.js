@@ -13,6 +13,7 @@ import { AIService } from './services/ai-service.js';
 import { ResearchService, MemorySearchProvider } from './services/research-service.js';
 import { GitHubService } from './services/github-service.js';
 import { CreationProjectManager } from './projects.js';
+import { Comm } from '../core/comm.js';
 import { EventBus } from '../core/events.js';
 import { MemoryStorage } from '../persistence/storage.js';
 import { registerPlatformTools } from '../singularity/platform-tools.js';
@@ -21,6 +22,7 @@ export class UTSPlatform {
   constructor({ storage = null, search = null } = {}) {
     this.services = new ServiceRegistry();
     this.bus = new EventBus();
+    this.comm = new Comm();          // OUR inter-module communication
     this.storage = storage ?? new MemoryStorage();
 
     this.ai = new AIService();
@@ -43,6 +45,19 @@ export class UTSPlatform {
       capabilities: () => ['pubsub'],
       status: () => ({ ok: true }),
     });
+    this.services.register({
+      name: 'comm',
+      capabilities: () => ['request-response', 'events'],
+      status: () => this.comm.report(),
+    });
+    this._wireComm();
+  }
+
+  /** module communication routes (native, typed, timeout-protected) */
+  _wireComm() {
+    this.comm.route('ask', async ({ objective, opts }) => this.ai.processObjective(objective, opts ?? {}));
+    this.comm.route('research.validate', async ({ question }) => this.research.validate(question));
+    this.comm.route('system.status', async () => this.status());
   }
 
   /**

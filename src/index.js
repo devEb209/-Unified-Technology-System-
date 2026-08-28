@@ -51,7 +51,8 @@ export { MemorySystem } from './singularity/memory.js';
 export { ToolRegistry, ToolValidationError } from './singularity/tools.js';
 export { SingularityCore } from './singularity/core.js';
 export { NullRenderer, TextRenderer } from './render/backends.js';
-export { WebGL2Renderer, RendererError } from './render/webgl2.js';
+export { WebGL2Renderer } from './render/webgl2.js';
+export { RendererError } from './render/rhi.js';
 export * as Persistence from './persistence/snapshot.js';
 export { MemoryStorage, FileStorage } from './persistence/storage.js';
 
@@ -65,6 +66,17 @@ export { GitHubService } from './platform/services/github-service.js';
 export { CreationProjectManager, ProjectError, planProject } from './platform/projects.js';
 export { defineExperience, bootExperience } from './ues/experience.js';
 export { ExperienceError, ENGINE_SYSTEMS } from './ues/rules.js';
+export { Comm, CommError } from './core/comm.js';
+export { GPUResourceManager, ProgramCache, RHIError, RHI_DEVICE_CONTRACT } from './render/rhi.js';
+export { MaterialLibrary } from './render/materials.js';
+export { LightSystem } from './render/lighting.js';
+export { frustumPlanes, sphereVisible, cullFrame } from './render/culling.js';
+export { StreamingSystem } from './world/streaming.js';
+export { PhysicsWorld, GRAVITY } from './physics/physics.js';
+export { AudioDirector, encodeWav } from './audio/uts-audio.js';
+export { Mixer } from './audio/mixer.js';
+export { spatialize } from './audio/spatial.js';
+export { UTSDB, UTSDBError, MemoryJournal, FileJournal } from './persistence/utsdb.js';
 
 /** construct the Singularity AI stack over a live system */
 export function buildSingularity({ ues, world, rrw, memory = null, log = null, providers = null, models = null }) {

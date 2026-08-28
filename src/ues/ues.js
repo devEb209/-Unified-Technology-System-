@@ -33,7 +33,24 @@ export class UES {
     this.scheduler.add({ name: 'trade', priority: 40, fn: dt => { if (world.clock.tick % 50 === 0) world.updateTrade(); } });
     this.scheduler.add({ name: 'nmn', priority: 50, fn: dt => world.updateNPCs(dt) });
     this.scheduler.add({ name: 'movement', priority: 60, fn: dt => world.updateMovement(dt) });
+    this.scheduler.add({
+      name: 'physics', priority: 65,
+      fn: dt => {
+        // D-O15: coarse pressure halves the physics rate (adaptation, not removal)
+        const coarse = do15?.strategy?.perceptionResolution === 'coarse';
+        if (coarse && world.clock.tick % 2 === 0) return;
+        const sub = world.physics.substeps;
+        for (let i = 0; i < sub; i++) world.physics.step(dt / sub, { tick: world.clock.tick });
+      },
+    });
     this.scheduler.add({ name: 'materializer', priority: 70, fn: () => world.updateMaterialization(this.camera.pos) });
+    this.scheduler.add({
+      name: 'streaming', priority: 75,
+      fn: () => world.streaming.update(this.camera.pos, {
+        radius: do15?.strategy?.terrainRadius ?? 220,
+        budgetMs: (do15?.pressure ?? 0) > 0.7 ? 1 : 3,
+      }),
+    });
     this.scheduler.add({
       name: 'deferred', priority: 80,
       fn: () => { if (do15 && do15.deferred.length > 0) do15.runDeferred(1.5); },

@@ -8,7 +8,7 @@
 
 import { ExperienceError } from './rules.js';
 
-const SYSTEM_KEYS = ['weather', 'ecology', 'economy', 'trade', 'nmn', 'movement', 'materializer', 'deferred'];
+const SYSTEM_KEYS = ['weather', 'ecology', 'economy', 'trade', 'nmn', 'movement', 'physics', 'materializer', 'streaming', 'deferred'];
 
 /** validate + default an experience manifest */
 export function defineExperience(manifest) {

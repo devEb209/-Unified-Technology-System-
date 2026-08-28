@@ -7,6 +7,10 @@
 import { SpatialGrid } from '../spatial/grid.js';
 import { Terrain } from './terrain.js';
 import { RealLife } from './reallife.js';
+import { MaterialLibrary } from '../render/materials.js';
+import { LightSystem } from '../render/lighting.js';
+import { StreamingSystem } from './streaming.js';
+import { PhysicsWorld } from '../physics/physics.js';
 import { clamp01, dist2 } from '../core/math.js';
 import * as society from './society.js';
 
@@ -34,9 +38,18 @@ export class World {
     };
 
     this.reallife = new RealLife({ world: this });
-    this.terrainCache = new Map(); // "cx:cz:res" -> {heights, biomes, res, version}
+    this.materials = new MaterialLibrary();     // OUR material system
+    this.lighting = new LightSystem();          // OUR lights (sun + phenomena)
+    this.streaming = new StreamingSystem({ world: this, perf: null, tese }); // OUR residency
+    this.physics = new PhysicsWorld({ world: this, tese }); // OUR physics
+    this.terrainCache = new Map(); // legacy sampling cache (non-visual helpers)
     this.perceptionMetrics = { consulted: 0, perceived: 0, queries: 0 };
     this.settlementMaterialCap = 12;
+  }
+
+  /** drop a dynamic rock into the reality (physics body + causal origin) */
+  dropRock(pos, vel = [0, 0, 0], { causeEvent = null } = {}) {
+    return this.physics.addBody({ pos, vel, causeEvent });
   }
 
   // ------------------------------------------------------------------ spawn

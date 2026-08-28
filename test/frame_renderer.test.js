@@ -21,13 +21,17 @@ test('frame: derived from state — npc position and weather are reflected', asy
 });
 
 test('frame: terrain LOD resolution decreases with distance', async () => {
+  // residency is filled synchronously (budget ∞) so both rings are READY;
+  // the extraction itself must pick each chunk at its ring resolution.
   const uts = createUTS({ seed: 'lod' });
   uts.ues.moveCamera([480, 40, 480]); // inside chunk (7,7)
   uts.do15.strategy.terrainLodBias = 0;
+  uts.world.streaming.update([480, 40, 480], { radius: 220, budgetMs: 1e9 });
   const frame = uts.ues.renderFrame();
   const byId = new Map(frame.terrain.patches.map(p => [p.id, p]));
   assert.equal(byId.get('7:7').res, 24, 'nearest chunk high res');
   assert.ok(byId.get('4:7').res < 24, 'distant chunk lower res');
+  for (const p of frame.terrain.patches) assert.ok([24, 16, 8].includes(p.res), `res is a ring value (${p.id}=${p.res})`);
 });
 
 test('frame: terrain cache reuse (same patch object until evicted)', async () => {

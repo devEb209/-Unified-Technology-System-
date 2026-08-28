@@ -79,8 +79,12 @@ Princípios invariantes:
 | `src/world/` | Terreno (heightfield/biomas), RealLife (clima causal), sociedade/economia, World |
 | `src/ues/` | Scheduler com orçamento, extração de Frame, orquestrador UES, **experiências (manifests/rulesets)** |
 | `src/singularity/` | ProviderRegistry, Heuristic/Puter/ExternalLLM providers, ModelRegistry (tiers), AgentRegistry, ToolRegistry, MemorySystem, SingularityCore, platform-tools |
-| `src/render/` | Contrate RendererBackend; Null, Text e **WebGL2** (contexto injetado) |
-| `src/persistence/` | StorageBackend (Memory/File), snapshots versionados com checksum+migração |
+| `src/render/` | **GÊNESIS**: `rhi.js` (RHI: recursos GPU rastreados/sized, ProgramCache, contrato de device), `culling.js` (frustum Gribb-Hartman + esferas), `materials.js` (MaterialLibrary), `lighting.js` (sol + point lights), `shaders.js` (GLSL próprio), `webgl2.js` (pipeline GÊNESIS), Null e Text |
+| `src/physics/` | **GÊNESIS** `physics.js`: PhysicsWorld própria (corpos=props RRW, impactos causais, sleep, raycast corpo+terreno, broadphase em células) |
+| `src/audio/` | **GÊNESIS**: `synth.js` (osciladores/ruído/env/lowpass), `spatial.js` (atenuação+pan), `mixer.js`, `uts-audio.js` (AudioDirector + encodeWav RIFF 16-bit) |
+| `src/persistence/` | StorageBackend (Memory/File), snapshots versionados com checksum+migração; **`utsdb.js`**: UTS-DB (journal append-only, replay tolerante a torn-tail, tx, índices, compaction, asStorage) |
+| `src/core/comm.js` | **GÊNESIS** Comm: rotas nomeadas, requests com timeout, pub/sub entre módulos (sem API keys) |
+| `src/world/streaming.js` | **GÊNESIS** StreamingSystem: residência de patches por anel de LOD (24/16/8), eviction, orçamento de tempo (budgetMs) |
 | `src/platform/` | **A PLATAFORMA**: ServiceRegistry, AIService (AI-first), ResearchService (triangulação multi-modelo), GitHubService (serviço conectado), AppHost (apps), CreationProjectManager (projetos duráveis), UTSPlatform |
 
 ## 2b. Serviços da PLATAFORMA (o que a UES e os apps consomem)
@@ -106,9 +110,11 @@ Clock.advance(dt)
  → economy      (processos RRW das settlements + trabalho individual detalhado)
  → trade        (a cada 50 ticks: excedente → déficit, com evento)
  → nmn          (mentes por tier: full=1 tick, partial=4, abstract=agregado)
+ → physics      (GÊNESIS: passos do solver; D-O15 coarse pula ticks ímpares)
  → movement     (integração de intents + sincronização do grid)
  → materializer (D-O15: raio+importância → full/partial/abstract;
                  settlements ↔ indivíduos com preservação de estado)
+ → streaming    (GÊNESIS: residência de patches por anel de LOD, budgetMs)
  → deferred     (D-O15 executa trabalho adiado quando há orçamento)
 ```
 

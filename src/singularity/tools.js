@@ -188,8 +188,32 @@ export function builtinTools({ ues, world, rrw, core }) {
         if (!id) return { ok: false, reason: `settlement '${p.settlementName}' not found` };
         anchor = rrw.getComponent(id, 'spatial').pos;
       }
-      const made = world.spawnResourceNodes(anchor, { radius: p.radius, bushes: p.bushes, trees: p.trees });
-      return { ok: true, created: made.length };
+      const made2 = world.spawnResourceNodes(anchor, { radius: p.radius, bushes: p.bushes, trees: p.trees });
+      return { ok: true, created: made2.length };
+    },
+  });
+
+  tools.register('world.drop_rock', {
+    desc: 'Drop a physics rock near the camera (impact events are causal)',
+    schema: {
+      forward: { type: 'number', min: 2, max: 40, default: 12 },
+      upSpeed: { type: 'number', min: 0, max: 20, default: 6 },
+    },
+    fn: (p) => {
+      const cause = rrw.emitEvent({ type: 'physics.rock.dropped', subject: 'world', cause: world.environment.lastWeatherEventId, data: { at: [...ues.camera.pos] }, tick: world.clock.tick });
+      const pos = [ues.camera.pos[0] + Math.sin(ues.camera.yaw) * p.forward, 24, ues.camera.pos[2] + Math.cos(ues.camera.yaw) * p.forward];
+      const ent = world.dropRock(pos, [0, -2, 0], { causeEvent: cause });
+      return { ok: true, rockId: ent.id, causeEvent: cause };
+    },
+  });
+
+  tools.register('physics.raycast', {
+    desc: 'Cast a ray from the camera forward; reports terrain/body hits',
+    schema: { maxDist: { type: 'number', min: 5, max: 400, default: 120 } },
+    fn: (p) => {
+      const dir = [Math.sin(ues.camera.yaw) * Math.cos(ues.camera.pitch), -Math.sin(ues.camera.pitch), Math.cos(ues.camera.yaw) * Math.cos(ues.camera.pitch)];
+      const hit = world.physics.raycast(ues.camera.pos, dir, p.maxDist);
+      return { ok: true, hit };
     },
   });
 

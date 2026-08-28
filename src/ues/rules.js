@@ -4,5 +4,6 @@
 export class ExperienceError extends Error {}
 
 export const ENGINE_SYSTEMS = Object.freeze([
-  'weather', 'ecology', 'economy', 'trade', 'nmn', 'movement', 'materializer', 'deferred',
+  'weather', 'ecology', 'economy', 'trade', 'nmn', 'movement', 'physics',
+  'materializer', 'streaming', 'deferred',
 ]);

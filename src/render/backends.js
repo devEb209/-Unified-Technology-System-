@@ -24,7 +24,7 @@ export class NullRenderer {
 }
 
 const BIOME_CHARS = ['~', '.', ',', 't', '^', '*'];
-const KIND_CHARS = { npc: 'N', hazard: 'F', tree: 'Y', bush: 'u', settlement: 'H', aggregate: 'O' };
+const KIND_CHARS = { npc: 'N', hazard: 'F', tree: 'Y', bush: 'u', settlement: 'H', aggregate: 'O', prop: 'o' };
 
 export class TextRenderer {
   constructor({ cols = 64, rows = 28 } = {}) {
