@@ -7,6 +7,10 @@
 import { SpatialGrid } from '../spatial/grid.js';
 import { Terrain } from './terrain.js';
 import { RealLife } from './reallife.js';
+import { Atmosphere } from './phenomena/atmosphere.js';
+import { Hydrology } from './phenomena/hydrology.js';
+import { Combustion } from './phenomena/combustion.js';
+import { Ecology } from './phenomena/ecology.js';
 import { MaterialLibrary } from '../render/materials.js';
 import { LightSystem } from '../render/lighting.js';
 import { StreamingSystem } from './streaming.js';
@@ -15,7 +19,7 @@ import { clamp01, dist2 } from '../core/math.js';
 import * as society from './society.js';
 
 export class World {
-  constructor({ rrw, rng, clock, tese = null, do15 = null, seed = 'uts-world', bus = null }) {
+  constructor({ rrw, rng, clock, tese = null, do15 = null, seed = 'uts-world', bus = null, genesisSeed = true }) {
     this.rrw = rrw;
     this.rng = rng;
     this.clock = clock;
@@ -38,6 +42,11 @@ export class World {
     };
 
     this.reallife = new RealLife({ world: this });
+    // ---- REALITY PHENOMENA (ADR-019: the world models reality, not tricks)
+    this.atmosphere = new Atmosphere();                       // air → sky IS scattering
+    this.hydrology = new Hydrology({ world: this });          // water as substance
+    this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
+    this.ecology = new Ecology({ world: this });              // vegetation as population
     this.materials = new MaterialLibrary();     // OUR material system
     this.lighting = new LightSystem();          // OUR lights (sun + phenomena)
     this.streaming = new StreamingSystem({ world: this, perf: null, tese }); // OUR residency
@@ -45,6 +54,43 @@ export class World {
     this.terrainCache = new Map(); // legacy sampling cache (non-visual helpers)
     this.perceptionMetrics = { consulted: 0, perceived: 0, queries: 0 };
     this.settlementMaterialCap = 12;
+    // restore paths pass genesisSeed:false: the forest comes from the snapshot
+    // (never consume rng draws nor re-emit genesis events on load)
+    if (genesisSeed) this._seedGenesisForest();
+  }
+
+  /** the world is born WITH vegetation (reality has no empty stages) */
+  _seedGenesisForest(center = [512, 0, 512], { tries = 90 } = {}) {
+    const seeded = [];
+    for (let i = 0; i < tries; i++) {
+      const a = this.rng.next() * Math.PI * 2, r = Math.sqrt(this.rng.next()) * 150;
+      const x = center[0] + Math.cos(a) * r, z = center[2] + Math.sin(a) * r;
+      const tree = this.ecology.seed(x, z, { age: this.rng.range(4, 40) });
+      if (tree) seeded.push(tree.id);
+    }
+    return seeded;
+  }
+
+  /** the phenomena are RRW-owned state: they persist with the world */
+  phenomenaSnapshot() {
+    return {
+      atmosphere: { state: { ...this.atmosphere.state } },
+      hydrology: this.hydrology.snapshot(),
+      combustion: this.combustion.snapshot(),
+      ecology: this.ecology.snapshot(),
+      // fire anchors are materialization bookkeeping: WITHOUT them a restored
+      // world would re-create burning-cell entities under new ids (divergence)
+      fireAnchors: this.reallife.fireAnchors ? [...this.reallife.fireAnchors] : [],
+    };
+  }
+
+  phenomenaRestore(s) {
+    if (!s) return;
+    if (s.atmosphere) Object.assign(this.atmosphere.state, s.atmosphere.state ?? {});
+    if (s.hydrology) this.hydrology.restore(s.hydrology);
+    if (s.combustion) this.combustion.restore(s.combustion);
+    if (s.ecology) this.ecology.restore(s.ecology);
+    if (s.fireAnchors) this.reallife.fireAnchors = new Map(s.fireAnchors);
   }
 
   /** drop a dynamic rock into the reality (physics body + causal origin) */
@@ -181,6 +227,34 @@ export class World {
 
   updateWeather(dt) {
     this.reallife.update(dt);
+    // ---- THE REALITY CHAIN (ADR-019), in causal order:
+    // air → sky, rain → soil+film, fuel+moisture+wind → fire, water+fire+sun → life
+    const env = this.environment;
+    const sunEl = this.clock.sunElevation;
+    this.atmosphere.step(dt, env);
+    const air = this.atmosphere.sky({ sunEl, ambient: env.ambient });
+    env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
+    env.fog = air.fog; env.haze = air.haze; env.sunVisible = air.sunVisible;
+    env.sunColor = air.sunColor;
+    this.hydrology.step(dt, {
+      focus: this.ues?.camera?.pos ?? this.cameraFocusFallback?.() ?? [512, 0, 512],
+      radius: 160, rain: env.rain, sunEl,
+    });
+    env.wetness = this.hydrology.soil.wetness; // the water table IS the wetness (single source)
+    if (this.combustionStepEnabled !== false) {
+      const spreadRate = (this.do15?.strategy?.perceptionResolution ?? 'full') === 'full' ? 1 : 0.5;
+      this.combustion.step(dt, {
+        rain: env.rain, wind: env.wind, windDir: [Math.cos(this.clock.timeOfDay * 6.28), Math.sin(this.clock.timeOfDay * 6.28)],
+        hydrology: this.hydrology, spreadRate,
+      });
+    }
+    if (this.ecologyStepEnabled !== false) {
+      this.ecology.step(dt, {
+        sunEl, soilWet: env.wetness,
+        combustion: this.combustionStepEnabled === false ? null : this.combustion,
+      });
+    }
+    this.reallife.updateFires(dt); // materialize fire anchors FROM the field
     this.tese?.touch('D-5', `weather=${this.environment.weather} wet=${this.environment.wetness.toFixed(2)}`, this.clock.tick);
   }
 

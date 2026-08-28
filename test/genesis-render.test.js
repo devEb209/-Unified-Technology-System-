@@ -83,6 +83,19 @@ test('lighting: fire hazards become point lights; distance culls; D-O15 reduces'
   assert.equal(reduced.stats.reduced, true, 'D-O15 pressure reduces light budget');
 });
 
+
+// ADR-019: fire needs FUEL — find the nearest burnable ground to a point
+function nearestFuel(world, x0, z0, maxR = 90) {
+  for (let r = 4; r <= maxR; r += 6) {
+    for (let a = 0; a < 12; a++) {
+      const x = x0 + Math.cos((a / 12) * Math.PI * 2) * r, z = z0 + Math.sin((a / 12) * Math.PI * 2) * r;
+      const c = world.combustion._cell(x, z);
+      if (c && c.fuel >= 0.3 && world.terrain.height(x, z) > world.terrain.seaLevel) return [x, 0, z];
+    }
+  }
+  return null;
+}
+
 test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resources', async () => {
   const C = { VERTEX_SHADER: 1, FRAGMENT_SHADER: 2 };
   const buffers = new Set(); const programs = [];
@@ -111,10 +124,13 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
 
   const uts = createUTS({ seed: 'gl-genesis' });
   await uts.core.tools.execute('ues.create_settlement', { name: 'Gl Vila', pop: 12, nearRiver: false });
+  uts.ues.run(90); // let the world live FIRST (a real fire burns out — it is fuel, not a countdown prop)
   const strike = uts.rrw.emitEvent({ type: 'reallife.lightning.strike', cause: null, data: {}, tick: 0 });
-  uts.world.reallife.igniteFire([512, 0, 512], strike);
+  const fuelSpot = nearestFuel(uts.world, 512, 512);
+  assert.ok(fuelSpot, 'burnable ground exists near spawn');
+  const fireId = uts.world.reallife.igniteFire(fuelSpot, strike);
+  assert.ok(fireId, 'dry ground ignites');
   uts.world.dropRock([512, 24, 512], [0, 0, 0], {});
-  uts.ues.run(90);
   uts.ues.moveCamera([512, 26, 560]);
 
   const r = new WebGL2Renderer(gl);
@@ -122,10 +138,13 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
   assert.equal(r.caps.instanced, true, 'mock device advertises instancing');
   assert.equal(r.caps.fbo, true);
   assert.ok(r.shadow, 'shadow target created on FBO-capable device');
-  assert.equal(programs.length, 6, 'sky+terrain+entity+points+shadow+water programs');
+  assert.equal(programs.length, 7, 'sky+terrain+entity+points+shadow+water+vegetation programs');
 
   const frame = uts.ues.renderFrame();
   assert.ok(frame.lights.points.length >= 1, 'frame carries OUR point lights');
+  assert.ok(Array.isArray(frame.vegetation) && frame.vegetation.length > 0,
+    `frame carries the REAL ecology population (${frame.vegetation?.length} trees near camera)`);
+  assert.ok(frame.vegetation.every(t => t.height > 0 && t.health >= 0), 'trees carry growth state (maturity/health)');
   assert.ok(frame.entities.every(e => e.material), 'frame carries OUR materials');
   assert.ok(frame.stats.streaming.resident > 0, 'streaming residency reported');
 

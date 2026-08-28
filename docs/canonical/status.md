@@ -94,3 +94,34 @@
 3. LLM real no loop (chave via env) com structured output validado pelo Core.
 4. HRTF completa (pinna/convolução própria) sobre o AudioStream binaural.
 5. Fade impostor↔malha (cross-fade no shader próprio).
+
+
+## R1 — FENÔMENOS I (esta rodada)
+
+**Refeitos sob ADR-019 (realidade primeiro), terminados e testados (210/210):**
+
+- `src/world/phenomena/atmosphere.js` — FUNCTIONAL: ar com estado
+  (umidade/poeira/poluição) + inércia; `sky()` = Rayleigh (dia vs pôr-do-sol
+  por caminho óptico) + Mie (umidade/poeira) + noite não-preta. O céu do
+  renderer DERIVA disso (gradiente autoral deletado do reallife).
+- `src/world/phenomena/hydrology.js` — FUNCTIONAL: lâmina d'água por célula
+  (chuva acumula, escoa por gradiente, evapora, infiltra), solo com memória
+  (`soil.wetness` = a umidade do mundo), poças persistem, orçamento D-O15.
+- `src/world/phenomena/combustion.js` — FUNCTIONAL: fogo consome biomassa
+  real, espalha por vento+combustível, chuva apaga, chão queimado persiste,
+  solo encharcado recusa ignição (evento `combustion.refused` auditável).
+- `src/world/phenomena/ecology.js` — FUNCTIONAL: população de árvores
+  (espécie/idade/biomassa/saúde), crescimento sol×água, sementes,
+  competição, morte (fogo/seca/idade), madeira morta vira combustível.
+- `reallife.js` re-ligado: fogo-entidade é agora âncora de PERCEPÇÃO que
+  espelha o campo de combustão (nunca inventa); wetness vem da hidrologia;
+  céu vem da atmosfera. Cadeia raio→fogo→medo de NPC continua 100%
+  verificável (teste de integração).
+- Frame/renderer: `frame.vegetation` (população materializada sob D-O15),
+  `frame.water` (lâmina d'água), 7º programa (vegetation points).
+- Persistência: fenômenos salvos/carregados; save→load byte-idêntico.
+
+**Limitações honestas restantes:** lâmina d'água ainda não renderizada
+(quad d'água fixo = limitação conhecida), chão queimado não muda a cor do
+terreno, acústica sem oclusão (R2), fogo sem partículas próprias (usa
+luzes), árvores como point-sprites (malha própria em rodada futura).

@@ -43,6 +43,8 @@ export function serializeState(uts) {
       seed: uts.world.seed,
       environment: structuredClone(uts.world.environment),
       settlementMaterialCap: uts.world.settlementMaterialCap,
+      // REALITY PHENOMENA (ADR-019): air, water, fire, life persist WITH the world
+      phenomena: uts.world.phenomenaSnapshot ? uts.world.phenomenaSnapshot() : null,
     },
     ues: {
       camera: structuredClone(uts.ues.camera),
@@ -150,9 +152,10 @@ export function restoreState(state, opts = {}) {
   const perf = opts.perf ?? null;
 
   const rrw = RRW.restore(state.rrw, { rng, bus, tese, processTypes: processTypeRegistry() });
-  const world = new World({ rrw, rng, clock, tese, do15, seed: state.world.seed, bus });
+  const world = new World({ rrw, rng, clock, tese, do15, seed: state.world.seed, bus, genesisSeed: false });
   world.environment = structuredClone(state.world.environment);
   world.settlementMaterialCap = state.world.settlementMaterialCap ?? 12;
+  if (state.world.phenomena) world.phenomenaRestore(state.world.phenomena); // older saves migrate honestly (fresh phenomena)
 
   const ues = new UES({ world, perf, tese, do15, schedulerBudgetMs: state.ues.schedulerBudgetMs ?? 0 });
   ues.camera = structuredClone(state.ues.camera);

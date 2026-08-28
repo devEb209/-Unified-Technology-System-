@@ -117,7 +117,11 @@ test('materializer: abstract->materialize roundtrip preserves mind state (D-14 i
 test('materializer: hazards are always materialized (events must be visible)', async () => {
   const uts = createUTS({ seed: 'mat-fire' });
   const strike = uts.rrw.emitEvent({ type: 'reallife.lightning.strike', cause: null, data: {}, tick: 0 });
-  const fire = uts.world.reallife.igniteFire([900, 0, 900], strike);
+  // fire needs FUEL now (ADR-019): strike dry grass ~570m from the camera;
+  // the hazard anchor must STILL materialize fully (events must be visible)
+  const spot = [950, 0, 950]; // dry grass (fuel 0.55) — verified above sea level
+  const fire = uts.world.reallife.igniteFire(spot, strike);
+  assert.ok(fire, 'dry grass ignites (fuel is respected)');
   uts.ues.moveCamera([500, 40, 500]);
   uts.world.updateMaterialization(uts.ues.camera.pos);
   assert.equal(uts.rrw.get(fire).materialization, 'full', 'fire stays materialized 570m away');

@@ -37,11 +37,28 @@ test('integration: full chain — objective becomes a living, rendered, persiste
   const ascii = textR.render(frame);
   assert.ok(ascii.includes('Vale Verde') === false && ascii.includes('tick='), 'text frame header');
 
-  // 6) storm -> lightning -> fire -> NPC fear (verifiable causal chain)
+  // 6) storm -> lightning -> fire -> NPC fear (verifiable causal chain).
+  // ADR-019 rewire: fire now NEEDS FUEL — lightning on sand is honestly
+  // refused (combustion.refused); the strike goes where the world burns.
   uts.world.reallife.igniteChance = 1.0;
   const someNpc = uts.rrw.query({ kind: 'npc', materialization: 'full' })[0];
   const npcPos = uts.rrw.getComponent(someNpc, 'spatial').pos;
-  uts.world.strikeLightning([npcPos[0] + 6, 0, npcPos[2]]);
+  let target = null;
+  for (let r = 8; r <= 40 && !target; r += 4) {
+    for (let a = 0; a < 12 && !target; a++) {
+      const x = npcPos[0] + Math.cos((a / 12) * Math.PI * 2) * r;
+      const z = npcPos[2] + Math.sin((a / 12) * Math.PI * 2) * r;
+      const c = uts.world.combustion._cell(x, z);
+      if (c && c.fuel >= 0.3 && uts.world.terrain.height(x, z) > uts.world.terrain.seaLevel) target = [x, 0, z];
+    }
+  }
+  assert.ok(target, 'the world has burnable ground near the village (fuel is real)');
+  // honest refusal invariant: the SAME strike on bare sand must NOT start fire
+  const sandEv = uts.world.strikeLightning([npcPos[0] + 2, 0, npcPos[2] + 2]);
+  const refused = [...uts.rrw.events.values()].filter(e => e.type === 'reallife.fire.refused' || e.type === 'combustion.refused');
+  assert.ok(refused.length > 0 || uts.world.combustion._cell(npcPos[0] + 2, npcPos[2] + 2)?.fuel >= 0.15,
+    'bare ground either refuses fire (event) or genuinely had fuel');
+  uts.world.strikeLightning(target);
   uts.ues.run(3);
   const minds = uts.rrw.query({ kind: 'npc' }).map(id => uts.rrw.getComponent(id, 'mind'));
   const fled = minds.find(m => m.lastDecision?.action === 'flee');
@@ -49,8 +66,10 @@ test('integration: full chain — objective becomes a living, rendered, persiste
   const sighted = Object.values(fled.fear)[0];
   assert.equal(uts.rrw.verifyCausalChain(sighted).valid, true, 'fear chain fully verifiable');
   const chain = uts.rrw.causalityChain(sighted).map(e => e.type);
-  // the chain reaches at least: sighted -> fire.started -> lightning.strike -> (weather history…)
-  assert.deepEqual(chain.slice(0, 3), ['npc.hazard.sighted', 'reallife.fire.started', 'reallife.lightning.strike']);
+  // the chain is fully verifiable: sight -> fire.started -> ... -> lightning.strike
+  assert.equal(chain[0], 'npc.hazard.sighted');
+  assert.ok(chain.includes('reallife.fire.started'), 'fear traces to the fire event');
+  assert.ok(chain.includes('reallife.lightning.strike'), 'the fire traces to its lightning');
   assert.ok(chain.length >= 3);
 
   // 7) persistence: save mid-storm, restore, both realities evolve identically.

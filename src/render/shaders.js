@@ -221,3 +221,30 @@ void main(){
   fragColor = vec4(col, uAlpha);
 }
 `;
+
+// ---- VEGETATION: trees are REAL population (ecology) materialized as
+// point-sprites. Health colors them (green → dry brown); height = maturity.
+// D-O15 governs HOW MANY are materialized, never that they exist.
+export const VEGETATION_VS = `#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec2 aHH; // height (m), health (0..1)
+uniform mat4 uVP; uniform float uPointScale;
+out float vHealth;
+void main(){
+  vec3 wp = aPos + vec3(0.0, aHH.x * 0.5, 0.0);
+  gl_Position = uVP * vec4(wp, 1.0);
+  float w = max(gl_Position.w, 0.1);
+  gl_PointSize = clamp(uPointScale * aHH.x / w, 1.5, 42.0);
+  vHealth = aHH.y;
+}`;
+export const VEGETATION_FS = `#version 300 es
+precision highp float;
+in float vHealth;
+uniform float uFog; uniform vec3 uSkyBottom; uniform vec3 uCamPos;
+out vec4 fragColor;
+void main(){
+  vec3 healthy = vec3(0.16, 0.42, 0.14);
+  vec3 dry = vec3(0.45, 0.36, 0.18);
+  vec3 col = mix(dry, healthy, clamp(vHealth, 0.0, 1.0));
+  fragColor = vec4(col, 0.92);
+}`;

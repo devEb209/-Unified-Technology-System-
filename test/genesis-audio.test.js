@@ -75,10 +75,25 @@ test('audio: thunder renders real energy with decay (from represented flash)', a
   assert.ok(late < peak, 'decay is audible (envelope)');
 });
 
+
+// ADR-019: fire needs FUEL — find the nearest burnable ground to a point
+function nearestFuel(world, x0, z0, maxR = 90) {
+  for (let r = 4; r <= maxR; r += 6) {
+    for (let a = 0; a < 12; a++) {
+      const x = x0 + Math.cos((a / 12) * Math.PI * 2) * r, z = z0 + Math.sin((a / 12) * Math.PI * 2) * r;
+      const c = world.combustion._cell(x, z);
+      if (c && c.fuel >= 0.3 && world.terrain.height(x, z) > world.terrain.seaLevel) return [x, 0, z];
+    }
+  }
+  return null;
+}
+
 test('audio: fire crackle is spatialized from the fire light position', async () => {
   const uts = createUTS({ seed: 'fire-audio' });
   const strike = uts.rrw.emitEvent({ type: 'reallife.lightning.strike', cause: null, data: {}, tick: 0 });
-  uts.world.reallife.igniteFire([512, 0, 500], strike);
+  const fuelSpot = nearestFuel(uts.world, 512, 500);
+  assert.ok(fuelSpot, 'burnable ground exists near the camera');
+  uts.world.reallife.igniteFire(fuelSpot, strike);
   uts.ues.moveCamera([512, 20, 520]);
   uts.ues.run(3);
   const frame = uts.ues.renderFrame();

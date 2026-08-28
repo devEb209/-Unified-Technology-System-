@@ -21,19 +21,31 @@
 
 ## B) O que está PARCIALMENTE alinhado
 
-- **Atmosfera/luz**: o estado existe (vento, poeira, chuva, molhado, hora
-  do dia → direção do sol ✓) mas o céu é **gradiente autoral** — não
-  derivado do ar. Fog é uniforme, não extinção atmosférica.
-- **Água**: o mundo representa `seaLevel` + chuva/molhado, mas não existe
-  CORPO d'água com estado (vazão, nível local, corrente). O "mar" é um
-  shader de ondas senoidais.
-- **Fogo**: é hazard com intensidade/combustível no RRW (bom!) e acende
-  por raio causal — mas não se **espalha** pelo combustível nem consome
-  vegetação nem é extinto pela chuva.
-- **Vegetação**: árvores são cones estáticos; D-9 regrow é abstrato.
-  Crescimento/idade/morfologia por bioma não existem como estado.
+> **R1 FECHOU (esta rodada): atmosfera, hidrologia, combustão, ecologia —
+> ver "✅ R1" abaixo. Os itens restantes de B são acústica, física de
+> energia, D-O15 re-representação.**
+
+- ✅ **R1: Atmosfera** — `world/phenomena/atmosphere.js`: o céu É
+  espalhamento (Rayleigh dia/pôr-do-sol por caminho óptico + Mie por
+  umidade/poeira/poluição), com inércia (o ar é gás, não flag). O renderer
+  CONSUME `atmosphere.sky()` — o gradiente autoral foi DELETADO de reallife.
+- ✅ **R1: Hidrologia** — `world/phenomena/hydrology.js`: água como
+  SUBSTÂNCIA (células com lâmina d'água; chuva acumula, escoa por
+  gradiente, evapora ao sol, infiltra no solo → `soil.wetness` é A umidade
+  do mundo). Poças persistem em terreno plano; solo encharcado RECUSA
+  ignição (testado).
+- ✅ **R1: Combustão** — `world/phenomena/combustion.js`: fogo é processo
+  sobre COMBUSTÍVEL real (bioma→biomassa); espalha por vento+continuidade,
+  chuva apaga, chão queimado PERSISTE, umidade bloqueia; cada ignição/
+  extinção é evento causal RRW (raio→ignited→started→sighted→flee
+  verificado em teste de integração).
+- ✅ **R1: Ecologia** — `world/phenomena/ecology.js`: vegetação é
+  POPULAÇÃO (indivíduos com espécie/idade/biomassa/saúde; crescimento
+  logístico dirigido por sol×água do solo; sementes, competição, morte por
+  fogo/seca/idade; madeira morta vira combustível — ciclo fechado com
+  combustão). Renderer materializa a população sob D-O15.
 - **Acústica**: binaural (ITD/ILD) e música adaptativa são fortes, mas não
-  há propagação/oclusão/absorção — o som atravessa montanhas.
+  há propagação/oclusão/absorção — o som atravessa montanhas. **(R2)**
 - **Física**: mecânica sólida (impactos causais, rotação, juntas PBD), sem
   energia acumulada, deformação, materiais, fluidos.
 - **D-O15 em áudio/partículas**: corta CONTAGEM (voices, densidade) em vez

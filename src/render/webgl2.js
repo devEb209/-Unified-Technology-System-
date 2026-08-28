@@ -10,6 +10,7 @@
 import {
   SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS,
   SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS,
+  VEGETATION_VS, VEGETATION_FS,
 } from './shaders.js';
 import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh } from './mesh.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
@@ -119,6 +120,7 @@ export class WebGL2Renderer {
       entity: this.programCache.get('entity', ENTITY_INST_VS, ENTITY_FS),
       points: this.programCache.get('points', POINTS_VS, POINTS_FS),
       water: this.programCache.get('water', WATER_VS, WATER_FS),
+      vegetation: this.programCache.get('vegetation', VEGETATION_VS, VEGETATION_FS),
     };
     if (this.caps.fbo) {
       this.programs.shadow = this.programCache.get('shadow', SHADOW_VS, SHADOW_FS);
@@ -227,6 +229,19 @@ export class WebGL2Renderer {
     const proj = perspective(Math.PI / 3, 1, 10, 500);
     const view = lookAt(eye, camFocus, [0, 1, 0]);
     return multiply(proj, view);
+  }
+
+  /** raw interleaved [pos3, height, health] binding for the vegetation points */
+  _bindRaw(prog, handle) {
+    const gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, handle.meta.gl);
+    const stride = 5 * 4;
+    gl.enableVertexAttribArray(prog.a.aPos);
+    gl.vertexAttribPointer(prog.a.aPos, 3, gl.FLOAT, false, stride, 0);
+    if (prog.a.aHH != null && prog.a.aHH >= 0) {
+      gl.enableVertexAttribArray(prog.a.aHH);
+      gl.vertexAttribPointer(prog.a.aHH, 2, gl.FLOAT, false, stride, 12);
+    }
   }
 
   _bind(prog, glBuf, stride, { normals = true, biome = false } = {}) {
@@ -499,6 +514,28 @@ export class WebGL2Renderer {
       gl.drawArrays(gl.POINTS, 0, 500);
       gl.disable(gl.BLEND);
       drawCalls++;
+    }
+
+    // ---- VEGETATION (ecology population materialized under D-O15)
+    if (frame.vegetation && frame.vegetation.length > 0) {
+      const veg = this.programs.vegetation;
+      gl.useProgram(veg.prog);
+      gl.uniformMatrix4fv(veg.u.uVP, false, vp);
+      gl.uniform1f(veg.u.uPointScale, (this.canvas?.height ?? 720) * 0.9);
+      const data = new Float32Array(frame.vegetation.length * 5);
+      for (let i = 0; i < frame.vegetation.length; i++) {
+        const t = frame.vegetation[i];
+        data.set([t.pos[0], t.pos[1], t.pos[2], t.height, t.health], i * 5);
+      }
+      if (!this._vegHandle) this._vegHandle = this.createBuffer(data, { dynamic: true });
+      else { gl.bindBuffer(gl.ARRAY_BUFFER, this._vegHandle.meta.gl); gl.bufferData(gl.ARRAY_BUFFER, data, GL.DYNAMIC_DRAW); }
+      this._bindRaw(veg, this._vegHandle);
+      gl.enable(gl.BLEND);
+      if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.drawArrays(gl.POINTS, 0, frame.vegetation.length);
+      gl.disable(gl.BLEND);
+      drawCalls++;
+      this.stats.vegDraws = (this.stats.vegDraws ?? 0) + 1;
     }
 
     this.stats.drawCalls += drawCalls;

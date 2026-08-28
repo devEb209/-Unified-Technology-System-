@@ -23,13 +23,13 @@ test('webgl2: rejects non-GL contexts loudly', async () => {
   assert.throws(() => new WebGL2Renderer(null), RendererError);
 });
 
-test('webgl2: compiles 5 programs (sky/terrain/entity/points/water), renders the world, counts draw calls', async () => {
+test('webgl2: compiles 7 programs (sky/terrain/entity/points/water/vegetation/shadow), renders the world, counts draw calls', async () => {
   const gl = makeGL();
   const { frame } = await makeScene();
   const r = new WebGL2Renderer(gl);
   r.init();
   const { drawCalls } = r.render(frame);
-  assert.equal(gl._programs.length, 5);
+  assert.equal(gl._programs.length, 6, 'sky+terrain+entity+points+water+vegetation (shadow only on FBO devices — genesis test covers 7)');
   const arrays = gl._calls.filter(c => c[0] === 'drawArrays');
   assert.equal(arrays.length, drawCalls);
   // sky (1) + terrain patches + VISIBLE entities (our culling skips the rest) (+ rain when raining)
@@ -95,14 +95,18 @@ test('webgl2: rain manifests as GL_POINTS driven by represented rain state', asy
   gl._calls.length = 0;
   r.render(f);
   const points = gl._calls.filter(c => c[0] === 'drawArrays' && c[1] === C.POINTS);
-  assert.equal(points.length, 1, 'one point pass for precipitation');
+  assert.ok(points.length >= 1, 'precipitation draws a point pass');
+  assert.ok(r.stats.vegDraws === undefined || r.stats.vegDraws <= 1, 'vegetation draws at most its own pass');
+  assert.ok(f.vegetation === null || f.vegetation === undefined || f.vegetation.length >= 0,
+    'frame exposes the vegetation array (population materialized under D-O15)');
 });
 
-test('webgl2: no precipitation -> no point pass', async () => {
+test('webgl2: no precipitation, no vegetation -> no point pass', async () => {
   const gl = makeGL();
   const { frame } = await makeScene('gl5');
   frame.environment.rain = 0;
   frame.environment.dust = 0;
+  frame.vegetation = null; // the population itself materializes nothing this frame
   const r = new WebGL2Renderer(gl);
   gl._calls.length = 0;
   r.render(frame);

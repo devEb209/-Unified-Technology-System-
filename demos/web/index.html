@@ -38,6 +38,9 @@
   <div>NPCs <b id="s-npc">0</b> (mat <b id="s-mat">0</b> / par <b id="s-par">0</b>) · patches <b id="s-pat">0</b> (malha <b id="s-lodm">0</b> / impostor <b id="s-lodi">0</b>) · agregados <b id="s-agg">0</b></div>
   <div>clima <b id="s-weather">–</b> · chuva <b id="s-rain">0</b> · molhado <b id="s-wet">0</b> · vento <b id="s-wind">0</b> · poeira <b id="s-dust">0</b></div>
   <div>percepção <b id="s-perc">full</b> · eventos causais <b id="s-ev">0</b></div>
+  <div style="color:#7d8db3">— FENÔMENOS (estado real) —</div>
+  <div>árvores <b id="s-trees">0</b> · fogo <b id="s-fire">0</b> células · solo úmido <b id="s-soil">0</b> · lâmina d'água <b id="s-film">0</b>m</div>
+  <div>céu (Rayleigh) topo <b id="s-sky" style="font-family:monospace">–</b> · umidade <b id="s-hum">0</b></div>
   <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
   <div class="bar"><i id="s-pressurebar"></i></div>
   <div style="color:#7d8db3">arraste = orbitar · roda = zoom</div>
@@ -78,6 +81,13 @@
   const canvas = document.getElementById('gl');
   const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } });
   const { ues, core, world, rrw, do15, clock, tese } = uts;
+
+  // ---- [phenomena] ADR-019: the world is born WITH its reality systems.
+  // sky = atmospheric scattering from AIR STATE; water = substance in cells;
+  // fire = combustion over fuel; vegetation = a living population. The world
+  // already seeds its genesis forest in the constructor (world._seedGenesisForest).
+  const phen = world;
+  logLine(`[phenomena] atmosfera ✓ · hidrologia ✓ · combustão ✓ · ecologia ✓ (${phen.ecology.aliveCount()} árvores vivas no gênesis)`);
 
   // ---- bootstrap a reality through the Singularity Core (same path as tests)
   const report = await core.processObjective('criar uma pequena vila próxima a um rio chamada Vila Aurora');
@@ -121,7 +131,21 @@
   $('w-rain').onclick = () => world.setWeather('rain');
   $('w-storm').onclick = () => world.setWeather('storm');
   $('w-dust').onclick = () => world.setWeather('dust');
-  $('fire').onclick = () => world.strikeLightning([ues.camera.pos[0] + 20, 0, ues.camera.pos[2]]);
+  $('fire').onclick = () => {
+    // reality: lightning strikes where it strikes; fire only exists where FUEL exists
+    const c = ues.camera.pos;
+    let target = [c[0] + 20, 0, c[2]];
+    for (let r = 4; r <= 120; r += 6) {
+      let found = false;
+      for (let a = 0; a < 10; a++) {
+        const x = c[0] + Math.cos((a / 10) * Math.PI * 2) * r, z = c[2] + Math.sin((a / 10) * Math.PI * 2) * r;
+        const cell = world.combustion._cell(x, z);
+        if (cell && cell.fuel >= 0.3 && world.terrain.height(x, z) > world.terrain.seaLevel) { target = [x, 0, z]; found = true; break; }
+      }
+      if (found) break;
+    }
+    world.strikeLightning(target);
+  };
   $('save').onclick = async () => {
     const { save, MemoryStorage } = await import('../../src/persistence/snapshot.js');
     const { MemoryStorage: MS } = await import('../../src/persistence/storage.js');
@@ -251,6 +275,17 @@
       $('s-dust').textContent = frame.environment.dust.toFixed(2);
       $('s-perc').textContent = frame.stats.perceptionResolution;
       $('s-ev').textContent = rrw.stats.events;
+      // phenomena readouts — the HUD reads REPRESENTED state, never decoration
+      $('s-trees').textContent = frame.stats.vegetation ?? 0;
+      $('s-fire').textContent = frame.stats.fireCells ?? 0;
+      $('s-soil').textContent = (world.environment.wetness ?? 0).toFixed(2);
+      $('s-film').textContent = (frame.water?.depth ?? 0).toFixed(3);
+      const st = world.atmosphere.state;
+      $('s-hum').textContent = st.humidity.toFixed(2);
+      const skyEl = $('s-sky');
+      const rgb = world.environment.skyTop.map(v => Math.round(Math.min(1, v) * 255));
+      skyEl.textContent = `rgb(${rgb.join(',')})`;
+      skyEl.style.color = `rgb(${rgb.join(',')})`;
       $('s-pressure').textContent = do15.pressure.toFixed(2);
       $('s-pressurebar').style.width = `${Math.round(do15.pressure * 100)}%`;
     }

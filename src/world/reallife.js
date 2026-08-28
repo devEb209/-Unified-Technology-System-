@@ -73,9 +73,28 @@ export class RealLife {
     return strikeId;
   }
 
+  /**
+   * ADR-019 rewire: the COMBUSTION FIELD (fuel, moisture, wind) is the
+   * reality that decides whether fire exists. The hazard entity is only the
+   * PERCEPTION ANCHOR (grid index → lights → audio → NPC sight), fed by the
+   * field — never a fire with a countdown inside it.
+   */
   igniteFire(pos, causeEventId) {
     const w = this.world;
     const land = w.terrain.findLand(pos[0], pos[2], 30);
+    const ev = w.combustion?.ignite(land[0], land[2], { causeEvent: causeEventId });
+    if (!ev) {
+      // honest refusal: the strike happened, the world said no (wet/no fuel)
+      w.rrw.emitEvent({
+        type: 'reallife.fire.refused',
+        subject: 'ground',
+        cause: causeEventId,
+        data: { pos: [land[0], 0, land[2]], wetness: +w.environment.wetness.toFixed(2) },
+        tick: w.clock.tick,
+      });
+      return null;
+    }
+    const cellKey = w.combustion._key(land[0], land[2]);
     const ent = w.rrw.createEntity({
       kind: 'hazard',
       materialization: 'full',
@@ -83,18 +102,20 @@ export class RealLife {
       tags: ['fire', 'hazard'],
       pos: [land[0], 0, land[2]],
       components: {
-        hazard: { type: 'fire', intensity: 1.0, fuel: 45 + w.rng.range(0, 30), causeEvent: causeEventId },
+        hazard: { type: 'fire', intensity: 1.0, fuel: 45, cellKey, causeEvent: causeEventId },
       },
     });
     const evId = w.rrw.emitEvent({
       type: 'reallife.fire.started',
       subject: ent.id,
       cause: causeEventId,
-      data: { pos: [land[0], 0, land[2]] },
+      data: { pos: [land[0], 0, land[2]], cell: cellKey },
       tick: w.clock.tick,
     });
     w.rrw.patchComponent(ent.id, 'hazard', { startedEvent: evId });
     w.grid.update(ent.id, land[0], land[2]); // hazards enter the spatial index (perceivable reality)
+    this.fireAnchors = this.fireAnchors ?? new Map(); // cellKey -> entity id
+    this.fireAnchors.set(cellKey, ent.id);
     return ent.id;
   }
 
@@ -128,12 +149,9 @@ export class RealLife {
     // ---- physical effects
     env.rain = lerp(env.rain, env.targetRain, clamp01(dt * 0.5));
     env.wind = lerp(env.wind, env.targetWind, clamp01(dt * 0.3));
-    if (env.rain > 0.05) {
-      env.wetness = clamp01(env.wetness + env.rain * this.rainRate * dt);
-    } else {
-      env.dryness = clamp01(env.dryness + this.dryRate * dt * (env.sunElevation > 0 ? 1.5 : 0.3));
-      env.wetness = clamp01(env.wetness - this.dryRate * dt * (env.sunElevation > 0 ? 2 : 0.2));
-    }
+    // wetness is OWNED by hydrology.soil (the water table is a substance,
+    // not a weather flag). dryness is DERIVED from it for dust generation.
+    env.dryness = clamp01(1 - (this.world.hydrology?.soil.wetness ?? env.wetness));
     env.dust = clamp01(env.wind * env.dryness * (env.weather === 'dust' ? 1.6 : 0.4));
     env.flash = Math.max(0, env.flash - dt * 2);
 
@@ -142,67 +160,71 @@ export class RealLife {
       this.strikeLightning();
     }
 
-    // ---- fire dynamics (intensity, spread, extinguish)
-    this.updateFires(dt);
-
+    // ---- fire DYNAMICS live in combustion (world.updateWeather orders the
+    // chain: reallife → atmosphere → hydrology → combustion → anchors)
     // ---- day/night lighting from the clock (D-3 + D-5)
     const sunEl = w.clock.sunElevation;
     const dayAmt = clamp01(sunEl * 1.6 + 0.2);
     env.sunDir = normalize([Math.cos(w.clock.timeOfDay * Math.PI * 2 - Math.PI / 2) * 0.6, Math.max(0.08, sunEl), 0.35]);
     env.ambient = lerp(0.16, 1.0, dayAmt) * lerp(1.0, 0.45, env.rain * 0.6 + (env.weather === 'storm' ? 0.4 : 0)) + env.flash * 0.8;
-    env.sunColor = [
-      lerp(1.0, 0.6, env.rain),
-      lerp(0.95, 0.62, env.rain),
-      lerp(0.8, 0.6, env.rain),
-    ];
-    env.skyTop = [0.25 * env.ambient, 0.45 * env.ambient, 0.9 * env.ambient];
-    env.skyBottom = [
-      lerp(0.75, 0.35, env.rain) * env.ambient,
-      lerp(0.82, 0.37, env.rain) * env.ambient,
-      lerp(0.9, 0.42, env.rain) * env.ambient,
-    ];
-    env.fog = clamp01(0.12 + env.rain * 0.35 + env.dust * 0.5);
+    // skyTop/skyBottom/fog/sunColor are computed by world.atmosphere.sky()
+    // from AIR STATE (Rayleigh + Mie) — reallife no longer paints the sky.
   }
 
+  /**
+   * D-O15 anchor sync: the combustion FIELD is the source of truth; hazard
+   * entities are materialized while (and only while) their cell burns.
+   * Spread is NOT here — combustion.step owns dynamics (fuel+wind+moisture).
+   */
   updateFires(dt) {
     const w = this.world;
-    const env = w.environment;
-    for (const id of w.rrw.query({ kind: 'hazard', materialization: null })) {
-      const hz = w.rrw.getComponent(id, 'hazard');
-      if (!hz || hz.type !== 'fire') continue;
-      hz.fuel -= dt;
-      hz.intensity = clamp01(Math.min(1, hz.fuel / 30));
-      const sp = w.rrw.getComponent(id, 'spatial');
-      // rain extinguishes
-      if (env.rain > 0.35) {
-        hz.fuel -= dt * 8;
+    const comb = w.combustion;
+    if (!comb) return;
+    this.fireAnchors = this.fireAnchors ?? new Map();
+    // 1) every burning cell gets a perceivable anchor (lights + audio + sight)
+    for (const [k, c] of comb.cells) {
+      if (!c.burning) continue;
+      let id = this.fireAnchors.get(k);
+      if (!id || !w.rrw.get(id)) {
+        const [cx, cz] = k.split(',').map(Number);
+        const pos = [cx * comb.cell + comb.cell / 2, 0, cz * comb.cell + comb.cell / 2];
+        const startedEvId = w.rrw.emitEvent({
+          type: 'reallife.fire.started', subject: null, cause: c.startedEvent ?? null,
+          data: { pos, cell: k, via: 'spread' }, tick: w.clock.tick,
+        });
+        const ent = w.rrw.createEntity({
+          kind: 'hazard', materialization: 'full', importance: 1.0,
+          tags: ['fire', 'hazard'], pos,
+          components: { hazard: { type: 'fire', intensity: c.intensity, fuel: c.fuel * 100, cellKey: k, causeEvent: c.startedEvent ?? null } },
+        });
+        w.rrw.patchComponent(ent.id, 'hazard', { startedEvent: startedEvId });
+        w.grid.update(ent.id, pos[0], pos[2]);
+        this.fireAnchors.set(k, ent.id);
+      } else {
+        const hz = w.rrw.getComponent(id, 'hazard');
+        hz.intensity = c.intensity;      // the anchor MIRRORS the field (never invents)
+        hz.fuel = c.fuel * 100;
       }
-      // spread to nearby trees
-      if (hz.intensity > 0.4 && w.rng.chance(0.02 * dt)) {
-        const near = w.grid.queryCircle(sp.pos[0], sp.pos[2], 12)
-          .map(nid => ({ nid, kind: w.rrw.get(nid)?.kind }))
-          .filter(x => x.kind === 'tree');
-        if (near.length > 0 && w.rng.chance(0.5)) {
-          const tree = w.rrw.get(w.rng.pick(near).nid);
-          const tsp = w.rrw.getComponent(tree.id, 'spatial');
-          const parentEv = w.rrw.getComponent(id, 'hazard').startedEvent;
-          this.igniteFire([tsp.pos[0], 0, tsp.pos[2]], parentEv); // causal spread
-        }
-      }
-      if (hz.fuel <= 0) {
+    }
+    // 2) anchors whose cell died are destroyed WITH the causal chain intact
+    for (const [k, id] of [...this.fireAnchors]) {
+      const c = comb.cells.get(k);
+      if (c?.burning) continue;
+      const hz = id ? w.rrw.getComponent(id, 'hazard') : null;
+      if (hz) {
         w.rrw.emitEvent({
           type: 'reallife.fire.extinguished',
           subject: id,
           cause: hz.startedEvent ?? null,
-          data: { pos: sp.pos },
+          data: { pos: w.rrw.getComponent(id, 'spatial')?.pos ?? null, cell: k },
           tick: w.clock.tick,
         });
         w.grid.remove(id);
         w.rrw.destroy(id);
       }
+      this.fireAnchors.delete(k);
     }
   }
-
   /** audio channel state for the Frame (D-11) — derived from represented state */
   audioState() {
     const env = this.world.environment;

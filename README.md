@@ -140,12 +140,17 @@ const chain = uts.rrw.causalityChain(algumEventoId); // causalidade audível
 
 ## Status honesto
 
-Veja [`docs/canonical/status.md`](docs/canonical/status.md) — nada é
-declarado funcional sem teste que prove. Funcional hoje: RRW causal,
-Tese dos D operacional, D-O15 adaptativo, percepção indexada (158× @10k
-NPCs), NMN, sociedade/economia, RealLife, Frames, WebGL2 v1, persistência
-determinística, Singularity Core com fallback. Planejado: sombras reais,
-instancing, áudio sintetizado, DatabaseStorage.
+Veja [`docs/canonical/status.md`](docs/canonical/status.md) e
+[`docs/canonical/progress.md`](docs/canonical/progress.md) — nada é
+declarado funcional sem teste que prove. **GÊNESIS: 73%** (régua de
+fidelidade ADR-019). Funcional hoje: RRW causal, Tese dos D operacional,
+D-O15 adaptativo, percepção indexada (158× @10k NPCs), NMN,
+sociedade/economia, Frames, WebGL2 (7 programas), persistência
+determinística (agora COM os fenômenos), Singularity Core com fallback,
+e os **fenômenos reais R1**: atmosfera (o céu é espalhamento do AR),
+hidrologia (água é substância com lâmina/solo), combustão (fogo é
+combustível+vento+umidade), ecologia (vegetação é população viva).
+Próximo (R2): acústica causal, energia/deformação, escala.
 
 ## Especificação
 

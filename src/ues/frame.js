@@ -100,6 +100,13 @@ export function extractFrame(ues, perf = null) {
     terrain: { patches, seaLevel: world.terrain.seaLevel, chunkSize: cs, impostorAfter, fade: IMPOSTOR_FADE },
     entities, aggregates,
     lights: world.lighting.collect(world, cam.pos, strategy),
+    // vegetation is REALITY (ecology population), materialized under D-O15:
+    // identity preserved, budget applied to COUNT only
+    vegetation: world.ecology
+      ? world.ecology.materialize(cam.pos, 160, Math.round((strategy?.particleDensity ?? 1) * 140))
+      : null,
+    // surface water around the camera (the film IS the data; renderers read it)
+    water: world.hydrology ? world.hydrology.sample(cam.pos[0], cam.pos[2]) : null,
     environment: { ...world.environment },
     audio: world.reallife.audioState(),
     stats: {
@@ -115,6 +122,8 @@ export function extractFrame(ues, perf = null) {
       lights: frame_lights_stats(world),
       streaming: world.streaming.report(),
       physics: world.physics.report(),
+      vegetation: world.ecology ? world.ecology.aliveCount() : 0,
+      fireCells: world.combustion ? [...world.combustion.cells.values()].filter(c => c.burning).length : 0,
     },
   };
   perf?.end(tk);
