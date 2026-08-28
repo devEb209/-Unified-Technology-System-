@@ -36,6 +36,7 @@ export function defaultStrategy() {
     maxMaterialized: 400,
     audioSr: 22050,
     audioVoices: 8,
+    terrainImpostorAfter: 150,
   };
 }
 
@@ -90,6 +91,7 @@ export class DO15 {
       s.particleDensity = 0.4;
       s.audioSr = 11025;
       s.audioVoices = 3;
+      s.terrainImpostorAfter = 90;
     } else if (p >= c.high) {
       s.materializationRadius = 65;
       s.updateEveryTicks = { full: 1, partial: 6, abstract: 0 };
@@ -100,6 +102,7 @@ export class DO15 {
       s.particleDensity = 0.7;
       s.audioSr = 16000;
       s.audioVoices = 5;
+      s.terrainImpostorAfter = 120;
     } else if (p <= c.low) {
       const d = defaultStrategy();
       Object.assign(s, d);
@@ -113,6 +116,7 @@ export class DO15 {
       s.particleDensity = 1;
       s.audioSr = 22050;
       s.audioVoices = 8;
+      s.terrainImpostorAfter = 150;
     }
 
     const after = JSON.stringify(pickFields(s));
@@ -228,8 +232,8 @@ export class DO15 {
 }
 
 function pickFields(s) {
-  const { materializationRadius, updateEveryTicks, perceptionResolution, terrainRadius, terrainLodBias, shadows, particleDensity, audioSr, audioVoices } = s;
-  return { materializationRadius, updateEveryTicks, perceptionResolution, terrainRadius, terrainLodBias, shadows, particleDensity, audioSr, audioVoices };
+  const { materializationRadius, updateEveryTicks, perceptionResolution, terrainRadius, terrainLodBias, shadows, particleDensity, audioSr, audioVoices, terrainImpostorAfter } = s;
+  return { materializationRadius, updateEveryTicks, perceptionResolution, terrainRadius, terrainLodBias, shadows, particleDensity, audioSr, audioVoices, terrainImpostorAfter };
 }
 
 function fmt(v) { return (v ?? 0).toFixed(1); }

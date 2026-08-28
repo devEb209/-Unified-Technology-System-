@@ -45,6 +45,7 @@ console.log('[physics] raycast down:', hit ? `${hit.kind} @ ${hit.dist.toFixed(1
 engine.run(20);
 const frame = engine.renderFrame();
 console.log('[streaming]', JSON.stringify(frame.stats.streaming));
+console.log('[lod] malha:', frame.stats.terrain.meshes, '· impostores:', frame.stats.terrain.impostors, '· limiar D-O15:', uts.do15.strategy.terrainImpostorAfter, 'u');
 console.log('[frame] patches:', frame.stats.patches, 'entidades:', frame.stats.entities, 'lights:', JSON.stringify(frame.lights.stats));
 
 // ---- renderer backends manifest the SAME frame

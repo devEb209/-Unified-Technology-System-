@@ -46,7 +46,7 @@
 | **Materiais + Iluminação nativas** (MaterialLibrary, sol+point lights D-O15-aware) | **FUNCTIONAL** | pressão reduz lights 4→2 com evidência no teste |
 | **Shadow mapping próprio** (depth pass + PCF 3×3, FBO 1024) | **FUNCTIONAL** | pipeline GL mockado; fallback honesto sem FBO |
 | **Instancing próprio** (12 floats/instância, batches por material) | **FUNCTIONAL** | path instanciado + fallback por-entidade testados |
-| **Streaming de terreno** (residência por anel 24/16/8, eviction, budgetMs) | **FUNCTIONAL** | 36 patches/38.980 bytes no demo; determinismo preservado |
+| **Streaming + LOD geométrico COMPLETO** (residência 24/16/8, histerese anti-flicker, skirts anti-fenda, impostores, budgetMs) | **FUNCTIONAL** | skirts provam-se > fenda T-junction medida; histerese: ≤2 mudanças sob jitter na fronteira; impostores 6 vértices/bioma dominante; limiar 150/120/90 u por D-O15 (auditável); determinismo preservado |
 | **Física nativa** (corpos=props RRW, impactos causais, sleep, raycast, broadphase) | **FUNCTIONAL** | cadeia de impacto verificável; D-O15 coarse reduz taxa de passos (medido) |
 | **Áudio nativo COMPLETO** (synth/spatial/mixer/AudioDirector + AudioStream contínuo + devices) | **FUNCTIONAL** | stream sem emendas (pior |Δ|=0.011); playback real no browser (botão 🔊 do demo) + WAV; trovão com lockout temporal; fogo espacial em loop; SR/vozes (22050/16000/11025 · 8/5/3) governadas por D-O15 com mudanças medidas |
 | **UTS-DB** (journal append-only, replay, tx, índices, compaction, torn-tail) | **FUNCTIONAL** | `test/genesis-db-comm.test.js`; corrupção no meio falha alto |
@@ -58,15 +58,14 @@
 | PuterProvider (browser, access-layer) | **FUNCTIONAL\*** | *\*detectado/validado via globalRef injetado; requer browser com Puter* |
 | Persistence (save/load, checksum, versão, migração, File/Memory) | **FUNCTIONAL** | corrupção falha alto; A==B após restore+ticks |
 | Física avançada (ragdoll, juntas, rotação completa de corpos) | **PARTIAL** | solver de translação/impactos/sleep nativo; juntas/rotação livre PLANNED |
-| LOD geométrico real (malhas por nível, não só resolução de amostragem) | **PARTIAL** | anéis de residência 24/16/8 FUNCTIONAL; malhas alternativas PLANNED |
 | Busca web real (provider HTTP para research) | **PLANNED** | interface SearchProvider pronta (mock funcional) |
 | LLM externo real no loop | **FUNCTIONAL\*** | *\*ExternalLLMProvider validado contra fetch mock; API real via env, nunca commitada* |
 | Banco de dados externo/cloud storage | **PARTIAL** | UTS-DB nativo FUNCTIONAL (journal/tx/índices); backend externo PLANNED |
 
 ## Limitações reais (honestidade)
 
-1. LOD de terreno é por **resolução de amostragem** (24/16/8), não malhas
-   geométricas alternativas por nível.
+1. LOD de terreno combina anéis de amostragem (24/16/8) + skirts +
+   impostores; transição impostor→malha é um pop discreto (fade PLANNED).
 2. Física nativa resolve translação + impactos + sleep; corpos rígidos com
    rotação livre, juntas e ragdoll são PLANNED.
 3. Terreno estático por (chunk,res) — deformação ao vivo ainda não existe.
@@ -80,9 +79,9 @@
 
 ## Próximas fronteiras (ordem técnica — UMA por vez, terminada antes da seguinte)
 
-1. LOD geométrico real: malhas por anel (alta/média/baixa) + impostores distantes.
-2. Autosave incremental de deltas (event sourcing via RRW → UTS-DB) + streaming
+1. Autosave incremental de deltas (event sourcing via RRW → UTS-DB) + streaming
    assíncrono de chunks com cache LRU persistido.
-3. Rotação completa de corpos + juntas na PhysicsWorld.
-4. LLM real no loop (chave via env) com structured output validado pelo Core.
-5. Spatialização avançada (HRTF/convolução própria) sobre o AudioStream.
+2. Rotação completa de corpos + juntas na PhysicsWorld.
+3. LLM real no loop (chave via env) com structured output validado pelo Core.
+4. Spatialização avançada (HRTF/convolução própria) sobre o AudioStream.
+5. Fade impostor↔malha (cross-fade no shader próprio).

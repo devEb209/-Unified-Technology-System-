@@ -24,8 +24,10 @@ export function extractFrame(ues, perf = null) {
     budgetMs: (strategy?.perceptionResolution ?? 'full') === 'coarse' ? 1 : 2.5,
   });
   const patches = [];
+  let meshPatches = 0, impostorPatches = 0;
   const cs = world.terrain.chunkSize;
   const radius = strategy?.terrainRadius ?? 220;
+  const impostorAfter = strategy?.terrainImpostorAfter ?? 150; // D-O15: LOD quality tier
   const c0x = Math.floor((cam.pos[0] - radius) / cs), c1x = Math.floor((cam.pos[0] + radius) / cs);
   const c0z = Math.floor((cam.pos[2] - radius) / cs), c1z = Math.floor((cam.pos[2] + radius) / cs);
   for (let cx = c0x; cx <= c1x && patches.length < 64; cx++) {
@@ -35,10 +37,13 @@ export function extractFrame(ues, perf = null) {
       if (Math.sqrt(dist2(ccx, ccz, cam.pos[0], cam.pos[2])) > radius) continue;
       const entry = world.streaming.getPatch(cx, cz, 24) ?? world.streaming.getPatch(cx, cz, 16) ?? world.streaming.getPatch(cx, cz, 8);
       if (!entry) continue; // not resident yet — the stream decides, we never fake
+      const d = Math.sqrt(dist2(ccx, ccz, cam.pos[0], cam.pos[2]));
+      const lod = d > impostorAfter ? 'impostor' : 'mesh';
+      if (lod === 'impostor') impostorPatches++; else meshPatches++;
       patches.push({
         id: `${cx}:${cz}`, x0: cx * cs, z0: cz * cs, size: cs,
         res: entry.res, heights: entry.patch.heights, biomes: entry.patch.biomes,
-        version: entry.version ?? 1,
+        version: entry.version ?? 1, lod, dist: d,
       });
     }
   }
@@ -97,6 +102,7 @@ export function extractFrame(ues, perf = null) {
     audio: world.reallife.audioState(),
     stats: {
       patches: patches.length,
+      terrain: { meshes: meshPatches, impostors: impostorPatches },
       entities: entities.length,
       aggregates: aggregates.length,
       npcsMaterialized: rrw.query({ kind: 'npc', materialization: 'full' }).length,

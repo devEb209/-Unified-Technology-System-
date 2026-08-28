@@ -11,7 +11,7 @@ import {
   SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS,
   SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS,
 } from './shaders.js';
-import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh } from './mesh.js';
+import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh } from './mesh.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
 import { frustumPlanes, cullFrame } from './culling.js';
 import { GPUResourceManager, ProgramCache, RHIError, RendererError } from './rhi.js';
@@ -34,7 +34,7 @@ export class WebGL2Renderer {
     this.resources = new GPUResourceManager();
     this.programCache = new ProgramCache(this); // device implements compileProgram
     this.initialized = false;
-    this.stats = { drawCalls: 0, uploads: 0, frames: 0, instances: 0, culled: 0, shadowPasses: 0, batches: 0 };
+    this.stats = { drawCalls: 0, uploads: 0, frames: 0, instances: 0, culled: 0, shadowPasses: 0, batches: 0, impostors: 0, terrainTris: 0, meshMs: 0 };
     this._lastSize = [0, 0];
     this.shadowSize = 1024;
   }
@@ -168,13 +168,19 @@ export class WebGL2Renderer {
     if (!this.initialized) this.init();
     const gl = this.gl;
     const current = new Set();
+    const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
     for (const patch of frame.terrain.patches) {
-      const key = `${patch.id}:${patch.res}:${patch.version}`;
+      const lod = patch.lod ?? 'mesh';
+      const key = `${patch.id}:${patch.res}:${patch.version}:${lod}`;
       current.add(key);
       if (this.terrainBuffers.has(key)) continue;
-      const mesh = buildTerrainMesh({ ...patch, size: patch.size });
+      // GÊNESIS-LOD: distant chunks are IMPOSTORS (one quad, dominant biome);
+      // near chunks are skirted meshes — cracks between rings are impossible.
+      const mesh = lod === 'impostor'
+        ? buildImpostorMesh({ ...patch })
+        : buildTerrainMesh({ ...patch, size: patch.size });
       const h = this.createBuffer(mesh.data); // single RHI-tracked upload
-      this.terrainBuffers.set(key, { handle: h, count: mesh.count });
+      this.terrainBuffers.set(key, { handle: h, count: mesh.count, lod });
       this.stats.uploads++;
     }
     for (const [key, res] of [...this.terrainBuffers]) {
@@ -354,12 +360,15 @@ export class WebGL2Renderer {
     gl.uniform1f(terr.u.uWetness, env.wetness);
     gl.uniform3f(terr.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
     for (const patch of frame.terrain.patches) {
-      const key = `${patch.id}:${patch.res}:${patch.version}`;
+      const lod = patch.lod ?? 'mesh';
+      const key = `${patch.id}:${patch.res}:${patch.version}:${lod}`;
       const res = this.terrainBuffers.get(key);
       if (!res) continue;
       this._bind(terr, res.handle.meta.gl, 7, { normals: true, biome: true });
       gl.drawArrays(gl.TRIANGLES, 0, res.count);
       drawCalls++;
+      if (lod === 'impostor') this.stats.impostors++;
+      this.stats.terrainTris += res.count / 3;
     }
 
     // ---- entities: OUR instanced path (fallback: per-entity draws)

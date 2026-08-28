@@ -45,7 +45,7 @@ Em paralelo, o fluxo cognitivo:
 ## Quick start
 
 ```bash
-npm test              # 160/160 testes determinísticos (128 + 28 Gênesis)
+npm test              # 178/178 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)

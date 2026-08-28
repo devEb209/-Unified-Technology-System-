@@ -60,14 +60,28 @@ export function domeMesh(stacks = 4, slices = 8) {
  * Build a terrain mesh from a patch (heights/biomes at res) — the visual
  * MANIFESTATION of the represented heightfield. Absolute world coords so the
  * model matrix stays identity (static resource).
+ *
+ * GÊNESIS-LOD (AAAA): every mesh carries SKIRTS — vertical walls hanging
+ * from all four borders down past the lowest height. Adjacent chunks at
+ * different LOD resolutions can never show cracks: the skirt physically
+ * covers the T-junction gap (standard AAA terrain technique, ours natively).
+ * Skirt triangles are emitted with both windings so they are visible from
+ * any side (CULL_FACE stays on; the cost is trivial).
  */
-export function buildTerrainMesh(patch) {
+export function buildTerrainMesh(patch, { skirt = true } = {}) {
   const { heights, biomes, res, size, x0, z0 } = patch;
   const step = size / res;
   const n = res + 1;
   const H = (i, j) => heights[j * n + i];
   const B = (i, j) => biomes[j * n + i];
-  const verts = new Float32Array(res * res * 6 * 7);
+  let minH = Infinity, maxH = -Infinity;
+  for (let k = 0; k < heights.length; k++) {
+    if (heights[k] < minH) minH = heights[k];
+    if (heights[k] > maxH) maxH = heights[k];
+  }
+  // skirt reaches below the deepest possible neighbor mismatch
+  const skirtDepth = Math.max(4, (maxH - minH) * 0.6);
+  const verts = new Float32Array((res * res * 6 + (skirt ? res * 4 * 12 : 0)) * 7);
   let o = 0;
   const push = (x, y, z, nx, ny, nz, b) => {
     verts[o++] = x; verts[o++] = y; verts[o++] = z;
@@ -97,5 +111,54 @@ export function buildTerrainMesh(patch) {
       push(x01, h01, z01, ...normalAt(i, j + 1), b01);
     }
   }
-  return { data: verts, count: res * res * 6 };
+  if (skirt) {
+    // one wall per border, both windings, biome from the border vertex
+    const skirtSeg = (xa, za, xb, zb, ia, ja, ib, jb, nx, nz) => {
+      const hA = H(ia, ja), hB = H(ib, jb), bA = B(ia, ja), bB = B(ib, jb);
+      const TA = [xa, hA, za], TB = [xb, hB, zb], BA = [xa, hA - skirtDepth, za], BB = [xb, hB - skirtDepth, zb];
+      const tri = (p, q, r) => {
+        for (const v of [p, q, r]) {
+          const b = (v === TA || v === BA) ? bA : bB;
+          push(v[0], v[1], v[2], nx, 0, nz, b);
+        }
+      };
+      tri(TA, TB, BB); tri(TA, BB, BA); // facing out
+      tri(TA, BB, TB); tri(TA, BA, BB); // facing in (CULL_FACE stays honest)
+    };
+    for (let i = 0; i < res; i++) {
+      skirtSeg(x0 + i * step, z0, x0 + (i + 1) * step, z0, i, 0, i + 1, 0, 0, -1);           // north
+      skirtSeg(x0 + i * step, z0 + size, x0 + (i + 1) * step, z0 + size, i, res, i + 1, res, 0, 1); // south
+      skirtSeg(x0, z0 + i * step, x0, z0 + (i + 1) * step, 0, i, 0, i + 1, -1, 0);           // west
+      skirtSeg(x0 + size, z0 + i * step, x0 + size, z0 + (i + 1) * step, res, i, res, i + 1, 1, 0);// east
+    }
+  }
+  return { data: verts, count: o / 7, tris: o / 21, skirtDepth, minH, maxH };
+}
+
+/**
+ * Impostor mesh (GÊNESIS-LOD): distant chunks stop paying for geometry and
+ * render as ONE flat quad at the average height with the dominant biome —
+ * the honest minimal representation of "the terrain continues that way".
+ * Same vertex layout (stride 7), same terrain program, ~zero cost.
+ */
+export function buildImpostorMesh(patch) {
+  const { heights, biomes, size, x0, z0 } = patch;
+  let sum = 0;
+  const votes = new Map();
+  for (let k = 0; k < heights.length; k++) {
+    sum += heights[k];
+    const b = Math.round(biomes[k]);
+    votes.set(b, (votes.get(b) ?? 0) + 1);
+  }
+  const avgH = sum / heights.length;
+  let dominant = 0, best = -1;
+  for (const [b, c] of votes) if (c > best) { best = c; dominant = b; }
+  const y = avgH;
+  const A = [x0, y, z0], Bp = [x0 + size, y, z0], C = [x0 + size, y, z0 + size], D = [x0, y, z0 + size];
+  const verts = new Float32Array(6 * 7);
+  let o = 0;
+  const push = (p) => { verts[o++] = p[0]; verts[o++] = p[1]; verts[o++] = p[2]; verts[o++] = 0; verts[o++] = 1; verts[o++] = 0; verts[o++] = dominant; };
+  push(A); push(Bp); push(C);
+  push(A); push(C); push(D);
+  return { data: verts, count: 6, tris: 2, avgH, dominantBiome: dominant };
 }

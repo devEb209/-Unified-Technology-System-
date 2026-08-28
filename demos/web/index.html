@@ -35,7 +35,7 @@
 <div class="panel" id="hud">
   <h1>UTS PLATFORM :: UES ENGINE :: RRW → D → D-O15 → FRAME → WEBGL2</h1>
   <div>tick <b id="s-tick">0</b> · fps <b id="s-fps">–</b> · draw calls <b id="s-draw">–</b></div>
-  <div>NPCs <b id="s-npc">0</b> (mat <b id="s-mat">0</b> / par <b id="s-par">0</b>) · patches <b id="s-pat">0</b> · agregados <b id="s-agg">0</b></div>
+  <div>NPCs <b id="s-npc">0</b> (mat <b id="s-mat">0</b> / par <b id="s-par">0</b>) · patches <b id="s-pat">0</b> (malha <b id="s-lodm">0</b> / impostor <b id="s-lodi">0</b>) · agregados <b id="s-agg">0</b></div>
   <div>clima <b id="s-weather">–</b> · chuva <b id="s-rain">0</b> · molhado <b id="s-wet">0</b> · vento <b id="s-wind">0</b> · poeira <b id="s-dust">0</b></div>
   <div>percepção <b id="s-perc">full</b> · eventos causais <b id="s-ev">0</b></div>
   <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
@@ -210,6 +210,8 @@
       $('s-mat').textContent = frame.stats.npcsMaterialized;
       $('s-par').textContent = frame.stats.npcsPartial;
       $('s-pat').textContent = frame.stats.patches;
+      $('s-lodm').textContent = frame.stats.terrain?.meshes ?? 0;
+      $('s-lodi').textContent = frame.stats.terrain?.impostors ?? 0;
       $('s-agg').textContent = frame.stats.aggregates;
       $('s-weather').textContent = frame.environment.weather;
       $('s-rain').textContent = frame.environment.rain.toFixed(2);

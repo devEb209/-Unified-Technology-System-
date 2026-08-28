@@ -13,7 +13,7 @@ export class StreamingSystem {
     this.tese = tese;
     /** key -> {key, cx, cz, res, state: 'pending'|'ready', priority, bytes} */
     this.resident = new Map();
-    this.stats = { loaded: 0, evicted: 0, scheduled: 0, budgetExhausted: 0 };
+    this.stats = { loaded: 0, evicted: 0, scheduled: 0, budgetExhausted: 0, resChanges: 0 };
     this.maxResident = 128;
   }
 
@@ -35,7 +35,10 @@ export class StreamingSystem {
         const ccx = cx * cs + cs / 2, ccz = cz * cs + cs / 2;
         const d = Math.sqrt(dist2(ccx, ccz, focus[0], focus[2]));
         if (d > radius) continue;
-        const res = d < 70 ? 24 : d < 150 ? 16 : 8;
+        // GÊNESIS-LOD: hysteresis — a resident chunk only changes ring when
+        // CLEARLY beyond the boundary (±HYST u), so a camera hovering on a
+        // ring border never flickers resolutions (measured: resChanges).
+        const res = this._ringRes(cx, cz, d);
         wants.push({ cx, cz, res, d, key: this.key(cx, cz, res) });
       }
     }
@@ -44,6 +47,8 @@ export class StreamingSystem {
     let scheduledNow = 0;
     for (const w of wants) {
       if (!this.resident.has(w.key)) {
+        const prevRes = this._residentRes(w.cx, w.cz);
+        if (prevRes != null && prevRes !== w.res) this.stats.resChanges++;
         this.resident.set(w.key, {
           key: w.key, cx: w.cx, cz: w.cz, res: w.res,
           state: 'pending', priority: w.d, bytes: 0,
@@ -56,7 +61,10 @@ export class StreamingSystem {
     // ---- evict far/out-of-range residents (never the truth — only residency)
     const wantKeys = new Set(wants.map(w => w.key));
     for (const [key, entry] of [...this.resident]) {
-      if (!wantKeys.has(key) && entry.state === 'ready') {
+      if (wantKeys.has(key)) continue;
+      // superseded resolution of a chunk that IS wanted at another ring:
+      const wantedHere = wants.some(w => w.cx === entry.cx && w.cz === entry.cz);
+      if (entry.state === 'ready' || wantedHere) {
         this.resident.delete(key);
         this.stats.evicted++;
       }
@@ -88,6 +96,24 @@ export class StreamingSystem {
     // NOTE: residency is derived cache, not a layer effect — it never touches
     // the tese (a cache warming up is not an observable event of reality).
     return { scheduledNow, loadedNow, pending: this.pendingCount() };
+  }
+
+  /** current resident res for a chunk (null if not resident) */
+  _residentRes(cx, cz) {
+    for (const e of this.resident.values()) {
+      if (e.cx === cx && e.cz === cz) return e.res;
+    }
+    return null;
+  }
+
+  /** ring resolution WITH hysteresis (boundaries 70/150, margin ±10u) */
+  _ringRes(cx, cz, d) {
+    const HYST = 10;
+    const cur = this._residentRes(cx, cz);
+    if (cur == null) return d < 70 ? 24 : d < 150 ? 16 : 8;
+    if (cur === 24) return d < 70 + HYST ? 24 : 16;
+    if (cur === 16) return d < 70 - HYST ? 24 : (d < 150 + HYST ? 16 : 8);
+    return d < 150 - HYST ? 16 : 8;
   }
 
   pendingCount() {
