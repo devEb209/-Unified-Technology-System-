@@ -19,9 +19,18 @@ export class Scheduler {
 
   add({ name, priority = 100, fn, budgetMs = 0 }) {
     if (this.systems.some(s => s.name === name)) throw new Error(`system already registered: ${name}`);
-    this.systems.push({ name, priority, fn, budgetMs, pending: false, runs: 0, skipped: 0, totalMs: 0, maxMs: 0 });
+    this.systems.push({ name, priority, fn, budgetMs, pending: false, enabled: true, runs: 0, skipped: 0, disabledTicks: 0, totalMs: 0, maxMs: 0 });
     this.orderDirty = true;
     return this;
+  }
+
+  /** experience rulesets toggle systems without unregistering them */
+  setEnabled(name, enabled) {
+    const sys = this.systems.find(s => s.name === name);
+    if (!sys) throw new Error(`unknown system: ${name}`);
+    sys.enabled = !!enabled;
+    if (!sys.enabled) sys.pending = false;
+    return sys.enabled;
   }
 
   getSystem(name) {
@@ -42,6 +51,7 @@ export class Scheduler {
 
     const ordered = [...pending, ...this.systems.filter(s => !pending.includes(s))];
     for (const sys of ordered) {
+      if (!sys.enabled) { sys.disabledTicks++; continue; } // ruleset-disabled: counted, never forgotten
       if (this.globalBudgetMs > 0 && (this.now() - t0) > this.globalBudgetMs && !pending.includes(sys)) {
         sys.pending = true;   // deferred, NOT dropped
         sys.skipped++;
@@ -70,6 +80,7 @@ export class Scheduler {
   stats() {
     return this.systems.map(s => ({
       name: s.name, priority: s.priority, runs: s.runs, skipped: s.skipped,
+      enabled: s.enabled, disabledTicks: s.disabledTicks,
       avgMs: s.runs ? s.totalMs / s.runs : 0, maxMs: s.maxMs,
       overBudget: s.overBudget ?? 0,
     }));

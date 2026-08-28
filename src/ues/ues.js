@@ -43,6 +43,12 @@ export class UES {
     attachToWorld(world);
   }
 
+  /** experience rulesets: enable/disable engine systems without removing them */
+  setSystemEnabled(name, enabled) {
+    this.scheduler.setEnabled(name, enabled);
+    return this;
+  }
+
   moveCamera(pos, yaw = this.camera.yaw, pitch = this.camera.pitch) {
     this.camera.pos = [pos[0], pos[1] ?? this.camera.pos[1], pos[2] ?? this.camera.pos[2]];
     this.camera.yaw = yaw;

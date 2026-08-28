@@ -6,14 +6,24 @@
 
 ## Estado geral
 
-- **115/115 testes** passando (`npm test`), determinísticos, zero dependências.
-- Cadeia completa funcional: objetivo → Singularity Core → RRW → mundo vivo →
-  D-O15 → Frame → **WebGL2 real** (browser) / Null / Text.
+- **128/128 testes** passando (`npm test`), determinísticos, zero dependências.
+- **UTS = PLATAFORMA funcional** (AI-first, serviços, apps, research, github,
+  projetos duráveis) · **UES = ENGINE funcional** dentro dela (mundos vivos,
+  frames, WebGL2, experiências por manifesto).
+- Cadeia completa: objetivo → plataforma AI → RRW → mundo vivo → D-O15 →
+  Frame → **WebGL2 real** (browser) / Null / Text.
 
 ## Sistemas
 
 | Sistema | Status | Evidência |
 |---|---|---|
+| **PLATAFORMA UTS** (ServiceRegistry, status/health) | **FUNCTIONAL** | `test/platform.test.js` |
+| **AI-first** (`platform.ask`, AIService) | **FUNCTIONAL** | linguagem natural → realidade verificada |
+| **Research triangulado** (N modelos + busca + consenso) | **FUNCTIONAL\*** | *\*validado com providers injetados; busca real plugar provider HTTP* |
+| **GitHub conectado** (REST, token mascarado) | **FUNCTIONAL\*** | *\*fetch mock no teste; produção via `GITHUB_TOKEN` env* |
+| **Apps da plataforma** (AppHost, kinds abertos, estado durável) | **FUNCTIONAL** | install/act/view + restart mantém estado |
+| **CreationProjects** (planos duráveis, orçamento, retomável) | **FUNCTIONAL** | retomada cross-session testada; falhas duráveis |
+| **UES como engine geral** (manifests, rulesets=genres) | **FUNCTIONAL** | `test/experience.test.js` |
 | RRW (entidades, componentes, relações) | **FUNCTIONAL** | `test/rrw.test.js` |
 | Causalidade verificável | **FUNCTIONAL** | cadeia raio→fogo→medo testada ponta a ponta |
 | Processos RRW (abstrato/detalhado) | **FUNCTIONAL** | settlement-life evolui abstrato; restauração exige implementação registrada |
@@ -36,6 +46,7 @@
 | Física | **PARTIAL** | movimento/intents/colisão-implícita-terreno; sem solver de forças/ragdoll |
 | Sombras/atenção visual avançada | **PLANNED** | shadow mapping, água animada, vegetação, partículas GPU, pós-processo |
 | Banco de dados/Cloud storage | **PLANNED** | interface StorageBackend pronta |
+| Busca web real (provider HTTP para research) | **PLANNED** | interface SearchProvider pronta (mock funcional) |
 | Agentes 'coder'/'graphics' avançados | **PARTIAL** | registry + tuning de orçamento; sem geração de código real |
 
 ## Limitações reais (honestidade)

@@ -65,3 +65,38 @@ heurístico → relatório honesto (`ok:false`), nunca invenção.
 ## ADR-012 — Falhas de persistência são altas
 Snapshot corrompido/incompatível → `SnapshotError` explícito. Nunca iniciar
 uma realidade vazia em silêncio.
+
+## ADR-013 — UTS é a PLATAFORMA; UES é a ENGINE (definição oficial)
+UTS (antiga SNB) = plataforma geral: infraestrutura, serviços, IA, ferramentas
+e recursos para criação e execução, com filosofia AI-first. UES = engine que
+roda DENTRO da plataforma, usando sua infraestrutura, capaz de qualquer tipo
+de experiência. UTS ≠ UES; UES ⊂ UTS; a UTS é estritamente maior. A UES é
+registrada como serviço-consumidor (`ues`) no ServiceRegistry. Não reduzir a
+UTS à UES; não reduzir a UES a um módulo. A UTS pode estar parcial desde que
+TUDO que a UES necessita esteja funcional.
+
+## ADR-014 — AI-first é a interface da plataforma
+O usuário interage naturalmente por IA (`platform.ask()`), usando arquivos,
+serviços e fontes como entrada. A IA agrega múltiplos providers/modelos
+(incluindo todos os modelos acessíveis via Puter), mas a orquestração é do
+Singularity Core: nenhum vendor é a inteligência. Conhecimento é validado por
+TRIANGULAÇÃO (≥3 modelos sobre busca; consenso + conflitos reportados — e
+`triangulated:false` honesto quando não há base suficiente).
+
+## ADR-015 — Serviços conectados são ferramentas validadas
+GitHub (e qualquer serviço futuro) entra como serviço da plataforma e é
+exposto à IA apenas por tools validadas por schema. Tokens vêm de env/param,
+são mascarados (`toString`/`toJSON`), nunca persistidos em snapshots, logs,
+testes ou docs.
+
+## ADR-016 — Criações grandes são PROJETOS duráveis
+Pedidos que levam minutos a meses viram CreationProjects: planos decompostos,
+executados por orçamento, persistidos em storage da plataforma e retomáveis
+em qualquer sessão exatamente onde pararam. Passo que falha é logado e
+persistido como falha — nunca marcado como feito.
+
+## ADR-017 — Apps e mundos são EXPERIÊNCIAS da engine
+A UES é engine geral: experiências são manifests (`world-sim`, `app`) com
+rulesets que ligam/desligam sistemas do engine — gêneros são configurações,
+não engines novas. Apps rodam na infraestrutura da plataforma (AppHost) e
+podem ser orquestrados pela UES como qualquer experiência.

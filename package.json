@@ -10,7 +10,8 @@
     "bench:perception": "node bench/perception.bench.js",
     "bench:frame": "node bench/frame.bench.js",
     "demo": "node demos/web/server.js",
-    "demo:cli": "node demos/cli.js"
+    "demo:cli": "node demos/cli.js",
+    "demo:platform": "node demos/platform.js"
   },
   "license": "MIT",
   "private": true

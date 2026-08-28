@@ -113,7 +113,9 @@ export function builtinTools({ ues, world, rrw, core }) {
       let anchor = ues.camera.pos;
       if (p.settlementName) {
         const id = rrw.query({ kind: 'settlement', predicate: e => e.name?.toLowerCase() === p.settlementName.toLowerCase() })[0];
-        if (id) anchor = rrw.getComponent(id, 'spatial').pos;
+        // honest failure: never silently fall back when a named target is missing
+        if (!id) return { ok: false, reason: `settlement '${p.settlementName}' not found` };
+        anchor = rrw.getComponent(id, 'spatial').pos;
       }
       const created = [];
       for (let i = 0; i < p.count; i++) {
@@ -169,6 +171,26 @@ export function builtinTools({ ues, world, rrw, core }) {
     desc: 'Advance the simulation by N ticks',
     schema: { ticks: { type: 'number', min: 1, max: 2000, default: 10 } },
     fn: (p) => { const ran = ues.run(p.ticks); return { ok: true, uesTick: ran }; },
+  });
+
+  tools.register('ues.grow_nature', {
+    desc: 'Spawn bushes and trees around a settlement or the camera',
+    schema: {
+      settlementName: { type: 'string', maxLength: 40 },
+      radius: { type: 'number', min: 20, max: 300, default: 100 },
+      bushes: { type: 'number', min: 0, max: 200, default: 24 },
+      trees: { type: 'number', min: 0, max: 300, default: 40 },
+    },
+    fn: (p) => {
+      let anchor = ues.camera.pos;
+      if (p.settlementName) {
+        const id = rrw.query({ kind: 'settlement', predicate: e => e.name?.toLowerCase().includes(String(p.settlementName).toLowerCase()) })[0];
+        if (!id) return { ok: false, reason: `settlement '${p.settlementName}' not found` };
+        anchor = rrw.getComponent(id, 'spatial').pos;
+      }
+      const made = world.spawnResourceNodes(anchor, { radius: p.radius, bushes: p.bushes, trees: p.trees });
+      return { ok: true, created: made.length };
+    },
   });
 
   return tools;

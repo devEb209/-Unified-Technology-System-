@@ -1,24 +1,38 @@
 # UTS — Unified Technology System
 
-> **Arquitetura para uma representação computacional da realidade.**
+> **UTS = PLATAFORMA GERAL · UES = ENGINE dentro da plataforma.**
+> Arquitetura para uma representação computacional da realidade.
 > RRW representa · a Tese dos D organiza · o D-O15 decide a resolução
-> necessária · a Singularity AI opera sobre tudo · a UES executa mundos ·
-> o renderer apenas manifesta.
+> necessária · a Singularity AI (AI-first) opera sobre tudo · a UES cria
+> e executa experiências (mundos, jogos, apps) · o renderer apenas manifesta.
 
 Node **22+** · zero dependências de runtime · 100% ESM.
+
+## UTS (plataforma) vs UES (engine) — definição oficial
+
+```
+UTS  plataforma geral: infraestrutura, serviços, IA-first, ferramentas.
+     O usuário descreve o que quer; a plataforma executa e verifica.
+     Serviços: ai · research (triangulação multi-modelo) · github (conectado)
+               apps · projects (criações longas duráveis) · storage · events
+
+UES  engine da plataforma: cria, representa, simula e executa EXPERIÊNCIAS
+     de qualquer tipo (mundo, jogo, simulação, app) via manifests/rulesets.
+     USA a infraestrutura da UTS. UES ⊂ UTS. A UTS é maior.
+```
 
 ## Chain
 
 ```
-USER → SINGULARITY AI (Core/Providers/Models/Agents/Tools/Memory)
-        ↓ objetivo → interpretação → plano → ferramentas validadas
+USER → UTS PLATFORM (AI-first: ask() → Core/Providers/Models/Agents/Tools)
+        ↓ objetivo → interpretação → plano → ferramentas validadas → verificação
 RRW (fonte da verdade: entidades, relações, eventos causais, processos)
         ↓
 TESE DOS D (D-0…D-14, cada camada com efeito observável)
         ↓
 D-O15 (pressão medida → estratégia; DEFER, nunca descartar)
         ↓
-UES (mundo vivo: RealLife, ecologia, economia, NMN, sociedade)
+UES ENGINE (experiência: RealLife, ecologia, economia, NMN, sociedade)
         ↓
 FRAME (descrição visual DERIVADA do estado)
         ↓
@@ -31,10 +45,28 @@ Em paralelo, o fluxo cognitivo:
 ## Quick start
 
 ```bash
-npm test            # 115/115 testes determinísticos
-npm run demo:cli    # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
-npm run demo        # demo WebGL2 no browser (http://localhost:8080)
-npm run bench       # percepção (500→10000 NPCs) + frame extraction
+npm test              # 128/128 testes determinísticos
+npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
+node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
+npm run demo          # demo WebGL2 no browser (http://localhost:8080)
+npm run bench         # percepção (500→10000 NPCs) + frame extraction
+```
+
+## Plataforma em 60 segundos
+
+```js
+import { createUTS, createPlatform } from './src/index.js';
+
+const platform = createPlatform();               // UTS: a plataforma
+const uts = createUTS({ seed: 'mundo', platform }); // UES roda DENTRO dela
+
+await platform.ask('criar uma pequena vila próxima a um rio chamada Aurora'); // AI-first
+
+const app = await platform.apps.install({ kind: 'tasks', name: 'Roadmap' });  // apps
+await platform.apps.act(app.id, 'add', { text: 'dominar a realidade' });
+
+const project = await platform.projects.create('criar uma vila chamada Metrópole'); // criação longa
+await platform.projects.run(project.id, { maxSteps: 2 });  // orçamento → retomável depois
 ```
 
 ## Demo browser (WebGL2 real)

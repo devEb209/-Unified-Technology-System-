@@ -13,21 +13,24 @@ import { ModelRegistry } from './models.js';
 import { AgentRegistry, builtinAgents } from './agents.js';
 import { ToolRegistry, builtinTools, ToolValidationError } from './tools.js';
 import { MemorySystem } from './memory.js';
+import { registerPlatformTools } from './platform-tools.js';
 
 const INTENTS = ['create_settlement', 'set_weather', 'spawn_population', 'start_fire', 'focus_camera', 'unknown'];
 
 export class SingularityCore {
-  constructor({ ues, world, rrw, providers, models = null, memory = null, log = null }) {
+  constructor({ ues, world, rrw, providers, models = null, memory = null, log = null, platform = null }) {
     this.ues = ues;
     this.world = world;
     this.rrw = rrw;
     this.log = log;
+    this.platform = platform;        // UTS platform (services, apps, projects) — optional until attached
     this.providers = providers;      // ProviderRegistry
     this.models = models ?? new ModelRegistry();
     this.agents = new AgentRegistry();
     for (const a of builtinAgents({ core: this })) this.agents.register(a);
     this.memory = memory ?? new MemorySystem();
     this.tools = builtinTools({ ues, world, rrw, core: this });
+    if (platform) registerPlatformTools(this);
     this.lastReport = null;
   }
 

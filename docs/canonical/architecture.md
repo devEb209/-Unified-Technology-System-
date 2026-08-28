@@ -6,6 +6,34 @@
 > **como ela está implementada neste repositório** — sem declarar como
 > funcional aquilo que não é.
 
+## 0. DEFINIÇÃO OFICIAL: UTS ≠ UES
+
+```
+UTS  = PLATAFORMA GERAL (a antiga SNB)
+       ambiente maior: infraestrutura, sistemas, serviços, IA, ferramentas,
+       recursos e tecnologias para criação e execução. Filosofia AI-first:
+       o usuário descreve o que quer e usa arquivos/serviços/fontes como
+       entrada. Plataforma geral — nunca especializada num tipo de app.
+
+UES  = ENGINE DA UTS (Unified Engine System)
+       um dos principais sistemas da plataforma: cria, representa, simula
+       e executa experiências e mundos. Engine GERAL (qualquer gênero de
+       experiência). USA a infraestrutura fornecida pela UTS.
+
+Relação:  UTS → fornece a plataforma e sua infraestrutura
+          UES → utiliza essa infraestrutura para funcionar como engine
+          UES ⊂ UTS — a UES faz parte, mas a UTS é MAIOR.
+
+Estado:   UTS parcial + infraestrutura necessária FUNCIONAL → UES plena.
+          Nem tudo da UTS precisa existir para a UES funcionar; o que a UES
+          precisa da UTS deve estar funcional (hoje: está — 128 testes).
+```
+
+Implementação: `src/platform/` é a PLATAFORMA (ServiceRegistry, AI-first,
+Research triangulado, GitHub conectado, AppHost, CreationProjects, storage).
+`src/ues/` é a ENGINE (mundo, NMN, frames, scheduler, experiências) —
+registrada na plataforma como serviço-consumidor `ues`, nunca o contrário.
+
 ## 1. A cadeia canônica
 
 ```
@@ -49,10 +77,24 @@ Princípios invariantes:
 | `src/spatial/` | SpatialGrid (grid uniforme derivado; permute quadtree/kd depois) |
 | `src/nmn/` | Mentes NPC: necessidades, percepção, decisão com explicações, memória, gossip |
 | `src/world/` | Terreno (heightfield/biomas), RealLife (clima causal), sociedade/economia, World |
-| `src/ues/` | Scheduler com orçamento, extração de Frame, orquestrador UES |
-| `src/singularity/` | ProviderRegistry, Heuristic/Puter/ExternalLLM providers, ModelRegistry (tiers), AgentRegistry, ToolRegistry, MemorySystem, SingularityCore |
+| `src/ues/` | Scheduler com orçamento, extração de Frame, orquestrador UES, **experiências (manifests/rulesets)** |
+| `src/singularity/` | ProviderRegistry, Heuristic/Puter/ExternalLLM providers, ModelRegistry (tiers), AgentRegistry, ToolRegistry, MemorySystem, SingularityCore, platform-tools |
 | `src/render/` | Contrate RendererBackend; Null, Text e **WebGL2** (contexto injetado) |
 | `src/persistence/` | StorageBackend (Memory/File), snapshots versionados com checksum+migração |
+| `src/platform/` | **A PLATAFORMA**: ServiceRegistry, AIService (AI-first), ResearchService (triangulação multi-modelo), GitHubService (serviço conectado), AppHost (apps), CreationProjectManager (projetos duráveis), UTSPlatform |
+
+## 2b. Serviços da PLATAFORMA (o que a UES e os apps consomem)
+
+| Serviço | Papel |
+|---|---|
+| `ai` | Acesso AI-first: linguagem natural → interpretação → plano → ferramentas validadas → verificação. Agrega todos os providers (incl. modelos via Puter) |
+| `research` | Validação de conhecimento por **triangulação**: N modelos (meta ≥3) sobre resultados de busca; consenso, acordo, conflitos; honesto quando não triangula |
+| `github` | Serviço conectado (REST): ler/escrever arquivos, inspecionar repositórios — token só via env, mascarado sempre |
+| `apps` | **Aplicações são cidadãs de primeira classe** (nem tudo é mundo): kinds abertos (setup/reduce/view), estado durável em storage, sobrevive a restarts |
+| `projects` | **CreationProjects**: objetivos grandes (horas/dias/semanas) viram planos duráveis, executáveis por orçamento e retomáveis em qualquer sessão |
+| `storage` | KV durável (Memory/File hoje; Database/Cloud depois) |
+| `events` | Pub/sub da plataforma |
+| `ues` | A ENGINE registrada como consumidora — UES ⊂ UTS |
 
 ## 3. Fluxo de dados por tick
 

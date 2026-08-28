@@ -55,6 +55,17 @@ export { WebGL2Renderer, RendererError } from './render/webgl2.js';
 export * as Persistence from './persistence/snapshot.js';
 export { MemoryStorage, FileStorage } from './persistence/storage.js';
 
+// UTS PLATFORM (UTS = platform · UES = engine inside the platform)
+export { UTSPlatform, createPlatform, MemorySearchProvider } from './platform/platform.js';
+export { ServiceRegistry } from './platform/service-registry.js';
+export { AppHost, AppError } from './platform/apps.js';
+export { AIService } from './platform/services/ai-service.js';
+export { ResearchService, ResearchError } from './platform/services/research-service.js';
+export { GitHubService } from './platform/services/github-service.js';
+export { CreationProjectManager, ProjectError, planProject } from './platform/projects.js';
+export { defineExperience, bootExperience } from './ues/experience.js';
+export { ExperienceError, ENGINE_SYSTEMS } from './ues/rules.js';
+
 /** construct the Singularity AI stack over a live system */
 export function buildSingularity({ ues, world, rrw, memory = null, log = null, providers = null, models = null }) {
   const providerRegistry = providers ?? new ProviderRegistry();
@@ -88,6 +99,7 @@ export function createUTS({
   perf = null,
   providers = null,
   coreMemory = null,
+  platform = null,
 } = {}) {
   const logger = log instanceof Logger ? log : new Logger(log ?? { level: 'warn' });
   const theRng = rng ?? new RNG(seed);
@@ -114,6 +126,10 @@ export function createUTS({
 
   const core = buildSingularity({ ues, world, rrw, memory: coreMemory ?? undefined, log: logger, providers });
 
+  // UTS platform: when provided, the engine registers as a platform consumer
+  // and the platform AI (Singularity) gains services, apps and durable projects.
+  if (platform) platform.attachCore(core, { ues });
+
   return {
     version: UTS_VERSION,
     seed,
@@ -128,5 +144,6 @@ export function createUTS({
     world,
     ues,
     core,
+    platform: platform ?? null,
   };
 }

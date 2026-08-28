@@ -29,7 +29,7 @@ export class HeuristicProvider {
 
   interpret(text, original = text) {
     // settlement? (name extracted from the ORIGINAL objective, preserving case)
-    const nameMatch = original.match(/chamad[ao]\s+"?([\p{L}][\p{L}\s'-]{1,30})"?/iu);
+    const nameMatch = original.match(/chamad[ao]\s+"?([\p{L}\p{N}][\p{L}\p{N}\s'-]{1,30})"?/iu);
     if (/\b(vila|village|cidade|city|town|povoado|settlement|povoacao)\b/.test(text)) {
       const nearRiver = /(rio|river|agua|lago|lake|praia)/.test(text);
       let pop = 24;
