@@ -52,6 +52,7 @@ O demo não tem dependências: só precisa de Node ≥ 22.
 pkg install -y git nodejs
 git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git
 cd -Unified-Technology-System-
+cat package.json | grep name   # DEVE mostrar uts-unified-technology-system (se mostrar "home", você não está na pasta!)
 npm start            # ou: node demos/web/server.js
 ```
 

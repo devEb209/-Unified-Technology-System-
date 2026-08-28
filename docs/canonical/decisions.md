@@ -156,3 +156,31 @@ espacializado (encodeWav próprio), UTS-DB (journal append-only com replay,
 transações, índices, compaction), Comm (rotas/timeouts/eventos entre módulos)
 e o pipeline WebGL2 GÊNESIS (shadow mapping PCF 3×3, instancing 12
 floats/instância, 4 point lights, precipitação).
+
+## ADR-019 — REALIDADE PRIMEIRO: a correção fundamental da visão
+A UES não é uma engine gráfica com sistemas bons: é uma **representação
+computacional da realidade**. A referência primária é a realidade
+("como isso funciona na realidade?" ANTES de "como aproximar
+computacionalmente?"). Técnicas (LOD, impostors, ray tracing, shaders,
+partículas) são **mecanismos de implementação/otimização**, nunca a
+ontologia — não definem céu, água, fogo, som ou luz da UES.
+
+Cadeia única e obrigatória: REALIDADE → MODELO CAUSAL (RRW) → SIMULAÇÃO →
+PERCEPÇÃO → FRAME/ÁUDIO → HARDWARE. O Renderer, o áudio, a física e a IA
+não são fontes de realidade; materializam a MESMA realidade. RealLife é
+transversal (princípio, não módulo). Escalas são realidade (a cidade
+distante é estado causal com menor granularidade, nunca textura).
+
+**Regras supremas:**
+1. NÃO SIMULAR A APARÊNCIA DA REALIDADE QUANDO PUDERMOS MODELAR A
+   REALIDADE QUE PRODUZ ESSA APARÊNCIA.
+2. NÃO OTIMIZAR DESTRUINDO A REALIDADE; OTIMIZAR A FORMA COMO A REALIDADE
+   É REPRESENTADA, PRIORIZADA E MATERIALIZADA.
+
+**Critério de completo (12 pontos)** — implementação própria, contrato
+próprio, integração à realidade da UES, causalidade, persistência,
+integração D-O15, testes unitários, testes de integração, medição,
+demonstração real, independência de engine externa, e REPRESENTAR
+CORRETAMENTE O FENÔMENO que afirma representar. Auditado em
+`audit-vision.md` (re-baseline honesto: 89% → 70% sob a régua correta).
+Visão completa em `vision.md`.

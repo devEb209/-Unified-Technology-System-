@@ -1,12 +1,14 @@
 # UTS/UES — PROGRESSO ATÉ O GÊNESIS COMPLETO
 
-> Meta: a GÊNESIS version — TUDO que foi especificado nos PROMPTS, nativo,
-> integrado, usável por qualquer pessoa, com UTS (plataforma) e UES (engine)
-> 100% funcionais. Este painel é recalculado **a cada rodada** com pesos
-> explícitos — sem otimismo, sem pessimismo: o que está FUNCTIONAL com
-> testes conta; o que está PLANNED desconta.
+> **RE-BASELINE (ADR-019)**: a régua antiga media "sistema implementado +
+> testes". A régua nova mede **fidelidade de representação do fenômeno**
+> (12 pontos em vision.md). Sob a régua correta, o marco honesto é
+> **70%** — o 89% anterior não mentia sobre o que media, mas media a coisa
+> errada. Auditoria completa: `audit-vision.md`.
+> Meta: GÊNESIS = a visão COMPLETA (vision.md), usável por todos, UTS+UES
+> funcionais. Recalculado **a cada rodada**, sem inflar nada.
 
-## % ATUAL: **89%** (atualizado nesta rodada)
+## % ATUAL: **70%** (régua ADR-019 — re-baseline desta rodada)
 
 | # | Categoria | Peso | Completo | Contribuição | Evidência / o que falta |
 |---|---|---|---|---|---|
