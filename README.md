@@ -90,7 +90,7 @@ src/spatial/        SpatialGrid (índice derivado)
 src/nmn/            Natural Mindset of NPCs
 src/world/          terreno, RealLife, sociedade/economia, streaming, World
 src/physics/        PhysicsWorld nativa (corpos=props RRW, impactos causais)
-src/audio/          synth/spatial/mixer/AudioDirector (encodeWav próprio)
+src/audio/          synth/spatial/mixer + AudioStream contínuo + devices (playback próprio)
 src/ues/            scheduler, frame, orquestrador
 src/singularity/    Core, providers, modelos, agentes, tools, memória
 src/render/         RHI, culling, materiais, iluminação, shaders, WebGL2 GÊNESIS, Null/Text

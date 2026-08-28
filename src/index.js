@@ -74,6 +74,8 @@ export { frustumPlanes, sphereVisible, cullFrame } from './render/culling.js';
 export { StreamingSystem } from './world/streaming.js';
 export { PhysicsWorld, GRAVITY } from './physics/physics.js';
 export { AudioDirector, encodeWav } from './audio/uts-audio.js';
+export { AudioStream } from './audio/stream.js';
+export { AudioDeviceError, MemoryDevice, NodePacerDevice, WebAudioDevice, createDevice, resample, AUDIO_DEVICE_CONTRACT } from './audio/backends.js';
 export { Mixer } from './audio/mixer.js';
 export { spatialize } from './audio/spatial.js';
 export { UTSDB, UTSDBError, MemoryJournal, FileJournal } from './persistence/utsdb.js';

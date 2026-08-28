@@ -81,7 +81,7 @@ Princípios invariantes:
 | `src/singularity/` | ProviderRegistry, Heuristic/Puter/ExternalLLM providers, ModelRegistry (tiers), AgentRegistry, ToolRegistry, MemorySystem, SingularityCore, platform-tools |
 | `src/render/` | **GÊNESIS**: `rhi.js` (RHI: recursos GPU rastreados/sized, ProgramCache, contrato de device), `culling.js` (frustum Gribb-Hartman + esferas), `materials.js` (MaterialLibrary), `lighting.js` (sol + point lights), `shaders.js` (GLSL próprio), `webgl2.js` (pipeline GÊNESIS), Null e Text |
 | `src/physics/` | **GÊNESIS** `physics.js`: PhysicsWorld própria (corpos=props RRW, impactos causais, sleep, raycast corpo+terreno, broadphase em células) |
-| `src/audio/` | **GÊNESIS**: `synth.js` (osciladores/ruído/env/lowpass), `spatial.js` (atenuação+pan), `mixer.js`, `uts-audio.js` (AudioDirector + encodeWav RIFF 16-bit) |
+| `src/audio/` | **GÊNESIS COMPLETO**: `synth.js` (osciladores/ruído/env/lowpass), `spatial.js` (atenuação+pan), `mixer.js`, `stream.js` (AudioStream: timeline contínua, vozes agendadas, ambience sem emendas, snapshot/restore), `backends.js` (contrato AudioDevice: Memory/NodePacer/WebAudio + resampler próprio), `uts-audio.js` (AudioDirector + encodeWav RIFF 16-bit) |
 | `src/persistence/` | StorageBackend (Memory/File), snapshots versionados com checksum+migração; **`utsdb.js`**: UTS-DB (journal append-only, replay tolerante a torn-tail, tx, índices, compaction, asStorage) |
 | `src/core/comm.js` | **GÊNESIS** Comm: rotas nomeadas, requests com timeout, pub/sub entre módulos (sem API keys) |
 | `src/world/streaming.js` | **GÊNESIS** StreamingSystem: residência de patches por anel de LOD (24/16/8), eviction, orçamento de tempo (budgetMs) |

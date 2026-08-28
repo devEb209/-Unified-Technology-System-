@@ -125,7 +125,7 @@ test('do15: strategy changes are logged with reasons (auditable decisions)', () 
   const last = do15.decisions.at(-1);
   assert.equal(last.kind, 'strategy');
   assert.ok(last.reason.includes('pressure'));
-  assert.deepEqual(last.from, { materializationRadius: 90, updateEveryTicks: { full: 1, partial: 4, abstract: 0 }, perceptionResolution: 'full', terrainRadius: 220, terrainLodBias: 0, shadows: true, particleDensity: 1 });
+  assert.deepEqual(last.from, { materializationRadius: 90, updateEveryTicks: { full: 1, partial: 4, abstract: 0 }, perceptionResolution: 'full', terrainRadius: 220, terrainLodBias: 0, shadows: true, particleDensity: 1, audioSr: 22050, audioVoices: 8 });
 });
 
 test('do15: snapshot/restore keeps strategy+budget; pressure/metrics/defer are runtime-only', () => {

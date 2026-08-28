@@ -48,7 +48,7 @@
 | **Instancing próprio** (12 floats/instância, batches por material) | **FUNCTIONAL** | path instanciado + fallback por-entidade testados |
 | **Streaming de terreno** (residência por anel 24/16/8, eviction, budgetMs) | **FUNCTIONAL** | 36 patches/38.980 bytes no demo; determinismo preservado |
 | **Física nativa** (corpos=props RRW, impactos causais, sleep, raycast, broadphase) | **FUNCTIONAL** | cadeia de impacto verificável; D-O15 coarse reduz taxa de passos (medido) |
-| **Áudio nativo** (synth/spatial/mixer/AudioDirector, encodeWav 16-bit) | **FUNCTIONAL** | WAV real de 215KB gerado no demo; SR adaptada por D-O15 |
+| **Áudio nativo COMPLETO** (synth/spatial/mixer/AudioDirector + AudioStream contínuo + devices) | **FUNCTIONAL** | stream sem emendas (pior |Δ|=0.011); playback real no browser (botão 🔊 do demo) + WAV; trovão com lockout temporal; fogo espacial em loop; SR/vozes (22050/16000/11025 · 8/5/3) governadas por D-O15 com mudanças medidas |
 | **UTS-DB** (journal append-only, replay, tx, índices, compaction, torn-tail) | **FUNCTIONAL** | `test/genesis-db-comm.test.js`; corrupção no meio falha alto |
 | **Comm** (rotas, timeouts, pub/sub entre módulos) | **FUNCTIONAL** | rotas ask/research.validate/system.status na plataforma |
 | **Renderer WebGL2 GÊNESIS** | **FUNCTIONAL** | shaders GLSL próprios, shadow PCF, instancing, culling, 4 point lights, chuva em GL_POINTS; GL mock (Node) + demo browser |
@@ -57,7 +57,6 @@
 | ExternalLLMProvider (OpenAI-compatível, generate/stream) | **FUNCTIONAL\*** | *\*validado contra fetch mock; contra API real requer `OPENAI_API_KEY` — nunca commitado* |
 | PuterProvider (browser, access-layer) | **FUNCTIONAL\*** | *\*detectado/validado via globalRef injetado; requer browser com Puter* |
 | Persistence (save/load, checksum, versão, migração, File/Memory) | **FUNCTIONAL** | corrupção falha alto; A==B após restore+ticks |
-| Áudio playback no browser (WebAudio graph em tempo real) | **PLANNED** | síntese+mix+encodeWav FUNCTIONAL; falta destino de playback |
 | Física avançada (ragdoll, juntas, rotação completa de corpos) | **PARTIAL** | solver de translação/impactos/sleep nativo; juntas/rotação livre PLANNED |
 | LOD geométrico real (malhas por nível, não só resolução de amostragem) | **PARTIAL** | anéis de residência 24/16/8 FUNCTIONAL; malhas alternativas PLANNED |
 | Busca web real (provider HTTP para research) | **PLANNED** | interface SearchProvider pronta (mock funcional) |
@@ -71,18 +70,19 @@
 2. Física nativa resolve translação + impactos + sleep; corpos rígidos com
    rotação livre, juntas e ragdoll são PLANNED.
 3. Terreno estático por (chunk,res) — deformação ao vivo ainda não existe.
-4. Áudio sai como WAV sintetizado (arquivo/amostras); playback contínuo no
-   browser (WebAudio) é PLANNED.
+4. Áudio no Node sai como WAV/pacer (sem device de som nativo sem deps);
+   playback ao vivo é no browser (WebAudioDevice). Spatialização estéreo
+   simples (ganho+pan); HRTF/convolução PLANNED.
 5. `world.set_weather` etc. mudam clima via cadeia causal; a máquina orgânica
    é estocástica por RNG — testes que exigem clima fixo rigam o RNG.
 6. Benchmarks dependem do host; sementes e contagens são determinísticas.
 7. Streams SSE do provider externo são mínimos (delta de texto).
 
-## Próximas fronteiras (ordem técnica)
+## Próximas fronteiras (ordem técnica — UMA por vez, terminada antes da seguinte)
 
-1. WebAudio em tempo real consumindo o AudioDirector (playback D-11).
-2. LOD geométrico real: malhas por anel + impostores distantes.
-3. Streaming assíncrono (workers) + cache LRU persistido no UTS-DB.
-4. Autosave incremental de deltas (event sourcing via RRW → UTS-DB).
-5. Rotação completa de corpos + juntas na PhysicsWorld.
-6. LLM real no loop (chave via env) com structured output validado pelo Core.
+1. LOD geométrico real: malhas por anel (alta/média/baixa) + impostores distantes.
+2. Autosave incremental de deltas (event sourcing via RRW → UTS-DB) + streaming
+   assíncrono de chunks com cache LRU persistido.
+3. Rotação completa de corpos + juntas na PhysicsWorld.
+4. LLM real no loop (chave via env) com structured output validado pelo Core.
+5. Spatialização avançada (HRTF/convolução própria) sobre o AudioStream.

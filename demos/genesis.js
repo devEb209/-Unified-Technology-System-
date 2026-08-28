@@ -3,7 +3,7 @@
 // RHI/culling/shadows/instancing/materials/lighting/streaming/physics/audio
 // (WAV rendered by OUR synth) / UTS-DB persistence / comm — all UTS-native.
 
-import { createUTS, createPlatform, AudioDirector, encodeWav, UTSDB, MemoryJournal } from '../src/index.js';
+import { createUTS, createPlatform, AudioDirector, encodeWav, MemoryDevice, UTSDB, MemoryJournal } from '../src/index.js';
 import { NullRenderer, TextRenderer } from '../src/index.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -62,6 +62,20 @@ await writeFile('demos/out/genesis.wav', wav);
 console.log(`[audio] ${rendered.voices} vozes @${rendered.sr}Hz -> demos/out/genesis.wav (${(wav.length / 1024).toFixed(0)}KB)`);
 const peak = Math.max(...rendered.left.slice(0, 2000).map(Math.abs));
 console.log('[audio] energia presente:', peak > 0.001 ? 'sim' : 'NÃO (falha!)');
+
+// ---- OUR live audio stream: continuous timeline -> device (real-time path)
+const liveDev = new MemoryDevice().open({ sr: uts.do15.strategy.audioSr });
+audio.openStream({ seed: 'uts-genesis' });
+let seamJump = 0, prevLast = null;
+for (let i = 0; i < 20; i++) { // 2.0s contínuos em chunks de 0.1s
+  const chunk = audio.pumpStream(frame, { seconds: 0.1, device: liveDev });
+  if (prevLast != null) seamJump = Math.max(seamJump, Math.abs(chunk.left[0] - prevLast));
+  prevLast = chunk.left[chunk.left.length - 1];
+}
+const live = liveDev.concat();
+const liveWav = encodeWav(live);
+await writeFile('demos/out/genesis-live.wav', liveWav);
+console.log(`[audio-stream] 20 chunks contínuos -> demos/out/genesis-live.wav (${(liveWav.length / 1024).toFixed(0)}KB) · pior emenda |Δ|=${seamJump.toFixed(4)} (clique se >0.1) · vozes=${audio.stream.stats.voices}`);
 
 // ---- D-O15 adaptation visible
 for (let i = 0; i < 6; i++) engine.do15.report({ frameMs: 30, simMs: 30, tick: engine.world.clock.tick });

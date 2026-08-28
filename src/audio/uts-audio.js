@@ -10,6 +10,7 @@
 import { renderOsc, renderNoise, applyDecay, applyShape, lowpass, place } from './synth.js';
 import { spatialize } from './spatial.js';
 import { Mixer } from './mixer.js';
+import { AudioStream } from './stream.js';
 
 const SR_BY_RESOLUTION = { full: 22050, reduced: 16000, coarse: 11025 };
 
@@ -47,6 +48,35 @@ export class AudioDirector {
   cricket({ sr, seed }) {
     const raw = renderOsc({ freq: 4300, dur: 0.05, gain: 0.35, sr, type: 'sine', seed });
     return applyShape(raw, { attack: 0.004, release: 0.02, sr });
+  }
+
+  /** open the continuous real-time stream (presentation layer, like the
+   *  renderer: pumped by the presentation loop, outside the tick pipeline) */
+  openStream({ seed = 'uts-audio' } = {}) {
+    this.stream = new AudioStream({ sr: this._sr(), seed });
+    this.stream.setSynth(this);
+    this.stats.streamPumps = 0;
+    return this.stream;
+  }
+
+  /** advance the stream by `seconds` of audio for `frame`; optionally push
+   *  straight into one of OUR devices (memory/pacer/webaudio). D-O15 governs
+   *  sample rate (strategy.audioSr) and the voice cap (strategy.audioVoices). */
+  pumpStream(frame, { seconds = 0.1, device = null } = {}) {
+    const strategy = this.do15?.strategy;
+    const stream = this.stream ?? this.openStream();
+    stream.setRate(strategy?.audioSr ?? this._sr());
+    const listener = { pos: frame.camera.pos, yaw: frame.camera.yaw };
+    const chunk = stream.pump(frame, {
+      seconds,
+      listener,
+      voiceCap: strategy?.audioVoices ?? 8,
+      ambienceGain: strategy?.perceptionResolution ?? 'full',
+    });
+    if (device) device.write(chunk);
+    this.stats.streamPumps++;
+    this.tese?.touch('D-11', `stream pump ${chunk.voices} voices @${chunk.sr}Hz t=${chunk.to.toFixed(1)}s`, frame.tick);
+    return chunk;
   }
 
   /**

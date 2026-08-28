@@ -44,6 +44,7 @@
 </div>
 
 <div class="panel" id="controls">
+  <button id="w-audio">🔊 áudio</button>
   <button id="w-clear">limpar</button>
   <button id="w-rain">chuva</button>
   <button id="w-storm">tempestade</button>
@@ -63,7 +64,7 @@
 </div>
 
 <script type="module">
-  import { createUTS, WebGL2Renderer, TextRenderer } from '../../src/index.js';
+  import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
 
   const canvas = document.getElementById('gl');
   const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } });
@@ -154,6 +155,39 @@
     el.scrollTop = el.scrollHeight;
   }
 
+
+  // ---- OUR live audio (D-11): AudioStream -> WebAudioDevice (the only
+  // external inevitability: the browser's audio hardware). Toggle on user
+  // gesture; the stream pumps 0.1s of continuous audio per 0.1s of wall time.
+  let audioOn = false, audioAccum = 0, lastAudioNow = 0;
+  let audioDirector = null, audioDevice = null, lastPumpedFrame = null;
+  $('w-audio').addEventListener('click', () => {
+    if (!audioOn) {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      audioDevice = new WebAudioDevice(ctx).open();
+      audioDirector = new AudioDirector({ tese, do15 });
+      audioDirector.openStream({ seed: 'uts-web' });
+      ctx.resume?.();
+      audioOn = true; lastAudioNow = performance.now();
+      $('w-audio').textContent = '🔇 áudio';
+    } else {
+      audioDevice.close();
+      audioOn = false;
+      $('w-audio').textContent = '🔊 áudio';
+    }
+  });
+  function pumpAudio(now, frame) {
+    lastPumpedFrame = frame;
+    if (!audioOn) return;
+    audioAccum += Math.min(0.25, (now - lastAudioNow) / 1000);
+    lastAudioNow = now;
+    while (audioAccum >= 0.1) {
+      audioAccum -= 0.1;
+      try { audioDirector.pumpStream(lastPumpedFrame, { seconds: 0.1, device: audioDevice }); }
+      catch { /* device hiccup: audio is presentation, never fatal */ }
+    }
+  }
+
   // ---- main loop: UES tick -> Frame -> WebGL2
   let last = performance.now(), fps = 60, frameCount = 0;
   function loop(now) {
@@ -164,6 +198,7 @@
 
     const frame = ues.renderFrame();
     const { drawCalls } = renderer.render(frame);
+    pumpAudio(now, frame);
 
     if (++frameCount % 10 === 0) {
       fps = Math.round(1000 / Math.max(0.1, now - (loop._t ?? now)) * 10);
