@@ -55,6 +55,7 @@ export { WebGL2Renderer } from './render/webgl2.js';
 export { RendererError } from './render/rhi.js';
 export * as Persistence from './persistence/snapshot.js';
 export { MemoryStorage, FileStorage } from './persistence/storage.js';
+export { AutosaveManager, AutosaveError, createAutosave } from './persistence/autosave.js';
 
 // UTS PLATFORM (UTS = platform · UES = engine inside the platform)
 export { UTSPlatform, createPlatform, MemorySearchProvider } from './platform/platform.js';

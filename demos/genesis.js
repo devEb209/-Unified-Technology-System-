@@ -3,7 +3,7 @@
 // RHI/culling/shadows/instancing/materials/lighting/streaming/physics/audio
 // (WAV rendered by OUR synth) / UTS-DB persistence / comm — all UTS-native.
 
-import { createUTS, createPlatform, AudioDirector, encodeWav, MemoryDevice, UTSDB, MemoryJournal } from '../src/index.js';
+import { createUTS, createPlatform, AudioDirector, encodeWav, MemoryDevice, createAutosave, UTSDB, MemoryJournal } from '../src/index.js';
 import { NullRenderer, TextRenderer } from '../src/index.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -92,5 +92,18 @@ console.log('[uts-db]', JSON.stringify(db.report()));
 
 // ---- the frame survives tese audit: every D with observable effect
 const withoutEffect = uts.tese.list().map(l => l.id).filter(id => !uts.tese.effect(id));
+// ---- OUR autosave: checkpoints comprimidos no UTS-DB + crash recovery real
+const adb = new UTSDB({ journal: new MemoryJournal() });
+await adb.open();
+const autosave = createAutosave(uts, adb, { everyTicks: 150 });
+const saved = await autosave.save();
+uts.ues.run(60);
+const saved2 = await autosave.save();
+// crash simulado: o journal registra a corrupção do checkpoint MAIS NOVO
+const rec = adb.get('checkpoints', `cp:${saved2.tick}`);
+await adb.put('checkpoints', `cp:${saved2.tick}`, { ...rec, data: rec.data.slice(0, 30) + '####' + rec.data.slice(34) });
+const rec2 = await autosave.recover();
+console.log(`[autosave] checkpoints @${saved.tick}+@${saved2.tick} (${(saved.bytes / 1024).toFixed(0)}KB, ${saved.ratio.toFixed(1)}x gzip, ${saved.ms.toFixed(1)}ms) | crash no mais novo -> recuperado @${rec2.restoredTick} | pulados: ${rec2.skipped.map(x => x.tick).join(',') || 'nenhum'}`);
+
 console.log('[tese] camadas sem efeito observado nesta cena:', withoutEffect.length ? withoutEffect.join(',') : '(nenhuma)');
 console.log('\n=== GÊNESIS COMPLETO: a realidade representada é a única verdade ===\n');

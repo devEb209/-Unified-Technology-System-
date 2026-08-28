@@ -57,6 +57,7 @@
 | ExternalLLMProvider (OpenAI-compatível, generate/stream) | **FUNCTIONAL\*** | *\*validado contra fetch mock; contra API real requer `OPENAI_API_KEY` — nunca commitado* |
 | PuterProvider (browser, access-layer) | **FUNCTIONAL\*** | *\*detectado/validado via globalRef injetado; requer browser com Puter* |
 | Persistence (save/load, checksum, versão, migração, File/Memory) | **FUNCTIONAL** | corrupção falha alto; A==B após restore+ticks |
+| **Autosave/checkpoint journaling** (gzip no UTS-DB, retenção, crash recovery) | **FUNCTIONAL** | 9.9× compressão medida; checkpoint mais novo corrompido → recupera o anterior COM razão; zero válido = erro alto; save nunca bloqueia tick (host-side); A==B após recover+ticks |
 | Física avançada (ragdoll, juntas, rotação completa de corpos) | **PARTIAL** | solver de translação/impactos/sleep nativo; juntas/rotação livre PLANNED |
 | Busca web real (provider HTTP para research) | **PLANNED** | interface SearchProvider pronta (mock funcional) |
 | LLM externo real no loop | **FUNCTIONAL\*** | *\*ExternalLLMProvider validado contra fetch mock; API real via env, nunca commitada* |
@@ -64,23 +65,26 @@
 
 ## Limitações reais (honestidade)
 
-1. LOD de terreno combina anéis de amostragem (24/16/8) + skirts +
+1. Checkpoints de autosave são estados completos comprimidos (RRW é a fonte
+   da verdade; gzip+retenção tornam o custo incremental). Streams de delta
+   por-entidade (cauda de eventos RRW) são PLANNED — não simulados.
+2. LOD de terreno combina anéis de amostragem (24/16/8) + skirts +
    impostores; transição impostor→malha é um pop discreto (fade PLANNED).
-2. Física nativa resolve translação + impactos + sleep; corpos rígidos com
+3. Física nativa resolve translação + impactos + sleep; corpos rígidos com
    rotação livre, juntas e ragdoll são PLANNED.
-3. Terreno estático por (chunk,res) — deformação ao vivo ainda não existe.
-4. Áudio no Node sai como WAV/pacer (sem device de som nativo sem deps);
+4. Terreno estático por (chunk,res) — deformação ao vivo ainda não existe.
+5. Áudio no Node sai como WAV/pacer (sem device de som nativo sem deps);
    playback ao vivo é no browser (WebAudioDevice). Spatialização estéreo
    simples (ganho+pan); HRTF/convolução PLANNED.
-5. `world.set_weather` etc. mudam clima via cadeia causal; a máquina orgânica
+6. `world.set_weather` etc. mudam clima via cadeia causal; a máquina orgânica
    é estocástica por RNG — testes que exigem clima fixo rigam o RNG.
-6. Benchmarks dependem do host; sementes e contagens são determinísticas.
-7. Streams SSE do provider externo são mínimos (delta de texto).
+7. Benchmarks dependem do host; sementes e contagens são determinísticas.
+8. Streams SSE do provider externo são mínimos (delta de texto).
 
 ## Próximas fronteiras (ordem técnica — UMA por vez, terminada antes da seguinte)
 
-1. Autosave incremental de deltas (event sourcing via RRW → UTS-DB) + streaming
-   assíncrono de chunks com cache LRU persistido.
+1. Streaming assíncrono de chunks (workers) + cache LRU de terreno persistido
+   no UTS-DB; depois, deltas por-entidade via cauda de eventos RRW.
 2. Rotação completa de corpos + juntas na PhysicsWorld.
 3. LLM real no loop (chave via env) com structured output validado pelo Core.
 4. Spatialização avançada (HRTF/convolução própria) sobre o AudioStream.

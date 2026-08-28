@@ -45,7 +45,7 @@ Em paralelo, o fluxo cognitivo:
 ## Quick start
 
 ```bash
-npm test              # 178/178 testes determinísticos
+npm test              # 185/185 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
@@ -94,7 +94,7 @@ src/audio/          synth/spatial/mixer + AudioStream contínuo + devices (playb
 src/ues/            scheduler, frame, orquestrador
 src/singularity/    Core, providers, modelos, agentes, tools, memória
 src/render/         RHI, culling, materiais, iluminação, shaders, WebGL2 GÊNESIS, Null/Text
-src/persistence/    storage (Memory/File) + snapshots versionados + UTS-DB (journal/tx)
+src/persistence/    storage + snapshots + UTS-DB (journal/tx) + autosave (gzip/recovery)
 src/core/comm.js    Comm (rotas/timeouts/pub-sub entre módulos)
 test/               160 testes (node:test, zero deps)
 bench/              percepção (brute vs grid) + frame
