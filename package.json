@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "UTS — Unified Technology System: computational representation of reality. RRW + Tese dos D + D-O15 + Singularity AI + UES.",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node --test",
     "bench": "node bench/perception.bench.js && node bench/frame.bench.js",
@@ -11,7 +13,8 @@
     "bench:frame": "node bench/frame.bench.js",
     "demo": "node demos/web/server.js",
     "demo:cli": "node demos/cli.js",
-    "demo:platform": "node demos/platform.js"
+    "demo:platform": "node demos/platform.js",
+    "start": "node demos/web/server.js"
   },
   "license": "MIT",
   "private": true

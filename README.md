@@ -42,6 +42,25 @@ RendererBackend → Null | Text | **WebGL2 → GPU**
 Em paralelo, o fluxo cognitivo:
 `entidades → índice espacial → percepção → NMN → decisão → ação → evento → causalidade → evolução`.
 
+
+## Rodar em qualquer lugar (incl. Android/Termux)
+
+O demo não tem dependências: só precisa de Node ≥ 22.
+
+```bash
+# Termux (Android):
+pkg install -y git nodejs
+git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git
+cd -Unified-Technology-System-
+npm start            # ou: node demos/web/server.js
+```
+
+Abra `http://localhost:8080` no navegador (no próprio celular).
+> A linha `UTS demo server: http://0.0.0.0:8080 ...` que o servidor imprime
+> é SAÍDA, não comando — não cole ela no terminal.
+
+Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch>`, `npm start`).
+
 ## Quick start
 
 ```bash
