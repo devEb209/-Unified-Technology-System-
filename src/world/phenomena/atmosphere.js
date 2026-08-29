@@ -35,7 +35,8 @@ export class Atmosphere {
 
   /** air responds to represented weather (evaporative humidity, dust load) */
   step(dt, env) {
-    const targetH = clamp01(0.3 + env.rain * 0.7 - env.dust * 0.2);
+    // evapotranspiração: a floresta (bioHumidity) alimenta a umidade do ar
+    const targetH = clamp01(0.3 + env.rain * 0.7 + (env.bioHumidity ?? 0) * 0.45 - env.dust * 0.2);
     const targetD = clamp01(env.dust + (env.weather === 'storm' ? 0.15 : 0));
     const k = 1 - Math.exp(-dt / 6); // air has inertia (~6s to follow weather)
     // the SAME wind that bends trees and spreads fire ADVECTS the cloud field

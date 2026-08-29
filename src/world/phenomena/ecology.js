@@ -109,6 +109,19 @@ export class Ecology {
    *   rain     — instant water
    *   combustion — fire hurts/kills trees near burning cells
    */
+  /** cobertura de dossel perto de (x,z): a floresta madura TRANSPIRA
+   *  (evapotranspiração real — a mata alimenta a umidade do ar) */
+  canopyNear(x, z, r = 100) {
+    let n = 0, sum = 0;
+    const r2 = r * r;
+    for (const tree of this.trees.values()) {
+      if (tree.state === 'dead') continue;
+      const dx = tree.pos[0] - x, dz = tree.pos[2] - z;
+      if (dx * dx + dz * dz <= r2) { n += 1; sum += tree.maturity; }
+    }
+    return n === 0 ? 0 : Math.min(1, (sum / n) * Math.min(1, n / 40)); // densidade × maturidade
+  }
+
   step(dt, { sunEl = 1, soilWet = 0.4, combustion = null, siltAt = null } = {}) {
     const w = this.world;
     let grown = 0;

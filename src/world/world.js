@@ -247,6 +247,9 @@ export class World {
     const sunEl = this.clock.sunElevation;
     env.sunEl = sunEl; // the air knows where the sun is (fog build/burn)
     this.climate.step(dt, { wind: env.wind });
+    // BIOLOGIA → ATMOSFERA: a floresta madura transpira (evapotranspiração)
+    const focus = this.ues?.camera?.pos ?? [512, 0, 512];
+    env.bioHumidity = this.ecology.canopyNear(focus[0], focus[2], 100);
     this.atmosphere.step(dt, env);
     // rain that LANDS flows (shallow water) around the focus
     if (env.rain > 0.02) {

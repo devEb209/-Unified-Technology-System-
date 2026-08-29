@@ -16,13 +16,15 @@ const idTint = () => [1, 1, 1];
  * exactly these): bands (cel/posterize levels, 0 = off), sat, contrast,
  * rim (silhouette cel-light, 0 = off), tint.
  */
-function P({ bands = 0, sat = 1, contrast = 1, rim = 0, tint = idTint() }) {
+function P({ bands = 0, sat = 1, contrast = 1, rim = 0, tint = idTint(), vignette = 0, grain = 0 }) {
   return Object.freeze({
     bands: Math.max(0, Number(bands) || 0),
     sat: clampN(sat, 0, 2.5),
     contrast: clampN(contrast, 0.2, 3),
     rim: clampN(rim, 0, 1.5),
     tint: [clampN(tint[0], 0, 2), clampN(tint[1], 0, 2), clampN(tint[2], 0, 2)],
+    vignette: clampN(vignette, 0, 1), // vinheta NATURAL cos⁴ (óptica da lente)
+    grain: clampN(grain, 0, 0.6),     // grão do SENSOR (ruído de fóton)
   });
 }
 
@@ -36,7 +38,7 @@ function clampN(v, lo, hi) {
 export const STYLES = Object.freeze({
   realista: P({ bands: 0, sat: 1, contrast: 1, rim: 0 }),
   anime: P({ bands: 4, sat: 1.35, contrast: 1.12, rim: 0.55, tint: [1.02, 1.0, 1.04] }),
-  noir: P({ bands: 0, sat: 0, contrast: 1.35, rim: 0.18, tint: [0.98, 1.0, 1.05] }),
+  noir: P({ bands: 0, sat: 0, contrast: 1.35, rim: 0.18, tint: [0.98, 1.0, 1.05], vignette: 0.35, grain: 0.16 }),
   pastel: P({ bands: 0, sat: 0.78, contrast: 0.92, rim: 0.1, tint: [1.05, 1.02, 1.0] }),
   cyberpunk: P({ bands: 0, sat: 1.4, contrast: 1.2, rim: 0.4, tint: [0.92, 1.0, 1.18] }),
   carvao: P({ bands: 3, sat: 0, contrast: 1.5, rim: 0.25, tint: [1, 1, 1] }),

@@ -340,6 +340,47 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R16 — ÍCONES AUTORAIS + A AUTORIDADE DO ESTADO (zero emoji; 90.74 → 91.38)
+
+**ÍCONES SVG PRÓPRIOS (render/icons.js):** 25 ícones autorais (olho,
+escalas, pasta, terminal, caixa, gamepad, paleta, link, check, cruz,
+proibido, alerta, som, mudo, terra, alvorada, ilha, fogo, templo, play,
+varinha, radar, gota, pincel, engrenagem) — 24×24, stroke currentColor,
+UMA fonte de verdade: o demo injeta o sprite e referencia com <use>;
+TESTE garante: nenhum codepoint gráfico (emoji) sobrevive no HTML e
+todo <use href="#i-x"> existe na biblioteca. Ícone inventado = erro
+honesto.
+
+**ACOMODAÇÃO MATERIALIZADA (DOF real):** o FBO da cena ganhou textura
+de DEPTH; o post lineariza near/far, lê a distância por pixel, foca no
+CENTRO (onde o olho acomoda) e borra pelo círculo de confusão
+∝ pupila/7 — a óptica do olho agora AGE na imagem com a geometria real.
+Device sem FBO: sem post, resto desenha normal (honesto).
+
+**A LENTE DO ESTILO ganhou óptica física:** vinheta NATURAL (cos⁴ do
+ângulo de campo — queda real de irradiância) e grão de SENSOR (ruído de
+fóton, σ ∝ 1/√sinal — menos luz, mais grão). Noir os carrega por
+padrão; qualquer estilo criado aceita. Via POST + uniforms.
+
+**O AGENTE GRÁFICO (agent/shader-smith.js):** forja óptica da biblioteca
+VERIFICADA — cada efeito tem modelo físico + GLSL + espelho JS gerados
+das MESMAS constantes; o espelho é amostrado numericamente (autoteste)
+antes de entregar; desconhecido/fora de faixa = erro honesto. Aplica na
+lente viva. Tool `agent.shader`.
+
+**SYNC AUTORITATIVO (net/sync.js):** o mundo do servidor é a ÚNICA
+verdade; deltas cruzam o fio com seq. Regras honestas: seq exata →
+aplica; replay/antigo → IGNORADO (idempotente); GAP → ERRO (o cliente
+pede snapshot completo, nunca adivinha). Teste: cliente converge byte a
+byte; replay não volta estado. Tool `net.sync` emite o delta.
+
+**BIOLOGIA→ATMOSFERA:** `ecology.canopyNear` (densidade × maturidade no
+raio) → evapotranspiração soma na umidade alvo do ar (fator 0.45) → a
+névoa da madrugada nasce ANTES na mata. Gêmeos: mesma chuva, só o
+dossel difere — umidade e névoa maiores na floresta (medido).
+
+**Testes:** r16-svg-and-authority.test.js — 7 testes (335 no total).
+
 ## R15 — O GÊNESIS CRIA LITERALMENTE TUDO + A UTS CONSEGUE TUDO (89.86 → 90.74)
 
 **O CRIADOR (agent/creator.js):** uma frase vira um JOGO COMPLETO E

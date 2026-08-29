@@ -185,11 +185,16 @@ export class WebGL2Renderer {
       const tex = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, GL.RGBA, this.canvas?.width ?? 1280, this.canvas?.height ?? 720, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+      // DEPTH da cena: a acomodação (DOF) lê a distância real por pixel
+      const dtex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, dtex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, GL.DEPTH_COMPONENT24, this.canvas?.width ?? 1280, this.canvas?.height ?? 720, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
       const fbo = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
       gl.framebufferTexture2D(gl.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, gl.TEXTURE_2D, dtex, 0);
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      this.sceneFbo = { tex, fbo, w: this.canvas?.width ?? 1280, h: this.canvas?.height ?? 720 };
+      this.sceneFbo = { tex, dtex, fbo, w: this.canvas?.width ?? 1280, h: this.canvas?.height ?? 720 };
     }
 
     this.terrainBuffers = new Map(); // key -> {handle, meta.gl, count}
@@ -353,6 +358,8 @@ export class WebGL2Renderer {
       if (this.sceneFbo.w !== w || this.sceneFbo.h !== h) {
         gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.tex);
         gl.texImage2D(gl.TEXTURE_2D, 0, GL.RGBA, w, h, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+        gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.dtex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, GL.DEPTH_COMPONENT24, w, h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
         this.sceneFbo.w = w; this.sceneFbo.h = h;
       }
       gl.bindFramebuffer(gl.FRAMEBUFFER, this.sceneFbo.fbo);
@@ -805,6 +812,14 @@ export class WebGL2Renderer {
       gl.uniform1f(post.u.uGlareE, frame.vision?.glare ?? 0);
       gl.uniform1f(post.u.uCAFrac, frame.vision?.caFrac ?? 0);
       gl.uniform2f(post.u.uTexel, 1 / w, 1 / h);
+      // ACOMODAÇÃO + LENTE: depth real, pupila do olho, vinheta cos⁴ e grão do estilo
+      if (post.u.uDepth) { if (gl.activeTexture) gl.activeTexture(gl.TEXTURE1 ?? (GL.TEXTURE0 + 1)); gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.dtex); gl.uniform1i(post.u.uDepth, 1); if (gl.activeTexture) gl.activeTexture(gl.TEXTURE0 ?? GL.TEXTURE0); }
+      gl.uniform1f(post.u.uPupil, frame.vision?.pupilMM ?? 5);
+      gl.uniform1f(post.u.uNear, 0.5);
+      gl.uniform1f(post.u.uFar, cam.far ?? 600);
+      gl.uniform1f(post.u.uVignette, frame.style?.vignette ?? 0);
+      gl.uniform1f(post.u.uGrain, frame.style?.grain ?? 0);
+      gl.uniform1f(post.u.uTime, frame.tick ?? 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.enable(gl.DEPTH_TEST);
       drawCalls++;

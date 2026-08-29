@@ -13,6 +13,8 @@ import { dubScript, LANGS } from '../media/dub.js';
 import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
+import { composeOptics, EFFECTS } from '../agent/shader-smith.js';
+import { DeltaStream } from '../net/sync.js';
 import { SCALES, scaleFor, ladder } from '../world/scales.js';
 import { PROFILES, applyProfile, detectProfile } from '../ues/devices.js';
 
@@ -120,6 +122,29 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
         build: TARGETS ? Object.keys(TARGETS) : null,
         media: { models: '2d/2.5d/3d/3.5d/4d', textures: 3, dubLangs: Object.keys(LANGS).length },
       };
+    },
+  });
+  tools.register('agent.shader', {
+    desc: 'o AGENTE GRÁFICO forja óptica real da biblioteca verificada (vinheta cos⁴, grão de sensor): devolve params + GLSL + autoteste do espelho e aplica na lente viva',
+    schema: { effects: { type: 'array' }, grain: { type: 'number' }, vignette: { type: 'number' } },
+    fn: async (p) => {
+      const amount = {};
+      if (p.vignette !== undefined) amount.vinheta = p.vignette;
+      if (p.grain !== undefined) amount.grao = p.grain;
+      const r = composeOptics({ effects: p.effects, amount });
+      if (world.style?.params) {
+        // aplica na LENTE viva (o estilo atual herda a óptica forjada)
+        world.style.params = { ...world.style.params, ...r.params };
+      }
+      return r;
+    },
+  });
+  tools.register('net.sync', {
+    desc: 'delta AUTORITATIVO do estado do mundo (seq + estado) para o transporte — gap/replay são erros honestos, nunca divergência silenciosa',
+    schema: {},
+    fn: async () => {
+      const stream = (world._sync ??= new DeltaStream());
+      return { wire: stream.encode({ tick: world.clock.tick, weather: world.environment.weather ?? null, style: world.style?.name ?? 'realista', erosionMoved: +(world.erosion?.stats.eroded ?? 0).toFixed(4) }), lastSeq: stream.lastSeq };
     },
   });
   tools.register('world.style', {

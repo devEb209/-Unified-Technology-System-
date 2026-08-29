@@ -481,10 +481,16 @@ precision highp float;
 in vec2 vUV;
 out vec4 fragColor;
 uniform sampler2D uScene;
+uniform sampler2D uDepth; // profundidade da cena (acomodação lê AQUI)
 uniform float uFovRad;  // fov vertical (rad) — o px vira ÂNGULO real
 uniform float uGlareE;  // energia do halo (PSF do olho, do frame)
 uniform float uCAFrac;  // aberração cromática lateral por radiano
 uniform vec2 uTexel;    // 1/resolução
+uniform float uPupil;   // pupila agora (mm) — abertura real
+uniform float uNear; uniform float uFar;
+uniform float uVignette; // vinheta natural cos⁴ (óptica da lente)
+uniform float uGrain;    // grão do sensor (ruído de fóton ∝ 1/√sinal)
+uniform float uTime;     // semente do grão (o sensor é vivo)
 const float ACUITY_ECC = 0.0384; // 2.2° em radianos (fóvea)
 void main(){
   vec2 c = vUV - 0.5;
@@ -510,5 +516,26 @@ void main(){
     max(texture(uScene, vUV + vec2(uTexel.x, -uTexel.y) * 5.0).rgb - 0.7, 0.0) +
     max(texture(uScene, vUV + vec2(-uTexel.x, uTexel.y) * 5.0).rgb - 0.7, 0.0));
   col += uGlareE * bright * 2.0;
+  // ACOMODAÇÃO (DOF REAL): o depth da cena diz a distância; o foco é onde
+  // o olho acomodou (centro); o círculo de confusão cresce com a abertura
+  float dz = texture(uDepth, vUV).r;
+  float z = (uNear * uFar) / (uFar - dz * (uFar - uNear)); // lineariza
+  float fz = (uNear * uFar) / (uFar - texture(uDepth, vec2(0.5)).r * (uFar - uNear));
+  float coc = (uPupil / 7.0) * min(1.0, abs(z - fz) / max(z, fz));
+  if (coc > 0.01) {
+    vec2 o2 = coc * 6.0 * uTexel;
+    vec3 blur2 = 0.25 * (
+      texture(uScene, vUV + vec2(o2.x, o2.y)).rgb +
+      texture(uScene, vUV + vec2(-o2.x, o2.y)).rgb +
+      texture(uScene, vUV + vec2(o2.x, -o2.y)).rgb +
+      texture(uScene, vUV - o2).rgb);
+    col = mix(col, blur2, clamp(coc * 1.6, 0.0, 0.85));
+  }
+  // VINHETA NATURAL: cos⁴ do ângulo — a própria óptica da lente (não um filtro)
+  float cosA = 1.0 / sqrt(1.0 + dot(c, c) * 4.0 * (uFovRad * uFovRad));
+  col *= mix(1.0, pow(cosA, 4.0), uVignette);
+  // GRÃO DO SENSOR: ruído de fóton — menos sinal, MAIS grão (real)
+  float n = fract(sin(dot(vUV * (1.0 + fract(uTime)), vec2(12.9898, 78.233))) * 43758.5453);
+  col += uGrain * (n - 0.5) / sqrt(max(dot(col, vec3(0.299, 0.587, 0.114)), 0.02) + 0.05) * 0.35;
   fragColor = vec4(col, 1.0);
 }`;

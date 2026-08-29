@@ -33,9 +33,12 @@
   #tour b { color: #8fd0ff; }
   #tour .step { color: #7d8db3; font-size: 11px; }
   #tour button { margin-left: 8px; }
+.ic{width:1em;height:1em;vertical-align:-0.12em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{display:inline-flex;align-items:center;gap:5px}
 </style>
 </head>
 <body>
+<div id="icon-sprite"></div>
 <canvas id="gl"></canvas>
 
 <div class="panel" id="hud">
@@ -73,7 +76,7 @@
 </div>
 
 <div class="panel" id="style-panel" style="margin-top:8px">
-  <b>🎨 Estilo (você fala, o mundo obedece — a física é UMA, a lente muda)</b>
+  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-palette"/></svg> Estilo (você fala, o mundo obedece — a física é UMA, a lente muda)</b>
   <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
     <button id="style-realista">Realista</button>
     <button id="style-anime">Anime</button>
@@ -90,11 +93,11 @@
   <div id="style-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap"></div>
 </div>
 <div class="panel" id="agent-panel" style="margin-top:8px">
-  <b>🤖 IA no seu aparelho</b>
+  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-terminal"/></svg> IA no seu aparelho</b>
   <div style="display:grid;gap:4px;margin-top:6px">
-    <button id="fs-demo">📝 criar arquivo no workspace</button>
-    <button id="exec-demo">⚙️ executar comando (precisa UTS_ALLOW_EXEC)</button>
-    <button id="build-demo">📦 gerar app web (.zip baixa)</button>
+    <button id="fs-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-folder"/></svg> criar arquivo no workspace</button>
+    <button id="exec-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg> executar comando (precisa UTS_ALLOW_EXEC)</button>
+    <button id="build-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-box"/></svg> gerar app web (.zip baixa)</button>
     <div style="display:flex;gap:4px">
       <select id="create-genre" style="flex:1">
         <option value="corrida">corrida</option>
@@ -103,23 +106,23 @@
         <option value="torre">torre</option>
         <option value="sobrevivencia">sobrevivência</option>
       </select>
-      <button id="create-demo">🎮 CRIAR JOGO completo (zip)</button>
+      <button id="create-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gamepad"/></svg> CRIAR JOGO completo (zip)</button>
     </div>
-    <div id="ws-live" style="font-size:10px;opacity:.7">🔗 transporte: conectando…</div>
+    <div style="font-size:10px;opacity:.7;display:flex;align-items:center;gap:4px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-link"/></svg><span id="ws-live">transporte: conectando…</span></div>
   </div>
   <div id="agent-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:auto"></div>
 </div>
 <div class="panel" id="gallery" style="margin-top:8px">
-  <b>🌍 Galeria de mundos</b>
+  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-earth"/></svg> Galeria de mundos</b>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">
-    <button data-world="vale">🌅 Vale do Alvorecer</button>
-    <button data-world="arquipelago">🏝️ Arquipélago</button>
-    <button data-world="incendio">🔥 Vale em Chamas</button>
-    <button data-world="cidade">🏛️ Cidade Viva</button>
+    <button data-world="vale"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dawn"/></svg> Vale do Alvorecer</button>
+    <button data-world="arquipelago"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-island"/></svg> Arquipélago</button>
+    <button data-world="incendio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fire"/></svg> Vale em Chamas</button>
+    <button data-world="cidade"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-temple"/></svg> Cidade Viva</button>
   </div>
 </div>
 <div class="panel" id="controls">
-  <button id="w-audio">🔊 áudio</button>
+  <button id="w-audio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-speaker"/></svg><span>áudio</span></button>
   <button id="w-clear">limpar</button>
   <button id="w-rain">chuva</button>
   <button id="w-storm">tempestade</button>
@@ -176,6 +179,8 @@
 
   // ---- painel de ESTILO: presets + estilos CRIADOS na hora (sem limites)
   import { styleParams } from '../../src/render/style.js';
+  import { spriteSheet } from '../../src/render/icons.js';
+  document.getElementById('icon-sprite').innerHTML = spriteSheet(); // ícones PRÓPRIOS (zero emoji)
   const styleOut = $('style-out');
   const sayStyle = (t) => { if (styleOut) styleOut.textContent = t; };
   const applyStyle = async (name, params) => {
@@ -183,8 +188,8 @@
       const r = styleParams(name, params);
       uts.world.style = { name: r.name, params: r.params }; // o FRAME leva ao shader
       await fetch('/api/style', { method: 'POST', body: JSON.stringify({ style: r.name, params }) });
-      sayStyle(`🎨 ${r.name}${r.preset ? '' : ' (estilo NOVO criado por você)'} — bandas:${r.params.bands} sat:${r.params.sat} contraste:${r.params.contrast} rim:${r.params.rim}`);
-    } catch (e) { sayStyle(`⛔ ${e.message}`); }
+      sayStyle(`${r.name}${r.preset ? '' : ' (estilo NOVO criado por você)'} — bandas:${r.params.bands} sat:${r.params.sat} contraste:${r.params.contrast} rim:${r.params.rim}`);
+    } catch (e) { sayStyle(`ERRO: ${e.message}`); }
   };
   if ($('style-realista')) $('style-realista').onclick = () => applyStyle('realista');
   if ($('style-anime')) $('style-anime').onclick = () => applyStyle('anime');
@@ -195,7 +200,7 @@
   if ($('style-apply')) $('style-apply').onclick = () => {
     let params = {};
     const raw = $('style-custom-json').value.trim();
-    if (raw) { try { params = JSON.parse(raw); } catch { sayStyle('⛔ JSON de parâmetros inválido'); return; } }
+    if (raw) { try { params = JSON.parse(raw); } catch { sayStyle('ERRO: JSON de parâmetros inválido'); return; } }
     applyStyle($('style-custom-name').value.trim() || 'meu estilo', params);
   };
 
@@ -206,48 +211,48 @@
     const r = await fetch('/api/fs', { method: 'POST', body: JSON.stringify({ op: 'write', path: 'genesis/ola.txt', data: `criado pelo GENESIS em ${new Date().toISOString()}\nmundo: ${uts.seed}\n` }) });
     const j = await r.json();
     const chk = await (await fetch('/api/fs', { method: 'POST', body: JSON.stringify({ op: 'read', path: 'genesis/ola.txt' }) })).json();
-    say(j.error ? `❌ ${j.error}` : `✅ arquivo criado e relido: ${JSON.stringify(chk.content).slice(0, 80)}…`);
+    say(j.error ? `ERRO: ${j.error}` : `arquivo criado e relido: ${JSON.stringify(chk.content).slice(0, 80)}…`);
   };
   if ($('exec-demo')) $('exec-demo').onclick = async () => {
     const r = await fetch('/api/exec', { method: 'POST', body: JSON.stringify({ cmd: 'echo GENESIS no seu aparelho' }) });
     const j = await r.json();
-    say(j.ok ? `✅ saída: ${j.out?.trim()}` : `⛔ honesto: ${j.error ?? 'execução desabilitada (UTS_ALLOW_EXEC=1 liga)'}`);
+    say(j.ok ? `saída: ${j.out?.trim()}` : `BLOQUEADO (honesto): ${j.error ?? 'execução desabilitada (UTS_ALLOW_EXEC=1 liga)'}`);
   };
   if ($('create-demo')) $('create-demo').onclick = async () => {
     const genre = $('create-genre').value;
     say(`… criando jogo de ${genre} do NADA`);
     const r = await fetch('/api/create', { method: 'POST', body: JSON.stringify({ genre, name: `Meu ${genre}` }) });
-    if (!r.ok) { say(`❌ ${(await r.json()).error ?? 'falhou'}`); return; }
+    if (!r.ok) { say(`ERRO: ${(await r.json()).error ?? 'falhou'}`); return; }
     const blob = await r.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `meu-${genre}.zip`;
     a.click();
-    say(`✅ JOGO COMPLETO de ${genre} criado do nada (.zip baixado) — abre o index.html e joga`);
+    say(`JOGO COMPLETO de ${genre} criado do nada (.zip baixado) — abre o index.html e joga`);
   };
   // TRANSPORTE REAL: o pulse do GENESIS chega por WebSocket (RFC 6455)
   try {
     const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
-    ws.onopen = () => { const el = $('ws-live'); if (el) el.textContent = '🔗 transporte: VIVO (WebSocket)'; };
+    ws.onopen = () => { const el = $('ws-live'); if (el) el.textContent = 'transporte: VIVO (WebSocket)'; };
     ws.onmessage = (ev) => {
       try {
         const j = JSON.parse(ev.data);
         const el = $('ws-live');
-        if (el && j.type === 'genesis.pulse') el.textContent = `🔗 vivo via WS · clientes:${j.clients} · estilo:${j.style} · pulses:${j.sent}`;
+        if (el && j.type === 'genesis.pulse') el.textContent = `vivo via WS · clientes:${j.clients} · estilo:${j.style} · pulses:${j.sent}`;
       } catch {}
     };
-    ws.onerror = () => { const el = $('ws-live'); if (el) el.textContent = '🔗 transporte: direto (sem WS neste host)'; };
+    ws.onerror = () => { const el = $('ws-live'); if (el) el.textContent = 'transporte: direto (sem WS neste host)'; };
   } catch {}
   if ($('build-demo')) $('build-demo').onclick = async () => {
     say('… gerando app web');
     const r = await fetch('/api/build', { method: 'POST', body: JSON.stringify({ name: 'MeuJogo', target: 'web', title: 'Meu Jogo (Genesis)' }) });
-    if (!r.ok) { say('❌ falha no build'); return; }
+    if (!r.ok) { say('ERRO: falha no build'); return; }
     const blob = await r.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'MeuJogo.zip';
     a.click();
-    say('✅ app web gerado (.zip baixado) — projeto real, roda com npm start');
+    say('app web gerado (.zip baixado) — projeto real, roda com npm start');
   };
 
   // ---- [phenomena] ADR-019: the world is born WITH its reality systems.
@@ -255,11 +260,11 @@
   // fire = combustion over fuel; vegetation = a living population. The world
   // already seeds its genesis forest in the constructor (world._seedGenesisForest).
   const phen = world;
-  logLine(`[phenomena] atmosfera ✓ · hidrologia ✓ · combustão ✓ · ecologia ✓ (${phen.ecology.aliveCount()} árvores vivas no gênesis)`);
+  logLine(`[phenomena] atmosfera OK · hidrologia OK · combustão OK · ecologia OK (${phen.ecology.aliveCount()} árvores vivas no gênesis)`);
 
   // ---- bootstrap a reality through the Singularity Core (same path as tests)
   const report = await core.processObjective('criar uma pequena vila próxima a um rio chamada Vila Aurora');
-  logLine(`objetivo executado: intent=${report.interpretation.intent} provider=${report.chosen.provider} ok=${report.ok} ${report.ok ? '✓' : '✗'}`);
+  logLine(`objetivo executado: intent=${report.interpretation.intent} provider=${report.chosen.provider} ok=${report.ok} ${report.ok ? 'OK' : 'FALHOU'}`);
 
   // ---- GPU backend: real WebGL2 (this IS the Frame -> GPU chain)
   let gl;
@@ -339,7 +344,7 @@
     e.preventDefault();
     const objective = $('objective').value.trim();
     if (!objective) return;
-    logLine(`▶ objetivo: ${objective}`);
+    logLine(`> objetivo: ${objective}`);
     try {
       // STREAMING real: primeiro o que foi ENTENDIDO chega em partes,
       // depois a execução completa (mesmas garantias do pipeline)
@@ -350,7 +355,7 @@
       });
       logLine(`  interpretação: ${r.interpretation.intent} ${JSON.stringify(r.interpretation.params)} (${r.chosen.provider}/${r.chosen.model})`);
       for (const v of r.verifications) logLine(`  verificação ${v.check}: ${v.ok ? 'OK' : 'FAIL'}`, !v.ok);
-      logLine(`  resultado: ${r.ok ? '✓ verificado' : '✗ falhou'}`, !r.ok);
+      logLine(`  resultado: ${r.ok ? 'OK: verificado' : 'FALHOU'}`, !r.ok);
     } catch (err) {
       logLine(`  erro: ${err.message}`, true);
     }
@@ -381,11 +386,11 @@
         else attachments.push({ kind: 'text', name: 'nomes.txt', content: attRaw });
       }
       const r = await core.processObjective(txt, { attachments });
-      const steps = (r?.executed ?? []).map(x => '  • ' + (x.tool ?? x.kind) + (x.error ? ' ✗ ' + String(x.error).slice(0, 40) : ' ✓')).join('\n');
+      const steps = (r?.executed ?? []).map(x => '  • ' + (x.tool ?? x.kind) + (x.error ? ' FALHOU: ' + String(x.error).slice(0, 40) : ' OK')).join('\n');
       const cmds = r?.interpretation?.commands?.length;
       log.textContent += `  [${r?.intent ?? '?'} · ${r?.chosen?.provider ?? '?'}/${r?.chosen?.model ?? '?'}${cmds > 1 ? ` · ${cmds} comandos (gramática)` : ''}]\n`
         + (steps ? steps + '\n' : '')
-        + `  = ${r?.ok ? 'REALIDADE CRIADA ✓' : 'falhou (ver logs)'}${r?.corrections?.length ? ' · correções: ' + r.corrections.length : ''}\n`;
+        + `  = ${r?.ok ? 'REALIDADE CRIADA' : 'falhou (ver logs)'}${r?.corrections?.length ? ' · correções: ' + r.corrections.length : ''}\n`;
       log.scrollTop = log.scrollHeight;
     } catch (err) {
       log.textContent += '  erro: ' + (err.message ?? err) + '\n';
@@ -407,11 +412,11 @@
       audioDirector.openStream({ seed: 'uts-web' });
       ctx.resume?.();
       audioOn = true; lastAudioNow = performance.now();
-      $('w-audio').textContent = '🔇 áudio';
+      $('w-audio span').textContent = 'mudo';
     } else {
       audioDevice.close();
       audioOn = false;
-      $('w-audio').textContent = '🔊 áudio';
+      $('w-audio span').textContent = 'áudio';
     }
   });
   function pumpAudio(now, frame) {
