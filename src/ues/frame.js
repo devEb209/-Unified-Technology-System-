@@ -129,6 +129,9 @@ export function extractFrame(ues, perf = null) {
       : null,
     // surface water around the camera (the film IS the data; renderers read it)
     water: world.hydrology ? world.hydrology.sample(cam.pos[0], cam.pos[2]) : null,
+    // SCALE (R3): the world does not end at the render bubble.
+    waterFilm: world.hydrology ? world.hydrology.filmNear(cam.pos, 220, 120) : null,
+    horizon: buildHorizon(world, cam, radius),
     environment: { ...world.environment },
     stats: {
       patches: patches.length,
@@ -154,4 +157,47 @@ export function extractFrame(ues, perf = null) {
 
 function frame_lights_stats(world) {
   return world.lightingStatsCache ?? { candidates: 0, active: 0 };
+}
+
+/**
+ * HORIZON (R3 — escala materializada): what is FAR is still REAL and still
+ * shown — re-represented, never discarded (D-O15). Far fires become horizon
+ * glow driven by the combustion field; far settlements become causal-state
+ * markers sized by population. Identity (id) travels with every marker.
+ */
+function buildHorizon(world, cam, radius) {
+  const out = [];
+  const horizonRadius = 1400;
+  // ---- far fire glow (beyond the light-contribution radius 160)
+  if (world.combustion) {
+    const fires = world.combustion.burningNear(cam.pos[0], cam.pos[2], 700);
+    for (const f of fires) {
+      if (f.dist <= 170) continue;
+      out.push({
+        kind: 'fire', id: `fire:${f.pos[0].toFixed(0)},${f.pos[2].toFixed(0)}`,
+        pos: [f.pos[0], (world.terrain.height(f.pos[0], f.pos[2]) ?? 0) + 6, f.pos[2]],
+        size: 26 + f.intensity * 40, alpha: 0.22 + f.intensity * 0.4,
+        color: [1.0, 0.42, 0.1], intensity: f.intensity,
+      });
+    }
+  }
+  // ---- far settlements: causal state (pop/store) as a marker, never a texture
+  const rrw = world.rrw;
+  for (const id of rrw.query({ kind: 'settlement', materialization: 'abstract' })) {
+    const sp = rrw.getComponent(id, 'spatial');
+    const st = rrw.getComponent(id, 'settlement');
+    if (!sp || !st) continue;
+    const d = Math.hypot(sp.pos[0] - cam.pos[0], sp.pos[2] - cam.pos[2]);
+    if (d <= radius * 2.5 || d > horizonRadius) continue; // near ones are aggregates
+    const prom = Math.sqrt(st.pop ?? 10);
+    out.push({
+      kind: 'settlement', id,
+      pos: [sp.pos[0], (world.terrain.height(sp.pos[0], sp.pos[2]) ?? 0) + 10, sp.pos[2]],
+      size: 18 + prom * 2.2, alpha: Math.min(0.7, 0.18 + prom * 0.05),
+      color: [0.92, 0.85, 0.66], pop: st.pop ?? 0,
+    });
+  }
+  // D-O15 budget: brightest/most prominent first
+  out.sort((a, b) => (b.intensity ?? 0) * 2 + ((b.pop ?? 10) ** 0.5) - ((a.intensity ?? 0) * 2 + ((a.pop ?? 10) ** 0.5)));
+  return out.slice(0, 24);
 }

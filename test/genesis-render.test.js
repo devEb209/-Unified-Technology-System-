@@ -110,7 +110,8 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
     createProgram: () => { const p = { id: programs.length }; programs.push(p); return p; },
     attachShader: () => {}, linkProgram: () => {}, getProgramParameter: () => true, deleteProgram: () => {},
     getUniformLocation: (p, n) => { const k = p.id + ':' + n; if (!uniforms.has(k)) uniforms.set(k, { name: n }); return uniforms.get(k); },
-    getAttribLocation: (p, n) => ({ aPos: 0, aNorm: 1, aBiome: 2, aSeed: 0, aInst0: 3, aInst1: 4, aInst2: 5 })[n] ?? -1,
+    getAttribLocation: (p, n) => ({ aPos: 0, aNorm: 1, aBiome: 2, aSeed: 0, aInst0: 3, aInst1: 4, aInst2: 5, aHH: 1, aSC: 1, aAlpha: 2 })[n] ?? -1,
+    uniform2f: (loc, ...v) => {},
     createBuffer: () => ({ id: ++bufN }), bindBuffer: () => {}, bufferData: () => {}, deleteBuffer: b => buffers.delete(b),
     enable: () => {}, disable: () => {}, depthFunc: () => {}, depthMask: () => {}, blendFunc: () => {},
     clearColor: () => {}, clear: () => {}, viewport: () => {}, useProgram: () => {},
@@ -138,7 +139,7 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
   assert.equal(r.caps.instanced, true, 'mock device advertises instancing');
   assert.equal(r.caps.fbo, true);
   assert.ok(r.shadow, 'shadow target created on FBO-capable device');
-  assert.equal(programs.length, 7, 'sky+terrain+entity+points+shadow+water+vegetation programs');
+  assert.equal(programs.length, 8, 'sky+terrain+entity+points+shadow+water+vegetation+horizon programs');
 
   const frame = uts.ues.renderFrame();
   assert.ok(frame.lights.points.length >= 1, 'frame carries OUR point lights');
@@ -173,7 +174,8 @@ test('webgl2: honest fallbacks — no FBO disables shadows; no instancing degrad
     createProgram: () => ({}), attachShader: () => {}, linkProgram: () => {}, getProgramParameter: () => true,
     deleteProgram: () => {},
     getUniformLocation: () => ({ u: 1 }),
-    getAttribLocation: (p, n) => ({ aPos: 0, aNorm: 1, aBiome: 2, aSeed: 0, aInst0: 3, aInst1: 4, aInst2: 5 })[n] ?? -1,
+    getAttribLocation: (p, n) => ({ aPos: 0, aNorm: 1, aBiome: 2, aSeed: 0, aInst0: 3, aInst1: 4, aInst2: 5, aHH: 1, aSC: 1, aAlpha: 2 })[n] ?? -1,
+    uniform2f: (loc, ...v) => {},
     createBuffer: () => ({}), bindBuffer: () => {}, bufferData: () => {}, deleteBuffer: () => {},
     enable: () => {}, disable: () => {}, depthFunc: () => {}, depthMask: () => {}, blendFunc: () => {},
     clearColor: () => {}, clear: () => {}, viewport: () => {}, useProgram: () => {},

@@ -145,8 +145,9 @@ test('renderer: impostor buffers are tiny and keyed separately; stats count them
   const fades = (frame.terrain.patches.filter(p => p.lod === 'fade')).length;
   const water = frame.terrain.seaLevel != null ? 1 : 0;
   const veg = frame.vegetation && frame.vegetation.length > 0 ? 1 : 0; // ecology materialized its own pass
-  assert.equal(drawCalls, 1 + frame.terrain.patches.length + fades + water + veg + (frame.entities.length - r.stats.culled),
-    'sky + every patch + fade impostors + water + vegetation + visible entities');
+  const scale = (frame.waterFilm?.length ?? 0) + (frame.horizon?.length ?? 0) > 0 ? 1 : 0; // film+horizon share one pass
+  assert.equal(drawCalls, 1 + frame.terrain.patches.length + fades + water + veg + scale + (frame.entities.length - r.stats.culled),
+    'sky + every patch + fade impostors + water + vegetation + scale pass + visible entities');
   assert.ok(r.stats.waterDraws === water, 'water draw is counted');
   if (fades > 0) assert.ok(r.stats.fadePasses === fades, 'fade pass draws each fading impostor once');
   for (const p of frame.terrain.patches) {

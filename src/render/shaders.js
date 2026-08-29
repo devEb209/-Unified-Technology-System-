@@ -184,15 +184,17 @@ out vec4 fragColor;
 void main(){ if (vAlpha<0.5) discard; fragColor = vec4(uColor,0.55); }`;
 
 export const WATER_VS = `#version 300 es
-layout(location=0) in vec3 aPos; // xz world, y ignored (rebuilt as waves)
+layout(location=0) in vec3 aPos; // xz RELATIVE to uCenter, y ignored (rebuilt as waves)
 uniform mat4 uVP; uniform float uTime; uniform float uSeaLevel; uniform float uWind;
+uniform vec2 uCenter; // the sea FOLLOWS the camera (scale!); waves stay fixed IN THE WORLD
 out vec3 vPos; out float vWave;
 void main(){
-  float w = sin(aPos.x*0.11 + uTime*1.9)*0.5 + cos(aPos.z*0.13 - uTime*1.3)*0.35
-          + sin((aPos.x+aPos.z)*0.05 + uTime*0.7)*0.4;
+  vec2 xz = aPos.xz + uCenter;
+  float w = sin(xz.x*0.11 + uTime*1.9)*0.5 + cos(xz.y*0.13 - uTime*1.3)*0.35
+          + sin((xz.x+xz.y)*0.05 + uTime*0.7)*0.4;
   float amp = 0.22 + uWind*0.5;
   float y = uSeaLevel + w*amp;
-  vPos = vec3(aPos.x, y, aPos.z);
+  vPos = vec3(xz.x, y, xz.y);
   vWave = w;
   gl_Position = uVP*vec4(vPos,1.0);
 }`;
@@ -247,4 +249,32 @@ void main(){
   vec3 dry = vec3(0.45, 0.36, 0.18);
   vec3 col = mix(dry, healthy, clamp(vHealth, 0.0, 1.0));
   fragColor = vec4(col, 0.92);
+}`;
+
+// ---- HORIZON MARKERS + WATER FILM: D-O15 re-representation of SCALE.
+// Far fires = horizon glow (never dropped); far settlements = causal-state
+// markers; hydrology film = the puddle/flow cells materialized as points.
+export const HORIZON_VS = `#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec4 aSC; // size(world), r, g, b
+layout(location=2) in float aAlpha;
+uniform mat4 uVP; uniform float uPointScale; uniform float uTime;
+out float vAlpha; out vec3 vColor;
+void main(){
+  gl_Position = uVP * vec4(aPos, 1.0);
+  float w = max(gl_Position.w, 0.1);
+  gl_PointSize = clamp(uPointScale * aSC.x / w, 2.0, 90.0);
+  float flicker = 1.0 + 0.18 * sin(uTime * 11.0 + aPos.x * 3.1 + aPos.z * 2.3);
+  vColor = aSC.yzw * flicker;
+  vAlpha = aAlpha;
+}`;
+export const HORIZON_FS = `#version 300 es
+precision highp float;
+in float vAlpha; in vec3 vColor;
+out vec4 fragColor;
+void main(){
+  vec2 d = gl_PointCoord - 0.5;
+  float r = length(d) * 2.0;
+  float soft = clamp(1.0 - r, 0.0, 1.0);
+  fragColor = vec4(vColor, vAlpha * soft);
 }`;

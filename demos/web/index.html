@@ -40,6 +40,7 @@
   <div>percepção <b id="s-perc">full</b> · eventos causais <b id="s-ev">0</b></div>
   <div style="color:#7d8db3">— FENÔMENOS (estado real) —</div>
   <div>árvores <b id="s-trees">0</b> · fogo <b id="s-fire">0</b> células · solo úmido <b id="s-soil">0</b> · lâmina d'água <b id="s-film">0</b>m</div>
+  <div>ESCALA: poças <b id="s-puddles">0</b> · horizonte <b id="s-hor">0</b> (fogo longe brilha, vila longe é estado)</div>
   <div>céu (Rayleigh) topo <b id="s-sky" style="font-family:monospace">–</b> · umidade <b id="s-hum">0</b></div>
   <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
   <div class="bar"><i id="s-pressurebar"></i></div>
@@ -280,6 +281,8 @@
       $('s-fire').textContent = frame.stats.fireCells ?? 0;
       $('s-soil').textContent = (world.environment.wetness ?? 0).toFixed(2);
       $('s-film').textContent = (frame.water?.depth ?? 0).toFixed(3);
+      $('s-puddles').textContent = frame.waterFilm?.length ?? 0;
+      $('s-hor').textContent = frame.horizon?.length ?? 0;
       const st = world.atmosphere.state;
       $('s-hum').textContent = st.humidity.toFixed(2);
       const skyEl = $('s-sky');

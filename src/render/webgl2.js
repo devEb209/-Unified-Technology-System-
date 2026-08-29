@@ -10,7 +10,7 @@
 import {
   SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS,
   SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS,
-  VEGETATION_VS, VEGETATION_FS,
+  VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS,
 } from './shaders.js';
 import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh } from './mesh.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
@@ -121,6 +121,7 @@ export class WebGL2Renderer {
       points: this.programCache.get('points', POINTS_VS, POINTS_FS),
       water: this.programCache.get('water', WATER_VS, WATER_FS),
       vegetation: this.programCache.get('vegetation', VEGETATION_VS, VEGETATION_FS),
+      horizon: this.programCache.get('horizon', HORIZON_VS, HORIZON_FS),
     };
     if (this.caps.fbo) {
       this.programs.shadow = this.programCache.get('shadow', SHADOW_VS, SHADOW_FS);
@@ -241,6 +242,23 @@ export class WebGL2Renderer {
     if (prog.a.aHH != null && prog.a.aHH >= 0) {
       gl.enableVertexAttribArray(prog.a.aHH);
       gl.vertexAttribPointer(prog.a.aHH, 2, gl.FLOAT, false, stride, 12);
+    }
+  }
+
+  /** raw interleaved [pos3, size, r, g, b, alpha] binding for horizon/film points */
+  _bindHorizon(prog, handle) {
+    const gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, handle.meta.gl);
+    const stride = 8 * 4;
+    gl.enableVertexAttribArray(prog.a.aPos);
+    gl.vertexAttribPointer(prog.a.aPos, 3, gl.FLOAT, false, stride, 0);
+    if (prog.a.aSC != null && prog.a.aSC >= 0) {
+      gl.enableVertexAttribArray(prog.a.aSC);
+      gl.vertexAttribPointer(prog.a.aSC, 4, gl.FLOAT, false, stride, 12);
+    }
+    if (prog.a.aAlpha != null && prog.a.aAlpha >= 0) {
+      gl.enableVertexAttribArray(prog.a.aAlpha);
+      gl.vertexAttribPointer(prog.a.aAlpha, 1, gl.FLOAT, false, stride, 28);
     }
   }
 
@@ -474,6 +492,7 @@ export class WebGL2Renderer {
       const wat = this.programs.water;
       gl.useProgram(wat.prog);
       gl.uniformMatrix4fv(wat.u.uVP, false, vp);
+      gl.uniform2f(wat.u.uCenter, cam.pos[0], cam.pos[2]); // SCALE: sea follows, waves world-fixed
       gl.uniform1f(wat.u.uTime, (frame.time ?? 0) % 1000);
       gl.uniform1f(wat.u.uSeaLevel, seaLevel);
       gl.uniform1f(wat.u.uWind, frame.environment.wind ?? 0);
@@ -536,6 +555,37 @@ export class WebGL2Renderer {
       gl.disable(gl.BLEND);
       drawCalls++;
       this.stats.vegDraws = (this.stats.vegDraws ?? 0) + 1;
+    }
+
+    // ---- HYDROLOGY FILM + HORIZON MARKERS (scale materialized; shared program)
+    const film = frame.waterFilm ?? [];
+    const horizon = frame.horizon ?? [];
+    if (film.length + horizon.length > 0) {
+      const hor = this.programs.horizon;
+      gl.useProgram(hor.prog);
+      gl.uniformMatrix4fv(hor.u.uVP, false, vp);
+      gl.uniform1f(hor.u.uPointScale, (this.canvas?.height ?? 720) * 0.9);
+      gl.uniform1f(hor.u.uTime, frame.time ?? 0);
+      const data = new Float32Array((film.length + horizon.length) * 8);
+      let n = 0;
+      for (const f of film) {
+        const k = Math.min(1, f.depth * 30);
+        data.set([f.pos[0], f.pos[1], f.pos[2], 16 + k * 14, 0.32, 0.46, 0.6, 0.25 + k * 0.5], n * 8); n++;
+      }
+      for (const h of horizon) {
+        data.set([h.pos[0], h.pos[1], h.pos[2], h.size, h.color[0], h.color[1], h.color[2], h.alpha], n * 8); n++;
+      }
+      if (!this._horHandle) this._horHandle = this.createBuffer(data, { dynamic: true });
+      else { gl.bindBuffer(gl.ARRAY_BUFFER, this._horHandle.meta.gl); gl.bufferData(gl.ARRAY_BUFFER, data, GL.DYNAMIC_DRAW); }
+      this._bindHorizon(hor, this._horHandle);
+      gl.enable(gl.BLEND);
+      if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      gl.drawArrays(gl.POINTS, 0, n);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+      drawCalls++;
+      this.stats.horizonDraws = (this.stats.horizonDraws ?? 0) + 1;
     }
 
     this.stats.drawCalls += drawCalls;

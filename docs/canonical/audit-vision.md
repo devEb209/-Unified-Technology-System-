@@ -52,8 +52,8 @@
 - **Física**: mecânica sólida (impactos causais, rotação, juntas PBD), sem
   energia acumulada, deformação, materiais, fluidos.
 - **D-O15 em áudio/partículas**: corta CONTAGEM (voices, densidade) em vez
-  de RE-REPRESENTAR — **trovão longe → rumble grave JÁ RESOLVIDO no R2**;
-  falta fogo longe (brilho no horizonte) e partículas.
+  de RE-REPRESENTAR — **trovão longe → rumble grave RESOLVIDO no R2**;
+  **fogo longe → brilho no horizonte RESOLVIDO no R3**; falta partículas.
 - **Streaming**: cache LRU persistido existe mas é opcional; sem workers.
 
 ## C) Onde caiu em mentalidade de engine tradicional (confissão honesta)
@@ -183,3 +183,14 @@ O 89% media "sistemas implementados e testados". A régua nova mede
 
 A cada rodada: % recalculado nesta régua, com o que ENTROU e o que ainda
 falta — sem inflar nada.
+
+
+## F) R3 — ESCALA (fechada nesta rodada)
+
+- "Cidade distante = estado causal, nunca textura": CUMPRIDO —
+  `frame.horizon` materializa assentamentos distantes como marcadores que
+  CARREGAM o estado causal (pop, identidade RRW), com orçamento D-O15 e
+  sem dupla representação do que está perto.
+- "Água da hidrologia renderizada onde importa": CUMPRIDO —
+  `waterFilm` materializa as células com lâmina > 4mm perto da câmera.
+- "Mar infinito": o quad agora SEGUE a câmera com ondas fixas no mundo.

@@ -147,3 +147,22 @@ luzes), árvores como point-sprites (malha própria em rodada futura).
   causal. Fome agora tem céu.
 - Testes: 219/219 (9 novos: velocidade do som, sombra acústica, umidade,
   energia/materiais, amassado persistente, chegada tardia, comida-clima).
+
+
+## R3 — ESCALA (esta rodada)
+
+- **Mar segue a câmera**: `WATER_VS` recebe `uCenter` (XZ da câmera) — o
+  oceano existe em TODA parte (escala), mas as ondas continuam FIXAS NO
+  MUNDO (padrão não "nada" com a câmera). Limitação "quad fixado na
+  origem" DELETADA.
+- **Lâmina d'água materializada**: `hydrology.filmNear(cam, 220, 120)` —
+  as células com profundidade > 4mm são renderizadas (mais fundo primeiro),
+  tamanho/alpha ∝ profundidade. A água da chuva aparece no chão.
+- **Horizonte vivo** (`frame.horizon`, `buildHorizon`): fogo além de 170m =
+  BRILHO no horizonte (cintilação, intensidade do campo de combustão —
+  re-representação D-O15, nunca descarte); assentamento além da bolha =
+  marcador causal (população, identidade RRW preservada). Sem DUPLA
+  representação (perto = luz/agregado, nunca os dois); orçamento 24.
+- Renderer: 8º programa (`horizon`), pass único film+horizonte com blend.
+- Testes: 226/226 (7 novos: mar-segue, filme, brilho, marcador-causal,
+  sem-dupla, orçamento, determinismo com escala).

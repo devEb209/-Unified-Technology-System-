@@ -49,6 +49,7 @@ function makeGL({ failCompile = false } = {}) {
     useProgram: (p) => calls.push(['useProgram', p?.id]),
     uniformMatrix4fv: (loc, t, m) => calls.push(['uniformMatrix4fv', loc?.name]),
     uniform1i: (loc, v) => calls.push(['uniform1i', loc?.name, v]), // shadow sampler binding (Gênesis)
+    uniform2f: (loc, ...v) => calls.push(['uniform2f', loc?.name, v]),
     uniform3f: (loc, ...v) => calls.push(['uniform3f', loc?.name, v]),
     uniform1f: (loc, v) => calls.push(['uniform1f', loc?.name, v]),
     vertexAttribPointer: () => calls.push(['vertexAttribPointer']),

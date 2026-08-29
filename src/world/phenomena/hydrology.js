@@ -127,6 +127,26 @@ export class Hydrology {
     return { rainVolume, flowed, evaporated, pooled };
   }
 
+  /**
+   * D-O15 materialization of the FILM: puddles/flow cells near the camera,
+   * deepest first, budget-capped. The renderer draws THESE (the cells are
+   * the reality; the visual derives from them, never from a painted texture).
+   */
+  filmNear(camPos, radius = 220, cap = 120) {
+    const out = [];
+    const { terrain } = this.world;
+    for (const [k, c] of this.cells) {
+      if (c.depth < 0.004) continue;
+      const [cx, cz] = k.split(',').map(Number);
+      const wx = cx * this.cell + this.cell / 2, wz = cz * this.cell + this.cell / 2;
+      const d = Math.hypot(wx - camPos[0], wz - camPos[2]);
+      if (d > radius) continue;
+      out.push({ pos: [wx, terrain.height(wx, wz) + 0.06, wz], depth: c.depth });
+    }
+    out.sort((a, b) => b.depth - a.depth);
+    return out.slice(0, cap);
+  }
+
   /** the Frame's hydrology summary for the camera area (renderer/audio read this) */
   sample(x, z) {
     return {
