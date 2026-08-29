@@ -145,7 +145,7 @@ test('r8: integração mock-GL — 10 programas; árvores e fogo desenham; stats
   uts.ues.moveCamera([spot[0], 24, spot[1] - 37], 0, 0.02); // yaw 0 = +z; pitch 0.02 quase nivelado (a mira cai ~22 em 37)
   const r = new WebGL2Renderer(gl);
   r.init();
-  assert.equal(programs.length, 10, 'sky+terrain+entity+points+shadow+water+vegetation+horizon+tree+fire');
+  assert.equal(programs.length, 11, 'sky+terrain+entity+points+shadow+water+vegetation+horizon+tree+fire+post (a óptica do olho na tela)');
   const frame = uts.ues.renderFrame();
   const fireEnts = frame.entities.filter(e => e.fire);
   assert.ok(fireEnts.length >= 1, 'frame carrega anchors de fogo com intensity/fuel');

@@ -14,6 +14,7 @@ export class Erosion {
     this.kE = kE;                 // how hard flowing water bites
     this.geologyEvery = geologyEvery; // m³ of moved ground per geology event
     this.accum = 0;               // accumulated movement since last geology event
+    this.silt = new Map();        // sedimento depositado por célula → SOLO FÉRTIL
     this.events = [];             // the planet-scale record
     this.stats = { eroded: 0, deposited: 0, inMotion: 0 };
   }
@@ -74,10 +75,21 @@ export class Erosion {
     const k0 = deltaKey(x, z), k1 = deltaKey(bx, bz);
     terrain.deltas.set(k0, (terrain.deltas.get(k0) ?? 0) - take);
     terrain.deltas.set(k1, (terrain.deltas.get(k1) ?? 0) + take * 0.9);
+    this.silt.set(k1, (this.silt.get(k1) ?? 0) + take * 0.9); // o rio ADUBA
     this.stats.eroded += take;
     this.stats.deposited += take * 0.9;
     this.stats.inMotion += take * 0.1; // 10% stays suspended (settles later)
     this.accum += take;
+  }
+
+  /** fertilidade do solo em (x,z): sedimento dos vizinhos (3×3 células) */
+  siltAt(x, z) {
+    const kx = Math.round(x / CELL), kz = Math.round(z / CELL);
+    let v = 0;
+    for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) {
+      v += this.silt.get(`${kx + dx},${kz + dz}`) ?? 0;
+    }
+    return v;
   }
 
   /** total ground moved (m) — the honest number for the HUD/the chat */

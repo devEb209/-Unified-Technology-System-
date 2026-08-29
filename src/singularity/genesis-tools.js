@@ -12,6 +12,7 @@ import { Cutscene } from '../media/cutscene.js';
 import { dubScript, LANGS } from '../media/dub.js';
 import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
+import { createGame, GENRES } from '../agent/creator.js';
 import { SCALES, scaleFor, ladder } from '../world/scales.js';
 import { PROFILES, applyProfile, detectProfile } from '../ues/devices.js';
 
@@ -93,6 +94,32 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
       const eye = world._eye;
       if (!eye) return { ok: false, honest: 'nenhum frame renderizado ainda (o olho ainda não viu nada)' };
       return { ok: true, pupilMM: +eye.pupilMM.toFixed(2), suppress: +eye.suppress.toFixed(3), afterimage: eye.after.map((v) => +v.toFixed(3)), veil: +veilOf(eye.L).toFixed(4), L: +eye.L.toFixed(3) };
+    },
+  });
+  tools.register('genesis.create', {
+    desc: 'CRIA UM JOGO COMPLETO E JOGÁVEL de uma frase: gênero (corrida/plataforma/rpg/torre/sobrevivencia) + nome; nível, missões, assets e casca reais, determinístico, zip verificado',
+    schema: { genre: { type: 'string' }, name: { type: 'string' } },
+    fn: async (p) => {
+      const r = createGame({ genre: p.genre, name: p.name ?? 'JogoGenesis', brief: p.brief ?? {} });
+      return { ok: true, genre: r.genre, seed: r.seed, files: r.files, zip: r.artifact };
+    },
+  });
+  tools.register('genesis.status', {
+    desc: 'a plataforma se VÊ: estado honesto de TODOS os subsistemas (mundo, olho, estilo, escalas, erosão, agentes, rede, build)',
+    schema: {},
+    fn: async () => {
+      const eye = world._eye;
+      return {
+        ok: true,
+        world: { tick: world.clock.tick, weather: world.environment.weather ?? null, wetness: +(world.environment.wetness ?? 0).toFixed(3) },
+        eye: eye ? { pupilMM: +eye.pupilMM.toFixed(2), L: +eye.L.toFixed(3), suppress: +eye.suppress.toFixed(3) } : { honest: 'nenhum frame ainda' },
+        style: world.style?.name ?? 'realista',
+        scales: world.scales ? { levels: 15, tagged: world.scales.tags?.size ?? 0 } : null,
+        erosion: world.erosion ? { moved: +world.erosion.stats.eroded.toFixed(4), events: world.erosion.events.length, siltCells: world.erosion.silt.size } : null,
+        agents: { fsJournal: agentFS?.journal?.length ?? 0, execAllowed: agentProc?.allow === true },
+        build: TARGETS ? Object.keys(TARGETS) : null,
+        media: { models: '2d/2.5d/3d/3.5d/4d', textures: 3, dubLangs: Object.keys(LANGS).length },
+      };
     },
   });
   tools.register('world.style', {

@@ -139,7 +139,7 @@ test('webgl2: gênesis pipeline — instancing, shadows, culling, tracked resour
   assert.equal(r.caps.instanced, true, 'mock device advertises instancing');
   assert.equal(r.caps.fbo, true);
   assert.ok(r.shadow, 'shadow target created on FBO-capable device');
-  assert.equal(programs.length, 10, 'sky+terrain+entity+points+shadow+water+vegetation+horizon+tree+fire programs');
+  assert.equal(programs.length, 11, 'sky+terrain+entity+points+shadow+water+vegetation+horizon+tree+fire+post programs (o post é a óptica do OLHO na tela)');
 
   const frame = uts.ues.renderFrame();
   assert.ok(frame.lights.points.length >= 1, 'frame carries OUR point lights');

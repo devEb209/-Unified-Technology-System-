@@ -465,3 +465,50 @@ void main(){
   float a = fall*vA;
   fragColor = vec4(vCol*a, a); // emissive: energy, not shading
 }`;
+
+// ---- POST: the eye's optics MATERIALIZED. The scene is rendered to a
+// texture; this pass maps pixels to REAL eccentricity angles and applies
+// what the eye does to them: foveal sampling (periphery = blur), lateral
+// chromatic aberration growing with eccentricity, and the glare halo
+// (PSF energy) around bright sources.
+export const POST_VS = `#version 300 es
+layout(location=0) in vec2 aPos;
+out vec2 vUV;
+void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+export const POST_FS = `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+uniform sampler2D uScene;
+uniform float uFovRad;  // fov vertical (rad) — o px vira ÂNGULO real
+uniform float uGlareE;  // energia do halo (PSF do olho, do frame)
+uniform float uCAFrac;  // aberração cromática lateral por radiano
+uniform vec2 uTexel;    // 1/resolução
+const float ACUITY_ECC = 0.0384; // 2.2° em radianos (fóvea)
+void main(){
+  vec2 c = vUV - 0.5;
+  float ang = length(c) * uFovRad;                          // excentricidade real
+  float acu = 1.0 / (1.0 + pow(ang / ACUITY_ECC, 2.0));     // acuidade foveal
+  vec2 ca = c * (uCAFrac * ang);                            // CA cresce com a borda
+  vec3 col;
+  col.r = texture(uScene, vUV + ca).r;
+  col.g = texture(uScene, vUV).g;
+  col.b = texture(uScene, vUV - ca).b;
+  // PERIFERIA: resolução cai — a periferia do olho é borrão (e movimento)
+  vec2 o = (1.0 - acu) * 3.0 * uTexel;
+  vec3 blur = 0.25 * (
+    texture(uScene, vUV + vec2(o.x, o.y)).rgb +
+    texture(uScene, vUV + vec2(-o.x, o.y)).rgb +
+    texture(uScene, vUV + vec2(o.x, -o.y)).rgb +
+    texture(uScene, vUV - o).rgb);
+  col = mix(col, blur, clamp((1.0 - acu) * 0.7, 0.0, 0.8));
+  // HALO DO GLARE: a energia espalhada pela óptica em volta dos brilhos
+  vec3 bright = 0.25 * (
+    max(texture(uScene, vUV + uTexel * 5.0).rgb - 0.7, 0.0) +
+    max(texture(uScene, vUV - uTexel * 5.0).rgb - 0.7, 0.0) +
+    max(texture(uScene, vUV + vec2(uTexel.x, -uTexel.y) * 5.0).rgb - 0.7, 0.0) +
+    max(texture(uScene, vUV + vec2(-uTexel.x, uTexel.y) * 5.0).rgb - 0.7, 0.0));
+  col += uGlareE * bright * 2.0;
+  fragColor = vec4(col, 1.0);
+}`;

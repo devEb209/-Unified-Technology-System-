@@ -7,6 +7,8 @@ import { AgentFS } from '../../src/agent/fs-agent.js';
 import { ProcAgent } from '../../src/agent/proc-agent.js';
 import { build as buildApp } from '../../src/agent/build-system.js';
 import { styleParams } from '../../src/render/style.js';
+import { createGame, GENRES } from '../../src/agent/creator.js';
+import { WSHub } from '../../src/net/transport.js';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -92,6 +94,21 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // ---- /api/create: o GENESIS CRIA UM JOGO COMPLETO de uma frase
+    if (path === '/api/create' && req.method === 'POST') {
+      let body = '';
+      for await (const ch of req) body += ch;
+      try {
+        const { genre, name } = JSON.parse(body || '{}');
+        const r = createGame({ genre, name: name ?? 'MeuJogo' });
+        res.writeHead(200, { 'content-type': 'application/zip', 'content-disposition': `attachment; filename="${r.artifact.name}"` });
+        res.end(Buffer.from(r.artifact.data));
+      } catch (e) {
+        res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message, genres: GENRES }));
+      }
+      return;
+    }
+
     // ---- /api/build: apk/exe/web — web builda AGORA (zip real)
     if (path === '/api/build' && req.method === 'POST') {
       let body = '';
@@ -156,6 +173,13 @@ const server = createServer(async (req, res) => {
     res.writeHead(404, { 'content-type': 'text/plain' }).end(`not found: ${e.message}`);
   }
 });
+
+// TRANSPORTE REAL (RFC 6455): o mundo sai daqui por WebSocket
+const hub = new WSHub().attach(server);
+const startedAt = Date.now();
+setInterval(() => {
+  hub.broadcast({ type: 'genesis.pulse', clients: hub.sockets.size, style: styleState.name, uptimeSec: Math.round((Date.now() - startedAt) / 1000), sent: hub.sent });
+}, 2000).unref?.();
 
 server.listen(PORT, HOST, () => {
   console.log(`UTS demo server: http://${HOST}:${PORT} (root: ${ROOT})`);

@@ -132,7 +132,7 @@ test('r9: integração mock-GL — duas malhas, dois grupos, 10 programas', asyn
   uts.ues.moveCamera([520, 30, 540], 0.5, 0.1);
   const r = new WebGL2Renderer(gl);
   r.init();
-  assert.equal(programs.length, 10, 'nenhum programa novo (as malhas compartilham o pass tree)');
+  assert.equal(programs.length, 11, 'o POST é o único programa novo (a óptica do olho na tela)');
   const frame = uts.ues.renderFrame();
   frame.vegetation = [
     ...frame.vegetation,

@@ -109,7 +109,7 @@ export class Ecology {
    *   rain     — instant water
    *   combustion — fire hurts/kills trees near burning cells
    */
-  step(dt, { sunEl = 1, soilWet = 0.4, combustion = null } = {}) {
+  step(dt, { sunEl = 1, soilWet = 0.4, combustion = null, siltAt = null } = {}) {
     const w = this.world;
     let grown = 0;
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water
@@ -121,7 +121,9 @@ export class Ecology {
       tree.health = clamp01(tree.health - stress * 0.004 * dt + (soilWet > 0.3 ? 0.001 * dt : 0));
       if (tree.health <= 0.02) { this.kill(tree, 'drought'); continue; }
       if (tree.age < sp.mature) {
-        tree.age += dt;
+        // SILT: sedimente que o rio depositou ADUBA (a geologia alimenta a vida)
+        const boost = siltAt ? Math.min(0.8, (siltAt(tree.pos?.[0] ?? tree.x ?? 0, tree.pos?.[2] ?? tree.z ?? 0)) * 2) : 0;
+        tree.age += dt * (1 + boost);
         const prev = tree.maturity;
         tree.maturity = clamp01(tree.age / sp.mature);
         tree.biomass = 0.15 + 0.85 * tree.maturity;

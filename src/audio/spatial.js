@@ -24,6 +24,21 @@ export function spatialize({ emitterPos, listener, refDist = 12, rolloff = 1.2, 
 // spectral cues) — documented, not faked. Pure math, zero deps.
 
 const MAX_ITD_SEC = 0.00065;
+// The MEASURED head: Woodworth spherical model, r=8.75cm (média adulta),
+// c=343 m/s. ITD(θ) = (r/c)(θ + sinθ) — frontal 0, lateral ~0.656ms.
+export const HEAD_R_M = 0.0875;
+export const SOUND_C_MS = 343;
+
+/** interaural time difference by lateral angle (lateral -1..1 = -90°..+90°) */
+export function headITDSec(lateral) {
+  const theta = (Math.abs(Number(lateral) || 0) * Math.PI) / 2;
+  return (HEAD_R_M / SOUND_C_MS) * (theta + Math.sin(theta));
+}
+
+/** pinna spectral notch frequency by elevation (the concha's filter) */
+export function pinnaNotchHz(elev) {
+  return 7000 + 3500 * Math.max(-1, Math.min(1, elev)); // sobe com a elevação
+}
 const SHADOW_LP = 750;     // Hz, contralateral head-shadow filter
 const SHADOW_GAIN = 0.42;  // how quiet the shadowed ear gets
 
@@ -78,9 +93,9 @@ export function renderBinaural(samples, { emitterPos, listener, sr = 22050, refD
   const sp = spatialize({ emitterPos, listener, refDist, maxDist });
   if (!sp.audible) return { left: new Float32Array(samples.length), right: new Float32Array(samples.length), gain: 0, audible: false };
   const lateral = sp.pan; // -1 hard left … +1 hard right
-  // ITD: the NEAR ear hears instantly; the FAR ear is delayed by up to 0.65ms
-  const delayL = MAX_ITD_SEC * Math.max(0, lateral);  // source right → LEFT ear delayed
-  const delayR = MAX_ITD_SEC * Math.max(0, -lateral); // source left → RIGHT ear delayed
+  // ITD: Woodworth pela cabeça REAL — frontal 0, lateral ~0.656ms, curva (θ+sinθ)
+  const delayL = lateral > 0 ? headITDSec(lateral) : 0;  // source right → LEFT ear delayed
+  const delayR = lateral < 0 ? headITDSec(lateral) : 0;  // source left → RIGHT ear delayed
   let left = fracDelay(samples, delayL * sr);
   let right = fracDelay(samples, delayR * sr);
   // ILD: the shadowed (far) ear is quieter AND darker

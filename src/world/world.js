@@ -290,6 +290,8 @@ export class World {
       this.ecology.step(dt, {
         sunEl, soilWet: env.wetness,
         combustion: this.combustionStepEnabled === false ? null : this.combustion,
+        // GEOLOGIA ALIMENTA A VIDA: sedimento erosionado aduba o crescimento
+        siltAt: (x, z) => this.erosion.siltAt(x, z),
       });
     }
     this.reallife.updateFires(dt); // materialize fire anchors FROM the field

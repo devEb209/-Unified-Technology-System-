@@ -140,6 +140,7 @@ export class VisionDynamics {
       after: this.after,
       cff: cff(st.rod),
       acuityCenter: acuity(0),
+      caFrac: VISION_CONST.CA_PER_DEG * 57.29578, // fração por radiano (o post usa)
     };
   }
 }
@@ -147,5 +148,5 @@ export class VisionDynamics {
 /** everything the renderer needs, from the world's REAL light (stateless) */
 export function eyeState({ ambient = 1, flash = 0, exposure = 1 }) {
   const L = Math.max(0.01, ambient + flash * 2.5) * exposure;
-  return { L, rod: rodMix(L), tint: purkinjeTint(L), glare: glare(L), contrast: contrastFrac(L) };
+  return { L, rod: rodMix(L), tint: purkinjeTint(L), glare: glare(L), contrast: contrastFrac(L), caFrac: VISION_CONST.CA_PER_DEG * 57.29578 };
 }

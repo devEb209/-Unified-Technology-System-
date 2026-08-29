@@ -340,6 +340,58 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R15 — O GÊNESIS CRIA LITERALMENTE TUDO + A UTS CONSEGUE TUDO (89.86 → 90.74)
+
+**O CRIADOR (agent/creator.js):** uma frase vira um JOGO COMPLETO E
+JOGÁVEL. `createGame({genre, name, brief})` — 5 gêneros REAIS:
+- **corrida**: pista procedural de 40 segmentos com curvas semeadas,
+  voltas, aderência;
+- **plataforma**: 24 plataformas com física real (gravidade 1500, salto
+  560) e moedas;
+- **rpg**: mapa com bioma semeado + 6 missões com recompensas;
+- **torre**: caminho senoidal + 10 ondas escalando hp/velocidade + 2
+  torres com custo/dps;
+- **sobrevivência**: mundo com árvores/pedras, ciclo dia/noite, fome,
+  inimigos noturnos, receitas de crafte.
+Determinístico (mesma frase = MESMO jogo — testado), shell auto-contido
+(canvas 2D, zero deps — roda num A01), assets gerados (textura + clipe
+de andar), zip verificado LENDO de volta. Gênero desconhecido = erro
+que ensina ("sei criar: … — me diga as REGRAS que eu crio o seu").
+Tool `genesis.create` + `/api/create` (baixa o .zip) + botão 🎮 no demo.
+
+**TRANSPORTE REAL (net/transport.js):** WebSocket RFC 6455 zero-dep —
+accept key idêntico ao exemplo do PRÓPRIO RFC (`s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`),
+frames do cliente MASCARADOS (máscara bit a bit), lengths 7/16/64 bits,
+ping→pong, close honesto. `WSHub.attach(server)` mantém os sockets
+vivos e transmite o MESMO mundo para todos. Pulse a cada 2s no demo
+(clientes, estilo, uptime) — o indicador 🔗 no painel é O transport
+funcionando, não um enfeite.
+
+**A ÓPTICA DO OLHO MATERIALIZADA (POST pass):** a cena vai para uma
+textura e o post mostra o que o OLHO faz com ela: px→ÂNGULO real
+(excentricidade = comprimento·fov), acuidade foveal 1/(1+(ang/2.2°)²)
+periferia = borrão; aberração cromática lateral desloca R/B ∝ ângulo;
+halo do glare em volta dos brilhos (PSF, energia do frame). Device sem
+FBO? Sem post — honesto (o resto desenha normal).
+
+**A GEOLOGIA ALIMENTA A VIDA (acoplado):** o sedimento que a erosão
+deposita fica mapeado por célula (`silt`), `siltAt(x,z)` soma 3×3 e o
+`ecology.step` recebe o adubo: crescimento ×(1+boost até 0.8). A MESMA
+chuva que esculpe o chão alimenta a mata — cadeia causal única.
+
+**A CABEÇA REAL (áudio):** ITD de Woodworth com a cabeça média (r=8.75cm,
+c=343): ITD(θ)=(r/c)(θ+sinθ) — frontal 0ms, lateral 0.656ms, curva
+contínua (o máximo antigo era o ponto final da curva — agora a curva
+INTEIRA). Notch da concha por elevação. Honesto: modelo paramétrico,
+não medidas — a base de dados medida segue na fila.
+
+**A PLATAFORMA SE VÊ:** tool `genesis.status` — estado HONESTO de todos
+os subsistemas (mundo, olho com pupila, estilo, escalas, erosão+silt,
+agentes fs/exec, targets de build, mídia/dublagem).
+
+**Testes:** r15-genesis-creates-all.test.js — 8 testes (328 no total),
+incluindo handshake RFC com socket CRU e criação dos 5 gêneros.
+
 ## R14 — O OLHO COMPLETO + ESTILOS SEM LIMITE (o órgão com estado + a lente que obedece ao usuário; 89.08 → 89.86)
 
 **O OLHO COMPLETO (render/vision.js):** "capturar TUDO que o olho humano

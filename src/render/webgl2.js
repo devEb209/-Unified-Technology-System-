@@ -7,7 +7,7 @@
 //   GPU resource (tracked, sized, freed). Honest fallbacks: no-FBO or
 //   no-instanced devices degrade gracefully, never fake.
 
-import {SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS, SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS, VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS, TREE_VS, TREE_FS, FIRE_VS, FIRE_FS} from './shaders.js';
+import {SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS, SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS, VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS, TREE_VS, TREE_FS, FIRE_VS, FIRE_FS, POST_VS, POST_FS} from './shaders.js';
 import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh, treeMesh } from './mesh.js';
 import { emitFrame as emitFireParticles } from './fire.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
@@ -21,6 +21,7 @@ const GL = {
   POINTS: 14, FLOAT: 15, BLEND: 16, SRC_ALPHA: 17, ONE_MINUS_SRC_ALPHA: 18,
   TEXTURE_2D: 19, DEPTH_COMPONENT24: 20, DEPTH_ATTACHMENT: 21, FRAMEBUFFER: 22,
   FRAMEBUFFER_COMPLETE: 23, TEXTURE_MIN_FILTER: 24, NEAREST: 25,
+  RGBA: 26, UNSIGNED_BYTE: 27, COLOR_ATTACHMENT0: 28, TEXTURE0: 29,
 };
 
 export class WebGL2Renderer {
@@ -115,6 +116,7 @@ export class WebGL2Renderer {
     this.caps = this.caps();
 
     this.programs = {
+      post: this.caps.fbo ? this.programCache.get('post', POST_VS, POST_FS) : null, // a óptica do OLHO na tela
       sky: this.programCache.get('sky', SKY_VS, SKY_FS),
       terrain: this.programCache.get('terrain', TERRAIN_VS, TERRAIN_FS),
       entity: this.programCache.get('entity', ENTITY_INST_VS, ENTITY_FS),
@@ -175,6 +177,19 @@ export class WebGL2Renderer {
       const complete = gl.checkFramebufferStatus ? gl.checkFramebufferStatus(gl.FRAMEBUFFER) === (gl.FRAMEBUFFER_COMPLETE ?? GL.FRAMEBUFFER_COMPLETE) : false;
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
       this.shadow = complete ? { tex, fbo } : null;
+    }
+    // THE EYE ON SCREEN: a cena vai para uma textura; o POST materializa
+    // fóvea, aberração cromática e o halo do glare (o que o olho faz)
+    this.sceneFbo = null;
+    if (this.caps.fbo && this.programs.post) {
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, GL.RGBA, this.canvas?.width ?? 1280, this.canvas?.height ?? 720, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+      const fbo = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      this.sceneFbo = { tex, fbo, w: this.canvas?.width ?? 1280, h: this.canvas?.height ?? 720 };
     }
 
     this.terrainBuffers = new Map(); // key -> {handle, meta.gl, count}
@@ -332,6 +347,17 @@ export class WebGL2Renderer {
       this._lastSize = [w, h];
     }
     this._w = w; this._h = h; this.fovDeg = cam.fovDeg ?? 60;
+    // com FBO a cena vai para a textura (o POST lê e mostra a visão do olho)
+    this._postOn = Boolean(this.programs?.post && this.sceneFbo);
+    if (this._postOn) {
+      if (this.sceneFbo.w !== w || this.sceneFbo.h !== h) {
+        gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, GL.RGBA, w, h, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+        this.sceneFbo.w = w; this.sceneFbo.h = h;
+      }
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.sceneFbo.fbo);
+      gl.viewport(0, 0, w, h);
+    }
     const proj = perspective((cam.fovDeg * Math.PI) / 180, w / h, 0.5, cam.far ?? 600);
     const view = lookAt(cam.pos, [
       cam.pos[0] + Math.sin(cam.yaw) * Math.cos(cam.pitch),
@@ -383,7 +409,7 @@ export class WebGL2Renderer {
         gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.count, batch.count);
         drawCalls++;
       }
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this._postOn ? this.sceneFbo.fbo : null);
       gl.viewport(0, 0, w, h);
       this.stats.shadowPasses++;
     }
@@ -762,6 +788,27 @@ export class WebGL2Renderer {
 
     this.stats.drawCalls += drawCalls;
     this.stats.frames++;
+    // ---- POST: a óptica do OLHO materializada (fóvea, aberração, halo)
+    if (this._postOn) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, w, h);
+      gl.disable(gl.DEPTH_TEST);
+      const post = this.programs.post;
+      gl.useProgram(post.id);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.quad);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      if (gl.activeTexture) gl.activeTexture(gl.TEXTURE0 ?? GL.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.tex);
+      gl.uniform1i(post.u.uScene, 0);
+      gl.uniform1f(post.u.uFovRad, ((cam.fovDeg ?? 60) * Math.PI) / 180);
+      gl.uniform1f(post.u.uGlareE, frame.vision?.glare ?? 0);
+      gl.uniform1f(post.u.uCAFrac, frame.vision?.caFrac ?? 0);
+      gl.uniform2f(post.u.uTexel, 1 / w, 1 / h);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.enable(gl.DEPTH_TEST);
+      drawCalls++;
+    }
     return { drawCalls, instances: this.caps.instanced ? culled.visible.length : 0, culled: culled.culled, shadows: shadowsOn };
   }
 
