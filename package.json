@@ -14,7 +14,9 @@
     "demo": "node demos/web/server.js",
     "demo:cli": "node demos/cli.js",
     "demo:platform": "node demos/platform.js",
-    "start": "node demos/web/server.js"
+    "start": "node demos/web/server.js",
+    "genesis": "node demos/web/server.js",
+    "genesis:help": "node -e \"console.log('UTS GENESIS — npm run genesis (demo web) | npm test | npm run demo:cli')\""
   },
   "license": "MIT",
   "private": true

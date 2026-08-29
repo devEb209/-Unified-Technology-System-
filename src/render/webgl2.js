@@ -413,6 +413,18 @@ export class WebGL2Renderer {
         gl.uniform3f(sky.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
       }
       if (sky.u.uExposure) gl.uniform1f(sky.u.uExposure, frame.exposure ?? 1);
+      if (sky.u.uSmoke && gl.uniform4fv) {
+        const far = (frame.horizon ?? []).filter(hz => hz.kind === 'fire').slice(0, 4);
+        const buf = new Float32Array(16);
+        for (let i = 0; i < far.length; i++) {
+          buf.set([far[i].pos[0], far[i].pos[1], far[i].pos[2], far[i].intensity ?? 0.5], i * 4);
+        }
+        gl.uniform4fv(sky.u.uSmoke, buf);
+        gl.uniform1i(sky.u.uSmokeN, far.length);
+        gl.uniform1f(sky.u.uSmokeWind, env.wind ?? 0.2);
+        gl.uniform2f(sky.u.uSmokeDir, env.windDir?.[0] ?? 1, env.windDir?.[1] ?? 0);
+        if (sky.u.uTime0) gl.uniform1f(sky.u.uTime0, frame.time ?? 0);
+      }
     }
     gl.uniform3f(sky.u.uSkyTop, env.skyTop[0], env.skyTop[1], env.skyTop[2]);
     gl.uniform3f(sky.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);

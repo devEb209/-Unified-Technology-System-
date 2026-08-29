@@ -146,13 +146,22 @@ export class RRW {
    * after a full snapshot — streaming only what CHANGED (D-O15: transfer
    * less, represent everything).
    */
-  deltaSince(tick) {
+  deltaSince(tick, { quantize = 0 } = {}) {
+    const q = (v) => (quantize > 0 && typeof v === 'number' ? Math.round(v / quantize) * quantize : v);
     const out = [];
     for (const e of this.entities.values()) {
       const comps = {};
       let any = false;
       for (const [type, c] of e.components) {
-        if (c && typeof c === 'object' && c.__v != null && c.__v > tick) { comps[type] = c; any = true; }
+        if (!(c && typeof c === 'object' && c.__v != null && c.__v > tick)) continue;
+        let cc = c;
+        if (quantize > 0) {
+          cc = {};
+          for (const [f2, v] of Object.entries(c)) {
+            cc[f2] = Array.isArray(v) ? v.map(q) : q(v);
+          }
+        }
+        comps[type] = cc; any = true;
       }
       if (any) out.push({ id: e.id, kind: e.kind, comps });
     }

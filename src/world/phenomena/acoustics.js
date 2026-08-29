@@ -35,7 +35,13 @@ export class Acoustics {
    *   delay    — seconds the wave needs (speed of sound is FINITE)
    *   occlusion— 0 clear .. 1 deep terrain shadow
    */
-  propagate({ source, listener, power = 1, humidity = null } = {}) {
+  // ACOUSTIC ABSORPTION BY MATERIAL (biome): a rock wall reflects and
+  // darkens differently than a forest that SCATTERS sound in trunks/leaves.
+  static get ABSORPTION() {
+    return { 0: 1.9, 1: 1.5, 2: 0.7, 3: 1.1, 4: 1.8, 5: 0.9 }; // by BIOME id (water..snow)
+  }
+
+  propagate({ source, listener, power = 1, humidity = null, biomeAt = null } = {}) {
     const t = this.world.terrain;
     const dx = listener[0] - source[0], dy = (listener[1] ?? 0) - (source[1] ?? 0), dz = listener[2] - source[2];
     const dist = Math.hypot(dx, dy || 0, dz);
@@ -48,14 +54,19 @@ export class Acoustics {
     // loses both level and brightness — that leakage is what we model).
     const steps = Math.min(this.maxMarch, Math.max(2, Math.floor(dist / this.marchStep)));
     let maxDeficit = 0;
+    let absorber = null; // the material of the DEEPEST occluder
     for (let i = 1; i < steps; i++) {
       const f = i / steps;
       const x = source[0] + dx * f, z = source[2] + dz * f;
       const lineY = (source[1] ?? t.height(source[0], source[2])) * (1 - f) +
                     (listener[1] ?? t.height(listener[0], listener[2])) * f + 1.6; // ear height
       const ground = t.height(x, z);
-      if (ground > lineY) maxDeficit = Math.max(maxDeficit, ground - lineY);
+      if (ground > lineY) {
+        if (ground - lineY > maxDeficit) absorber = biomeAt ? biomeAt(x, z) : null;
+        maxDeficit = Math.max(maxDeficit, ground - lineY);
+      }
     }
+    this._absorber = absorber; // probed by reallife (muffle per material)
     const occlusion = clamp01(maxDeficit / 10); // 10 m of blockage ≈ full shadow
     if (occlusion > 0.5) this.stats.occluded++;
 
@@ -63,7 +74,8 @@ export class Acoustics {
     // (represented humidity — the atmosphere owns this state, we consume it)
     const hum = humidity ?? this.world.atmosphere?.state.humidity ?? 0.3;
     const airAbsorption = Math.exp(-dist * (0.0009 + 0.0014 * hum));
-    const muffle = 1 + dist * (0.004 + 0.010 * hum) + occlusion * 3.2;
+    const matAbs = absorber != null ? (Acoustics.ABSORPTION[absorber] ?? 1.0) : 1.0;
+    const muffle = (1 + dist * (0.004 + 0.010 * hum) + occlusion * 3.2) * (occlusion > 0.05 ? matAbs : 1);
 
     const gain = power * spread * airAbsorption * (1 - 0.78 * occlusion);
     const delay = dist / this.speedOfSound; // thunder after the flash — REALITY

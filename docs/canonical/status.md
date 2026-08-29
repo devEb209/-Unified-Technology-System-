@@ -339,3 +339,35 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   (invariante honesto do pôr-do-sol: B/R 0.48→1.4e-5); aerial insc com
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
+
+## R12 — NOVE SISTEMAS DE UMA VEZ (o maior round; 84.98 → 87.18)
+
+1. **Fluidos** (`fluids.js`): água rasa por pipe-model atômico — chuva
+   despejada no morro ESCORRE (poça mais funda é morro abaixo), conserva
+   massa com evaporação+infiltração MEDIDAS (mass+lost ≈ despejado).
+2. **Clima regional** (`climate.js`): grade 6×6 de fatores que RESPIRAM e
+   são ADVECTADOS pelo vento (frentes andam); `rainAt(x,z)` alimenta a
+   combustão POR CÉLULA — o fogo vê a chuva da SUA região (piso 0.6×:
+   tempestade segue tempestade em toda região).
+3. **Fumaça volumétrica de horizonte** (`smoke.js`): march com BANDA
+   ADAPTATIVA por fogo (projeta o raio na pluma, ±140) — JS+GLSL gerado,
+   no SKY pass (uSmoke[4]); escura à noite, leitosa de dia, CURVA com o
+   vento, atenua o céu atrás. Escopo honesto: fogos >170 (perto continua
+   partículas); reflexo de terreno na água espera render target.
+4. **Agente CODER**: gera código REAL na gramática de criação a partir de
+   um brief estruturado, o PARSER valida (auto-reparo simplificando, ≤3),
+   executa, e o MUNDO verifica (vila no RRW, árvores vivas, clima). Falha
+   honesta em brief vazio. Fix da gramática: nome entre aspas DIRETO.
+5. **Streaming**: `processObjectiveStream`/`interpretObjectiveStream` —
+   o stream É o resultado (chunk join == JSON exato); UI recebe em partes.
+6. **SSE** (`/api/llm/stream`): proxy token-a-token do LLM env; 503
+   honesto sem chave.
+7. **Absorção por material** (acoustics): a oclusão ganha o material do
+   bloqueador por bioma (rocha 1.8 ≫ mata 1.1) — o morro de rocha abafa
+   mais que a mata.
+8. **Deltas comprimidos**: quantização em deltaSince — JSON menor, o clone
+   sincroniza igual (testado com NPCs).
+9. **GENESIS 1-comando**: npm run genesis === npm start.
+
+**Fixes colaterais:** mock-gl ganhou uniform4fv; fluid atômico (delta map);
+plant_forest do coder ancora na TERRA da vila. **290/290 testes.**

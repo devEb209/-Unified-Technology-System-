@@ -13,13 +13,17 @@ void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.999, 1.0); }`;
 import { SCATTER_GLSL } from './scattering.js';
 import { CLOUD_GLSL } from './clouds.js';
 import { OCEAN_GLSL } from './ocean.js';
-export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + `
+import { SMOKE_GLSL } from './smoke.js';
+export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + SMOKE_GLSL + `
 in vec2 vUV;
 uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
 uniform float uTanF; uniform float uAspect;
 uniform vec3 uSunDir; uniform float uAirMie; uniform float uAirI;
+uniform float uTime0;
 uniform float uFlash; uniform float uCloudCov; uniform float uCloudSeed;
 uniform float uExposure;
+uniform vec4 uSmoke[4]; uniform int uSmokeN; uniform float uSmokeWind;
+uniform vec2 uSmokeDir;
 uniform vec3 uCamPos;
 out vec4 fragColor;
 void main(){
@@ -30,6 +34,11 @@ void main(){
   float cT; vec3 cCol;
   marchClouds(uCamPos, dir, uSunDir, uCloudCov, uAirI*clamp(uSunDir.y*4.0+0.12,0.0,1.0), uCloudSeed, cCol, cT);
   col = col*cT + cCol;
+  // SMOKE of far fires: volumetric plume, lit by the SAME sky (uSmoke =
+  // [x,y,z,intensity]*N — causally fed from the combustion field)
+  float smokeT;
+  vec3 smokeCol = smokeMarch(uCamPos, dir, uSmoke, uSmokeN, uTime0, uSmokeWind, uSmokeDir, clamp(uAirI/22.0, 0.05, 1.2), smokeT);
+  col = col*smokeT + smokeCol;
   col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
   col *= uExposure; // the observer's eye gain (adapts to real light)
   fragColor = vec4(col, 1.0);

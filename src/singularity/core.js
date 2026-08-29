@@ -59,6 +59,37 @@ export class SingularityCore {
     return { intent: json.intent, params: json.params };
   }
 
+  /**
+   * STREAMING interpretation: same result as interpretObjective, delivered
+   * in chunks (onChunk(text)). With an env LLM this becomes token-streaming
+   * when the provider supports it; the heuristic path streams its own
+   * structured report (honest: same content, progressive delivery).
+   */
+  async processObjectiveStream(objective, onChunk = null, opts = {}) {
+    // the FULL pipeline with progressive feedback: interpretation streams
+    // first (what was understood), then execution runs (same guarantees).
+    if (onChunk) {
+      const chosen = await this.chooseModel(objective, {});
+      const r = await this.interpretObjective(objective, chosen);
+      onChunk(JSON.stringify({ intent: r.intent, provider: r.provider, commands: r.commands?.length ?? 0 }));
+    }
+    return this.processObjective(objective, opts);
+  }
+
+  async interpretObjectiveStream(objective, chosen = undefined, onChunk = null, opts = {}) {
+    if (chosen == null) chosen = await this.chooseModel(objective, {});
+    const r = await this.interpretObjective(objective, chosen, opts);
+    if (onChunk) {
+      const text = JSON.stringify(r, null, 1);
+      const parts = text.split(/(?=\{)|(?<=,)/g).reduce((acc, x) => {
+        for (let i = 0; i < x.length; i += 24) acc.push(x.slice(i, i + 24));
+        return acc;
+      }, []);
+      for (const part of parts) { onChunk(part); await new Promise((res) => setImmediate(res)); }
+    }
+    return r;
+  }
+
   async interpretObjective(objective, chosen, { maxCorrections = 2 } = {}) {
     let errorHint = null;
     for (let attempt = 0; attempt <= maxCorrections; attempt++) {

@@ -89,7 +89,7 @@ export class Combustion {
    * step the fire field. wind = represented wind 0..1 (spread boost + drift),
    * rain = represented rain 0..1 (extinguishing), wetness lookup from hydrology.
    */
-  step(dt, { rain = 0, wind = 0, windDir = [1, 0], hydrology = null, spreadRate = 1 } = {}) {
+  step(dt, { rain = 0, wind = 0, windDir = [1, 0], hydrology = null, spreadRate = 1, rainAt = null } = {}) {
     if (hydrology) this.hydrologyRef = hydrology; // remember for ignite-time wetness checks
     const w = this.world;
     let spreads = 0, consumed = 0, extinctions = 0;
@@ -106,7 +106,8 @@ export class Combustion {
         // ---- rain fights fire (water film + humidity beat heat)
         if (hydrology) {
           const film = hydrology.depthAt(wx, wz);
-          if (film > 0.004 || rain > 0.45) {
+          const cellRain = rainAt ? rainAt(cx * this.cell + this.cell / 2, cz * this.cell + this.cell / 2) : rain;
+          if (film > 0.004 || cellRain > 0.45) {
             c.fuel -= dt * (0.4 + film * 30);
             c.intensity = clamp01(c.fuel * 2.2);
           }

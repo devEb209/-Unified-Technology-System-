@@ -8,6 +8,8 @@ import { SpatialGrid } from '../spatial/grid.js';
 import { Terrain } from './terrain.js';
 import { RealLife } from './reallife.js';
 import { Atmosphere } from './phenomena/atmosphere.js';
+import { Climate } from './phenomena/climate.js';
+import { FluidField } from './phenomena/fluids.js';
 import { Hydrology } from './phenomena/hydrology.js';
 import { Combustion } from './phenomena/combustion.js';
 import { Ecology } from './phenomena/ecology.js';
@@ -46,6 +48,8 @@ export class World {
     this._lastRainEventId = null;
     // ---- REALITY PHENOMENA (ADR-019: the world models reality, not tricks)
     this.atmosphere = new Atmosphere();                       // air → sky IS scattering
+    this.climate = new Climate({ world: this });              // regional weather (escalas)
+    this.fluid = new FluidField({ world: this });             // água rasa que ESCORRE
     this.observer = { adapt: 1, exposure: 1 };                // the eye ADAPTS to real light
     this.hydrology = new Hydrology({ world: this });          // water as substance
     this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
@@ -238,7 +242,18 @@ export class World {
     const env = this.environment;
     const sunEl = this.clock.sunElevation;
     env.sunEl = sunEl; // the air knows where the sun is (fog build/burn)
+    this.climate.step(dt, { wind: env.wind });
     this.atmosphere.step(dt, env);
+    // rain that LANDS flows (shallow water) around the focus
+    if (env.rain > 0.02) {
+      const focus = this.ues?.camera?.pos ?? [512, 0, 512];
+      const cells = Math.round(env.rain * dt * 3);
+      for (let k = 0; k < cells; k++) {
+        const a = this.rng.next() * Math.PI * 2, r = this.rng.next() * 80;
+        this.fluid.pour(focus[0] + Math.cos(a) * r, focus[2] + Math.sin(a) * r, 0.06 * dt);
+      }
+    }
+    this.fluid.step(dt);
     const air = this.atmosphere.sky({ sunEl, ambient: env.ambient });
     env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
     env.fog = air.fog; env.haze = air.haze; env.sunVisible = air.sunVisible;
@@ -262,6 +277,7 @@ export class World {
       this.combustion.step(dt, {
         rain: env.rain, wind: env.wind, windDir: env.windDir,
         hydrology: this.hydrology, spreadRate,
+        rainAt: (x, z) => this.climate.rainAt(x, z, env.rain), // o fogo vê a chuva da SUA região
       });
     }
     if (this.ecologyStepEnabled !== false) {

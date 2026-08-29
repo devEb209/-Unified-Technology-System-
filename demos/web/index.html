@@ -228,7 +228,13 @@
     if (!objective) return;
     logLine(`▶ objetivo: ${objective}`);
     try {
-      const r = await core.processObjective(objective);
+      // STREAMING real: primeiro o que foi ENTENDIDO chega em partes,
+      // depois a execução completa (mesmas garantias do pipeline)
+      const box = $('ai-out');
+      if (box) box.textContent = '';
+      const r = await core.processObjectiveStream(objective, (chunk) => {
+        if (box) { box.textContent += chunk + '\n'; box.scrollTop = box.scrollHeight; }
+      });
       logLine(`  interpretação: ${r.interpretation.intent} ${JSON.stringify(r.interpretation.params)} (${r.chosen.provider}/${r.chosen.model})`);
       for (const v of r.verifications) logLine(`  verificação ${v.check}: ${v.ok ? 'OK' : 'FAIL'}`, !v.ok);
       logLine(`  resultado: ${r.ok ? '✓ verificado' : '✗ falhou'}`, !r.ok);

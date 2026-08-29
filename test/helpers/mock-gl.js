@@ -54,6 +54,7 @@ function makeGL({ failCompile = false } = {}) {
     uniform1f: (loc, v) => calls.push(['uniform1f', loc?.name, v]),
     vertexAttribPointer: () => calls.push(['vertexAttribPointer']),
     enableVertexAttribArray: () => calls.push(['enableVertexAttribArray']),
+    uniform4fv: () => {},
     drawArrays: (mode, first, count) => calls.push(['drawArrays', mode, count]),
   };
   gl._calls = calls;

@@ -37,7 +37,11 @@ function countNear(t, words) {
 }
 
 function quotedName(t, original) {
-  // ALL "chamada X" candidates in the original (casing preserved); the name
+  // 1) a DIRECT quoted name in this clause ("crie a vila \"X\"") — the
+  // quotes ARE the naming; no 'chamada' needed
+  const dq = t.match(/"([^"]{1,40})"/u);
+  if (dq) return dq[1].trim();
+  // 2) ALL "chamada X" candidates in the original (casing preserved); the name
   // ENDS at a stop word. A candidate belongs to THIS clause only if every
   // word of it appears in the clause (deaccented) — no cross-clause leaks.
   const names = [...original.matchAll(/chamad[ao]\s+"?([\p{L}\p{N}][\p{L}\p{N}\s'-]{1,30}?)"?\s*(?=\b(?:com|perto|ao|na|no|e[,\s]|,)|\s*\d|$)/giu)];
