@@ -535,10 +535,11 @@ export class WebGL2Renderer {
     }
 
     // ---- FIRE: blackbody particles emitted by the combustion field
-    // (additive emission — the fire IS light; smoke cools toward gray)
+    // (additive emission — the fire IS light; smoke scatters the real sky)
     const fires = culled.visible.filter(e => e.kind === 'hazard' && e.fire);
     if (fires.length > 0) {
-      const parts = emitFireParticles(fires.map(fl => ({ ...fl.fire, pos: fl.pos, id: fl.id })), frame.time ?? 0, env.wind ?? 0.2, env.windDir ?? [1, 0, 0]);
+      const wd3 = [...(env.windDir ?? [1, 0]), 0];
+      const parts = emitFireParticles(fires.map(fl => ({ ...fl.fire, pos: fl.pos, id: fl.id })), frame.time ?? 0, env.wind ?? 0.2, wd3, air, sd);
       if (parts.length > 0) {
         const fireP = this.programs.fire;
         gl.useProgram(fireP.prog);
@@ -566,6 +567,7 @@ export class WebGL2Renderer {
       gl.uniformMatrix4fv(wat.u.uVP, false, vp);
       gl.uniform2f(wat.u.uCenter, cam.pos[0], cam.pos[2]); // SCALE: sea follows, waves world-fixed
       gl.uniform1f(wat.u.uTime, (frame.time ?? 0) % 1000);
+      if (wat.u.uWindDir) { gl.uniform2f(wat.u.uWindDir, env.windDir?.[0] ?? 1, env.windDir?.[1] ?? 0); gl.uniform1f(wat.u.uWind, env.wind ?? 0.2); }
       gl.uniform1f(wat.u.uSeaLevel, seaLevel);
       gl.uniform1f(wat.u.uWind, frame.environment.wind ?? 0);
       gl.uniform3f(wat.u.uSunDir, frame.lights.sun.dir[0], frame.lights.sun.dir[1], frame.lights.sun.dir[2]);
@@ -626,6 +628,7 @@ export class WebGL2Renderer {
       gl.useProgram(tree.prog);
       gl.uniformMatrix4fv(tree.u.uVP, false, vp);
       gl.uniform1f(tree.u.uTime, frame.time ?? 0);
+      if (tree.u.uWindDir) gl.uniform2f(tree.u.uWindDir, env.windDir?.[0] ?? 1, env.windDir?.[1] ?? 0);
       bindLights(tree);
       gl.uniform3f(tree.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
       const data = new Float32Array(pines.length * 8);

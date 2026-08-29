@@ -4,6 +4,8 @@
 // blackbody, never an artistic ramp. Anchors come FROM the combustion field
 // (frame hazards carry intensity/fuel mirrored from RRW).
 
+import { skyColor } from './scattering.js';
+
 export const FIRE_CONST = Object.freeze({
   T0: 900,        // K at zero intensity (smoldering wood flame)
   T1: 1800,       // K at full intensity (bright wood flame)
@@ -33,6 +35,12 @@ export function blackbody(kelvin) {
 }
 
 /** flame temperature of the represented combustion (K) — 900..1800 */
+/** sky light at the fire (0..1, noon reference) — smoke scatters THIS */
+export function skyLight(sunDir, air = { mie: 1, intensity: 22 }) {
+  const z = skyColor([0, 1, 0], sunDir, air, 4);
+  return Math.min(1, Math.max(0.02, ((z[0] + z[1] + z[2]) / 3) / 0.85));
+}
+
 export function flameTemp(intensity) {
   return FIRE_CONST.T0 + (FIRE_CONST.T1 - FIRE_CONST.T0) * Math.min(1, Math.max(0, intensity));
 }
@@ -45,7 +53,7 @@ const hash2 = (a, b) => fract(Math.sin(a * 127.1 + b * 311.7) * 43758.5453);
  * (cellKey, intensity, fuel, time, wind) -> same particles. Layout matches
  * the horizon/fire vertex format: [x, y, z, size, r, g, b, alpha] * n.
  */
-export function emitFire(fire, time, wind = 0.2, out = [], windDir = [1, 0, 0]) {
+export function emitFire(fire, time, wind = 0.2, out = [], windDir = [1, 0, 0], ctx = {}) {
   const C = FIRE_CONST;
   const intensity = Math.min(1, Math.max(0, fire.intensity ?? 0.5));
   const fuel = Math.min(100, Math.max(0, fire.fuel ?? 20));
@@ -53,6 +61,7 @@ export function emitFire(fire, time, wind = 0.2, out = [], windDir = [1, 0, 0]) 
   for (let i = 0; i < (fire.cellKey ?? String(fire.id ?? 0)).length; i++) seed = (seed * 31 + (fire.cellKey ?? String(fire.id ?? 0)).charCodeAt(i)) % 997;
   const n = Math.min(C.MAX_PER_FIRE, 6 + Math.round(fuel * 0.3 * (0.4 + 0.6 * intensity)));
   const T0 = flameTemp(intensity);
+  const skyL = ctx.skyL ?? 1; // the smoke scatters the REAL sky light
   for (let i = 0; i < n; i++) {
     const h1 = hash2(seed + 1, i * 3.7), h2 = hash2(seed + 7, i * 5.3), h3 = hash2(seed + 13, i * 7.1), h4 = hash2(seed + 29, i * 9.2);
     const life = C.LIFE * (0.5 + h1 * 0.9);
@@ -68,7 +77,12 @@ export function emitFire(fire, time, wind = 0.2, out = [], windDir = [1, 0, 0]) 
     let a = (1 - age) * (1 - age) * 0.9;
     if (age > C.SMOKE_AT) {
       const sm = (age - C.SMOKE_AT) / (1 - C.SMOKE_AT);
-      r += (C.SMOKE[0] - r) * sm; g += (C.SMOKE[1] - g) * sm; b += (C.SMOKE[2] - b) * sm;
+      // smoke SCATTERS ambient sky light (dark at night, milky at noon) and
+      // still glows near the flame with the fire's own blackbody light
+      const lum = (0.22 + 0.78 * skyL);
+      r = C.SMOKE[0] * lum + blackbody(T0)[0] * 0.55 * (1 - sm);
+      g = C.SMOKE[1] * lum + blackbody(T0)[1] * 0.55 * (1 - sm);
+      b = C.SMOKE[2] * lum + blackbody(T0)[2] * 0.55 * (1 - sm);
       a *= 1 - sm * 0.72;
     }
     out.push(x, y, z, size, r, g, b, a);
@@ -77,8 +91,9 @@ export function emitFire(fire, time, wind = 0.2, out = [], windDir = [1, 0, 0]) 
 }
 
 /** Every burning anchor in the frame → one interleaved particle buffer. */
-export function emitFrame(fires, time, wind = 0.2, windDir = [1, 0, 0]) {
+export function emitFrame(fires, time, wind = 0.2, windDir = [1, 0, 0], air = null, sun = null) {
   const out = [];
-  for (const fire of fires) emitFire(fire, time, wind, out, windDir);
+  const ctx = { skyL: sun ? skyLight(sun, air ?? undefined) : 1 };
+  for (const fire of fires) emitFire(fire, time, wind, out, windDir, ctx);
   return new Float32Array(out);
 }

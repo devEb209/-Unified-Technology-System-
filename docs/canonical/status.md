@@ -290,3 +290,24 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   `fragColor` duplicada latente em ENTITY_FS removida.
 - **267/267 testes.** Falta em render: ondas direcionais, fumaça
   volumétrica iluminada, neblina por altura.
+
+## R10 — O MAR E O AR RESPONDEM (realidade completa, água e luz)
+
+- `src/render/ocean.js`: ondas = 3 componentes com dispersão de águas
+  profundas ω=√(g·k) (o swell viaja ~1.8× mais rápido que o chop — FÍSICA
+  VISÍVEL), direção = o MESMO vento (spread 0°/28°/63°), amplitude ∝ v²
+  do vento, cristas que quebram viram ESPUMA cujo limiar cai com o vento
+  (mar de tempestade 12× mais branco) e que espalha a COR DO CÉU.
+  `OCEAN_GLSL` gerado das mesmas constantes (WATER_VS desloca; WATER_FS
+  recomputa o campo p/ normal analítica consistente).
+- `fire.js`: a fumaça ESPALHA a luz do céu (`skyLight()` do scattering —
+  escura à noite, leitosa ao meio-dia) e ainda brilha perto da chama com
+  o próprio corpo negro do fogo.
+- `atmosphere.js`: NEBLINA DE RADIAÇÃO — umidade>0.72 & sol<0.12 constrói;
+  sol alto e vento queimam; extinção do ar ganha a névoa. `frame.js`
+  materializa BANCOS nos baixios (grade determinística, cor = céu real,
+  dentro do orçamento D-O15 de 24).
+- `world.js`: `env.windDir` fonte ÚNICA da direção (mar, árvores, fogo,
+  nuvens). TREE_VS dobra NA direção do vento.
+- **274/274 testes** (7 novos). Falta: fumaça volumétrica 3D, neblina
+  por altura no aerial, reflexo de terreno na água.

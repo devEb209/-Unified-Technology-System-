@@ -40,6 +40,14 @@ export class Atmosphere {
     const k = 1 - Math.exp(-dt / 6); // air has inertia (~6s to follow weather)
     // the SAME wind that bends trees and spreads fire ADVECTS the cloud field
     this.state.cloudDrift = (this.state.cloudDrift ?? 0) + (env.wind ?? 0.2) * dt * 0.05;
+    // ---- RADIATION FOG: humid air cooling at dawn pools in the lowlands;
+    // the rising sun and the wind BURN it off (both ends physical)
+    const sunElF = env.sunEl ?? 0.5;
+    if (this.state.humidity > 0.72 && sunElF < 0.12) {
+      this.state.fog = Math.min(1, (this.state.fog ?? 0) + dt * (this.state.humidity - 0.72) * 1.6);
+    } else {
+      this.state.fog = Math.max(0, (this.state.fog ?? 0) - dt * (Math.max(0, sunElF - 0.12) * 3.2 + (env.wind ?? 0.2) * 0.05));
+    }
     this.state.humidity += (targetH - this.state.humidity) * k;
     this.state.dust += (targetD - this.state.dust) * k;
     return this.state;
@@ -74,7 +82,7 @@ export class Atmosphere {
       (rayleigh[2] * 0.95 + haze * 0.42) * ambient * (1 - dust * 0.6) + NIGHT_AIR[2] + haze * 0.06,
     ];
     // extinction: how much the air REMOVES light along a view path (fog)
-    const extinction = clamp01(0.05 + humidity * 0.25 + dust * 0.6 + (1 - day) * 0.1);
+    const extinction = clamp01(0.05 + humidity * 0.25 + dust * 0.6 + (1 - day) * 0.1 + (this.state.fog ?? 0) * 0.55);
     // the disk: visible when the sun is up and the air is not opaque
     const sunVisible = clamp01(day * (1 - extinction * 0.75));
     const sunColor = [

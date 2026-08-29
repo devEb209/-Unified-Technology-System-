@@ -218,6 +218,30 @@ function buildHorizon(world, cam, radius) {
       color: [0.92, 0.85, 0.66], pop: st.pop ?? 0,
     });
   }
+  // ---- RADIATION FOG at dawn: humid valleys breathe mist; it BURNS OFF as
+  // the sun climbs (atmosphere.state.fog is the causal amount)
+  const fogAmt = world.atmosphere?.state?.fog ?? 0;
+  if (fogAmt > 0.12) {
+    const cell = 96, R = 3;
+    const frac = (x) => x - Math.floor(x);
+    const cx = Math.floor(cam.pos[0] / cell), cz = Math.floor(cam.pos[2] / cell);
+    for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) {
+      const gx = cx + i, gz = cz + j;
+      const hsh = frac(Math.sin(gx * 127.1 + gz * 311.7) * 43758.5453);
+      if (hsh > 0.42) continue; // deterministic placement
+      const x = (gx + 0.5) * cell + (hsh - 0.5) * 40;
+      const z = (gz + 0.5) * cell + (frac(hsh * 7) - 0.5) * 40;
+      const hy = world.terrain.height(x, z) ?? 0;
+      if (hy > 9 || hy < world.terrain.seaLevel - 2) continue; // fog POOLS in lowlands
+      const c = world.environment.skyBottom ?? [0.7, 0.8, 0.9];
+      out.push({
+        kind: 'fog', id: `fog:${gx}:${gz}`,
+        pos: [x, hy + 4, z], size: 60 + hsh * 50,
+        alpha: Math.min(0.5, fogAmt * 0.55),
+        color: [Math.min(1, c[0] * 1.05 + 0.05), Math.min(1, c[1] * 1.05 + 0.05), Math.min(1, c[2] * 1.05 + 0.05)],
+      });
+    }
+  }
   // D-O15 budget: brightest/most prominent first
   out.sort((a, b) => (b.intensity ?? 0) * 2 + ((b.pop ?? 10) ** 0.5) - ((a.intensity ?? 0) * 2 + ((a.pop ?? 10) ** 0.5)));
   return out.slice(0, 24);

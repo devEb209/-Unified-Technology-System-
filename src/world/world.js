@@ -237,6 +237,7 @@ export class World {
     // air → sky, rain → soil+film, fuel+moisture+wind → fire, water+fire+sun → life
     const env = this.environment;
     const sunEl = this.clock.sunElevation;
+    env.sunEl = sunEl; // the air knows where the sun is (fog build/burn)
     this.atmosphere.step(dt, env);
     const air = this.atmosphere.sky({ sunEl, ambient: env.ambient });
     env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
@@ -257,8 +258,9 @@ export class World {
     env.wetness = this.hydrology.soil.wetness; // the water table IS the wetness (single source)
     if (this.combustionStepEnabled !== false) {
       const spreadRate = (this.do15?.strategy?.perceptionResolution ?? 'full') === 'full' ? 1 : 0.5;
+      env.windDir = [Math.cos(this.clock.timeOfDay * 6.28), Math.sin(this.clock.timeOfDay * 6.28)]; // ONE direction: sea, trees, fire, clouds
       this.combustion.step(dt, {
-        rain: env.rain, wind: env.wind, windDir: [Math.cos(this.clock.timeOfDay * 6.28), Math.sin(this.clock.timeOfDay * 6.28)],
+        rain: env.rain, wind: env.wind, windDir: env.windDir,
         hydrology: this.hydrology, spreadRate,
       });
     }

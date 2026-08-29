@@ -12,6 +12,7 @@ void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.999, 1.0); }`;
 // governs sample cost elsewhere; the phenomenon here is integrated whole.
 import { SCATTER_GLSL } from './scattering.js';
 import { CLOUD_GLSL } from './clouds.js';
+import { OCEAN_GLSL } from './ocean.js';
 export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + `
 in vec2 vUV;
 uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
@@ -209,38 +210,48 @@ uniform vec3 uColor;
 out vec4 fragColor;
 void main(){ if (vAlpha<0.5) discard; fragColor = vec4(uColor,0.55); }`;
 
+// WATER_VS: wind-driven waves with REAL deep-water dispersion (ω=√gk) —
+// generated physics from OCEAN_GLSL; the sea of a storm is another sea.
 export const WATER_VS = `#version 300 es
+` + OCEAN_GLSL + `
 layout(location=0) in vec3 aPos; // xz RELATIVE to uCenter, y ignored (rebuilt as waves)
 uniform mat4 uVP; uniform float uTime; uniform float uSeaLevel; uniform float uWind;
+uniform vec2 uWindDir;
 uniform vec2 uCenter; // the sea FOLLOWS the camera (scale!); waves stay fixed IN THE WORLD
-out vec3 vPos; out float vWave;
+out vec3 vPos; out float vWave; out float vFoam;
 void main(){
   vec2 xz = aPos.xz + uCenter;
-  float w = sin(xz.x*0.11 + uTime*1.9)*0.5 + cos(xz.y*0.13 - uTime*1.3)*0.35
-          + sin((xz.x+xz.y)*0.05 + uTime*0.7)*0.4;
-  float amp = 0.22 + uWind*0.5;
-  float y = uSeaLevel + w*amp;
+  float foam;
+  vec3 fld = waveField(xz, uTime, uWind, uWindDir, foam);
+  float y = uSeaLevel + fld.y;
   vPos = vec3(xz.x, y, xz.y);
-  vWave = w;
+  vWave = fld.y;
+  vFoam = foam;
   gl_Position = uVP*vec4(vPos,1.0);
 }`;
 
 export const WATER_FS = `#version 300 es
 precision highp float;
-in vec3 vPos; in float vWave;
+` + OCEAN_GLSL + `
+in vec3 vPos; in float vWave; in float vFoam;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
+uniform float uTime; uniform float uWind;
 uniform float uWetness; uniform float uAlpha; uniform float uAirMie; uniform float uAirI;
 uniform float uExposure;
+uniform vec2 uWindDir;
 out vec4 fragColor;
 void main(){
   vec3 view = normalize(uCamPos - vPos);
-  // wave normal from the same field the vertex shader used (cheap derivative)
-  vec3 n = normalize(vec3(-cos(vPos.x*0.11)*0.06, 1.0, cos(vPos.z*0.13)*0.05));
+  // normal from the SAME dispersive field the vertex shader displaced
+  float foam;
+  vec3 fld = waveField(vPos.xz, uTime, uWind, uWindDir, foam);
+  vec3 n = normalize(vec3(-fld.x, 1.0, -fld.z));
   float fres = pow(1.0 - clamp(dot(view, n), 0.0, 1.0), 3.0);
   vec3 deep = vec3(0.05, 0.14, 0.22) * (0.7 + uAmbient);
   vec3 shallow = vec3(0.12, 0.32, 0.42) * (0.7 + uAmbient);
-  vec3 col = mix(deep, shallow, clamp(vWave*0.5 + 0.5, 0.0, 1.0));
+  vec3 col = mix(deep, shallow, clamp(vWave*0.9 + 0.5, 0.0, 1.0));
+  col = mix(col, skyColor(vec3(0.0,1.0,0.0), uSunDir, uAirMie, uAirI, 2)*0.9, vFoam); // whitecaps scatter the sky
   float spec = pow(max(dot(reflect(-uSunDir, n), view), 0.0), 90.0);
   col += uSunColor * spec * 0.9;
   vec3 skyRef = skyColor(reflect(-view, n), uSunDir, uAirMie, uAirI, 4); // the water mirrors the REAL sky
@@ -316,14 +327,14 @@ layout(location=1) in vec3 aNorm;
 layout(location=2) in float aCanopy;
 layout(location=3) in vec4 aT0;
 layout(location=4) in vec4 aT1;
-uniform mat4 uVP; uniform float uTime;
+uniform mat4 uVP; uniform float uTime; uniform vec2 uWindDir;
 out vec3 vPos; out vec3 vNorm; out float vCanopy; out float vHealth;
 void main(){
   float h = max(aT0.w, 0.1);
   vec3 lp = aPos;
-  // wind bends the top quadratically (real cantilever shape, small angles)
+  // the cantilever bends DOWNWIND (the same wind of the sea, fire and clouds)
   float bend = aT1.y * 0.5 * aPos.y*aPos.y * (0.6 + 0.4*sin(uTime*1.4 + aT1.z));
-  lp.x += bend; lp.z += bend*0.6;
+  lp.x += bend*uWindDir.x; lp.z += bend*uWindDir.y;
   vec3 wp = aT0.xyz + lp*vec3(1.0, h, 1.0);
   vPos = wp; vNorm = aNorm; vCanopy = aCanopy; vHealth = aT1.x;
   gl_Position = uVP*vec4(wp, 1.0);
