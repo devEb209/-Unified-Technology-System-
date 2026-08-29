@@ -50,8 +50,7 @@ test('r19: CORRENTEZA — o plâncton é CAMPO: nasce na costa e o VENTO leva o 
   const uts = createUTS({ seed: 'corrente' });
   const eco = uts.world.ecology;
   eco.planktonField.set('8,8', 0.9); // bloom na costa oeste
-  const wind = uts.world.environment.wind ?? 0.2;
-  eco.step(1, { sunEl: 1, seaSilt: 0.05, wind: 1 });
+  for (let i = 0; i < 40; i++) eco.step(1, { sunEl: 1, seaSilt: 0.05 }); // 40s de vento do mundo
   const keys = [...eco.planktonField.keys()];
   assert.ok(keys.length > 0, 'o campo existe');
   const moved = keys.some((k) => { const [i, j] = k.split(',').map(Number); return i > 8; });

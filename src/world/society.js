@@ -78,11 +78,62 @@ export function abstractSettlement(world, settlementId) {
 }
 
 /** abstract evolution of a settlement (runs via RRW process when far from focus) */
+/**
+ * A TEIA ALIMENTA A GENTE: a vila PESCA o cardume da sua célula e CAÇA o
+ * veado (célula ou vizinha). A rede e a flecha COBRAM do campo (o banco
+ * diminui de verdade — pesca predatória colapsa o cardume e a fome volta).
+ * Serve ao tier ABSTRATO (pop estatística) e ao MATERIALIZADO (trabalhadores).
+ * Determinístico; o que foi tirado é acumulado no componente settlement.
+ */
+export function teiaPass(world, settlementId, dt) {
+  const rrw = world.rrw;
+  const s = rrw.getComponent(settlementId, 'settlement');
+  const eco = world.ecology;
+  if (!s || !eco) return null;
+  const pos = rrw.getComponent(settlementId, 'spatial')?.pos ?? [512, 0, 512];
+  const CELL = 64;
+  const k = `${Math.round(pos[0] / CELL)},${Math.round(pos[2] / CELL)}`;
+  s.teia ??= { fishCaught: 0, gameHunted: 0 };
+  const out = { fish: 0, game: 0 };
+  // PESCA: cardume > 2% vira comida; a rede tira peixe DO BANCO
+  const fish = eco.fishField.get(k) ?? 0;
+  if (fish > 0.02) {
+    const taken = Math.min(fish, 0.06 * dt * (1 + (s.pop ?? 1) / 200));
+    eco.fishField.set(k, fish - taken * 0.4);
+    out.fish = taken * 12; // peixe rende na boca da vila (escala do armazém)
+  }
+  // CAÇA: rebanho na célula ou na melhor vizinha; a flecha cobra veado
+  let deerK = k, deer = eco.deerField.get(k) ?? 0;
+  if (deer < 0.02) {
+    const [i, j] = k.split(',').map(Number);
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nk = `${i + di},${j + dj}`;
+      const d2 = eco.deerField.get(nk) ?? 0;
+      if (d2 > deer) { deer = d2; deerK = nk; }
+    }
+  }
+  if (deer > 0.02) {
+    const taken = Math.min(deer, 0.035 * dt * (1 + (s.pop ?? 1) / 300));
+    eco.deerField.set(deerK, deer - taken * 0.6);
+    out.game = taken * 8; // um veado alimenta gente: carne na escala do armazém
+  }
+  s.store.food += (out.fish + out.game) * dt;
+  s.teia.fishCaught += out.fish * dt;
+  s.teia.gameHunted += out.game * dt;
+  if (out.fish + out.game > 0) {
+    rrw.emitEvent({ type: 'society.teia', subject: settlementId, cause: null,
+                    data: { fish: +out.fish.toFixed(4), game: +out.game.toFixed(4), cell: k }, tick: world.clock.tick });
+  }
+  return out;
+}
+
 export function evolveSettlementAbstract(world, settlementId, dt) {
   const rrw = world.rrw;
   const s = rrw.getComponent(settlementId, 'settlement');
   if (!s) return;
-  // production/consumption at population scale
+  // production/consumption at population scale — e A TEIA ALIMENTA (pesca
+  // e caça leem os campos reais da ecologia, tier abstrato incluído)
+  teiaPass(world, settlementId, dt);
   s.store.food += s.rates.food * s.pop * dt * 0.05 - s.pop * dt * 0.05;
   s.store.wood += s.rates.wood * s.pop * dt * 0.03;
   s.store.stone += s.rates.stone * s.pop * dt * 0.015;
@@ -118,6 +169,8 @@ export function updateSettlementEconomy(world, settlementId, dt) {
   const s = rrw.getComponent(settlementId, 'settlement');
   if (!s) return;
   // individual labor at detailed resolution (aggregate flow already ran via process)
+  // — e A TEIA ALIMENTA aqui também (a vila materializada pesca e caça)
+  teiaPass(world, settlementId, dt);
   const laborers = rrw.query({ kind: 'npc', predicate: e => e.components.get('npc')?.settlementId === settlementId }).length;
   s.store.food += laborers * 0.012 * dt;
   s.store.wood += laborers * 0.004 * dt;

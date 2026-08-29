@@ -8,6 +8,7 @@ import { spawnSync, execFileSync } from 'node:child_process';
 import { mkdtemp, readFile, writeFile, copyFile, chmod, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 
 export const TARGETS = Object.freeze({
   web: { label: 'Web/PWA', tool: 'uts-zip', needs: [] },
@@ -24,6 +25,19 @@ export function probeToolchains({ which = null } = {}) {
   };
   // postject só expõe --help com exit 0 (sem --version) — sonda honesta
   return { java: has('java'), gradle: has('gradle'), node: has('node'), postject: has('postject', ['--help']) };
+}
+
+/** SELO DE INTEGRIDADE: sha256 dos bytes do artefato (o pacote que chega
+ *  é o pacote que saiu). Identidade (certificado) é passo de distribuição
+ *  e continua honesto; integridade é provada AQUI. */
+export function selo(data) {
+  return { sha256: createHash('sha256').update(data).digest('hex'), bytes: data.length };
+}
+
+export function verifySelo(artifact) {
+  if (!artifact?.data || !artifact?.selo?.sha256) return { ok: false, reason: 'sem selo' };
+  const now = selo(artifact.data);
+  return { ok: now.sha256 === artifact.selo.sha256 && now.bytes === artifact.selo.bytes, now };
 }
 
 /** lê o SENTINEL do fuse SEA direto do binário do node desta máquina */
@@ -101,7 +115,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
     const zip = zipCreate(entries);
     const check = zipRead(zip); // self-verify the artifact
     if ([...check.keys()].length !== entries.length) throw new Error('zip auto-verificação falhou');
-    out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip };
+    out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip, selo: selo(zip) };
     return out;
   }
   if (target === 'exe' && probeToolchains().postject) {
@@ -113,7 +127,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'binário único (SEA: app embutido no executável do node)',
       honest: 'nativo da máquina que compilou (linux/mac aqui); Windows igual com postject no .exe; assinatura de código é passo de distribuição',
       files: out.files,
-      artifact: { name: `${name}`, bytes: data.length, data },
+      artifact: { name: `${name}`, bytes: data.length, data, selo: selo(data) },
     };
   }
   if (target === 'exe') {
@@ -131,7 +145,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'deploy-kit (zip executável: linux/mac com node 22)',
       honest: 'binário único (.exe/.AppImage): SEA precisa de postject — plano real documentado no INSTALL.txt, não fingido',
       files: out.files,
-      artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit },
+      artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit, selo: selo(kit) },
     };
   }
   if (target === 'android') {
@@ -149,7 +163,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'android-kit (projeto gradle completo: manifest + MainActivity + www)',
       honest: 'APK precisa de java+gradle (assembleDebug) — o kit traz o projeto buildável, documentado no INSTALL.txt',
       files: out.files,
-      artifact: { name: `${name}-android-kit.zip`, bytes: kit.length, data: kit },
+      artifact: { name: `${name}-android-kit.zip`, bytes: kit.length, data: kit, selo: selo(kit) },
     };
   }
   const needs = TARGETS[target].needs;

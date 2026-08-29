@@ -40,6 +40,7 @@ export class Ecology {
     this.deerField = new Map();     // TEIA: veados por célula (comem capim, 0..1)
     this.wolves = 0;                // TEIA: lobos seguem os veados (contagem suave)
     this._fieldT = 0;               // relógio interno dos campos (determinístico)
+    this._advAcc = 0;               // deslocamento acumulado da correnteza (física de verdade: só anda quando completa 1 célula)
   }
 
   speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
@@ -81,7 +82,7 @@ export class Ecology {
 
   /** the RRW persistence contract */
   snapshot() {
-    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, _fieldT: this._fieldT, plankton: this.plankton, planktonField: [...this.planktonField], fishField: [...this.fishField], seabirds: this.seabirds, grassField: [...this.grassField], deerField: [...this.deerField], wolves: this.wolves };
+    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, _fieldT: this._fieldT, _advAcc: this._advAcc, plankton: this.plankton, planktonField: [...this.planktonField], fishField: [...this.fishField], seabirds: this.seabirds, grassField: [...this.grassField], deerField: [...this.deerField], wolves: this.wolves };
   }
   restore(s) {
     this.nextId = s.nextId; this.maxTrees = s.maxTrees;
@@ -91,6 +92,7 @@ export class Ecology {
     this.fishField = new Map(s.fishField ?? []);
     this.seabirds = s.seabirds ?? 0;
     this._fieldT = s._fieldT ?? 0;
+    this._advAcc = s._advAcc ?? 0;
     this.grassField = new Map(s.grassField ?? []);
     this.deerField = new Map(s.deerField ?? []);
     this.wolves = s.wolves ?? 0;
@@ -151,11 +153,19 @@ export class Ecology {
       const wind = w.environment?.wind ?? 0.2;
       const wd = w.environment?.windDir ?? [1, 0];
       const CELL = 64;
-      const shift = Math.max(1, Math.round(wind * dt * 0.35));
+      // CORRENTEZA FÍSICA: o deslocamento ACUMULA (vento·0.35 células/s);
+      // o campo inteiro anda UMA célula quando o acumulador completa —
+      // determinístico e com a velocidade real do vento, sem teleporte
+      this._advAcc += wind * dt * 0.35;
+      let shift = 0;
+      while (Math.abs(this._advAcc) >= 1) {
+        shift += this._advAcc > 0 ? 1 : -1;
+        this._advAcc -= this._advAcc > 0 ? 1 : -1;
+      }
       const next = new Map();
       for (const [key, v] of this.planktonField) {
         const [i, j] = key.split(',').map(Number);
-        const ni = i + Math.round(wd[0] * shift), nj = j + Math.round(wd[1] * shift);
+        const ni = i + Math.round(wd[0]) * shift, nj = j + Math.round(wd[1]) * shift;
         next.set(`${ni},${nj}`, Math.max(next.get(`${ni},${nj}`) ?? 0, v * (1 - 0.004 * dt)));
       }
       // nutrientes novos entram na costa (silt que chega)
@@ -172,7 +182,7 @@ export class Ecology {
       const advFish = new Map();
       for (const [key, f] of this.fishField) {
         const [i, j] = key.split(',').map(Number);
-        const nk = `${i + Math.round(wd[0] * shift)},${j + Math.round(wd[1] * shift)}`;
+        const nk = `${i + Math.round(wd[0]) * shift},${j + Math.round(wd[1]) * shift}`;
         advFish.set(nk, Math.max(advFish.get(nk) ?? 0, f));
       }
       this.fishField = advFish;

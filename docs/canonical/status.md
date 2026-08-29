@@ -340,7 +340,36 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R21 — A TEIA NA TERRA E O BINÁRIO VIVO (a cadeia fechou no chão; 96.48 → 97.76)
+## R22 — A GENTE COME DA TEIA + O SELO (a cadeia chega à boca; 97.76 → 98.06)
+
+**A TEIA ALIMENTA A GENTE (society.teiaPass):** a vila PESCA o cardume
+da sua célula (64m) e CAÇA o veado da célula ou da vizinha mais cheia.
+A rede e a flecha COBRAM do campo: o peixe e o veado tirados deixam de
+existir no banco — pesca predatória COLAPSA o cardume e a comida SOME
+(não há peixe mágico). A carne e o peixe entram no armazém nos DOIS
+tiers: abstrato (pop estatística, evolveSettlementAbstract) e
+materializado (trabalhadores). Evento society.teia registra o que foi
+tirado; acumuladores honestos no componente. O rebanho volta quando a
+natureza se recupera (imigração da teia) — a fome da vila agora tem a
+MESMA causa que a seca.
+
+**CORRENTEZA COM VELOCIDADE REAL (ecology):** a advecção deixou de
+saltar 1 célula por passo (teleporte) e ganhou ACUMULADOR físico: o
+campo inteiro anda quando o deslocamento acumulado completa 1 célula —
+0.35 células/s por unidade de vento, determinístico, persistido no
+snapshot. Brisa de 30s não espalha o banco; vento forte de 120s leva o
+bloom (e o cardume junto) para leste.
+
+**O SELO (build-system):** TODO artefato sai com sha256 dos próprios
+bytes (web zip, binário SEA, exe-kit, android-kit). verifySelo confere:
+UM byte alterado quebra o selo; artefato sem selo não passa. Honestidade
+mantida: integridade é PROVADA aqui; identidade (certificado de código)
+continua sendo passo de distribuição.
+
+**Fixes colaterais:** r19/r20 atualizados à física nova da correnteza
+(a cadência mudou, a conclusão não). **375/375 testes. NÚCLEO 18/18.**
+
+
 
 **FAUNA TERRESTRE (ecology):** a teia desceu do mar para o chão. CAPIM
 por célula (64m) bebe a água do solo (logístico; SECA MATA o mato —
