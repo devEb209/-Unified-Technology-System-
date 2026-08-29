@@ -24,6 +24,20 @@ export function applyDelta(client, wire, lastSeq) {
   return { applied: true, lastSeq: d.seq };
 }
 
+/** wire for a FULL snapshot (reconnect: the client replaces its state) */
+export function encodeSnapshot(seq, state) {
+  return JSON.stringify({ v: 1, full: true, seq, state });
+}
+
+/** apply a full snapshot: the client REPLACES state (no guessing) */
+export function applySnapshot(client, wire) {
+  const d = typeof wire === 'string' ? JSON.parse(wire) : wire;
+  if (d.v !== 1 || d.full !== true) throw new Error('sync: não é um snapshot');
+  for (const k of Object.keys(client)) delete client[k];
+  Object.assign(client, d.state);
+  return { applied: true, lastSeq: d.seq };
+}
+
 /**
  * DeltaStream: the server-side sequence authority. Every broadcast gets
  * the next seq; history keeps the last deltas (a reconnecting client can
@@ -41,6 +55,15 @@ export class DeltaStream {
     this.lastSeq += 1;
     const wire = encodeDelta(this.lastSeq, state);
     this.history.push({ seq: this.lastSeq, bytes: wire.length });
+    if (this.history.length > this.historyCap) this.history.shift();
+    return wire;
+  }
+
+  /** the FULL state under an advancing seq (a reconnecting client asks for this) */
+  snapshot(state) {
+    this.lastSeq += 1;
+    const wire = encodeSnapshot(this.lastSeq, state);
+    this.history.push({ seq: this.lastSeq, bytes: wire.length, full: true });
     if (this.history.length > this.historyCap) this.history.shift();
     return wire;
   }

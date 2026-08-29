@@ -106,11 +106,16 @@ button{display:inline-flex;align-items:center;gap:5px}
         <option value="torre">torre</option>
         <option value="sobrevivencia">sobrevivência</option>
       </select>
-      <button id="create-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gamepad"/></svg> CRIAR JOGO completo (zip)</button>
+      <button id="create-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gamepad"/></svg><span>criar jogo (zip)</span></button>
+      <button id="install-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg><span>instalar na plataforma</span></button>
     </div>
     <div style="font-size:10px;opacity:.7;display:flex;align-items:center;gap:4px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-link"/></svg><span id="ws-live">transporte: conectando…</span></div>
   </div>
-  <div id="agent-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:auto"></div>
+  <div style="display:flex;gap:4px;align-items:center;margin-top:4px">
+      <button id="apps-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-app"/></svg><span>apps instalados</span></button>
+      <span id="apps-out" style="font-size:10px;opacity:.8"></span>
+    </div>
+    <div id="agent-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:auto"></div>
 </div>
 <div class="panel" id="gallery" style="margin-top:8px">
   <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-earth"/></svg> Galeria de mundos</b>
@@ -218,8 +223,10 @@ button{display:inline-flex;align-items:center;gap:5px}
     const j = await r.json();
     say(j.ok ? `saída: ${j.out?.trim()}` : `BLOQUEADO (honesto): ${j.error ?? 'execução desabilitada (UTS_ALLOW_EXEC=1 liga)'}`);
   };
+  let lastCreated = { genre: 'plataforma', name: 'Meu jogo' };
   if ($('create-demo')) $('create-demo').onclick = async () => {
     const genre = $('create-genre').value;
+    lastCreated = { genre, name: 'Meu ' + genre };
     say(`… criando jogo de ${genre} do NADA`);
     const r = await fetch('/api/create', { method: 'POST', body: JSON.stringify({ genre, name: `Meu ${genre}` }) });
     if (!r.ok) { say(`ERRO: ${(await r.json()).error ?? 'falhou'}`); return; }
@@ -229,6 +236,18 @@ button{display:inline-flex;align-items:center;gap:5px}
     a.download = `meu-${genre}.zip`;
     a.click();
     say(`JOGO COMPLETO de ${genre} criado do nada (.zip baixado) — abre o index.html e joga`);
+  };
+  if ($('install-demo')) $('install-demo').onclick = async () => {
+    say('… instalando ' + lastCreated.name + ' na plataforma');
+    const r = await fetch('/api/install', { method: 'POST', body: JSON.stringify({ genre: lastCreated.genre, name: lastCreated.name }) });
+    const j = await r.json();
+    if (!r.ok) { say('ERRO: ' + (j.error ?? 'falhou')); return; }
+    say('INSTALADO: ' + j.url + ' (com storage próprio em apps/) — abra e jogue');
+  };
+  if ($('apps-demo')) $('apps-demo').onclick = async () => {
+    const r = await (await fetch('/api/apps')).json();
+    const el = $('apps-out');
+    if (el) el.textContent = r.apps.length ? r.apps.map((a2) => a2.name + ' (' + (a2.bytes / 1024).toFixed(1) + 'KB)').join(' · ') : 'nenhum app ainda — crie e instale';
   };
   // TRANSPORTE REAL: o pulse do GENESIS chega por WebSocket (RFC 6455)
   try {

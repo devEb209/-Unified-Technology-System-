@@ -15,6 +15,8 @@ import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
 import { composeOptics, EFFECTS } from '../agent/shader-smith.js';
 import { DeltaStream } from '../net/sync.js';
+import { UserApps } from '../platform/user-apps.js';
+import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
 import { SCALES, scaleFor, ladder } from '../world/scales.js';
 import { PROFILES, applyProfile, detectProfile } from '../ues/devices.js';
 
@@ -119,6 +121,7 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
         scales: world.scales ? { levels: 15, tagged: world.scales.tags?.size ?? 0 } : null,
         erosion: world.erosion ? { moved: +world.erosion.stats.eroded.toFixed(4), events: world.erosion.events.length, siltCells: world.erosion.silt.size } : null,
         agents: { fsJournal: agentFS?.journal?.length ?? 0, execAllowed: agentProc?.allow === true },
+        perf: world.perf ? Object.fromEntries(Object.entries(world.perf).map(([k, v]) => [k, +v.toFixed(3)])) : { honest: 'nenhum passo ainda' },
         build: TARGETS ? Object.keys(TARGETS) : null,
         media: { models: '2d/2.5d/3d/3.5d/4d', textures: 3, dubLangs: Object.keys(LANGS).length },
       };
@@ -145,6 +148,46 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     fn: async () => {
       const stream = (world._sync ??= new DeltaStream());
       return { wire: stream.encode({ tick: world.clock.tick, weather: world.environment.weather ?? null, style: world.style?.name ?? 'realista', erosionMoved: +(world.erosion?.stats.eroded ?? 0).toFixed(4) }), lastSeq: stream.lastSeq };
+    },
+  });
+  const userApps = agentFS ? new UserApps({ fs: agentFS }) : null;
+  tools.register('platform.install', {
+    desc: 'INSTALA um app criado na plataforma (workspace/apps/<nome>/) com storage próprio; devolve a URL para jogar',
+    schema: { name: { type: 'string' }, genre: { type: 'string' } },
+    fn: async (p) => {
+      if (!userApps) return { ok: false, honest: 'sem workspace (UTS_WORKSPACE) não há onde instalar' };
+      const game = createGame({ genre: p.genre, name: p.name ?? 'AppGenesis' });
+      return userApps.install({ name: `${game.genre}-${String(p.name ?? 'app').toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, zip: game.artifact.data });
+    },
+  });
+  tools.register('platform.apps', {
+    desc: 'lista os apps INSTALADOS na plataforma (com seus storages)',
+    schema: {},
+    fn: async () => {
+      if (!userApps) return { ok: false, honest: 'sem workspace' };
+      await userApps.rescan();
+      return { ok: true, apps: userApps.list() };
+    },
+  });
+  tools.register('platform.storage', {
+    desc: 'storage do APP (sandbox por app): write/read no workspace/apps/<nome>/data/',
+    schema: { app: { type: 'string' }, op: { type: 'string', values: ['write', 'read'] }, path: { type: 'string' }, data: { type: 'string' } },
+    fn: async (p) => {
+      if (!userApps) return { ok: false, honest: 'sem workspace' };
+      if (p.op === 'write') return { ok: true, ...(await userApps.storageWrite(p.app, p.path, p.data ?? '')) };
+      const content = (await userApps.storageRead(p.app, p.path)).toString();
+      return { ok: true, content };
+    },
+  });
+  tools.register('audio.hrtf', {
+    desc: 'a ORELHA DIRECIONAL: aplica a tabela HRTF (paramétrica publicada hoje; o dono anexa banco MEDIDO pelo mesmo schema) e devolve L/R',
+    schema: { az: { type: 'number' }, elev: { type: 'number' } },
+    fn: async (p) => {
+      const n = 220;
+      const tone = new Float32Array(n);
+      for (let i = 0; i < n; i++) tone[i] = Math.sin((2 * Math.PI * 440 * i) / PARAMETRIC_TABLE.sr) * 0.5;
+      const r = applyHRTF(tone, p.az ?? 0, p.elev ?? 0);
+      return { ok: true, table: r.table, leftPeak: +Math.max(...r.left).toFixed(3), rightPeak: +Math.max(...r.right).toFixed(3) };
     },
   });
   tools.register('world.style', {

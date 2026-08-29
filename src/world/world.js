@@ -57,6 +57,7 @@ export class World {
     this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
     this.ecology = new Ecology({ world: this });              // vegetation as population
     this.acoustics = new Acoustics({ world: this });          // sound as pressure wave
+    this.perf = {};                             // custo EMA por fenômeno (a plataforma se mede)
     this.materials = new MaterialLibrary();     // OUR material system
     this.lighting = new LightSystem();          // OUR lights (sun + phenomena)
     this.streaming = new StreamingSystem({ world: this, perf: null, tese }); // OUR residency
@@ -240,17 +241,28 @@ export class World {
   // ----------------------------------------------------------------- systems
 
   updateWeather(dt) {
+    const t0 = performance.now();
     this.reallife.update(dt);
+    const tRl = performance.now();
     // ---- THE REALITY CHAIN (ADR-019), in causal order:
     // air → sky, rain → soil+film, fuel+moisture+wind → fire, water+fire+sun → life
     const env = this.environment;
     const sunEl = this.clock.sunElevation;
     env.sunEl = sunEl; // the air knows where the sun is (fog build/burn)
     this.climate.step(dt, { wind: env.wind });
+    const tCl = performance.now();
     // BIOLOGIA → ATMOSFERA: a floresta madura transpira (evapotranspiração)
     const focus = this.ues?.camera?.pos ?? [512, 0, 512];
     env.bioHumidity = this.ecology.canopyNear(focus[0], focus[2], 100);
+    // OCEANO → ATMOSFERA: a superfície do mar EVAPORA (8 amostras ao redor)
+    let seaN = 0;
+    for (let k = 0; k < 8; k++) {
+      const a2 = (k / 8) * Math.PI * 2;
+      if (this.terrain.height(focus[0] + Math.cos(a2) * 180, focus[2] + Math.sin(a2) * 180) < this.terrain.seaLevel) seaN++;
+    }
+    env.seaHumidity = seaN / 8;
     this.atmosphere.step(dt, env);
+    const tAt = performance.now();
     // rain that LANDS flows (shallow water) around the focus
     if (env.rain > 0.02) {
       const focus = this.ues?.camera?.pos ?? [512, 0, 512];
@@ -261,8 +273,10 @@ export class World {
       }
     }
     this.fluid.step(dt);
+    const tFl = performance.now();
     // the water that LANDED carves the ground (the ladder feels it)
     this.erosion.step(dt);
+    const tEr = performance.now();
     const air = this.atmosphere.sky({ sunEl, ambient: env.ambient });
     env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
     env.fog = air.fog; env.haze = air.haze; env.sunVisible = air.sunVisible;
@@ -297,6 +311,10 @@ export class World {
         siltAt: (x, z) => this.erosion.siltAt(x, z),
       });
     }
+    // PERF HONESTO: EMA do custo de cada fenômeno (a plataforma se mede)
+    const ema = (k, v) => { this.perf[k] = (this.perf[k] ?? v) * 0.9 + v * 0.1; };
+    ema('reallife', tRl - t0); ema('climate', tCl - tRl); ema('atmosphere', tAt - tCl);
+    ema('fluid', tFl - tAt); ema('erosion', tEr - tFl);
     this.reallife.updateFires(dt); // materialize fire anchors FROM the field
     this.tese?.touch('D-5', `weather=${this.environment.weather} wet=${this.environment.wetness.toFixed(2)}`, this.clock.tick);
   }

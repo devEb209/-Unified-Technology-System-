@@ -635,6 +635,9 @@ export class WebGL2Renderer {
       gl.uniform1f(wat.u.uWetness, env.wetness);
       gl.uniform3f(wat.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
       gl.uniform1f(wat.u.uAlpha, 0.8);
+      // A TERRA NO ESPELHO + a chuva quebrando a superfície
+      if (wat.u.uTerrSeed) gl.uniform1f(wat.u.uTerrSeed, frame.terrainSeed ?? 0);
+      if (wat.u.uRain) gl.uniform1f(wat.u.uRain, env.rain ?? 0);
       gl.enable(gl.BLEND);
       if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.depthMask(false);

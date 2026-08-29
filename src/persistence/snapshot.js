@@ -160,6 +160,7 @@ export function restoreState(state, opts = {}) {
   const ues = new UES({ world, perf, tese, do15, schedulerBudgetMs: state.ues.schedulerBudgetMs ?? 0 });
   ues.camera = structuredClone(state.ues.camera);
   ues.tickN = state.ues.tickN ?? 0;
+  world.ues = ues; // o mundo restaurado foca os fenômenos onde o OBSERVADOR está (simetria com o original)
 
   const core = buildSingularity({ ues, world, rrw, memory: null });
   if (state.singularity?.memory) core.memory.restore(state.singularity.memory);

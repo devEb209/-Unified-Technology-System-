@@ -135,6 +135,7 @@ export function extractFrame(ues, perf = null) {
     water: world.hydrology ? world.hydrology.sample(cam.pos[0], cam.pos[2]) : null,
     // SCALE (R3): the world does not end at the render bubble.
     waterFilm: world.hydrology ? world.hydrology.filmNear(cam.pos, 220, 120) : null,
+    terrainSeed: world.terrain?.seedNum ?? 0, // a água reflete ESTE mundo
     // burn scars are REAL persistent field state, materialized near the camera
     burntGround: world.combustion ? world.combustion.burntNear(cam.pos, 240, 90) : null,
     horizon: buildHorizon(world, cam, radius),

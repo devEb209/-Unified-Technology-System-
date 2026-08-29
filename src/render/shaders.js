@@ -1,4 +1,6 @@
 // UTS :: render/shaders — UTS GLSL programs (OURS).
+import { terrainMirrorGLSL } from './water-reflection.js';
+const TERRAIN_MIRROR_GLSL = terrainMirrorGLSL(); // a TERRA no espelho da água (mesmas constantes do JS)
 // Materials, Blinn-Phong sun, PCF shadow mapping from OUR depth pass,
 // up to 4 point lights (fires) — all interpreting the Frame, inventing nothing.
 
@@ -282,7 +284,7 @@ void main(){
 
 export const WATER_FS = `#version 300 es
 precision highp float;
-` + OCEAN_GLSL + `
+` + OCEAN_GLSL + TERRAIN_MIRROR_GLSL + `
 in vec3 vPos; in float vWave; in float vFoam;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
@@ -293,6 +295,8 @@ uniform vec3 uEyeTint;
 uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
 uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter; uniform float uAirFog;
 uniform vec2 uWindDir;
+uniform float uTerrSeed; // a semente REAL do mundo (a silhueta refletida é DESTE mundo)
+uniform float uRain;     // a chuva QUEBRA a superfície (especular cai, espuma sobe)
 out vec4 fragColor;
 void main(){
   vec3 view = normalize(uCamPos - vPos);
@@ -305,11 +309,18 @@ void main(){
   vec3 shallow = vec3(0.12, 0.32, 0.42) * (0.7 + uAmbient);
   vec3 col = mix(deep, shallow, clamp(vWave*0.9 + 0.5, 0.0, 1.0));
   col = mix(col, skyColor(vec3(0.0,1.0,0.0), uSunDir, uAirMie, uAirI, 2)*0.9, vFoam); // whitecaps scatter the sky
-  float spec = pow(max(dot(reflect(-uSunDir, n), view), 0.0), 90.0);
+  float spec = pow(max(dot(reflect(-uSunDir, n), view), 0.0), 90.0) * (1.0 - 0.7 * clamp(uRain, 0.0, 1.0)); // a chuva quebra o brilho
   col += uSunColor * spec * 0.9;
-  vec3 skyRef = skyColor(reflect(-view, n), uSunDir, uAirMie, uAirI, 4); // the water mirrors the REAL sky
-  col = mix(col, skyRef, fres*0.65);
+  vec3 rd = reflect(-view, n);
+  vec3 skyRef = skyColor(rd, uSunDir, uAirMie, uAirI, 4); // the water mirrors the REAL sky
+  // A TERRA NO ESPELHO: marcha no heightfield do MESMO mundo — se o raio
+  // refletido acerta morro/montanha, o que a água mostra é a TERRA, não o céu
+  vec4 tref = twReflect(vPos, rd, uTerrSeed);
+  float tAtt = tref.a * exp(-length(vPos) / 300.0);
+  vec3 refl = mix(skyRef, tref.rgb, clamp(tAtt, 0.0, 0.85));
+  col = mix(col, refl, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
+  col += vec3(0.10, 0.11, 0.12) * uRain * fres; // a chuva PRATEIA a superfície (gotas espalham a luz do céu)
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
     float lumS = dot(col, vec3(0.299, 0.587, 0.114));

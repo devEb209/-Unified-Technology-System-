@@ -174,6 +174,7 @@ export function createUTS({
 
   // THE REALITY LADDER: every body is TAGGED by its scale (do átomo ao universo)
   world.scales = new ScaleLadder({ world });
+  world.ues = ues; // os fenômenos focam onde o OBSERVADOR está (câmera é realidade)
 
   const core = buildSingularity({ ues, world, rrw, memory: coreMemory ?? undefined, log: logger, providers });
 

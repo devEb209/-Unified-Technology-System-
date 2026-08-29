@@ -30,6 +30,10 @@ export const ICONS = Object.freeze({
   drop: '<path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/>',
   brush: '<path d="M20 4s-7 3-10 8c-1.4 2.4-1 5 1.5 6.5C14 20 17 19 18 16c1-2.6 2-12 2-12z"/><path d="M9 13c-2.5.5-4 2-4.5 4.5-.3 1.4.3 2.5 1.5 2.5s3-1 3.5-3"/>',
   gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',
+  install: '<path d="M12 3v10M8 9.5l4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>',
+  app: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  chart: '<path d="M4 20V6M4 20h16"/><path d="M8 20v-6M12 20v-10M16 20v-4M20 20V8"/>',
+  wave: '<path d="M2 12c2-2.4 4-2.4 6 0s4 2.4 6 0 4-2.4 6 0M2 17c2-2.4 4-2.4 6 0s4 2.4 6 0 4-2.4 6 0"/>',
 });
 
 /** the complete sprite as an injectable <svg> block (symbols per icon) */

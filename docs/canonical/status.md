@@ -340,6 +340,56 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R17 — A TERRA NO ESPELHO + A PLATAFORMA QUE RECEBE E MEDe (91.38 → 92.26)
+
+**A TERRA NO ESPELHO (render/water-reflection.js):** a água refletia só
+o céu — agora MARCHA o heightfield REAL ao longo do raio refletido (4
+passos × 26m): se o raio acerta morro/montanha, o que a água mostra é a
+TERRA (areia/mata/rocha/neve por altura), com fade de perspectiva aérea.
+Sem render target: o terreno é DADO analítico. O espelho JS usa
+terrain.height (com deltas de erosão); o GLSL é gerado com as MESMAS
+frequências macro e a SEMENTE real do mundo (uTerrSeed via frame) — a
+silhueta na água é a silhueta DESTE mundo. A chuva ainda PRATEIA a
+superfície (gotas espalham a luz do céu) e QUEBRA o especular (quebra
+de tensão superficial).
+
+**OCEANO→ATMOSFERA:** o mar EVAPORA — 8 amostras no horizonte do
+observador viram fração de mar (env.seaHumidity) que soma na umidade do
+ar (litoral medido mais úmido que interior, mesma chuva). E a névoa de
+radiação ganhou a física que faltava: ela é fenômeno de AR CALMO —
+acima de vento moderado a formação CESA (turbulência mistura) e o vento
+disperse a que existe (tendência líquida build − disperse).
+
+**SNAPSHOT DE RECONEXÃO (net/sync.js):** fio completo e honesto — delta
+exato aplica; replay ignora (idempotente); GAP é erro; e agora o SNAPSHOT
+COMPLETO (encodeSnapshot/applySnapshot) substitui o estado do cliente
+sob seq nova e os deltas continuam dali. Reconectar nunca adivinha.
+
+**APPS DE USUÁRIO (platform/user-apps.js):** o ciclo REAL da plataforma:
+o GENESIS cria o jogo → o usuário INSTALA (workspace/apps/<nome>/, do
+zip VERIFICADO, com manifest app.json) → joga servido PELA plataforma
+(/apps/<nome>/index.html) → o app tem STORAGE PRÓPRIO (apps/<nome>/data/,
+sandbox duplo; fuga e app alheio = erro). rescan() traz os apps de volta
+ao reiniciar. /api/install, /api/apps, tool platform.install/apps/storage.
+Botão "instalar na plataforma" no demo.
+
+**A ORELHA DIRECIONAL (audio/hrtf.js):** HRTF como TABELA direcional
+(7 azimutes × 5 elevações, FIR de 8 taps por orelha: ITD de Woodworth
+como atraso puro, sombra de cabeça lowpass, notch da concha por
+elevação, ombro). Rótulo honesto: "paramétrica publicada" — e o slot
+loadMeasuredTable(table) valida o banco MEDIDO do dono pelo MESMO schema
+(recusa incompleta com erro que ensina); o consumidor nunca muda.
+
+**A PLATAFORMA SE MEDINDO:** perf EMA por fenômeno (reallife, climate,
+atmosphere, fluid, erosion) no world.perf, exposto no genesis.status —
+custo honesto por subsistema, sem estimativa.
+
+**Simetria restaurada:** o load de save agora liga world.ues = ues (o
+mundo restaurado foca os fenômenos onde o observador está — igual ao
+original; os testes de determinismo byte-a-byte voltaram a fechar).
+
+**Testes:** r17-land-in-the-mirror.test.js — 8 testes (343 no total).
+
 ## R16 — ÍCONES AUTORAIS + A AUTORIDADE DO ESTADO (zero emoji; 90.74 → 91.38)
 
 **ÍCONES SVG PRÓPRIOS (render/icons.js):** 25 ícones autorais (olho,

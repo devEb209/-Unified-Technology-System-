@@ -36,7 +36,8 @@ export class Atmosphere {
   /** air responds to represented weather (evaporative humidity, dust load) */
   step(dt, env) {
     // evapotranspiração: a floresta (bioHumidity) alimenta a umidade do ar
-    const targetH = clamp01(0.3 + env.rain * 0.7 + (env.bioHumidity ?? 0) * 0.45 - env.dust * 0.2);
+    // evapotranspiração da mata + EVAPORAÇÃO do mar alimentam a umidade
+    const targetH = clamp01(0.3 + env.rain * 0.7 + (env.bioHumidity ?? 0) * 0.45 + (env.seaHumidity ?? 0) * 0.3 - env.dust * 0.2);
     const targetD = clamp01(env.dust + (env.weather === 'storm' ? 0.15 : 0));
     const k = 1 - Math.exp(-dt / 6); // air has inertia (~6s to follow weather)
     // the SAME wind that bends trees and spreads fire ADVECTS the cloud field
@@ -45,7 +46,13 @@ export class Atmosphere {
     // the rising sun and the wind BURN it off (both ends physical)
     const sunElF = env.sunEl ?? 0.5;
     if (this.state.humidity > 0.72 && sunElF < 0.12) {
-      this.state.fog = Math.min(1, (this.state.fog ?? 0) + dt * (this.state.humidity - 0.72) * 1.6);
+      // névoa de radiação é fenômeno de AR CALMO: acima de vento moderado a
+      // formação CESA (a turbulência mistura o ar) e o vento dispersa a que existe
+      const wind = env.wind ?? 0.2;
+      const calm = Math.max(0, 1 - wind / 0.6);
+      const build = (this.state.humidity - 0.72) * 1.6 * calm;
+      const disperse = wind * 0.06;
+      this.state.fog = Math.max(0, Math.min(1, (this.state.fog ?? 0) + dt * (build - disperse)));
     } else {
       this.state.fog = Math.max(0, (this.state.fog ?? 0) - dt * (Math.max(0, sunElF - 0.12) * 3.2 + (env.wind ?? 0.2) * 0.05));
     }

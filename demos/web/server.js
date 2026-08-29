@@ -9,6 +9,7 @@ import { build as buildApp } from '../../src/agent/build-system.js';
 import { styleParams } from '../../src/render/style.js';
 import { createGame, GENRES } from '../../src/agent/creator.js';
 import { WSHub } from '../../src/net/transport.js';
+import { UserApps } from '../../src/platform/user-apps.js';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,7 @@ const WORKSPACE = process.env.UTS_WORKSPACE || join(ROOT, 'workspace');
 const agentFS = new AgentFS({ root: WORKSPACE });
 const agentProc = new ProcAgent({ allow: process.env.UTS_ALLOW_EXEC === '1' });
 const styleState = { name: 'realista', params: null }; // o estilo dito no chat (estado do módulo)
+const userApps = new UserApps({ fs: agentFS }); // APPS DE USUÁRIO: criar → instalar → jogar na plataforma
 
 const server = createServer(async (req, res) => {
   try {
@@ -105,6 +107,44 @@ const server = createServer(async (req, res) => {
         res.end(Buffer.from(r.artifact.data));
       } catch (e) {
         res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message, genres: GENRES }));
+      }
+      return;
+    }
+
+    // ---- /api/install: instala um app criado na PLATAFORMA (com storage próprio)
+    if (path === '/api/install' && req.method === 'POST') {
+      let body = '';
+      for await (const ch of req) body += ch;
+      try {
+        const { name, genre } = JSON.parse(body || '{}');
+        const game = createGame({ genre, name: name ?? 'AppGenesis' });
+        const r = await userApps.install({ name: game.genre + '-' + (name ?? 'app').toLowerCase().replace(/[^a-z0-9-]+/g, '-'), zip: game.artifact.data });
+        res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(r));
+      } catch (e) {
+        res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message }));
+      }
+      return;
+    }
+    // ---- lista de apps instalados
+    if (path === '/api/apps' && req.method === 'GET') {
+      await userApps.rescan();
+      res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ apps: userApps.list() }));
+      return;
+    }
+    // ---- app instalado servido PELA PLATAFORMA (workspace/apps/<nome>/…)
+    if (path.startsWith('/apps/')) {
+      const rel = path.slice('/apps/'.length);
+      const file = normalize(join(WORKSPACE, 'apps', rel));
+      if (!file.startsWith(join(WORKSPACE, 'apps'))) {
+        res.writeHead(403).end('forbidden');
+        return;
+      }
+      try {
+        const data = await readFile(file);
+        res.writeHead(200, { 'content-type': MIME[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-cache' });
+        res.end(data);
+      } catch (e) {
+        res.writeHead(404, { 'content-type': 'text/plain' }).end(`app não encontrado: ${e.message}`);
       }
       return;
     }
