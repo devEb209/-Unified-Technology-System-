@@ -142,7 +142,7 @@ const chain = uts.rrw.causalityChain(algumEventoId); // causalidade audível
 
 Veja [`docs/canonical/status.md`](docs/canonical/status.md) e
 [`docs/canonical/progress.md`](docs/canonical/progress.md) — nada é
-declarado funcional sem teste que prove. **GÊNESIS: 79%** (régua de
+declarado funcional sem teste que prove. **GÊNESIS: 82%** (régua de
 fidelidade ADR-019). Funcional hoje: RRW causal, Tese dos D operacional,
 D-O15 adaptativo, percepção indexada (158× @10k NPCs), NMN,
 sociedade/economia, Frames, WebGL2 (7 programas), persistência
@@ -156,9 +156,11 @@ escala** (o mar segue a câmera, poças aparecem, fogo distante brilha, vila
 distante é marcador causal); **R4: re-representação** (fogo abafado atrás
 da serra é um filtro real, cinzas desvanecem com a idade, chuva sob
 pressão fica menos+maior+mais rápida); **R5: criação** (gramática própria
-multi-comando com relações "perto de/ao norte de", anexos csv/nomes
-viram realidade, florestas plantadas são árvores individuais).
-Próximo (R6): workers, LLM real, onboarding.
+multi-comando, anexos csv/nomes viram realidade, florestas são árvores
+individuais); **R6: plataforma real** (streaming em workers byte-idênticos,
+LLM real via env sem nunca persistir a chave, busca web real via env,
+tour guiado no demo). Fila restante: agentes geradores de código, galeria
+de mundos, storage externo, deltas por-entidade.
 
 ## Especificação
 

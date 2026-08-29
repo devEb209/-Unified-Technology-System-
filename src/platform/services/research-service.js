@@ -23,6 +23,46 @@ function normalize(text) {
     .trim();
 }
 
+/**
+ * R6: REAL web search behind an interface — HTTP endpoint (SearXNG /
+ * custom bridge / any JSON API) configured ONLY via env, never hardcoded.
+ * Response shapes accepted: { results:[{title,url,snippet}] } or
+ * [{title,url,snippet}] — normalized to the internal contract.
+ */
+export class HttpSearchProvider {
+  constructor({ url = null, apiKey = null, fetchImpl = null, timeoutMs = 8000 } = {}) {
+    this.url = url ?? (typeof process !== 'undefined' ? process.env?.UTS_SEARCH_URL ?? null : null);
+    this.apiKey = apiKey ?? (typeof process !== 'undefined' ? process.env?.UTS_SEARCH_KEY ?? null : null);
+    this.fetchImpl = fetchImpl ?? (typeof fetch !== 'undefined' ? fetch : null);
+    this.timeoutMs = timeoutMs;
+    this.name = 'http-search';
+  }
+
+  static available() {
+    return typeof process !== 'undefined' && !!process.env?.UTS_SEARCH_URL;
+  }
+
+  async availability() {
+    return !!(this.url && this.fetchImpl);
+  }
+
+  async search(query) {
+    if (!this.url || !this.fetchImpl) return [];
+    const res = await this.fetchImpl(`${this.url.replace(/\/$/, '')}?q=${encodeURIComponent(query)}`, {
+      headers: this.apiKey ? { authorization: `Bearer ${this.apiKey}` } : {},
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
+    if (!res.ok) throw new ResearchError(`search endpoint ${res.status}`);
+    const body = await res.json();
+    const rows = Array.isArray(body) ? body : body.results ?? [];
+    return rows.slice(0, 5).map(r => ({
+      title: String(r.title ?? r.name ?? '').slice(0, 200),
+      snippet: String(r.snippet ?? r.content ?? r.abstract ?? '').slice(0, 600),
+      url: String(r.url ?? r.link ?? ''),
+    }));
+  }
+}
+
 /** deterministic in-memory search backend (tests / offline) */
 export class MemorySearchProvider {
   constructor(corpus = []) {

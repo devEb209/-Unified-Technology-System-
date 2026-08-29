@@ -27,6 +27,12 @@
   h1 { font-size: 13px; margin: 0 0 6px; color: #8fd0ff; letter-spacing: 0.08em; }
   .bar { height: 6px; background: #101c3a; border-radius: 3px; overflow: hidden; margin: 3px 0 8px; }
   .bar > i { display: block; height: 100%; background: linear-gradient(90deg,#2b6cff,#8fd0ff); width: 0%; }
+  #tour { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 30;
+          background: rgba(10,15,30,.92); border: 1px solid #2a3a5f; border-radius: 10px;
+          padding: 10px 14px; max-width: 520px; font-size: 12.5px; color: #dfe7ff; display: none; }
+  #tour b { color: #8fd0ff; }
+  #tour .step { color: #7d8db3; font-size: 11px; }
+  #tour button { margin-left: 8px; }
 </style>
 </head>
 <body>
@@ -45,6 +51,15 @@
   <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
   <div class="bar"><i id="s-pressurebar"></i></div>
   <div style="color:#7d8db3">arraste = orbitar · roda = zoom</div>
+</div>
+
+<div id="tour">
+  <div class="step" id="tour-step">passo 1/5</div>
+  <div id="tour-text"></div>
+  <div style="margin-top:6px;text-align:right">
+    <button id="tour-next">próximo</button>
+    <button id="tour-skip" style="background:transparent;border:1px solid #2a3a5f;color:#7d8db3">pular</button>
+  </div>
 </div>
 
 <div class="panel" id="ai-panel">
@@ -81,7 +96,7 @@
   import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
 
   const canvas = document.getElementById('gl');
-  const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } });
+  const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } }); // browser: streaming síncrono (worker_threads não existe aqui — fallback honesto)
   const { ues, core, world, rrw, do15, clock, tese } = uts;
 
   // ---- [phenomena] ADR-019: the world is born WITH its reality systems.
@@ -305,6 +320,35 @@
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+  // ---- [onboarding] guided tour (R6): usável por TODOS, aparece uma vez
+  const TOUR = [
+    { t: 'Bem-vindo ao <b>UTS</b>. Esta cena é uma REALIDADE simulada: arraste para orbitar a câmera e use a roda para zoom.', hi: null },
+    { t: 'A IA cria realidade por texto. No painel <b>IA · crie seu mundo</b>, escreva: "crie uma vila chamada Vale Verde perto do rio e 10 npcs" e clique <b>criar</b>. Cada passo é verificado.', hi: '#ai-panel' },
+    { t: 'O clima é CAUSAL: use <b>tempestade</b> e observe raios, chuva e — com sorte — um incêndio real se houver combustível seco.', hi: '#controls' },
+    { t: 'O botão <b>raio/fogo</b> procura combustível de verdade: fogo em areia molhada é honestamente recusado. Afaste-se: o fogo vira brilho no horizonte.', hi: '#controls' },
+    { t: '<b>save/load</b> persiste TUDO (fenômenos, mentes, fogo, árvores) e o mundo continua EXATAMENTE de onde parou. Bom mundo!', hi: '#controls' },
+  ];
+  let tourStep = 0;
+  const tourEl = $('tour');
+  const tourDone = (() => { try { return localStorage.getItem('uts-tour-done') === '1'; } catch { return false; } })();
+  function showTour(i) {
+    tourStep = i;
+    if (i >= TOUR.length) { endTour(); return; }
+    tourEl.style.display = 'block';
+    $('tour-step').textContent = `passo ${i + 1}/${TOUR.length}`;
+    $('tour-text').innerHTML = TOUR[i].t;
+    document.querySelectorAll('#ai-panel, #controls, #hud').forEach(el => el.style.outline = '');
+    const hi = TOUR[i].hi;
+    if (hi) { const el = document.querySelector(hi); if (el) el.style.outline = '2px solid #8fd0ff'; }
+  }
+  function endTour() {
+    tourEl.style.display = 'none';
+    document.querySelectorAll('#ai-panel, #controls, #hud').forEach(el => el.style.outline = '');
+    try { localStorage.setItem('uts-tour-done', '1'); } catch {}
+  }
+  $('tour-next').addEventListener('click', () => showTour(tourStep + 1));
+  $('tour-skip').addEventListener('click', endTour);
+  if (!tourDone) setTimeout(() => showTour(0), 800);
 </script>
 </body>
 </html>

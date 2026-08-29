@@ -18,9 +18,11 @@ import { RRW } from './rrw/registry.js';
 import { TeseDosD } from './d/tese.js';
 import { DO15 } from './d/do15.js';
 import { World } from './world/world.js';
+import { AsyncChunkSampler, supported as workerSupported } from './world/async-sampler.js';
 import { UES } from './ues/ues.js';
 import { ProviderRegistry } from './singularity/provider.js';
 import { HeuristicProvider } from './singularity/heuristic.js';
+import { ExternalLLMProvider } from './singularity/external.js';
 import { PuterProvider } from './singularity/puter.js';
 import { ModelRegistry } from './singularity/models.js';
 import { SingularityCore } from './singularity/core.js';
@@ -87,16 +89,34 @@ export { UTSDB, UTSDBError, MemoryJournal, FileJournal } from './persistence/uts
 /** construct the Singularity AI stack over a live system */
 export function buildSingularity({ ues, world, rrw, memory = null, log = null, providers = null, models = null }) {
   const providerRegistry = providers ?? new ProviderRegistry();
+  const modelRegistry = models ?? new ModelRegistry();
   if (providerRegistry.names().length === 0) {
     providerRegistry.register(new HeuristicProvider(), { isDefault: true });
     const puter = new PuterProvider();
     // Puter registered only when actually present (access layer, not the intelligence)
     if (puter._ai()) providerRegistry.register(puter);
+    // R6: a REAL LLM joins the loop ONLY through secure configuration (env).
+    // The key never enters logs/snapshots/memory (ExternalLLMProvider masks it).
+    const envKey = process.env?.UTS_LLM_API_KEY ?? process.env?.OPENAI_API_KEY ?? null;
+    if (envKey) {
+      providerRegistry.register(new ExternalLLMProvider({
+        name: 'llm-env',
+        baseUrl: process.env?.UTS_LLM_BASE_URL ?? 'https://api.openai.com/v1',
+        apiKey: envKey,
+        model: process.env?.UTS_LLM_MODEL ?? 'gpt-4o-mini',
+        costPer1k: Number(process.env?.UTS_LLM_COST ?? 0.5),
+      }));
+      modelRegistry.register({
+        id: 'llm-env', tier: 'B', provider: 'llm-env', costPer1k: Number(process.env?.UTS_LLM_COST ?? 0.5),
+        latencyMs: 900, context: 128000,
+        capabilities: { text: true, reasoning: true, code: true, vision: false, structured: true, tools: false },
+      });
+    }
   }
   return new SingularityCore({
     ues, world, rrw,
     providers: providerRegistry,
-    models: models ?? new ModelRegistry(),
+    models: modelRegistry,
     memory: memory ?? undefined,
     log,
   });
@@ -118,6 +138,7 @@ export function createUTS({
   providers = null,
   coreMemory = null,
   platform = null,
+  asyncStreaming = false,
 } = {}) {
   const logger = log instanceof Logger ? log : new Logger(log ?? { level: 'warn' });
   const theRng = rng ?? new RNG(seed);
@@ -137,6 +158,13 @@ export function createUTS({
     rrw, rng: theRng, clock: theClock, tese: theTese, do15: theDo15,
     seed: worldSeed ?? `${seed}:world`, bus: theBus,
   });
+
+  // R6: off-thread chunk sampling (worker_threads). Off by default; the
+  // demo and Node hosts opt in. Browsers fall back to synchronous streaming
+  // (async-sampler has no static node imports — it is browser-safe).
+  if (asyncStreaming && workerSupported()) {
+    world.streaming.attachSampler(new AsyncChunkSampler({ seed: world.seed, threads: 2 }));
+  }
 
   const ues = new UES({
     world, perf: thePerf, tese: theTese, do15: theDo15, schedulerBudgetMs,

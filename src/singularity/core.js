@@ -295,6 +295,21 @@ export class SingularityCore {
     //    CREATION GRAMMAR augments/overrides when it captures MORE of the
     //    objective (multi-command) or the provider guessed 'unknown'.
     let interpretation = await this.interpretObjective(objective, chosen);
+    // R6 HONEST UPGRADE: the deterministic heuristic says "I don't know";
+    // when a REAL model is configured (env), retry interpretation with it.
+    if (interpretation.intent === 'unknown' && chosen.provider.name === 'heuristic') {
+      const upgrade = (this.models.list() ?? [])
+        .filter(m => m.provider !== 'heuristic' && m.provider !== 'puter')
+        .sort((a, b) => a.costPer1k - b.costPer1k)[0];
+      const upProvider = upgrade ? this.providers.get(upgrade.provider) : null;
+      if (upProvider && await upProvider.availability().catch(() => false)) {
+        const upInterpretation = await this.interpretObjective(objective, { model: upgrade, provider: upProvider });
+        if (upInterpretation?.intent && upInterpretation.intent !== 'unknown') {
+          interpretation = upInterpretation;
+          interpretation.upgradedFrom = 'heuristic';
+        }
+      }
+    }
     const parsed = parseCreation(objective, { attachments: validated });
     if (parsed.commands.length > 0 && (interpretation.intent === 'unknown' || parsed.commands.length > 1)) {
       interpretation = {

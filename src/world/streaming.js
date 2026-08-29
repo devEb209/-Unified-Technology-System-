@@ -77,17 +77,39 @@ export class StreamingSystem {
       this.stats.evicted++;
     }
 
-    // ---- load pending within the time budget (nearest first)
+    // ---- load pending within the time budget (nearest first).
+    // R6 ASYNC PATH: with a sampler attached, sampling happens OFF-THREAD
+    // (workers run the SAME pure sampling — byte-identical results); the
+    // main thread consumes completed work on later frames. Cache hits and
+    // the synchronous path remain the fallbacks (browser = honest sync).
     const t0 = now();
     let loadedNow = 0;
+    const completed = this.asyncSampler ? this.asyncSampler.poll() : [];
+    for (const msg of completed) {
+      const entry = [...this.resident.values()].find(e => e.state === 'sampling' && e.cx === msg.cx && e.cz === msg.cz && e.res === msg.res);
+      if (!entry) continue;
+      entry.patch = { heights: msg.heights, biomes: msg.biomes, res: msg.res, step: msg.step };
+      entry.bytes = msg.heights.byteLength + msg.biomes.byteLength;
+      entry.state = 'ready';
+      entry.version = 1;
+      this.stats.asyncCompleted = (this.stats.asyncCompleted ?? 0) + 1;
+      this.stats.loaded++;
+      loadedNow++;
+      this.cache?.put(entry.cx, entry.cz, entry.res, { heights: msg.heights, biomes: msg.biomes, step: msg.step });
+    }
     for (const entry of this.resident.values()) {
       if (entry.state !== 'pending') continue;
-      if ((now() - t0) > budgetMs) { this.stats.budgetExhausted++; break; }
-      // OUR persistent cache first: a hit reuses the chunk WITHOUT resampling
-      // (sampling is pure — byte-exact equality is proven by tests).
+      // cache hit → ready immediately (no thread roundtrip needed)
       let patch = this.cache?.get(entry.cx, entry.cz, entry.res) ?? null;
-      if (patch) this.stats.cacheHits++;
-      else {
+      if (patch) {
+        this.stats.cacheHits++;
+      } else if (this.asyncSampler && this.asyncSampler.running) {
+        entry.state = 'sampling'; // worker owns it now (same pure function)
+        this.stats.asyncDispatched = (this.stats.asyncDispatched ?? 0) + 1;
+        this.asyncSampler.request({ cx: entry.cx, cz: entry.cz, res: entry.res });
+        continue;
+      } else {
+        if ((now() - t0) > budgetMs) { this.stats.budgetExhausted++; break; }
         patch = this.world.terrain.sampleChunk(entry.cx, entry.cz, entry.res);
         this.cache?.put(entry.cx, entry.cz, entry.res, {
           heights: patch.heights, biomes: patch.biomes, step: patch.step,
@@ -124,6 +146,14 @@ export class StreamingSystem {
     if (cur === 24) return d < 70 + HYST ? 24 : 16;
     if (cur === 16) return d < 70 - HYST ? 24 : (d < 150 + HYST ? 16 : 8);
     return d < 150 - HYST ? 16 : 8;
+  }
+
+  /** attach an AsyncChunkSampler (R6) — null = synchronous streaming.
+   *  The pool warms up HERE so the first frame can already dispatch. */
+  attachSampler(sampler) {
+    this.asyncSampler = sampler;
+    sampler._spawn?.();
+    return this;
   }
 
   pendingCount() {

@@ -11,6 +11,7 @@ import { ServiceRegistry } from './service-registry.js';
 import { AppHost } from './apps.js';
 import { AIService } from './services/ai-service.js';
 import { ResearchService, MemorySearchProvider } from './services/research-service.js';
+import { HttpSearchProvider } from './services/research-service.js';
 import { GitHubService } from './services/github-service.js';
 import { CreationProjectManager } from './projects.js';
 import { Comm } from '../core/comm.js';
@@ -26,7 +27,10 @@ export class UTSPlatform {
     this.storage = storage ?? new MemoryStorage();
 
     this.ai = new AIService();
-    this.research = new ResearchService({ search });
+    // R6: real web search when configured via env; offline falls back honestly
+    this.research = new ResearchService({
+      search: search ?? (HttpSearchProvider.available() ? new HttpSearchProvider() : null),
+    });
     this.github = new GitHubService();
     this.apps = new AppHost({ storage: this.storage, bus: this.bus });
     this.projects = null; // wired at attachCore (needs the Singularity Core)

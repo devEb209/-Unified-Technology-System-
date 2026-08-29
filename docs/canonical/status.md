@@ -198,3 +198,26 @@ luzes), árvores como point-sprites (malha própria em rodada futura).
   (relações de âncora: Porto Sul fica ao sul de Ancora de verdade).
 - Demo: painel de IA aceita anexo (csv/nomes) e mostra "N comandos (gramática)".
 - Testes: 237/237.
+
+
+## R6 — PLATAFORMA REAL (esta rodada)
+
+- **Streaming assíncrono**: `world/async-sampler.js` + `world/chunk-worker.js`
+  (worker_threads). Amostragem de chunks OFF-THREAD; resultado BYTE-IDÊNTO
+  ao síncrono (testado com compare de buffers) — o worker muda QUANDO, nunca
+  O QUÊ. Demo/Node opt-in (`createUTS({ asyncStreaming: true })`); browser
+  cai honestamente para o caminho síncrono. `execArgv: []` no worker (nunca
+  herdar flags do pai). Save→load continua byte-idêntico com workers ligados.
+- **LLM real no loop**: `buildSingularity` registra `ExternalLLMProvider`
+  quando `UTS_LLM_API_KEY`/`OPENAI_API_KEY` existe (+ `UTS_LLM_BASE_URL`,
+  `UTS_LLM_MODEL`). Objetivos com raciocínio vão direto ao modelo real;
+  heurística "não sei" → upgrade honesto audível (`upgradedFrom`).
+  TESTADO contra servidor HTTP local; a chave NUNCA entra em snapshots
+  nem memória (testado por substring). Sem chave: registra nada (honesto).
+- **Busca web real**: `HttpSearchProvider` (env: `UTS_SEARCH_URL`/`KEY`),
+  normaliza {results|lista} → contrato interno; ResearchService triangula
+  sobre ele (testado contra servidor local). Sem env: offline honesto.
+- **Onboarding**: tour guiado de 5 passos no demo (orbitar → IA cria →
+  clima → fogo → save/load), destaca o painel de cada passo, uma vez por
+  visitante (localStorage), botão pular.
+- Testes: 242/242.
