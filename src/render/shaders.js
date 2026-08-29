@@ -23,6 +23,8 @@ uniform float uTime0;
 uniform float uFlash; uniform float uCloudCov; uniform float uCloudSeed;
 uniform float uExposure;
 uniform vec3 uEyeTint;
+uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
+uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter;
 uniform vec4 uSmoke[4]; uniform int uSmokeN; uniform float uSmokeWind;
 uniform vec2 uSmokeDir;
 uniform vec3 uCamPos;
@@ -41,8 +43,17 @@ void main(){
   vec3 smokeCol = smokeMarch(uCamPos, dir, uSmoke, uSmokeN, uTime0, uSmokeWind, uSmokeDir, clamp(uAirI/22.0, 0.05, 1.2), smokeT);
   col = col*smokeT + smokeCol;
   col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
+  { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
+    float lumS = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(vec3(lumS), col, uStyleSat);
+    col = (col - 0.5) * uStyleCon + 0.5;
+    if (uStyleBands > 1.5) col = floor(col * uStyleBands + 0.5) / uStyleBands;
+    col *= uStyleTint;
+  }
   col = col * uEyeTint;
-  col *= uExposure; // the observer's eye gain (adapts to real light)
+  col *= uExposure;
+  col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
+  col += uAfter; // pós-imagem negativa: persistência da retina // the observer's eye gain (adapts to real light)
   fragColor = vec4(col, 1.0);
 }`;
 
@@ -81,6 +92,8 @@ uniform vec3 uSkyBottom; uniform float uFog; uniform float uWetness;
 uniform float uAirMie; uniform float uAirI;
 uniform float uCloudCov; uniform float uCloudSeed; uniform float uExposure;
 uniform vec3 uEyeTint;
+uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
+uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter;
 uniform float uAirFog;
 uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
@@ -126,8 +139,17 @@ void main(){
   col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
   // AERIAL PERSPECTIVE: the air between camera and terrain IS the atmosphere
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
+  { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
+    float lumS = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(vec3(lumS), col, uStyleSat);
+    col = (col - 0.5) * uStyleCon + 0.5;
+    if (uStyleBands > 1.5) col = floor(col * uStyleBands + 0.5) / uStyleBands;
+    col *= uStyleTint;
+  }
   col = col * uEyeTint;
   col *= uExposure;
+  col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
+  col += uAfter; // pós-imagem negativa: persistência da retina
   fragColor = vec4(col, uAlpha);
 }`;
 
@@ -156,7 +178,9 @@ in vec3 vNorm; in vec3 vWorld; in vec4 vA1; in vec4 vA2;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
 uniform float uAirMie; uniform float uAirI; uniform float uExposure;
-uniform vec3 uEyeTint; uniform float uAirFog;
+uniform vec3 uEyeTint;
+uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
+uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter; uniform float uAirFog;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
 uniform float uAlpha;
@@ -197,8 +221,18 @@ void main(){
   }
   col += albedo * emissive * 1.5;
   col = aerial(col, normalize(vWorld-uCamPos), length(vWorld-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vWorld.y, 0.0));
+  col += uStyleRim * pow(1.0 - max(dot(normalize(vNorm), normalize(uCamPos - vWorld)), 0.0), 3.0) * (0.35 + 0.65 * dot(col, vec3(0.299, 0.587, 0.114))); // RIM cel
+  { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
+    float lumS = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(vec3(lumS), col, uStyleSat);
+    col = (col - 0.5) * uStyleCon + 0.5;
+    if (uStyleBands > 1.5) col = floor(col * uStyleBands + 0.5) / uStyleBands;
+    col *= uStyleTint;
+  }
   col = col * uEyeTint;
   col *= uExposure;
+  col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
+  col += uAfter; // pós-imagem negativa: persistência da retina
   fragColor = vec4(col, uAlpha);
   fragColor = vec4(col,1.0);
 }`;
@@ -255,7 +289,9 @@ uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
 uniform float uTime; uniform float uWind;
 uniform float uWetness; uniform float uAlpha; uniform float uAirMie; uniform float uAirI;
 uniform float uExposure;
-uniform vec3 uEyeTint; uniform float uAirFog;
+uniform vec3 uEyeTint;
+uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
+uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter; uniform float uAirFog;
 uniform vec2 uWindDir;
 out vec4 fragColor;
 void main(){
@@ -275,8 +311,17 @@ void main(){
   col = mix(col, skyRef, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
+  { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
+    float lumS = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(vec3(lumS), col, uStyleSat);
+    col = (col - 0.5) * uStyleCon + 0.5;
+    if (uStyleBands > 1.5) col = floor(col * uStyleBands + 0.5) / uStyleBands;
+    col *= uStyleTint;
+  }
   col = col * uEyeTint;
   col *= uExposure;
+  col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
+  col += uAfter; // pós-imagem negativa: persistência da retina
   fragColor = vec4(col, uAlpha);
 }
 `;
@@ -366,7 +411,9 @@ precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vCanopy; in float vHealth;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI; uniform float uExposure;
-uniform vec3 uEyeTint; uniform float uAirFog;
+uniform vec3 uEyeTint;
+uniform float uStyleSat; uniform float uStyleCon; uniform float uStyleBands; uniform float uStyleRim;
+uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter; uniform float uAirFog;
 out vec4 fragColor;
 void main(){
   vec3 bark = vec3(0.27, 0.19, 0.12);
@@ -376,8 +423,18 @@ void main(){
   float ndl = max(dot(normalize(vNorm), uSunDir), 0.0);
   col = col*(uSunColor*ndl + vec3(uAmbient*0.9));
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
+  col += uStyleRim * pow(1.0 - max(dot(normalize(vNorm), normalize(uCamPos - vPos)), 0.0), 3.0) * (0.35 + 0.65 * dot(col, vec3(0.299, 0.587, 0.114))); // RIM cel
+  { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
+    float lumS = dot(col, vec3(0.299, 0.587, 0.114));
+    col = mix(vec3(lumS), col, uStyleSat);
+    col = (col - 0.5) * uStyleCon + 0.5;
+    if (uStyleBands > 1.5) col = floor(col * uStyleBands + 0.5) / uStyleBands;
+    col *= uStyleTint;
+  }
   col = col * uEyeTint;
   col *= uExposure;
+  col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
+  col += uAfter; // pós-imagem negativa: persistência da retina
   fragColor = vec4(col, 1.0);
 }`;
 

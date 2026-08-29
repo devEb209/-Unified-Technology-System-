@@ -442,6 +442,16 @@ export class WebGL2Renderer {
       if (p.u.uAirFog) gl.uniform1f(p.u.uAirFog, air.fogH ?? 0); // névoa de radiação no ar
       if (p.u.uExposure) gl.uniform1f(p.u.uExposure, frame.exposure ?? 1); // the eye's real gain
       if (p.u.uEyeTint) { const tnt = frame.vision?.tint ?? [1, 1, 1]; gl.uniform3f(p.u.uEyeTint, tnt[0], tnt[1], tnt[2]); }
+      // EYE ORGAN: veil (óptica) + afterimage (retina) + supressão sacádica
+      if (p.u.uVeil) gl.uniform1f(p.u.uVeil, frame.vision?.veil ?? 0);
+      if (p.u.uAfter) { const af = frame.vision?.after ?? [0, 0, 0]; gl.uniform3f(p.u.uAfter, af[0], af[1], af[2]); }
+      // STYLE LENS: os parâmetros do estilo dito no chat (identidade se null)
+      const stl = frame.style;
+      if (p.u.uStyleSat) gl.uniform1f(p.u.uStyleSat, stl?.sat ?? 1);
+      if (p.u.uStyleCon) gl.uniform1f(p.u.uStyleCon, stl?.contrast ?? 1);
+      if (p.u.uStyleBands) gl.uniform1f(p.u.uStyleBands, stl?.bands ?? 0);
+      if (p.u.uStyleRim) gl.uniform1f(p.u.uStyleRim, stl?.rim ?? 0);
+      if (p.u.uStyleTint) { const ct = stl?.tint ?? [1, 1, 1]; gl.uniform3f(p.u.uStyleTint, ct[0], ct[1], ct[2]); }
       gl.uniform3f(p.u.uSunColor, frame.lights.sun.color[0], frame.lights.sun.color[1], frame.lights.sun.color[2]);
       gl.uniform1f(p.u.uAmbient, frame.lights.sun.ambient);
       if (p.u.uLightVP) gl.uniformMatrix4fv(p.u.uLightVP, false, lightVP ?? identity());

@@ -4,7 +4,7 @@
 // fire point lights), aggregates, audio state, D-O15 quality. The renderer
 // only manifests this; it invents nothing.
 
-import { eyeState } from '../render/vision.js';
+import { eyeState, VisionDynamics } from '../render/vision.js';
 import { dist2 } from '../core/math.js';
 
 const SHAPE_BY_KIND = {
@@ -148,10 +148,23 @@ export function extractFrame(ues, perf = null) {
       coverage: world.atmosphere.cloudCoverage(world.environment),
       seedT: world.atmosphere.state?.cloudDrift ?? 0, // the wind advects the field
     } : null,
-    // the observer's eye gain (adapts to the REAL light; the renderer multiplies)
-    exposure: world.observer?.exposure ?? 1,
-    // THE HUMAN EYE: purkinje tint, glare, contrast (vision.js from REAL light)
-    vision: eyeState({ ambient: world.environment.ambient ?? 1, flash: world.environment.flash ?? 0, exposure: world.observer?.exposure ?? 1 }),
+    // THE HUMAN EYE AS AN ORGAN: pupil mid-motion, saccadic masking,
+    // afterimages and veil — state that PERSISTS between frames
+    vision: (() => {
+      const eye = (world._eye ??= new VisionDynamics());
+      const dt = Math.max(1e-3, ((world.clock.tick ?? 0) - (world._eyeTick ?? world.clock.tick ?? 0)) * 0.05);
+      world._eyeTick = world.clock.tick;
+      return eye.update(dt, {
+        ambient: world.environment.ambient ?? 1,
+        flash: world.environment.flash ?? 0,
+        exposure: world.observer?.exposure ?? 1,
+        yaw: world.observer?.yaw ?? 0, pitch: world.observer?.pitch ?? 0,
+      });
+    })(),
+    // the observer's eye gain — the saccade MASKS the gain (the eye blinks fast)
+    exposure: (world.observer?.exposure ?? 1) * (1 - (world._eye?.suppress ?? 0)),
+    // THE STYLE (D-O15 re-representation): params for the lens in the shaders
+    style: world.style?.params ? { ...world.style.params } : null,
     // TRUE sun direction (unclamped — the sky must be able to set)
     sunDirTrue: (() => {
       const a = world.clock.timeOfDay * Math.PI * 2 - Math.PI / 2;

@@ -340,6 +340,61 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R14 — O OLHO COMPLETO + ESTILOS SEM LIMITE (o órgão com estado + a lente que obedece ao usuário; 89.08 → 89.86)
+
+**O OLHO COMPLETO (render/vision.js):** "capturar TUDO que o olho humano
+consegue" — o olho agora é um ÓRGÃO com estado que evolui entre frames
+(`VisionDynamics`, determinístico, mora no mundo):
+- **Pupila** 2–7mm com dinâmica assimétrica REAL (constrição tau 0.25s —
+  protege a retina; dilatação tau 1.5s — adaptação ao escuro é lenta).
+- **Acomodação**: círculo de confusão pela abertura — pupila aberta =
+  foco raso (a óptica do olho, não um blur pintado).
+- **Acuidade foveal**: 1/(1+(e/2.2°)²) — o centro é denso, a periferia
+  é borrão sensível a movimento (é assim que o olho amostra).
+- **Supressão sacádica**: gaze > 60°/s mascara a visão (até 85% do
+  ganho) — virar o olho rápido APAGA a visão por um instante.
+- **Pós-imagem negativa**: o flash queima o complemento da tinta de
+  Purkinje e decai (tau 1.2s) — uAfter nos shaders.
+- **Véu óptico**: luz espalhada na óptica LEVANTA o preto (∝ cena);
+  escuro = preto é preto. uVeil.
+- **CFF**: fusão crítica 56Hz fóvea dia → 36Hz noite; periferia funde
+  MAIS ALTO (é detector de movimento).
+- **Aberração cromática lateral**: 0.035%/° — cresce com a excentricidade.
+- Purkinje/glare/CSF (R13) continuam; o frame carrega o órgão inteiro
+  (`frame.vision`) e o `exposure` do frame é mascarado pela sacada.
+
+**MOTOR DE ESTILO (render/style.js) — "realista, anime ou QUALQUER um
+que o user falar (sem limites)":** a física é resolvida UMA vez e é a
+MESMA para todo estilo (comprovado: mundos gêmeos dão pupila e luz
+idênticas); o estilo é a LENTE D-O15 sobre a luz já resolvida: bandas
+cel, rim light (entidade+vegetação), saturação, contraste, tinta — nos
+5 shaders. 7 presets (realista=identidade honesta, anime, noir, pastel,
+cyberpunk, carvão, aquarela). Nome desconhecido SEM parâmetros = erro
+honesto; COM parâmetros = a IA **CRIA o estilo do usuário na hora**
+("sonho azul" com sat/tint vira estilo real, validado e congelado).
+`StyleEngine` guarda histórico e emite `world.style.changed` no RRW.
+Tool `world.style` usa o engine; tool nova `eye.readout` devolve o que
+a retina captura (a IA VÊ pelo olho). `/api/style` no servidor (400
+honesto p/ inventado sem params). Demo: painel de estilo com os 6
+presets + criar estilo novo (nome + params JSON) ao vivo.
+
+**EROSÃO MULTI-ESCALA (world/erosion.js):** a chuva que CAI escava o
+chão (kE·energia·declive, nunca abaixo de 0), o sedimento vai MORRO
+ABAIXO (4 vizinhos), deposita onde o declive morre, 10% fica suspenso
+e assenta — massa CONSERVADA (erodido == depositado + em trânsito, o
+teste exige 1e-9). Os deltas são estado REAL: `terrain.height()` lê
+`terrain.deltas` — o mundo é esculpido de verdade. Quando o total
+movido cruza o limiar, SOBE A ESCADA: `scales.propagateUp([m³],
+'region')` → o registro geológico no nível PLANETA (events[] persiste
+no phenomenaSnapshot/Restore). Determinística (twin seeds batem).
+
+**REVERB → BUS DO MIXER (dívida da R11 paga):** `mixer.setSpace('sala|
+vale|cânion')` — o mix estéreo SECO passa pelo Schroeder do espaço
+antes do limitador (uma verdade só). Medido: tailEnergy(cânion) ≫
+tailEnergy(sala) > seco. Espaço inventado = erro honesto.
+
+**Testes:** r14-eye-and-styles.test.js — 14 testes (320 no total).
+
 ## R13 — QUINZE SISTEMAS DE UMA VEZ (a escada inteira + o olho + a IA operando a máquina; 87.18 → 89.08)
 
 **A escada da realidade (world/scales.js):** 15 níveis do quantum (1e-12 m)

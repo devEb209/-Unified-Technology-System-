@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 import { AgentFS } from '../../src/agent/fs-agent.js';
 import { ProcAgent } from '../../src/agent/proc-agent.js';
 import { build as buildApp } from '../../src/agent/build-system.js';
+import { styleParams } from '../../src/render/style.js';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +31,7 @@ const MIME = {
 const WORKSPACE = process.env.UTS_WORKSPACE || join(ROOT, 'workspace');
 const agentFS = new AgentFS({ root: WORKSPACE });
 const agentProc = new ProcAgent({ allow: process.env.UTS_ALLOW_EXEC === '1' });
+const styleState = { name: 'realista', params: null }; // o estilo dito no chat (estado do módulo)
 
 const server = createServer(async (req, res) => {
   try {
@@ -57,6 +59,27 @@ const server = createServer(async (req, res) => {
         if (!res.headersSent) res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message }));
       }
       return;
+    }
+
+    // ---- /api/style: o usuário DIZ o estilo no chat; validação honesta
+    if (path === '/api/style') {
+      if (req.method === 'GET') {
+        res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(styleState));
+        return;
+      }
+      if (req.method === 'POST') {
+        let body = '';
+        for await (const ch of req) body += ch;
+        try {
+          const { style, params } = JSON.parse(body || '{}');
+          const r = styleParams(style, params ?? {});
+          styleState.name = r.name; styleState.params = r.params;
+          res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(styleState));
+        } catch (e) {
+          res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message }));
+        }
+        return;
+      }
     }
 
     // ---- /api/exec: the AI runs commands (HONEST: default OFF)

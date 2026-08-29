@@ -1,10 +1,20 @@
 // UTS :: audio/mixer — OUR mixer: channels, per-voice gain/pan, soft limiter.
 // Deterministic float mixing; the WAV device (ours too) turns it into bytes.
 
+import { reverb, SPACES } from './reverb.js';
+
 export class Mixer {
   constructor({ sr = 22050 }) {
     this.sr = sr;
     this.voices = []; // {samples, gain, pan, at}
+    this.space = null; // acoustic space of the BUS (reverb on the mix)
+  }
+
+  /** the bus lives in a place: 'room' | 'valley' | 'canyon' */
+  setSpace(name) {
+    if (!SPACES[name]) throw new Error(`mixer: espaço desconhecido "${name}" (${Object.keys(SPACES).join(', ')})`);
+    this.space = name;
+    return this;
   }
 
   add(samples, { gain = 1, pan = 0, at = 0 } = {}) {
@@ -30,9 +40,16 @@ export class Mixer {
         right[j] += s * gr;
       }
     }
+    // THE BUS IS IN A PLACE: the mixed dry signal goes through the space's
+    // real reverberation (Schroeder) before the limiter — one truth.
+    let dl = left, dr = right;
+    if (this.space) {
+      dl = reverb(left, { space: this.space, sr: this.sr });
+      dr = reverb(right, { space: this.space, sr: this.sr });
+    }
     for (let i = 0; i < n; i++) {
-      left[i] = Math.tanh(left[i]);
-      right[i] = Math.tanh(right[i]);
+      left[i] = Math.tanh(dl[i]);
+      right[i] = Math.tanh(dr[i]);
     }
     return { left, right, sr: this.sr };
   }

@@ -72,6 +72,23 @@
   <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
 </div>
 
+<div class="panel" id="style-panel" style="margin-top:8px">
+  <b>🎨 Estilo (você fala, o mundo obedece — a física é UMA, a lente muda)</b>
+  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+    <button id="style-realista">Realista</button>
+    <button id="style-anime">Anime</button>
+    <button id="style-noir">Noir</button>
+    <button id="style-pastel">Pastel</button>
+    <button id="style-cyberpunk">Cyberpunk</button>
+    <button id="style-carvao">Carvão</button>
+  </div>
+  <div style="display:flex;gap:4px;margin-top:4px">
+    <input id="style-custom-name" placeholder="seu estilo (ex: sonho)" style="flex:1;min-width:80px" />
+    <input id="style-custom-json" placeholder='params {"sat":1.2,"rim":0.8}' style="flex:1.4;min-width:110px" />
+    <button id="style-apply">aplicar</button>
+  </div>
+  <div id="style-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap"></div>
+</div>
 <div class="panel" id="agent-panel" style="margin-top:8px">
   <b>🤖 IA no seu aparelho</b>
   <div style="display:grid;gap:4px;margin-top:6px">
@@ -145,6 +162,31 @@
   document.querySelectorAll('#gallery button').forEach((b) => {
     b.onclick = () => { location.search = '?world=' + b.dataset.world; };
   });
+
+  // ---- painel de ESTILO: presets + estilos CRIADOS na hora (sem limites)
+  import { styleParams } from '../../src/render/style.js';
+  const styleOut = $('style-out');
+  const sayStyle = (t) => { if (styleOut) styleOut.textContent = t; };
+  const applyStyle = async (name, params) => {
+    try {
+      const r = styleParams(name, params);
+      uts.world.style = { name: r.name, params: r.params }; // o FRAME leva ao shader
+      await fetch('/api/style', { method: 'POST', body: JSON.stringify({ style: r.name, params }) });
+      sayStyle(`🎨 ${r.name}${r.preset ? '' : ' (estilo NOVO criado por você)'} — bandas:${r.params.bands} sat:${r.params.sat} contraste:${r.params.contrast} rim:${r.params.rim}`);
+    } catch (e) { sayStyle(`⛔ ${e.message}`); }
+  };
+  if ($('style-realista')) $('style-realista').onclick = () => applyStyle('realista');
+  if ($('style-anime')) $('style-anime').onclick = () => applyStyle('anime');
+  if ($('style-noir')) $('style-noir').onclick = () => applyStyle('noir');
+  if ($('style-pastel')) $('style-pastel').onclick = () => applyStyle('pastel');
+  if ($('style-cyberpunk')) $('style-cyberpunk').onclick = () => applyStyle('cyberpunk');
+  if ($('style-carvao')) $('style-carvao').onclick = () => applyStyle('carvao');
+  if ($('style-apply')) $('style-apply').onclick = () => {
+    let params = {};
+    const raw = $('style-custom-json').value.trim();
+    if (raw) { try { params = JSON.parse(raw); } catch { sayStyle('⛔ JSON de parâmetros inválido'); return; } }
+    applyStyle($('style-custom-name').value.trim() || 'meu estilo', params);
+  };
 
   // ---- painel do agente: arquivos, comandos, build (TUDO funcional)
   const agentOut = $('agent-out');

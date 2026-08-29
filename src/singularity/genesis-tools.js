@@ -10,6 +10,8 @@ import { generateTexture } from '../media/textures.js';
 import { walkClip, Clip, Track, blendPoses } from '../media/animation.js';
 import { Cutscene } from '../media/cutscene.js';
 import { dubScript, LANGS } from '../media/dub.js';
+import { StyleEngine } from '../render/style.js';
+import { veilOf } from '../render/vision.js';
 import { SCALES, scaleFor, ladder } from '../world/scales.js';
 import { PROFILES, applyProfile, detectProfile } from '../ues/devices.js';
 
@@ -84,13 +86,22 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
   tools.register('device.detect', { desc: 'detecta o perfil pelo aparelho', schema: { deviceMemory: { type: 'number' }, cores: { type: 'number' }, mobile: { type: 'boolean' } },
     fn: async (p) => ({ profile: detectProfile(p) }) });
 
+  tools.register('eye.readout', {
+    desc: 'o que o OLHO humano está capturando agora: pupila (mm), supressão sacádica, pós-imagem, véu, CFF, tinta de Purkinje',
+    schema: {},
+    fn: async () => {
+      const eye = world._eye;
+      if (!eye) return { ok: false, honest: 'nenhum frame renderizado ainda (o olho ainda não viu nada)' };
+      return { ok: true, pupilMM: +eye.pupilMM.toFixed(2), suppress: +eye.suppress.toFixed(3), afterimage: eye.after.map((v) => +v.toFixed(3)), veil: +veilOf(eye.L).toFixed(4), L: +eye.L.toFixed(3) };
+    },
+  });
   tools.register('world.style', {
     desc: 'define o ESTILO do mundo (o usuário pede no chat, a IA aplica)',
     schema: { style: { type: 'string' } },
     fn: async (p) => {
-      world.style = { name: String(p.style ?? 'realista'), at: world.clock.tick };
-      world.rrw.emitEvent({ type: 'world.style.changed', subject: 'world', data: { style: world.style.name }, tick: world.clock.tick });
-      return { ok: true, style: world.style };
+      const engine = new StyleEngine(world);
+      const r = engine.apply(p.style ?? 'realista', p.params ?? {});
+      return { ok: true, style: world.style, history: engine.history.length };
     },
   });
 

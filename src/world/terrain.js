@@ -14,6 +14,9 @@ export class Terrain {
     this.chunksPerSide = chunksPerSide;
     this.size = chunkSize * chunksPerSide;
     this.seaLevel = 6;
+    // EROSION deltas: real persistent state (sediment moved by water);
+    // height() reads them, so the world itself is carved by the rain.
+    this.deltas = new Map();
   }
 
   /** continental base height 0..24 */
@@ -27,6 +30,11 @@ export class Terrain {
     const river = Math.abs(Math.sin(x * 0.006 + fbm(x * 0.01, z * 0.01, s + 42, { octaves: 2 }) * 2) ) ;
     const riverInfluence = Math.exp(-Math.pow((z - this.size / 2 + Math.sin(x * 0.008) * 30) / 26, 2));
     h = h * (1 - riverInfluence * 0.9) + (this.seaLevel - 1.2) * riverInfluence * 0.9;
+    if (this.deltas.size > 0) {
+      const k = `${Math.round(x / 3)},${Math.round(z / 3)}`;
+      const d = this.deltas.get(k);
+      if (d !== undefined) h += d;
+    }
     return clamp(h, 0, 34);
   }
 

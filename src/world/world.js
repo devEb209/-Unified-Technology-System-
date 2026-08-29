@@ -11,6 +11,7 @@ import { Atmosphere } from './phenomena/atmosphere.js';
 import { Climate } from './phenomena/climate.js';
 import { FluidField } from './phenomena/fluids.js';
 import { Hydrology } from './phenomena/hydrology.js';
+import { Erosion } from './erosion.js';
 import { Combustion } from './phenomena/combustion.js';
 import { Ecology } from './phenomena/ecology.js';
 import { Acoustics } from './phenomena/acoustics.js';
@@ -50,6 +51,7 @@ export class World {
     this.atmosphere = new Atmosphere();                       // air → sky IS scattering
     this.climate = new Climate({ world: this });              // regional weather (escalas)
     this.fluid = new FluidField({ world: this });             // água rasa que ESCORRE
+    this.erosion = new Erosion({ world: this });               // a chuva ESCAVA (escada até geologia)
     this.observer = { adapt: 1, exposure: 1 };                // the eye ADAPTS to real light
     this.hydrology = new Hydrology({ world: this });          // water as substance
     this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
@@ -84,6 +86,7 @@ export class World {
     return {
       atmosphere: { state: { ...this.atmosphere.state } },
       acoustics: this.acoustics.snapshot(),
+      erosion: this.erosion.snapshot(),
       hydrology: this.hydrology.snapshot(),
       combustion: this.combustion.snapshot(),
       ecology: this.ecology.snapshot(),
@@ -97,6 +100,7 @@ export class World {
     if (!s) return;
     if (s.atmosphere) Object.assign(this.atmosphere.state, s.atmosphere.state ?? {});
     if (s.acoustics) this.acoustics.restore(s.acoustics);
+    if (s.erosion) this.erosion.restore(s.erosion);
     if (s.hydrology) this.hydrology.restore(s.hydrology);
     if (s.combustion) this.combustion.restore(s.combustion);
     if (s.ecology) this.ecology.restore(s.ecology);
@@ -254,6 +258,8 @@ export class World {
       }
     }
     this.fluid.step(dt);
+    // the water that LANDED carves the ground (the ladder feels it)
+    this.erosion.step(dt);
     const air = this.atmosphere.sky({ sunEl, ambient: env.ambient });
     env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
     env.fog = air.fog; env.haze = air.haze; env.sunVisible = air.sunVisible;
