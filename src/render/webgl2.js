@@ -7,7 +7,7 @@
 //   GPU resource (tracked, sized, freed). Honest fallbacks: no-FBO or
 //   no-instanced devices degrade gracefully, never fake.
 
-import {SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS, SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS, VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS, TREE_VS, TREE_FS, FIRE_VS, FIRE_FS, POST_VS, POST_FS} from './shaders.js';
+import {terrainFS, SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS, SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS, VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS, TREE_VS, TREE_FS, FIRE_VS, FIRE_FS, POST_VS, POST_FS} from './shaders.js';
 import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh, treeMesh } from './mesh.js';
 import { emitFrame as emitFireParticles } from './fire.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
@@ -447,7 +447,10 @@ export class WebGL2Renderer {
       }
       if (sky.u.uExposure) gl.uniform1f(sky.u.uExposure, frame.exposure ?? 1);
       if (sky.u.uSmoke && gl.uniform4fv) {
-        const far = (frame.horizon ?? []).filter(hz => hz.kind === 'fire').slice(0, 4);
+        // FUMAÇA SOLUÇÃO PRIMEIRO (o solver 3D), fogos analíticos de
+        // horizonte completam as 4 vagas (D-O15: nada é descartado)
+        const near = (frame.smoke3d ?? []).map((c) => ({ pos: c.pos, intensity: c.intensity }));
+        const far = [...near, ...(frame.horizon ?? []).filter(hz => hz.kind === 'fire')].slice(0, 4);
         const buf = new Float32Array(16);
         for (let i = 0; i < far.length; i++) {
           buf.set([far[i].pos[0], far[i].pos[1], far[i].pos[2], far[i].intensity ?? 0.5], i * 4);
@@ -864,6 +867,17 @@ export class WebGL2Renderer {
   }
 
   render(frame) {
+    // A LENTE DE CENA VIVA: o smith de cena gerou GLSL de superfície → o
+    // programa do TERRENO é recompilado com a composição (novo shader real)
+    if (!this.initialized) this.init(); // o render é autossuficiente (contrato dos hosts)
+    const surf = frame?.style?.surface ?? null;
+    const hash = surf?.glsl ? surf.hash : null;
+    if (hash !== this._surfHash) {
+      this._surfHash = hash;
+      this.programs.terrain = hash
+        ? this.programCache.get('terrain:surf:' + hash, TERRAIN_VS, terrainFS(surf.glsl))
+        : this.programCache.get('terrain', TERRAIN_VS, TERRAIN_FS);
+    }
     this.prepare(frame);
     return this.draw(frame);
   }

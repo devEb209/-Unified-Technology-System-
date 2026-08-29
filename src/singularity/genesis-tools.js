@@ -13,7 +13,7 @@ import { dubScript, LANGS } from '../media/dub.js';
 import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
-import { composeOptics, forgeLook, composeColorPipeline, COLOR_STAGES, COLOR_PRESETS, EFFECTS } from '../agent/shader-smith.js';
+import { composeOptics, forgeLook, composeColorPipeline, COLOR_STAGES, COLOR_PRESETS, composeSurfacePipeline, SURFACE_STAGES, SURFACE_PRESETS, EFFECTS } from '../agent/shader-smith.js';
 import { DeltaStream } from '../net/sync.js';
 import { UserApps } from '../platform/user-apps.js';
 import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
@@ -143,6 +143,21 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
         tint: mid.map((x) => Math.max(0, Math.min(2, x / 0.5))),
       };
       return { ...r, applied: true, lensSummary: 'tint = pipeline(cincza médio); GLSL completo no artefato do build' };
+    },
+  });
+  tools.register('agent.surface', {
+    desc: `o SMITH DE CENA gera um SHADER DE SUPERFÍCIE NOVO por composição (${Object.keys(SURFACE_STAGES).join(', ')}; presets: ${Object.keys(SURFACE_PRESETS).join(', ')}) — o programa do TERRENO é recompilado com o GLSL forjado; espelho JS = GLSL`,
+    schema: { stages: { type: 'array' }, preset: { type: 'string' }, remover: { type: 'boolean' } },
+    fn: async (p) => {
+      if (p.remover) {
+        if (world.style?.params) delete world.style.params.surface;
+        return { ok: true, removed: true, honest: 'o terreno voltou ao programa padrão' };
+      }
+      const pipeline = p.stages ?? SURFACE_PRESETS[p.preset ?? 'inverno'];
+      const r = composeSurfacePipeline(pipeline);
+      if (!world.style?.params) new StyleEngine(world).apply('realista', {});
+      world.style.params = { ...world.style.params, surface: { glsl: r.glsl, hash: r.hash, stages: r.stages } };
+      return { ok: true, hash: r.hash, stages: r.stages, selfTest: r.selfTest, honest: r.honest, applied: true };
     },
   });
   tools.register('genesis.critique', {

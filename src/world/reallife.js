@@ -207,6 +207,16 @@ export class RealLife {
         hz.fuel = c.fuel * 100;
       }
     }
+    // FUMAÇA É SOLUÇÃO: cada fogo vivo injeta densidade+calor no solver 3D
+    if (w.fluid3d) {
+      for (const [k, c] of comb.cells) {
+        if (!c.burning) continue;
+        const [cx, cz] = k.split(',').map(Number);
+        const gy = w.terrain.height(cx * comb.cell + comb.cell / 2, cz * comb.cell + comb.cell / 2) ?? 0;
+        w.fluid3d.emit(cx * comb.cell + comb.cell / 2, gy + 2, cz * comb.cell + comb.cell / 2,
+                       { amount: Math.min(0.5, 0.15 + c.intensity * 0.3), heat: 1 + c.intensity });
+      }
+    }
     // 2) anchors whose cell died are destroyed WITH the causal chain intact
     for (const [k, id] of [...this.fireAnchors]) {
       const c = comb.cells.get(k);

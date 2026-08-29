@@ -139,7 +139,7 @@ void main(){
   gl_Position = uVP*vec4(aPos,1.0);
 }`;
 
-export const TERRAIN_FS = `#version 300 es
+export function terrainFS(surfaceBlock = '') { return `#version 300 es
 precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vBiome;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
@@ -170,6 +170,7 @@ float shadowSample(vec3 wp, float ndl){
   return sum/9.0;
 }
 ` + CLOUD_GLSL + `
+${surfaceBlock}
 void main(){
   vec3 cs[6];
   cs[0]=vec3(0.10,0.32,0.55); cs[1]=vec3(0.78,0.71,0.50); cs[2]=vec3(0.32,0.55,0.25);
@@ -191,7 +192,7 @@ void main(){
     float att = max(0.0, 1.0-d/26.0);
     col += base * uPointColor[i] * att * att * max(dot(n, L/max(d,0.01)),0.0) * 2.2;
   }
-  col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
+  col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);${surfaceBlock ? '  col = utsSurface(col, vPos, n, uWetness);' : ''}
   // AERIAL PERSPECTIVE: the air between camera and terrain IS the atmosphere
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
@@ -206,7 +207,10 @@ void main(){
   col += uVeil;  // veiling glare: a óptica do olho LEVANTA o preto
   col += uAfter; // pós-imagem negativa: persistência da retina
   fragColor = vec4(col, uAlpha);
-}`;
+}`; }
+
+// TERRAIN_FS padrão (sem lente de cena gerada) — usado por todos os hosts
+export const TERRAIN_FS = terrainFS();
 
 export const ENTITY_INST_VS = `#version 300 es
 layout(location=0) in vec3 aPos;

@@ -28,6 +28,19 @@ export class UES {
 
     // ---- canonical system order (D-3 temporal ordering of reality)
     this.scheduler.add({ name: 'cutscene', priority: 5, fn: dt => this._stepCutscene(dt) });
+    this.scheduler.add({ name: 'fluid3d', priority: 8, fn: dt => {
+      const f3 = world.fluid3d;
+      if (!f3) return;
+      // D-O15: a grade segue o FOCO (recêntrise é honesto: fumaça é efêmera
+      // e a injeção contínua dos fogos reconstrói o campo)
+      const f = this.camera.pos;
+      const half = f3.nx * f3.cell / 2;
+      if (Math.abs(f[0] - (f3.origin[0] + half)) > half * 0.8 || Math.abs(f[2] - (f3.origin[2] + half)) > half * 0.8) {
+        f3.recenter([f[0] - half, 0, f[2] - half]);
+      }
+      const env = world.environment;
+      f3.step(dt, { wind: [ (env.windDir?.[0] ?? 1) * (env.wind ?? 0.2) * 6, 0.6, (env.windDir?.[1] ?? 0) * (env.wind ?? 0.2) * 6 ] });
+    } });
     this.scheduler.add({ name: 'weather', priority: 10, fn: dt => world.updateWeather(dt) });
     this.scheduler.add({ name: 'ecology', priority: 20, fn: dt => world.updateEcology(dt) });
     this.scheduler.add({ name: 'economy', priority: 30, fn: dt => world.updateEconomy(dt) });

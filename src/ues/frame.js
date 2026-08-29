@@ -139,6 +139,8 @@ export function extractFrame(ues, perf = null) {
     // burn scars are REAL persistent field state, materialized near the camera
     burntGround: world.combustion ? world.combustion.burntNear(cam.pos, 240, 90) : null,
     horizon: buildHorizon(world, cam, radius),
+    // A FUMAÇA REAL: colunas do solver 3D (o que sobe, enrola e viaja)
+    smoke3d: world.fluid3d ? world.fluid3d.peakColumns(4) : null,
     environment: { ...world.environment },
     // the air's optical truth (scattering physics consumes THIS, not colors)
     air: world.atmosphere?.optics

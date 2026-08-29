@@ -10,6 +10,7 @@ import { RealLife } from './reallife.js';
 import { Atmosphere } from './phenomena/atmosphere.js';
 import { Climate } from './phenomena/climate.js';
 import { FluidField } from './phenomena/fluids.js';
+import { Fluid3D } from './phenomena/fluid3d.js';
 import { Hydrology } from './phenomena/hydrology.js';
 import { Erosion } from './erosion.js';
 import { Combustion } from './phenomena/combustion.js';
@@ -51,6 +52,9 @@ export class World {
     this.atmosphere = new Atmosphere();                       // air → sky IS scattering
     this.climate = new Climate({ world: this });              // regional weather (escalas)
     this.fluid = new FluidField({ world: this });             // água rasa que ESCORRE
+    // O AR EM 3D: solver Euleriano real (advecção + empuxo + projeção) —
+    // a fumaça dos incêndios é SOLUÇÃO, não fórmula. Grade segue o foco.
+    this.fluid3d = new Fluid3D({ nx: 20, ny: 14, nz: 20, cell: 12, origin: [this.terrain.size / 2 - 120, 0, this.terrain.size / 2 - 120] });
     this.erosion = new Erosion({ world: this });               // a chuva ESCAVA (escada até geologia)
     this.observer = { adapt: 1, exposure: 1 };                // the eye ADAPTS to real light
     this.hydrology = new Hydrology({ world: this });          // water as substance
@@ -94,6 +98,7 @@ export class World {
       // fire anchors are materialization bookkeeping: WITHOUT them a restored
       // world would re-create burning-cell entities under new ids (divergence)
       fireAnchors: this.reallife.fireAnchors ? [...this.reallife.fireAnchors] : [],
+      fluid3d: this.fluid3d.snapshot(),
     };
   }
 
@@ -106,6 +111,7 @@ export class World {
     if (s.combustion) this.combustion.restore(s.combustion);
     if (s.ecology) this.ecology.restore(s.ecology);
     if (s.fireAnchors) this.reallife.fireAnchors = new Map(s.fireAnchors);
+    if (s.fluid3d) this.fluid3d.restore(s.fluid3d);
   }
 
   /** drop a dynamic rock into the reality (physics body + causal origin) */

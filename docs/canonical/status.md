@@ -340,7 +340,41 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R22 — A GENTE COME DA TEIA + O SELO (a cadeia chega à boca; 97.76 → 98.06)
+## R23 — O AR É REAL E O TERRENO É LENTE (a fumaça virou solução; 98.06 → 98.52)
+
+**FLUIDO 3D COM PROFUNDIDADE REAL (fluid3d):** solver Euleriano (Stam,
+"Real-Time Fluid Dynamics") numa grade local 20×14×20 @ 12m: advecção
+SEMI-LAGRANGIANA com o VENTO AMBIENTE na backtrace (o meio inteiro se
+move), EMPUXO TÉRMICO (α·T − β·ρ — a fumaça quente sobe e o peso próprio
+puxa para baixo), PROJEÇÃO DE PRESSÃO por Gauss-Seidel (14 iterações,
+∇·v → 5e-6 medido). Determinístico: zero aleatório, passos fixos, e os
+LIMIARES são IDENTIDADE do estado (dens < 1e-4, |T| < 0.01, |v| < 1e-3 ⇒
+0 todo passo) — o snapshot esparso (só células vivas viajam; ar parado é
+zero) restaura bit a bit e o determinismo save→load→evoluer se mantém.
+JSON de double roundtrip exato.
+
+**A FUMAÇA É SOLUÇÃO:** cada célula queimando INJETA densidade+calor no
+solver (updateFires), a grade SEGUE O FOCO (recêntrise honesto: fumaça é
+efêmera e a injeção contínua reconstrói), e o CÉU materializa as colunas
+da solução (uSmoke lê peakColumns antes dos fogos analíticos de
+horizonte — D-O15: nada é descartado). A vida do fogo é real: consome o
+combustível e apaga sozinho; a fumaça continua subindo.
+
+**O SMITH DE CENA (agent.surface):** shaders de SUPERFÍCIE novos por
+composição de leis de material: NEVE (altitude+declive: acumula no alto
+e no plano, penhasco solta), MUSGO (umidade × plano), CINZA (a cicatriz
+do fogo), FLORAÇÃO (hash determinístico 127.1/311.7 — a primavera tem
+endereço). Espelho JS = GLSL com as mesmas constantes; erro de estágio
+ou parâmetro é explícito. O terrainFS injeta definição+chamada no shader
+do TERRENO e o programa é RECOMPILADO ao vivo (cache por hash) — o chat
+pediu "inverno", o mundo compila neve.
+
+**Fixes colaterais:** render() autossuficiente (init lazy restaurado);
+limiar esparso com identidade de estado matou a divergência do
+save→load; r18 fio compacto volta a encolher (ar vazio não viaja).
+**378/378 testes. RENDER 14/14.**
+
+
 
 **A TEIA ALIMENTA A GENTE (society.teiaPass):** a vila PESCA o cardume
 da sua célula (64m) e CAÇA o veado da célula ou da vizinha mais cheia.

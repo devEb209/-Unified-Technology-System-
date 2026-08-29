@@ -202,6 +202,100 @@ export function composeColorPipeline(pipeline = []) {
   };
 }
 
+// ---- O SMITH DE CENA: GLSL de SUPERFÍCIE gerado por composição. Cada
+// estágio é uma lei de material (neve por altitude+declive, musgo por
+// umidade, cinza de incêndio, floração determinística por célula) com
+// espelho JS = GLSL e autoteste em amostras de terreno.
+const _ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const _hash01 = (xi, zi) => {
+  const d = xi * 127.1 + zi * 311.7;
+  const v = Math.sin(d) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+export const SURFACE_STAGES = Object.freeze({
+  neve: {
+    desc: 'NEVE por altitude e declive: acumula no alto e no plano (a física da camada fria)',
+    params: { alt: [8, 60], faixa: [2, 10] },
+    glsl: (p) => {
+      const lo = (p.alt - p.faixa).toFixed(2), hi = (p.alt + p.faixa).toFixed(2);
+      return `  { float snow = smoothstep(${lo}, ${hi}, vPos.y) * smoothstep(0.45, 0.75, min(n.y, 1.0)); col = mix(col, vec3(0.93, 0.95, 0.97), snow); }\n`;
+    },
+    js: (col, s, p) => {
+      const snow = _ss(p.alt - p.faixa, p.alt + p.faixa, s.y) * _ss(0.45, 0.75, Math.min(1, s.ny));
+      return col.map((c, i) => c + ([0.93, 0.95, 0.97][i] - c) * snow);
+    },
+  },
+  musgo: {
+    desc: 'MUSGO por umidade: a terra molhada e plana vira mata viva (o bioma responde ao solo)',
+    params: { limiar: [0.1, 0.6] },
+    glsl: (p) => `  { float moss = smoothstep(${p.limiar.toFixed(2)}, ${(p.limiar + 0.25).toFixed(2)}, uWetness) * smoothstep(0.45, 0.8, n.y); col = mix(col, vec3(0.22, 0.36, 0.16), moss * 0.75); }\n`,
+    js: (col, s, p) => {
+      const moss = _ss(p.limiar, p.limiar + 0.25, s.wet) * _ss(0.45, 0.8, s.ny);
+      return col.map((c, i) => c + ([0.22, 0.36, 0.16][i] - c) * moss * 0.75);
+    },
+  },
+  cinza: {
+    desc: 'CINZA de incêndio: o que queimou fica escuro (a cicatriz da combustão na terra)',
+    params: { amount: [0, 1] },
+    glsl: (p) => `  col = mix(col, vec3(0.16, 0.15, 0.14), ${p.amount.toFixed(3)});\n`,
+    js: (col, s, p) => col.map((c, i) => c + ([0.16, 0.15, 0.14][i] - c) * p.amount),
+  },
+  flor: {
+    desc: 'FLORAÇÃO determinística: células escolhidas por hash ganham cor (a primavera tem endereço)',
+    params: { passo: [3, 14], densidade: [0.05, 0.5] },
+    glsl: (p) => `  { vec2 id = floor(vPos.xz / ${(p.passo).toFixed(2)}); float h = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453); float spot = step(${(1 - p.densidade).toFixed(3)}, h) * smoothstep(0.5, 0.85, n.y); col = mix(col, vec3(0.94, 0.75, 0.85), spot * 0.5); }\n`,
+    js: (col, s, p) => {
+      const id = [Math.floor(s.x / p.passo), Math.floor(s.z / p.passo)];
+      const spot = (_hash01(id[0], id[1]) >= 1 - p.densidade ? 1 : 0) * _ss(0.5, 0.85, s.ny);
+      return col.map((c, i) => c + ([0.94, 0.75, 0.85][i] - c) * spot * 0.5);
+    },
+  },
+});
+
+export const SURFACE_PRESETS = Object.freeze({
+  inverno: [{ type: 'neve', params: { alt: 22, faixa: 6 } }],
+  'mata-viva': [{ type: 'musgo', params: { limiar: 0.3 } }, { type: 'flor', params: { passo: 7, densidade: 0.2 } }],
+  cicatriz: [{ type: 'cinza', params: { amount: 0.55 } }],
+  primavera: [{ type: 'flor', params: { passo: 5, densidade: 0.3 } }, { type: 'musgo', params: { limiar: 0.25 } }],
+});
+
+/** compõe a LENTE DE CENA: GLSL de superfície + espelho JS + hash estável */
+export function composeSurfacePipeline(pipeline = []) {
+  if (!Array.isArray(pipeline) || pipeline.length === 0) {
+    throw new Error(`smith de cena: digite os estágios (tenho: ${Object.keys(SURFACE_STAGES).join(', ')})`);
+  }
+  let body = '';
+  const chain = [];
+  for (const stage of pipeline) {
+    const def = SURFACE_STAGES[stage?.type];
+    if (!def) throw new Error(`smith de cena: estágio desconhecido "${stage?.type}" (tenho: ${Object.keys(SURFACE_STAGES).join(', ')})`);
+    const params = {};
+    for (const [k, [lo, hi]] of Object.entries(def.params)) {
+      const v = Number(stage.params?.[k] ?? (lo + hi) / 2);
+      if (!(v >= lo && v <= hi)) throw new Error(`smith de cena: ${stage.type}.${k}=${v} fora de [${lo}, ${hi}]`);
+      params[k] = v;
+    }
+    body += `  // ${stage.type}: ${def.desc}\n`;
+    body += def.glsl(params);
+    chain.push((col, s) => def.js(col, s, params));
+  }
+  const glsl = `vec3 utsSurface(vec3 col, vec3 vPos, vec3 n, float uWetness){\n${body}  return col;\n}`;
+  const js = (col, s) => chain.reduce((acc, f) => f(acc, s), [...col]);
+  const samples = [
+    { col: [0.5, 0.5, 0.5], y: 40, ny: 1, wet: 0.6, x: 33, z: 41 },
+    { col: [0.3, 0.3, 0.3], y: 6, ny: 0.5, wet: 0.05, x: 7, z: 90 },
+    { col: [0.6, 0.5, 0.4], y: 25, ny: 0.95, wet: 0.4, x: 71, z: 13 },
+  ];
+  const out = samples.map((s) => js(s.col, s));
+  const hash = (() => { let h = 2166136261; for (const c of glsl) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16); })();
+  return {
+    glsl, js, hash, stages: pipeline.length,
+    selfTest: { finite: out.every((c) => c.every((x) => Number.isFinite(x))), samples: out },
+    honest: 'shader de CENA gerado por composição de leis de material (espelho JS = GLSL, mesmas constantes)',
+  };
+}
+
 // O LÉXICO DO OLHAR: palavras que o usuário diz no chat viram ÓPTICA.
 // Cada look é uma receita de parâmetros dos efeitos VERIFICADOS — nada
 // aqui inventa shader; tudo compõe a biblioteca testada.
