@@ -99,7 +99,7 @@ test('r15: O HUB — aceita, conta e transmite o MESMO mundo para todos', async 
 test('r15: A ÓPTICA DO OLHO NA TELA — post com fóvea, aberração e halo declarados', () => {
   // os shaders existem e falam a física certa
   assert.match(POST_FS, /ACUITY_ECC = 0.0384/, '2.2° em radianos (fóvea real)');
-  assert.match(POST_FS, /uCAFrac \* ang/, 'aberração cresce com a excentricidade');
+  assert.match(POST_FS, /uCAFrac \* \(1\.0 \+ uCAExtra\) \* ang/, 'aberração cresce com a excentricidade (a lente do estilo soma)');
   assert.match(POST_FS, /uGlareE \* bright/, 'halo do glare em volta dos brilhos');
   assert.match(POST_VS, /aPos\*0\.5\+0\.5/, 'fullscreen triangle');
 });

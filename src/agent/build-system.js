@@ -67,6 +67,24 @@ export async function build({ name, target, manifest, fs = null } = {}) {
     out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip };
     return out;
   }
+  if (target === 'exe') {
+    // KIT DE IMPLANTAÇÃO REAL: o que EXISTE sem postject é o pacote
+    // executável completo (app + run.sh + INSTALL) — roda em linux/mac com
+    // node 22. O binário ÚNICO (SEA) fica HONESTO: precisa de postject.
+    const kit = zipCreate([
+      ...files.map((f) => ({ name: f.name, data: f.data })),
+      { name: 'run.sh', data: `#!/bin/sh\n# kit GENESIS (roda com node 22)\ncd "$(dirname "$0")/X"\nnode main.js\n` },
+      { name: 'INSTALL.txt', data: `${name} — GENESIS\n1) descompacte  2) sh run.sh (linux/mac, node 22)\nbinario unico (SEA): requer postject (npm i -g postject)\n` },
+    ]);
+    return {
+      ok: true,
+      target: 'exe',
+      kind: 'deploy-kit (zip executável: linux/mac com node 22)',
+      honest: 'binário único (.exe/.AppImage): SEA precisa de postject — plano real documentado no INSTALL.txt, não fingido',
+      files: out.files,
+      artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit },
+    };
+  }
   const needs = TARGETS[target].needs;
   const missing = needs.filter((n) => !(probeToolchains())[n]);
   out.ok = missing.length === 0;

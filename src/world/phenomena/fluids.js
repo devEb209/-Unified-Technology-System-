@@ -50,7 +50,11 @@ export class FluidField {
         const nh = this.depth.get(nk) ?? 0;
         const nHead = (t.height(nx, nz) ?? 0) + nh;
         if (nHead < myHead) {
-          const drop = Math.min(h * 0.2, (myHead - nHead) * 0.25, C.MAX_FLOW);
+          // LÂMINA D'ÁGUA (Manning-like): película fina sofre ATRITO do leito
+          // e escova devagar; lâmina profunda deságua mais rápido (velocidade
+          // cresce com a profundidade relativa) — a física de escoamento raso
+          const lamina = Math.min(1, 0.3 + (h / 0.4) * 0.7);
+          const drop = Math.min(h * 0.2, (myHead - nHead) * 0.25 * lamina, C.MAX_FLOW * lamina);
           if (drop > 1e-5) flow.push([k, nk, drop]);
         }
       }

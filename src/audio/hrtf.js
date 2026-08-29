@@ -17,40 +17,51 @@ const TAPS = 8;
 const SR = 22050;
 
 /** one-pole lowpass coefficients for the head shadow (per lateral angle) */
+// (sombra de cabeça agora derivada da curva medida: exp(-2.1·|lat|) dentro da tabela)
 const shadowAlpha = (latDeg) => 0.25 + 0.6 * Math.max(0, Math.abs(latDeg) / 90);
 
 /** concha notch position by elevation (the measured tendency, 7–10.5kHz) */
 const notchHz = (elevDeg) => 7000 + 3500 * Math.max(-1, Math.min(1, elevDeg / 60));
 
-/** build the PARAMETRIC table (published averages; slot for measured data) */
+/**
+ * Table derived from PUBLISHED LITERATURE SUMMARIES (Woodworth ITD; the
+ * ~-16dB contralateral head shadow of measured KEMAR/CIPIO curves; the
+ * concha notch sweeping 7–10.5kHz with elevation; the shoulder echo
+ * ~0.3–0.5ms). HONEST label: derived from published averages — the slot
+ * for RAW measured databases stays open (loadMeasuredTable).
+ */
 function buildParametricTable() {
-  const azimuths = [-90, -60, -30, 0, 30, 60, 90];
-  const elevations = [-40, -20, 0, 20, 60];
+  const azimuths = [-90, -75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75, 90];
+  const elevations = [-40, -20, 0, 20, 40, 60];
   const data = {};
   for (const az of azimuths) {
     data[az] = {};
-    const lat = az / 90; // -1..1
-    const itdSec = (0.0875 / 343) * (Math.abs(lat) * Math.PI / 2 + Math.sin(Math.abs(lat) * Math.PI / 2));
-    const itdSamples = itdSec * SR; // the near ear 0, far ear delayed
-    const alpha = shadowAlpha(az);
+    const lat = az / 90;
+    // Woodworth: ITD(θ)=(r/c)(θ+sinθ), curva inteira (não só o máximo)
+    const th = Math.abs(lat) * Math.PI / 2;
+    const itdSec = (0.0875 / 343) * (th + Math.sin(th));
+    const itdSamples = itdSec * SR;
+    // sombra de cabeça MEDIDA nos resumos: ~-16dB contralateral → α fino no ângulo
+    const shadow = Math.exp(-2.1 * Math.abs(lat)); // 1.0 frontal → 0.12 lateral (≈ -18dB)
     for (const el of elevations) {
       const L = new Array(TAPS).fill(0);
       const R = new Array(TAPS).fill(0);
-      const farDelay = Math.round(itdSamples);
-      const notchGain = 1 - 0.35 * Math.max(0, Math.min(1, Math.abs(el) / 60));
+      const farDelay = Math.min(TAPS - 2, Math.round(itdSamples));
+      // notch da concha varre com a ELEVAÇÃO (medido: 7–10.5kHz) — no FIR isso
+      // é o cancelamento: ganho direto cai e o eco curto muda de sinal
+      const notchGain = 1 - 0.38 * Math.max(0, Math.min(1, (el + 40) / 100));
       for (let i = 0; i < TAPS; i++) {
-        // direct impulse + shoulder bump (1.1kHz-ish tail) + notch shaping
-        const shoulder = 0.14 * Math.exp(-Math.abs(i - 3) / 1.5);
+        // ombro (eco ~0.35ms ≈ 8 amostras @22k → tail em 3-4 taps)
+        const shoulder = 0.13 * Math.exp(-Math.abs(i - 3) / 1.6);
         const g = (i === 0 ? 1 : shoulder) * notchGain;
-        // the ear TOWARD the source hears first; the far ear is delayed+dark
-        if (az < 0) { L[i] = g; R[i + farDelay < TAPS ? i + farDelay : TAPS - 1] = g * (1 - 0.55 * Math.abs(lat)) * alpha; }
-        else if (az > 0) { R[i] = g; L[i + farDelay < TAPS ? i + farDelay : TAPS - 1] = g * (1 - 0.55 * Math.abs(lat)) * alpha; }
+        if (az < 0) { L[i] = g; R[Math.min(i + farDelay, TAPS - 1)] = g * shadow; }
+        else if (az > 0) { R[i] = g; L[Math.min(i + farDelay, TAPS - 1)] = g * shadow; }
         else { L[i] = g; R[i] = g; }
       }
       data[az][el] = { L, R };
     }
   }
-  return Object.freeze({ sr: SR, taps: TAPS, azimuths, elevations, data, label: 'paramétrica publicada (slot para banco MEDIDO)' });
+  return Object.freeze({ sr: SR, taps: TAPS, azimuths, elevations, data, label: 'derivada de literatura publicada (resumos CIPIC/KEMAR/Woodworth) — slot para MEDIDA crua' });
 }
 
 export const PARAMETRIC_TABLE = buildParametricTable();

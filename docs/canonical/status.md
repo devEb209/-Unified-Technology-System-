@@ -340,7 +340,48 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R18 — O MAR VIVO (a vida que brilha + o fio que não mente; 92.26 → 93.02)
+## R19 — O SALTO (física + ecologia + áudio + fio + empacotamento num lote só; 93.02 → 94.70)
+
+**LÂMINA D'ÁGUA (fluids, atrito de leito):** o escoamento rasante perde
+energia no LEITO: drop × min(1, 0.3 + (h/0.4)·0.7). A película de 2cm
+escorrega DEVAGAR; a lâmina de 40cm deságua rápido — provado no mesmo
+declive (0.5 escoa mais que 0.03). Conservação segue de pé.
+
+**CORRENTEZA (ecology.planktonField):** o plâncton deixa de ser número e
+vira CAMPO (células de 64m): o bloom nasce na costa (onde o silt chega) e
+O VENTO ADVECTA o campo (shift = vento·dt·0.35, decaimento por célula).
+Sem ilha causal: a vida se move com o ar. Persiste no snapshot/restore.
+
+**O FIO COM LZ (src/util/lz.js, USZ):** LZW próprio (zero deps), header
+de 12B + códigos u32 LE. Honestidade ANTES do pacote: encodeSnapshotPacked
+empacota SÓ se shrinks() — estado diverso viaja TEXTO (e os dois abrem
+IGUAIS no cliente, provado); applySnapshot aceita ambos.
+
+**A ORELHA DE LITERATURA (hrtf):** grade 13 az × 6 el (15°/20°) derivada
+de resumos publicados (CIPIC/KEMAR/Woodworth): ITD=(0.0875/343)(θ+sinθ),
+sombra contralateral ≈ -18dB MEDIDA no pico da resposta, notch da concha
+varrendo com a elevação, ombro no reflexo do torso. Binlinear mantida
+(7.5° = média EXATA de 0°/15°). O slot da tabela MEDIDA continua aberto
+(loadMeasuredTable intacto).
+
+**KIT DE IMPLANTAÇÃO (build exe):** o exe agora é um kit REAL: zip
+executável com o app + run.sh + INSTALL.txt — roda em qualquer
+linux/mac com node 22. Honestidade mantida: o binário ÚNICO exige
+postject/SEA (dito no resultado, não escondido).
+
+**SMITH COMPLETO (aberração + nitidez):** a forja óptica agora carrega 6
+efeitos verificados (espelho JS = GLSL, autoteste numérico): vinheta,
+grão, bloom, tonemap, ABERRAÇÃO CROMÁTICA (dispersão radial ∝ excentricidade
+× uCAExtra) e NITIDEZ (unsharp mascarado). A lente viva recebe todos.
+
+**STREAMING PROVADO PONTA-A-PONTA:** o plano da IA atravessa o fio SSE
+partido no meio dos bytes e é reconstruído BYTE A BYTE (parser + [DONE] +
+multiline) — a mesma substância, sem chave nenhuma.
+
+**Fixes colaterais:** guard do atraso HRTF (taps dentro do FIR 8);
+world.style aceita ca/sharp; schema do smith com ca/sharp; R19 = 357/357.
+
+
 
 **O PLÂNCTON (ecology.plankton):** a vida no MAR. Floresce com nutrientes
 que chegam à costa (o SILT da erosão escorrido para o mar — a mesma

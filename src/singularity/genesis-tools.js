@@ -129,13 +129,15 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
   });
   tools.register('agent.shader', {
     desc: 'o AGENTE GRÁFICO forja óptica real da biblioteca verificada (vinheta cos⁴, grão de sensor): devolve params + GLSL + autoteste do espelho e aplica na lente viva',
-    schema: { effects: { type: 'array' }, grain: { type: 'number' }, vignette: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' } },
+    schema: { effects: { type: 'array' }, grain: { type: 'number' }, vignette: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' }, ca: { type: 'number' }, sharp: { type: 'number' } },
     fn: async (p) => {
       const amount = {};
       if (p.vignette !== undefined) amount.vinheta = p.vignette;
       if (p.grain !== undefined) amount.grao = p.grain;
       if (p.bloom !== undefined) amount.bloom = p.bloom;
       if (p.tone !== undefined) amount.tonemap = p.tone;
+      if (p.ca !== undefined) amount.aberracao = p.ca;
+      if (p.sharp !== undefined) amount.nitidez = p.sharp;
       const r = composeOptics({ effects: p.effects, amount });
       if (world.style?.params) {
         // aplica na LENTE viva (o estilo atual herda a óptica forjada)
@@ -194,11 +196,11 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
   });
   tools.register('world.style', {
     desc: 'define o ESTILO do mundo (o usuário pede no chat, a IA aplica): nome + parâmetros opcionais achatados (sat, contrast, rim, bloom, tone, grain, vignette)',
-    schema: { style: { type: 'string' }, sat: { type: 'number' }, contrast: { type: 'number' }, rim: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' }, grain: { type: 'number' }, vignette: { type: 'number' } },
+    schema: { style: { type: 'string' }, sat: { type: 'number' }, contrast: { type: 'number' }, rim: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' }, grain: { type: 'number' }, vignette: { type: 'number' }, ca: { type: 'number' }, sharp: { type: 'number' } },
     fn: async (p) => {
       const engine = new StyleEngine(world);
       const overrides = {};
-      for (const k of ['sat', 'contrast', 'rim', 'bloom', 'tone', 'grain', 'vignette']) {
+      for (const k of ['sat', 'contrast', 'rim', 'bloom', 'tone', 'grain', 'vignette', 'ca', 'sharp']) {
         if (p[k] !== undefined) overrides[k] = p[k];
       }
       const r = engine.apply(p.style ?? 'realista', overrides);

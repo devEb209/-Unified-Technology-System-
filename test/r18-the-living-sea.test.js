@@ -75,9 +75,9 @@ test('r18: BIOLUMINESCÊNCIA — a cadeia INTEIRA viva: chuva→erosão→silt�
 
 test('r18: A ORELHA GIRA SUAVE — binlinear: 15° é a média exata de 0° e 30°, sem degraus', () => {
   const t = PARAMETRIC_TABLE;
-  const mid = pickBilinear(t, 15, 0);
-  const a0 = t.data[0][0].L, a30 = t.data[30][0].L;
-  assert.ok(Math.abs(mid.L[0] - (a0[0] + a30[0]) / 2) < 1e-12, `interpolação exata (${mid.L[0].toFixed(4)})`);
+  const mid = pickBilinear(t, 7.5, 0); // 7.5° está ENTRE âncoras (0 e 15)
+  const a0 = t.data[0][0].L, a15 = t.data[15][0].L;
+  assert.ok(Math.abs(mid.L[0] - (a0[0] + a15[0]) / 2) < 1e-12, `interpolação exata (${mid.L[0].toFixed(4)})`);
   // continuidade: vizinhos a ±1° diferem pouco (não há salto de célula)
   const a = applyHRTF(new Float32Array([1, 0, 0]), 29, 0);
   const b = applyHRTF(new Float32Array([1, 0, 0]), 31, 0);

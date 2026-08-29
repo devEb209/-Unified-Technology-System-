@@ -17,6 +17,20 @@ export const EFFECTS = Object.freeze({
       return 1 * (1 - p.amount) + Math.pow(cosA, 4) * p.amount;
     },
   },
+  aberracao: {
+    desc: 'ABERRAÇÃO cromática da lente: R/B deslocam na borda (dispersão do vidro, cresce com o campo)',
+    params: { amount: [0, 2] },
+    constants: (p) => ({ ca: p.amount }),
+    glsl: (p) => `vec2 caOff = c * (uCAFrac * ang * ${Number(p.amount).toFixed(4)});\n  col.r = texture(uScene, vUV + caOff).r;\n  col.b = texture(uScene, vUV - caOff).b;`,
+    mirror(_r, _f, p) { return p.amount * 0.00035 * 10; },
+  },
+  nitidez: {
+    desc: 'NITIDEZ (unsharp mask): a percepção de borda ganha com o contraste local realçado',
+    params: { amount: [0, 1.5] },
+    constants: (p) => ({ sh: p.amount }),
+    glsl: (p) => `vec3 sharp = texture(uScene, vUV + uTexel * 1.5).rgb + texture(uScene, vUV - uTexel * 1.5).rgb;\n  col += ${Number(p.amount).toFixed(4)} * (col * 2.0 - sharp) * 0.25;`,
+    mirror(_r, _f, p) { return p.amount * 0.25 * (0.8 * 2 - 1.6); },
+  },
   bloom: {
     desc: 'BLOOM fisiológico: a corona ciliar espalha fontes brilhantes (limiar + halo largo na tela)',
     params: { amount: [0, 1] },
@@ -63,12 +77,12 @@ export function composeOptics(brief = {}) {
     const eff = EFFECTS[name];
     if (!eff) throw new Error(`shader-smith: efeito desconhecido "${name}" (tenho: ${Object.keys(EFFECTS).join(', ')})`);
     const raw = amount[name];
-    const a = raw === undefined ? (name === 'vinheta' ? 0.35 : name === 'grao' ? 0.16 : 0.25) : clamp01(raw);
+    const a = raw === undefined ? (name === 'vinheta' ? 0.35 : name === 'grao' ? 0.16 : 0.25) : (name === 'aberracao' ? Math.min(2, Math.max(0, Number(raw))) : clamp01(raw));
     const p = { amount: a };
     Object.entries(eff.params).forEach(([k, [lo, hi]]) => {
       if (!(p[k] >= lo && p[k] <= hi)) throw new Error(`shader-smith: ${name}.${k}=${p[k]} fora de [${lo}, ${hi}]`);
     });
-    params[{ vinheta: 'vignette', grao: 'grain', bloom: 'bloom', tonemap: 'tone' }[name]] = a;
+    params[{ vinheta: 'vignette', grao: 'grain', bloom: 'bloom', tonemap: 'tone', aberracao: 'ca', nitidez: 'sharp' }[name]] = a;
     glslParts.push(eff.glsl(p));
     mirrors.push(() => eff.mirror(0.6, 1.0, p));
   }

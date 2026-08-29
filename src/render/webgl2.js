@@ -825,6 +825,8 @@ export class WebGL2Renderer {
       gl.uniform1f(post.u.uGrain, frame.style?.grain ?? 0);
       gl.uniform1f(post.u.uBloomE, frame.style?.bloom ?? 0);
       gl.uniform1f(post.u.uTone, frame.style?.tone ?? 0);
+      gl.uniform1f(post.u.uSharp, frame.style?.sharp ?? 0);
+      gl.uniform1f(post.u.uCAExtra, frame.style?.ca ?? 0);
       gl.uniform1f(post.u.uTime, frame.tick ?? 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.enable(gl.DEPTH_TEST);

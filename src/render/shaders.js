@@ -510,12 +510,14 @@ uniform float uGrain;    // grão do sensor (ruído de fóton ∝ 1/√sinal)
 uniform float uTime;     // semente do grão (o sensor é vivo)
 uniform float uBloomE;   // corona ciliar (bloom fisiológico das brilhas)
 uniform float uTone;     // tonemap de display (a tela não é energia infinita)
+uniform float uSharp;    // nitidez (unsharp mask)
+uniform float uCAExtra;  // aberração cromática EXTRA (lente do estilo)
 const float ACUITY_ECC = 0.0384; // 2.2° em radianos (fóvea)
 void main(){
   vec2 c = vUV - 0.5;
   float ang = length(c) * uFovRad;                          // excentricidade real
   float acu = 1.0 / (1.0 + pow(ang / ACUITY_ECC, 2.0));     // acuidade foveal
-  vec2 ca = c * (uCAFrac * ang);                            // CA cresce com a borda
+  vec2 ca = c * (uCAFrac * (1.0 + uCAExtra) * ang);         // CA cresce com a borda (a lente do estilo soma)
   vec3 col;
   col.r = texture(uScene, vUV + ca).r;
   col.g = texture(uScene, vUV).g;
@@ -556,6 +558,11 @@ void main(){
   // GRÃO DO SENSOR: ruído de fóton — menos sinal, MAIS grão (real)
   float n = fract(sin(dot(vUV * (1.0 + fract(uTime)), vec2(12.9898, 78.233))) * 43758.5453);
   col += uGrain * (n - 0.5) / sqrt(max(dot(col, vec3(0.299, 0.587, 0.114)), 0.02) + 0.05) * 0.35;
+  // NITIDEZ (unsharp): a percepção de borda (só quando o estilo pede)
+  if (uSharp > 0.001) {
+    vec3 sharpN = texture(uScene, vUV + uTexel * 1.5).rgb + texture(uScene, vUV - uTexel * 1.5).rgb;
+    col += uSharp * (col * 2.0 - sharpN) * 0.25;
+  }
   // BLOOM FISIOLÓGICO: a corona ciliar espalha o brilho (limiar + halo largo)
   if (uBloomE > 0.001) {
     vec3 bl = vec3(0.0);

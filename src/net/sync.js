@@ -53,13 +53,27 @@ export function compactState(state) {
 }
 
 /** full snapshot with the COMPACT body (smaller wire, same truth) */
+const textEnc = new TextEncoder();
+
+/** wire for a full snapshot COMPRESSED when it truly shrinks (honest: the smaller travels) */
+export function encodeSnapshotPacked(seq, state) {
+  const wire = encodeSnapshotCompact(seq, state);
+  const packed = compress(textEnc.encode(wire));
+  return packed.length < wire.length ? packed : wire;
+}
+
 export function encodeSnapshotCompact(seq, state) {
   return JSON.stringify({ v: 1, full: true, seq, state: compactState(state) });
 }
 
-/** apply a full snapshot: the client REPLACES state (no guessing) */
+import { compress, decompress } from '../util/lz.js';
+
+/** apply a full snapshot: the client REPLACES state (no guessing). Accepts
+ *  the plain JSON string OR the compressed USZ package (transparent). */
 export function applySnapshot(client, wire) {
-  const d = typeof wire === 'string' ? JSON.parse(wire) : wire;
+  let raw = wire;
+  if (raw instanceof Uint8Array) raw = new TextDecoder().decode(decompress(raw));
+  const d = typeof raw === 'string' ? JSON.parse(raw) : raw;
   if (d.v !== 1 || d.full !== true) throw new Error('sync: não é um snapshot');
   for (const k of Object.keys(client)) delete client[k];
   Object.assign(client, d.state);
@@ -88,8 +102,9 @@ export class DeltaStream {
   }
 
   /** the FULL state under an advancing seq (a reconnecting client asks for this) */
-  snapshot(state, { compact = true } = {}) {
+  snapshot(state, { compact = true, pack = true } = {}) {
     this.lastSeq += 1;
+    if (compact && pack) return encodeSnapshotPacked(this.lastSeq, state);
     const wire = compact ? encodeSnapshotCompact(this.lastSeq, state) : encodeSnapshot(this.lastSeq, state);
     this.history.push({ seq: this.lastSeq, bytes: wire.length, full: true });
     if (this.history.length > this.historyCap) this.history.shift();

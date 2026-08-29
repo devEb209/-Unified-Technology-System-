@@ -33,6 +33,7 @@ export class Ecology {
     this.trees = new Map();
     this.stats = { seeded: 0, died: 0, burnt: 0, grown: 0 };
     this.plankton = 0.15; // densidade de dinoflagelados no mar (0..1) — a VIDA que brilha
+    this.planktonField = new Map(); // correnteza: bloom por célula (key→0..1), ADVECTADO pelo vento
   }
 
   speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
@@ -74,12 +75,13 @@ export class Ecology {
 
   /** the RRW persistence contract */
   snapshot() {
-    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton };
+    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton, planktonField: [...this.planktonField] };
   }
   restore(s) {
     this.nextId = s.nextId; this.maxTrees = s.maxTrees;
     this.trees = new Map(s.trees ?? []);
     this.plankton = s.plankton ?? 0.15;
+    this.planktonField = new Map(s.planktonField ?? []);
     Object.assign(this.stats, s.stats ?? {});
     return this;
   }
@@ -130,6 +132,29 @@ export class Ecology {
     // escorrido para a costa) + luz; decai sozinho. Determinístico.
     this.plankton = Math.max(0, Math.min(1,
       this.plankton + dt * 0.05 * (seaSilt * 2.2 * (0.3 + 0.7 * Math.max(0, Math.min(1, sunEl))) - 0.01 * this.plankton)));
+    // CORRENTEZA: o bloom é um CAMPO que o vento ADVECTA (o mar flui —
+    // a mesma ordem do vento que dobra as árvores leva o brilho embora)
+    if (this.planktonField.size > 0 || seaSilt > 0.05) {
+      const w = this.world;
+      const wind = w.environment?.wind ?? 0.2;
+      const wd = w.environment?.windDir ?? [1, 0];
+      const CELL = 64;
+      const next = new Map();
+      for (const [key, v] of this.planktonField) {
+        const [i, j] = key.split(',').map(Number);
+        const shift = Math.max(1, Math.round(wind * dt * 0.35));
+        const ni = i + Math.round(wd[0] * shift), nj = j + Math.round(wd[1] * shift);
+        next.set(`${ni},${nj}`, Math.max(next.get(`${ni},${nj}`) ?? 0, v * (1 - 0.004 * dt)));
+      }
+      // nutrientes novos entram na costa (silt que chega)
+      const focus = w.ues?.camera?.pos ?? [512, 0, 512];
+      if (seaSilt > 0.02) {
+        const ci = Math.round(focus[0] / CELL), cj = Math.round(focus[2] / CELL);
+        const k = `${ci},${cj}`;
+        next.set(k, Math.min(1, (next.get(k) ?? 0) + seaSilt * 0.1));
+      }
+      this.planktonField = next;
+    }
     let grown = 0;
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water
     for (const tree of this.trees.values()) {
