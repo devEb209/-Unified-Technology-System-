@@ -45,13 +45,13 @@ Em paralelo, o fluxo cognitivo:
 
 ## Rodar em qualquer lugar (incl. Android/Termux)
 
-O demo não tem dependências: só precisa de Node ≥ 22.
+O demo não tem dependências: só precisa de Node ≥ 22 (funciona no 26).
 
 ```bash
-# Termux (Android):
+# Termux (Android) — CLONE DIRETO NUMA PASTA SIMPLES "uts" (evita o armadilha abaixo):
 pkg install -y git nodejs
-git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git
-cd -Unified-Technology-System-
+git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git uts
+cd uts
 cat package.json | grep name   # DEVE mostrar uts-unified-technology-system (se mostrar "home", você não está na pasta!)
 npm start            # ou: node demos/web/server.js
 ```
@@ -60,12 +60,33 @@ Abra `http://localhost:8080` no navegador (no próprio celular).
 > A linha `UTS demo server: http://0.0.0.0:8080 ...` que o servidor imprime
 > é SAÍDA, não comando — não cole ela no terminal.
 
-Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch>`, `npm start`).
+### Se você já clonou e deu este erro:
+
+```
+Error: Cannot find module '/data/data/com.termux/files/home/demos/web/server.js'
+```
+
+**Causa:** o nome da pasta começa com TRAÇO (`-Unified-Technology-System-`),
+então `cd -Unified-Technology-System-` falha como "opção inválida" do bash e
+você fica em `~` sem perceber — e `node demos/web/server.js` procura o
+arquivo na pasta errada. **Solução (escolha uma):**
+
+```bash
+cd ./-Unified-Technology-System-      # ./ na frente neutraliza o traço
+# OU (mais simples): clone de novo numa pasta limpa
+git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git uts
+cd uts && npm start
+```
+
+Verificação rápida de que está na pasta certa: `cat package.json | grep name`
+mostra `uts-unified-technology-system`.
+
+Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch> <url> uts`, `npm start`).
 
 ## Quick start
 
 ```bash
-npm test              # 200/200 testes determinísticos
+npm test              # 242/242 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
