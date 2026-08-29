@@ -11,17 +11,23 @@ void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.999, 1.0); }`;
 // the view ray (Rayleigh+Mie, generated physics in SCATTER_GLSL). D-O15
 // governs sample cost elsewhere; the phenomenon here is integrated whole.
 import { SCATTER_GLSL } from './scattering.js';
-export const SKY_FS = SCATTER_GLSL + `
+import { CLOUD_GLSL } from './clouds.js';
+export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + `
 in vec2 vUV;
 uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
 uniform float uTanF; uniform float uAspect;
 uniform vec3 uSunDir; uniform float uAirMie; uniform float uAirI;
-uniform float uFlash;
+uniform float uFlash; uniform float uCloudCov; uniform float uCloudSeed;
+uniform vec3 uCamPos;
 out vec4 fragColor;
 void main(){
   vec2 ndc = vUV*2.0 - 1.0;
   vec3 dir = normalize(uCamFwd + uCamRight*(ndc.x*uAspect*uTanF) + uCamUp*(ndc.y*uTanF));
   vec3 col = skyColor(dir, uSunDir, uAirMie, uAirI, 8);
+  // CLOUDS: the same air, condensed — integrated along the view ray
+  float cT; vec3 cCol;
+  marchClouds(uCamPos, dir, uSunDir, uCloudCov, uAirI*clamp(uSunDir.y*4.0+0.12,0.0,1.0), uCloudSeed, cCol, cT);
+  col = col*cT + cCol;
   col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
   fragColor = vec4(col, 1.0);
 }`;
@@ -287,4 +293,74 @@ void main(){
   float r = length(d) * 2.0;
   float soft = clamp(1.0 - r, 0.0, 1.0);
   fragColor = vec4(vColor, vAlpha * soft);
+}`;
+
+// ---- TREE: the living population as REAL geometry (not billboards).
+// Instance attrs: aT0 = (worldPos.xyz, height); aT1 = (health, wind, phase, pad).
+export const TREE_VS = `#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNorm;
+layout(location=2) in float aCanopy;
+layout(location=3) in vec4 aT0;
+layout(location=4) in vec4 aT1;
+uniform mat4 uVP; uniform float uTime;
+out vec3 vPos; out vec3 vNorm; out float vCanopy; out float vHealth;
+void main(){
+  float h = max(aT0.w, 0.1);
+  vec3 lp = aPos;
+  // wind bends the top quadratically (real cantilever shape, small angles)
+  float bend = aT1.y * 0.5 * aPos.y*aPos.y * (0.6 + 0.4*sin(uTime*1.4 + aT1.z));
+  lp.x += bend; lp.z += bend*0.6;
+  vec3 wp = aT0.xyz + lp*vec3(1.0, h, 1.0);
+  vPos = wp; vNorm = aNorm; vCanopy = aCanopy; vHealth = aT1.x;
+  gl_Position = uVP*vec4(wp, 1.0);
+}`;
+
+// TREE_FS reuses the GENERATED scattering physics (aerial perspective) — the
+// tree breathes the SAME air as the terrain (no #version here: SCATTER_GLSL
+// already opens the shader).
+export const TREE_FS = SCATTER_GLSL + `
+precision highp float;
+in vec3 vPos; in vec3 vNorm; in float vCanopy; in float vHealth;
+uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
+uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI;
+out vec4 fragColor;
+void main(){
+  vec3 bark = vec3(0.27, 0.19, 0.12);
+  vec3 dry  = vec3(0.42, 0.35, 0.19);
+  vec3 lush = vec3(0.13, 0.33, 0.12);
+  vec3 col = vCanopy > 0.5 ? mix(dry, lush, clamp(vHealth, 0.0, 1.0)) : bark;
+  float ndl = max(dot(normalize(vNorm), uSunDir), 0.0);
+  col = col*(uSunColor*ndl + vec3(uAmbient*0.9));
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  fragColor = vec4(col, 1.0);
+}`;
+
+// ---- FIRE: hot gas EMITS blackbody light (Planck), cools, becomes smoke.
+// Additive emission — the fire IS a light source; it never shades.
+export const FIRE_VS = `#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec4 aSC;  // size, r, g, b
+layout(location=2) in float aAlpha;
+uniform mat4 uVP; uniform float uPointScale;
+out vec3 vCol; out float vA;
+void main(){
+  vec4 clip = uVP*vec4(aPos, 1.0);
+  float dist = max(clip.w, 0.1);
+  gl_Position = clip;
+  gl_PointSize = clamp(aSC.x*uPointScale/dist, 1.0, 220.0);
+  vCol = aSC.yzw; vA = aAlpha;
+}`;
+
+export const FIRE_FS = `#version 300 es
+precision highp float;
+in vec3 vCol; in float vA;
+out vec4 fragColor;
+void main(){
+  float d = length(gl_PointCoord - vec2(0.5));
+  float fall = smoothstep(0.5, 0.10, d);
+  float a = fall*vA;
+  fragColor = vec4(vCol*a, a); // emissive: energy, not shading
 }`;

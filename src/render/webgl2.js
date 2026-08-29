@@ -7,12 +7,9 @@
 //   GPU resource (tracked, sized, freed). Honest fallbacks: no-FBO or
 //   no-instanced devices degrade gracefully, never fake.
 
-import {
-  SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS,
-  SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS,
-  VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS,
-} from './shaders.js';
-import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh } from './mesh.js';
+import {SKY_VS, SKY_FS, TERRAIN_VS, TERRAIN_FS, ENTITY_INST_VS, ENTITY_FS, SHADOW_VS, SHADOW_FS, POINTS_VS, POINTS_FS, WATER_VS, WATER_FS, VEGETATION_VS, VEGETATION_FS, HORIZON_VS, HORIZON_FS, TREE_VS, TREE_FS, FIRE_VS, FIRE_FS} from './shaders.js';
+import { cubeMesh, sphereMesh, coneMesh, domeMesh, buildTerrainMesh, buildImpostorMesh, treeMesh } from './mesh.js';
+import { emitFrame as emitFireParticles } from './fire.js';
 import { perspective, lookAt, multiply, identity } from './mat.js';
 import { frustumPlanes, cullFrame } from './culling.js';
 import { GPUResourceManager, ProgramCache, RHIError, RendererError } from './rhi.js';
@@ -72,7 +69,10 @@ export class WebGL2Renderer {
       },
     }); // lazy cached uniform locations — u.uVP works without eager enumeration
     const a = {};
-    for (const name of ['aPos', 'aNorm', 'aBiome', 'aSeed', 'aInst0', 'aInst1', 'aInst2']) {
+    // introspect EVERY attribute name the shaders use (-1 when absent; all
+    // bind sites guard). Missing ones here silently break the real browser.
+    for (const name of ['aPos', 'aNorm', 'aBiome', 'aSeed', 'aInst0', 'aInst1', 'aInst2',
+      'aHH', 'aSC', 'aAlpha', 'aCanopy', 'aT0', 'aT1']) {
       a[name] = gl.getAttribLocation(prog, name);
     }
     return { prog, u, a, uniform: { u } };
@@ -122,6 +122,8 @@ export class WebGL2Renderer {
       water: this.programCache.get('water', WATER_VS, WATER_FS),
       vegetation: this.programCache.get('vegetation', VEGETATION_VS, VEGETATION_FS),
       horizon: this.programCache.get('horizon', HORIZON_VS, HORIZON_FS),
+      tree: this.programCache.get('tree', TREE_VS, TREE_FS),
+      fire: this.programCache.get('fire', FIRE_VS, FIRE_FS),
     };
     if (this.caps.fbo) {
       this.programs.shadow = this.programCache.get('shadow', SHADOW_VS, SHADOW_FS);
@@ -131,6 +133,8 @@ export class WebGL2Renderer {
       box: cubeMesh(), sphere: sphereMesh(), cone: coneMesh(),
       dome: domeMesh(), capsule: sphereMesh(6, 8),
     };
+    this.treeMesh = treeMesh('pine'); // real geometry for pine (grass-shrub stays a point under D-O15)
+    this.treeMesh.handle = this.createBuffer(this.treeMesh.data); // RHI-tracked
     for (const m of Object.values(this.meshes)) {
       m.handle = this.createBuffer(m.data); // RHI-tracked; raw buffer lives in handle.meta.gl
     }
@@ -397,6 +401,12 @@ export class WebGL2Renderer {
       gl.uniform1f(sky.u.uAspect, (this._w || 1) / (this._h || 1));
       gl.uniform3f(sky.u.uSunDir, sd[0], sd[1], sd[2]);
       gl.uniform1f(sky.u.uAirMie, air.mie); gl.uniform1f(sky.u.uAirI, air.intensity);
+      // clouds: coverage FROM the represented air (causal), seed drifts with the day
+      if (sky.u.uCloudCov) {
+        gl.uniform1f(sky.u.uCloudCov, frame.clouds?.coverage ?? 0);
+        gl.uniform1f(sky.u.uCloudSeed, frame.clouds?.seedT ?? 0);
+        gl.uniform3f(sky.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
+      }
     }
     gl.uniform3f(sky.u.uSkyTop, env.skyTop[0], env.skyTop[1], env.skyTop[2]);
     gl.uniform3f(sky.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);
@@ -513,6 +523,30 @@ export class WebGL2Renderer {
       }
     }
 
+    // ---- FIRE: blackbody particles emitted by the combustion field
+    // (additive emission — the fire IS light; smoke cools toward gray)
+    const fires = culled.visible.filter(e => e.kind === 'hazard' && e.fire);
+    if (fires.length > 0) {
+      const parts = emitFireParticles(fires.map(fl => ({ ...fl.fire, pos: fl.pos, id: fl.id })), frame.time ?? 0, env.wind ?? 0.2, env.windDir ?? [1, 0, 0]);
+      if (parts.length > 0) {
+        const fireP = this.programs.fire;
+        gl.useProgram(fireP.prog);
+        gl.uniformMatrix4fv(fireP.u.uVP, false, vp);
+        gl.uniform1f(fireP.u.uPointScale, (this.canvas?.height ?? 720) * 0.9);
+        if (!this._fireHandle) this._fireHandle = this.createBuffer(parts, { dynamic: true });
+        else { gl.bindBuffer(gl.ARRAY_BUFFER, this._fireHandle.meta.gl); gl.bufferData(gl.ARRAY_BUFFER, parts, GL.DYNAMIC_DRAW); }
+        this._bindHorizon(fireP, this._fireHandle);
+        gl.enable(gl.BLEND);
+        if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // additive: energy adds
+        gl.depthMask(false);
+        gl.drawArrays(gl.POINTS, 0, parts.length / 8);
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
+        drawCalls++;
+        this.stats.fireParticles = (this.stats.fireParticles ?? 0) + parts.length / 8;
+      }
+    }
+
     // ---- water: OUR animated sea (GPU waves, fresnel, sun specular)
     const seaLevel = frame.terrain?.seaLevel;
     if (seaLevel != null && this.waterHandle) {
@@ -569,15 +603,70 @@ export class WebGL2Renderer {
       drawCalls++;
     }
 
+    // ---- TREES: the pine population as REAL geometry (health colors the
+    // canopy; wind bends it; the SAME aerial air surrounds it)
+    const pines = (frame.vegetation ?? []).filter(t => t.species === 'pine');
+    if (pines.length > 0 && this.treeMesh) {
+      const tree = this.programs.tree;
+      gl.useProgram(tree.prog);
+      gl.uniformMatrix4fv(tree.u.uVP, false, vp);
+      gl.uniform1f(tree.u.uTime, frame.time ?? 0);
+      bindLights(tree);
+      gl.uniform3f(tree.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
+      const data = new Float32Array(pines.length * 8);
+      let o = 0;
+      for (const t of pines) {
+        let ph = 0; for (let i = 0; i < String(t.id).length; i++) ph = (ph * 31 + String(t.id).charCodeAt(i)) % 97;
+        data[o++] = t.pos[0]; data[o++] = t.pos[1]; data[o++] = t.pos[2]; data[o++] = t.height;
+        data[o++] = t.health ?? 1; data[o++] = env.wind ?? 0.2; data[o++] = ph; data[o++] = 0;
+      }
+      if (!this._treeInstHandle) { this._treeInstHandle = this.createBuffer(data, { dynamic: true }); this._treeInstBuf = this._treeInstHandle.meta.gl; }
+      else { gl.bindBuffer(gl.ARRAY_BUFFER, this._treeInstBuf); gl.bufferData(gl.ARRAY_BUFFER, data, GL.DYNAMIC_DRAW); }
+      // mesh: [pos3, norm3, canopy1] stride 7 — instances: [pos3,h, health,wind,phase,pad] stride 8
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.treeMesh.handle.meta.gl);
+      gl.enableVertexAttribArray(tree.a.aPos);
+      gl.vertexAttribPointer(tree.a.aPos, 3, gl.FLOAT, false, 7 * 4, 0);
+      if (tree.a.aNorm >= 0) { gl.enableVertexAttribArray(tree.a.aNorm); gl.vertexAttribPointer(tree.a.aNorm, 3, gl.FLOAT, false, 7 * 4, 3 * 4); }
+      gl.enableVertexAttribArray(tree.a.aCanopy); gl.vertexAttribPointer(tree.a.aCanopy, 1, gl.FLOAT, false, 7 * 4, 6 * 4);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this._treeInstBuf);
+      const div = gl.vertexAttribDivisor ? gl.vertexAttribDivisor.bind(gl) : () => {};
+      if (gl.drawArraysInstanced) {
+        div(tree.a.aT0, 1); gl.vertexAttribPointer(tree.a.aT0, 4, gl.FLOAT, false, 8 * 4, 0);
+        div(tree.a.aT1, 1); gl.vertexAttribPointer(tree.a.aT1, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
+        gl.drawArraysInstanced(gl.TRIANGLES, 0, this.treeMesh.count, pines.length);
+        this.stats.treeInstances = (this.stats.treeInstances ?? 0) + pines.length;
+        div(tree.a.aT0, 0); div(tree.a.aT1, 0);
+        drawCalls++;
+      } else {
+        // sem instancing: UMA malha por árvore (mesma física, custo maior)
+        div(tree.a.aT0, 0); gl.vertexAttribPointer(tree.a.aT0, 4, gl.FLOAT, false, 8 * 4, 0);
+        div(tree.a.aT1, 0); gl.vertexAttribPointer(tree.a.aT1, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
+        const one = new Float32Array(8);
+        for (const t of pines) {
+          one[0] = t.pos[0]; one[1] = t.pos[1]; one[2] = t.pos[2]; one[3] = t.height;
+          one[4] = t.health ?? 1; one[5] = env.wind ?? 0.2;
+          let ph = 0; for (let i = 0; i < String(t.id).length; i++) ph = (ph * 31 + String(t.id).charCodeAt(i)) % 97;
+          one[6] = ph; one[7] = 0;
+          gl.bindBuffer(gl.ARRAY_BUFFER, this._treeInstBuf);
+          gl.bufferData(gl.ARRAY_BUFFER, one, GL.DYNAMIC_DRAW);
+          gl.drawArrays(gl.TRIANGLES, 0, this.treeMesh.count);
+          this.stats.treeInstances = (this.stats.treeInstances ?? 0) + 1;
+          drawCalls++;
+        }
+      }
+    }
+
     // ---- VEGETATION (ecology population materialized under D-O15)
     if (frame.vegetation && frame.vegetation.length > 0) {
       const veg = this.programs.vegetation;
       gl.useProgram(veg.prog);
       gl.uniformMatrix4fv(veg.u.uVP, false, vp);
       gl.uniform1f(veg.u.uPointScale, (this.canvas?.height ?? 720) * 0.9);
-      const data = new Float32Array(frame.vegetation.length * 5);
-      for (let i = 0; i < frame.vegetation.length; i++) {
-        const t = frame.vegetation[i];
+      const shrubs = frame.vegetation.filter(t => t.species !== 'pine'); // pines are REAL mesh above
+      if (shrubs.length > 0) {
+      const data = new Float32Array(shrubs.length * 5);
+      for (let i = 0; i < shrubs.length; i++) {
+        const t = shrubs[i];
         data.set([t.pos[0], t.pos[1], t.pos[2], t.height, t.health], i * 5);
       }
       if (!this._vegHandle) this._vegHandle = this.createBuffer(data, { dynamic: true });
@@ -585,7 +674,8 @@ export class WebGL2Renderer {
       this._bindRaw(veg, this._vegHandle);
       gl.enable(gl.BLEND);
       if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      gl.drawArrays(gl.POINTS, 0, frame.vegetation.length);
+      gl.drawArrays(gl.POINTS, 0, shrubs.length);
+      }
       gl.disable(gl.BLEND);
       drawCalls++;
       this.stats.vegDraws = (this.stats.vegDraws ?? 0) + 1;

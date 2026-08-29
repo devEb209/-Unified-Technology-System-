@@ -244,3 +244,26 @@ aparências. **Feito e testado (9 testes novos, suite 251/251):**
 
 **Régua:** 81.66 → **82.46** (render 70 → 76). Falta em render: partículas
 de fogo, malha de árvores, nuvens volumétricas, pós-processo.
+
+## R8 — NUVENS VOLUMÉTRICAS + FOGO FÍSICO + ÁRVORES REAIS (ADR-020)
+
+- `src/render/clouds.js`: a lâmina de nuvens é o MESMO ar condensado —
+  densidade = ruído determinístico × perfil vertical × cobertura CAUSAL
+  (`atmosphere.cloudCoverage`: tempestade 0.95, chuva, umidade; poeira
+  suprime). O céu integra Beer + Henyey–Greenstein ao longo do raio
+  (espelho JS + `CLOUD_GLSL` gerado). Borda prateada EMERGE do pico direto
+  (testado: em direção ao sol ≫ anti-solar).
+- `src/render/fire.js`: partículas de gás quente com temperatura
+  900–1800K ∝ intensidade real da combustão; cor = LOCI DE PLANCK
+  (`blackbody()` — 1000K vermelho, 5800K branco); sobe por flutuabilidade,
+  esfria 75% e vira fumaça; contagem ∝ combustível; determinística.
+  Blend aditivo (o fogo É luz).
+- `mesh.js treeMesh()`: pinheiro = tronco cônico + 3 copas, stride
+  pos3+norm3+copa; saúde mistura seco→verde; vento dobra quadraticamente
+  (cantilever). Fallback sem instancing: 1 malha por árvore.
+- Integração: 10 programas (+tree, +fire); `frame.clouds` (coverage+drift);
+  frame hazards carregam {intensity,fuel}; arbustos continuam pontos (D-O15).
+- Correção latente: introspecção de atributos agora cobre aHH/aSC/aAlpha/
+  aCanopy/aT0/aT1 (atributos não listados ficavam soltos no navegador).
+- **259/259 testes.** Falta em render: broadleaf, sombra de nuvem no solo,
+  pós-processo.

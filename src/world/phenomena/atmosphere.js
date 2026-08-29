@@ -101,4 +101,15 @@ export class Atmosphere {
     const intensity = 22 * clamp01(env.ambient ?? 1) * (1 - 0.55 * clamp01(env.rain ?? 0));
     return { mie, intensity };
   }
+
+  /**
+   * Cloud coverage FROM THE REPRESENTED AIR (causal): storms saturate the
+   * slab, rain keeps it overcast, dry dusty air suppresses convection.
+   */
+  cloudCoverage(env = {}) {
+    const st = this.state;
+    if (env.weather === 'storm') return 0.95;
+    if ((env.rain ?? 0) > 0.2) return 0.72 + (env.rain ?? 0) * 0.23;
+    return clamp01(((st.humidity ?? 0.35) - 0.5) / 0.42) * (1 - 0.25 * (st.dust ?? 0));
+  }
 }

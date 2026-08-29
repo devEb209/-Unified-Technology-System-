@@ -162,3 +162,57 @@ export function buildImpostorMesh(patch) {
   push(A); push(C); push(D);
   return { data: verts, count: 6, tris: 2, avgH, dominantBiome: dominant };
 }
+
+/**
+ * A REAL tree mesh (ADR-020: vegetation is the living population — it gets
+ * geometry, not a billboard). Unit height (y 0..1); the instance scales it.
+ * Interleaved [pos3, norm3, canopy1] — stride 7. Deterministic.
+ */
+export function treeMesh(species = 'pine', segments = 7) {
+  const p = [];
+  const P = (x, y, z, nx, ny, nz, c) => p.push(x, y, z, nx, ny, nz, c);
+  // --- trunk: tapered cylinder, bark normals
+  const trunk = (r0, r1, y0, y1) => {
+    for (let j = 0; j < segments; j++) {
+      const a0 = (j / segments) * Math.PI * 2, a1 = ((j + 1) / segments) * Math.PI * 2;
+      const c0 = [Math.cos(a0), Math.sin(a0)], c1 = [Math.cos(a1), Math.sin(a1)];
+      const am = (a0 + a1) / 2, n = [Math.cos(am), 0.08, Math.sin(am)];
+      const v = (c, r, y) => [c[0] * r, y, c[1] * r];
+      P(v(c0, r0, y0)[0], y0, v(c0, r0, y0)[2], n[0], n[1], n[2], 0);
+      P(v(c0, r1, y1)[0], y1, v(c0, r1, y1)[2], n[0], n[1], n[2], 0);
+      P(v(c1, r1, y1)[0], y1, v(c1, r1, y1)[2], n[0], n[1], n[2], 0);
+      P(v(c0, r0, y0)[0], y0, v(c0, r0, y0)[2], n[0], n[1], n[2], 0);
+      P(v(c1, r1, y1)[0], y1, v(c1, r1, y1)[2], n[0], n[1], n[2], 0);
+      P(v(c1, r0, y0)[0], y0, v(c1, r0, y0)[2], n[0], n[1], n[2], 0);
+    }
+  };
+  // --- canopy cone (stacked for pines)
+  const cone = (y0, r, h) => {
+    const tip = [0, y0 + h, 0];
+    for (let j = 0; j < segments; j++) {
+      const a0 = (j / segments) * Math.PI * 2, a1 = ((j + 1) / segments) * Math.PI * 2;
+      const b0 = [Math.cos(a0) * r, y0, Math.sin(a0) * r], b1 = [Math.cos(a1) * r, y0, Math.sin(a1) * r];
+      const am = (a0 + a1) / 2, n = [Math.cos(am) * 0.85, 0.35, Math.sin(am) * 0.85];
+      P(tip[0], tip[1], tip[2], n[0], n[1], n[2], 1);
+      P(b0[0], b0[1], b0[2], n[0], n[1], n[2], 1);
+      P(b1[0], b1[1], b1[2], n[0], n[1], n[2], 1);
+    }
+  };
+  // --- canopy sphere blob
+  const blob = (cx, cy, cz, r) => {
+    const s = sphereMesh(4, 7);
+    for (let i = 0; i < s.count; i++) {
+      const vi = i * 6;
+      P(cx + s.data[vi] * r, cy + s.data[vi + 1] * r, cz + s.data[vi + 2] * r,
+        s.data[vi + 3], s.data[vi + 4], s.data[vi + 5], 1);
+    }
+  };
+  if (species === 'pine') {
+    trunk(0.035, 0.016, 0, 0.42);
+    cone(0.26, 0.30, 0.34); cone(0.47, 0.23, 0.30); cone(0.66, 0.15, 0.26);
+  } else {
+    trunk(0.040, 0.024, 0, 0.55);
+    blob(0, 0.74, 0, 0.27); blob(0.15, 0.62, 0.06, 0.18); blob(-0.13, 0.66, -0.07, 0.17);
+  }
+  return { data: new Float32Array(p), count: p.length / 7 };
+}

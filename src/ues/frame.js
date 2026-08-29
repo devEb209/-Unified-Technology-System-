@@ -62,16 +62,19 @@ export function extractFrame(ues, perf = null) {
     if (e.kind === 'settlement') scale = 4;
     if (e.kind === 'prop') scale = e.components.get('physics')?.radius * 2 ?? 1.2;
     const params = {};
+    let fire = null;
     if (e.kind === 'hazard') {
       const hz = e.components.get('hazard');
       scale = 1 + (hz?.intensity ?? 0.5) * (1 + Math.sin(((world.clock.tick % 7) / 7) * Math.PI * 2) * 0.15);
       params.emissive = hz?.intensity ?? 0.5;
+      // the renderer's fire PARTICLES mirror the combustion field (RRW truth)
+      if (hz?.type === 'fire') fire = { intensity: hz.intensity ?? 0.5, fuel: hz.fuel ?? 20, cellKey: hz.cellKey ?? null };
     }
     const material = world.materials.resolve(e.kind, params);
     entities.push({
       id, kind: e.kind, pos: sp.pos, yaw: sp.yaw ?? 0,
       shape: SHAPE_BY_KIND[e.kind] ?? 'box', scale, lod, material,
-      emissive: material.emissive, color: material.albedo,
+      emissive: material.emissive, color: material.albedo, fire,
     });
   };
   for (const id of rrw.query({ kind: 'npc', materialization: 'full' })) pushEntity(id, rrw.get(id), 2);
@@ -137,6 +140,11 @@ export function extractFrame(ues, perf = null) {
     environment: { ...world.environment },
     // the air's optical truth (scattering physics consumes THIS, not colors)
     air: world.atmosphere?.optics ? world.atmosphere.optics(world.environment) : null,
+    // cloud coverage FROM the represented air (the renderer only integrates)
+    clouds: world.atmosphere?.cloudCoverage ? {
+      coverage: world.atmosphere.cloudCoverage(world.environment),
+      seedT: world.clock.timeOfDay * 2.7,
+    } : null,
     // TRUE sun direction (unclamped — the sky must be able to set)
     sunDirTrue: (() => {
       const a = world.clock.timeOfDay * Math.PI * 2 - Math.PI / 2;
