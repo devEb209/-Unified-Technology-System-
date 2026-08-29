@@ -340,6 +340,43 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R18 — O MAR VIVO (a vida que brilha + o fio que não mente; 92.26 → 93.02)
+
+**O PLÂNCTON (ecology.plankton):** a vida no MAR. Floresce com nutrientes
+que chegam à costa (o SILT da erosão escorrido para o mar — a mesma
+cadeia da R17 agora termina em LUZ) e com luz (fotossíntese); decai sem
+nutriente. Persiste no phenomenaSnapshot.
+
+**BIOLUMINESCÊNCIA (WATER_FS uBio):** no escuro, a água PERTURBADA
+brilha (luz mecânica dos dinoflagelados — cor real ciano-verde
+[0.18, 0.85, 0.62]): uBio = plankton × presença de mar; brilho = uBio ×
+noite × (onda + espuma). A cadeia INTEIRA viva e testada: chuva →
+erosão → silt → rio → mar → plâncton → luz. Sem mar, sem brilho (honesto).
+
+**A ORELHA GIRA SUAVE (pickBilinear):** a HRTF interpolada entre as 4
+células (az × el) — 15° é a MÉDIA EXATA de 0°/30° (provado a 1e-12), as
+âncoras ficam exatas, vizinhos contínuos (atrasos discretos de FIR
+documentados). O ouvido não dá degraus ao virar a cabeça.
+
+**O FIO COMPACTO (compactState):** snapshot com números arredondados e
+nulls fora — MENOR com a MESMA verdade (≤1e-4, provado por caminhada no
+estado restaurado). O seq segue autoritativo (gap continua erro).
+
+**O SMITH COMPLETO:** mais dois blocos verificados — BLOOM fisiológico
+(corona ciliar: limiar 0.75 + halo largo) e TONEMAP de display (Reinhard
+col/(1+col)) — espelho JS = GLSL, autoteste; estilo aceita bloom/tone
+(schema achatado); o post tem uBloomE/uTone.
+
+**O FIO DO LLM CONTADO (net/sse.js):** parser SSE que junta chunks
+PARTIDOS no meio da linha, vê [DONE], junta data multiline — integrado
+ao proxy (passthrough byte-exato + contagem honesta de eventos no log).
+
+**NOITE NUM BOTÃO:** lua AUTORAL (ícone SVG), handler que manda o tempo
+do mundo para a madrugada — o olho escurece (Purkinje) e o mar brilha
+se houver plâncton. Zero emoji segue garantido por teste.
+
+**Testes:** r18-the-living-sea.test.js — 7 testes (350 no total).
+
 ## R17 — A TERRA NO ESPELHO + A PLATAFORMA QUE RECEBE E MEDe (91.38 → 92.26)
 
 **A TERRA NO ESPELHO (render/water-reflection.js):** a água refletia só

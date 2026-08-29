@@ -254,13 +254,16 @@ export class World {
     // BIOLOGIA → ATMOSFERA: a floresta madura transpira (evapotranspiração)
     const focus = this.ues?.camera?.pos ?? [512, 0, 512];
     env.bioHumidity = this.ecology.canopyNear(focus[0], focus[2], 100);
-    // OCEANO → ATMOSFERA: a superfície do mar EVAPORA (8 amostras ao redor)
-    let seaN = 0;
+    // OCEANO → ATMOSFERA: o mar evapora; e mede o SILT que chega à costa
+    // (o adubo do rio no mar — a cadeia que alimenta o plâncton)
+    let seaN = 0, siltSum = 0;
     for (let k = 0; k < 8; k++) {
       const a2 = (k / 8) * Math.PI * 2;
-      if (this.terrain.height(focus[0] + Math.cos(a2) * 180, focus[2] + Math.sin(a2) * 180) < this.terrain.seaLevel) seaN++;
+      const sx = focus[0] + Math.cos(a2) * 180, sz = focus[2] + Math.sin(a2) * 180;
+      if (this.terrain.height(sx, sz) < this.terrain.seaLevel) { seaN++; siltSum += this.erosion.siltAt(sx, sz); }
     }
     env.seaHumidity = seaN / 8;
+    env.seaSilt = seaN ? siltSum / seaN : 0;
     this.atmosphere.step(dt, env);
     const tAt = performance.now();
     // rain that LANDS flows (shallow water) around the focus
@@ -309,8 +312,12 @@ export class World {
         combustion: this.combustionStepEnabled === false ? null : this.combustion,
         // GEOLOGIA ALIMENTA A VIDA: sedimento erosionado aduba o crescimento
         siltAt: (x, z) => this.erosion.siltAt(x, z),
+        seaSilt: env.seaSilt ?? 0, // nutrientes no mar (a mesma cadeia até o plâncton)
       });
     }
+    // BIOLUMINESCÊNCIA: densidade de plâncton × presença de mar (o shader
+    // soma o brilho ONDE a água é perturbada e NO ESCURO)
+    env.bioGlow = this.ecology.plankton * (env.seaHumidity ?? 0);
     // PERF HONESTO: EMA do custo de cada fenômeno (a plataforma se mede)
     const ema = (k, v) => { this.perf[k] = (this.perf[k] ?? v) * 0.9 + v * 0.1; };
     ema('reallife', tRl - t0); ema('climate', tCl - tRl); ema('atmosphere', tAt - tCl);

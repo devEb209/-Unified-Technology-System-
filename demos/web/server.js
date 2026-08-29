@@ -10,6 +10,7 @@ import { styleParams } from '../../src/render/style.js';
 import { createGame, GENRES } from '../../src/agent/creator.js';
 import { WSHub } from '../../src/net/transport.js';
 import { UserApps } from '../../src/platform/user-apps.js';
+import { createSSEParser } from '../../src/net/sse.js';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -188,12 +189,15 @@ const server = createServer(async (req, res) => {
       }
       res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'keep-alive' });
       const reader = upstream.body.getReader();
+      const sse = createSSEParser(); // a verdade sobre o fio (conta, vê [DONE])
       for (;;) {
         const { done, value } = await reader.next();
         if (done) break;
-        res.write(value); // passthrough byte-exact (the UI parses the SSE)
+        sse.feed(value); // PASSTHROUGH byte-exato + contagem honesta
+        res.write(value);
       }
       res.end();
+      console.log(`[sse] stream completo: ${sse.events.length} eventos, done=${sse.done}`);
       return;
     }
 

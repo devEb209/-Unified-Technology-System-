@@ -17,6 +17,22 @@ export const EFFECTS = Object.freeze({
       return 1 * (1 - p.amount) + Math.pow(cosA, 4) * p.amount;
     },
   },
+  bloom: {
+    desc: 'BLOOM fisiológico: a corona ciliar espalha fontes brilhantes (limiar + halo largo na tela)',
+    params: { amount: [0, 1] },
+    constants: (p) => ({ b: p.amount }),
+    glsl: (p) => `vec3 bl = vec3(0.0);
+  for (int i = 0; i < 8; i++) { float an = float(i) * 0.7853982; vec2 o = vec2(cos(an), sin(an)) * uTexel * 14.0; bl += max(texture(uScene, vUV + o).rgb - 0.75, 0.0); }
+  col += ${Number(p.amount).toFixed(4)} * bl * 0.25;`,
+    mirror(_r, _f, p, seed = 0.6) { const s = p.amount * Math.max(0, seed - 0.75) * 2.0; return Number.isFinite(s) ? s : 0; },
+  },
+  tonemap: {
+    desc: 'TONEMAP de display: Reinhard (col/(1+col)) — a tela NÃO é energia infinita',
+    params: { amount: [0, 1] },
+    constants: (p) => ({ t: p.amount }),
+    glsl: (p) => `col = mix(col, col / (1.0 + col), ${Number(p.amount).toFixed(4)});`,
+    mirror(r, _f, p) { const c = 0.8; return c * (1 - p.amount) + (c / (1 + c)) * p.amount; },
+  },
   grao: {
     desc: 'grão do SENSOR: ruído de fóton — menos sinal, mais grão (σ ∝ 1/√sinal)',
     params: { amount: [0, 0.6] },
@@ -47,12 +63,12 @@ export function composeOptics(brief = {}) {
     const eff = EFFECTS[name];
     if (!eff) throw new Error(`shader-smith: efeito desconhecido "${name}" (tenho: ${Object.keys(EFFECTS).join(', ')})`);
     const raw = amount[name];
-    const a = raw === undefined ? (name === 'vinheta' ? 0.35 : 0.16) : clamp01(raw);
+    const a = raw === undefined ? (name === 'vinheta' ? 0.35 : name === 'grao' ? 0.16 : 0.25) : clamp01(raw);
     const p = { amount: a };
     Object.entries(eff.params).forEach(([k, [lo, hi]]) => {
       if (!(p[k] >= lo && p[k] <= hi)) throw new Error(`shader-smith: ${name}.${k}=${p[k]} fora de [${lo}, ${hi}]`);
     });
-    params[name === 'vinheta' ? 'vignette' : 'grain'] = a;
+    params[{ vinheta: 'vignette', grao: 'grain', bloom: 'bloom', tonemap: 'tone' }[name]] = a;
     glslParts.push(eff.glsl(p));
     mirrors.push(() => eff.mirror(0.6, 1.0, p));
   }

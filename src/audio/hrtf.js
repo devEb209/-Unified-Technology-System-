@@ -78,11 +78,37 @@ export function loadMeasuredTable(table) {
   return Object.freeze({ ...table, label: 'MEDIDA (banco anexado pelo dono)' });
 }
 
-/** nearest-neighbour tap pair lookup (deterministic; interpolation follows) */
-function pick(table, azDeg, elevDeg) {
-  const az = table.azimuths.reduce((a, b) => (Math.abs(b - azDeg) < Math.abs(a - azDeg) ? b : a));
-  const el = table.elevations.reduce((a, b) => (Math.abs(b - elevDeg) < Math.abs(a - elevDeg) ? b : a));
-  return table.data[az][el];
+/** bracketing cells + weights (binlinear; the ear turns SMOOTH) */
+function bracket(grid, v) {
+  if (v <= grid[0]) return [grid[0], grid[0], 0];
+  if (v >= grid[grid.length - 1]) return [grid[grid.length - 1], grid[grid.length - 1], 0];
+  for (let i = 0; i < grid.length - 1; i++) {
+    if (v >= grid[i] && v <= grid[i + 1]) {
+      const t = (v - grid[i]) / (grid[i + 1] - grid[i]);
+      return [grid[i], grid[i + 1], t];
+    }
+  }
+  return [grid[0], grid[0], 0];
+}
+
+/**
+ * BIINLINEAR lookup: interpolate the directional table between the four
+ * bracketing cells (az × el). The ear turns without clicking — and the
+ * interpolation is on the MEASURED data too (whatever table is attached).
+ */
+export function pickBilinear(table, azDeg, elevDeg) {
+  const [az0, az1, ta] = bracket(table.azimuths, azDeg);
+  const [el0, el1, te] = bracket(table.elevations, elevDeg);
+  const mixCell = (A, B, t) => A.map((v, i) => v * (1 - t) + (B[i] ?? v) * t);
+  const top = {
+    L: mixCell(table.data[az0][el0].L, table.data[az1][el0].L, ta),
+    R: mixCell(table.data[az0][el0].R, table.data[az1][el0].R, ta),
+  };
+  const bot = {
+    L: mixCell(table.data[az0][el1].L, table.data[az1][el1].L, ta),
+    R: mixCell(table.data[az0][el1].R, table.data[az1][el1].R, ta),
+  };
+  return { L: mixCell(top.L, bot.L, te), R: mixCell(top.R, bot.R, te) };
 }
 
 /** FIR convolution (deterministic) */
@@ -105,6 +131,6 @@ export function firFilter(samples, taps) {
  * (parametric today, measured when the owner attaches one).
  */
 export function applyHRTF(samples, azDeg, elevDeg, { table = PARAMETRIC_TABLE } = {}) {
-  const cell = pick(table, azDeg, elevDeg);
+  const cell = pickBilinear(table, azDeg, elevDeg);
   return { left: firFilter(samples, cell.L), right: firFilter(samples, cell.R), table: table.label };
 }

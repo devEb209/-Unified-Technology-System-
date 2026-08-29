@@ -16,7 +16,7 @@ const idTint = () => [1, 1, 1];
  * exactly these): bands (cel/posterize levels, 0 = off), sat, contrast,
  * rim (silhouette cel-light, 0 = off), tint.
  */
-function P({ bands = 0, sat = 1, contrast = 1, rim = 0, tint = idTint(), vignette = 0, grain = 0 }) {
+function P({ bands = 0, sat = 1, contrast = 1, rim = 0, tint = idTint(), vignette = 0, grain = 0, bloom = 0, tone = 0 }) {
   return Object.freeze({
     bands: Math.max(0, Number(bands) || 0),
     sat: clampN(sat, 0, 2.5),
@@ -25,6 +25,8 @@ function P({ bands = 0, sat = 1, contrast = 1, rim = 0, tint = idTint(), vignett
     tint: [clampN(tint[0], 0, 2), clampN(tint[1], 0, 2), clampN(tint[2], 0, 2)],
     vignette: clampN(vignette, 0, 1), // vinheta NATURAL cos⁴ (óptica da lente)
     grain: clampN(grain, 0, 0.6),     // grão do SENSOR (ruído de fóton)
+    bloom: clampN(bloom, 0, 1),       // corona ciliar (bloom fisiológico)
+    tone: clampN(tone, 0, 1),         // tonemap de display (Reinhard)
   });
 }
 

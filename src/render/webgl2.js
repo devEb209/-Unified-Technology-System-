@@ -638,6 +638,7 @@ export class WebGL2Renderer {
       // A TERRA NO ESPELHO + a chuva quebrando a superfície
       if (wat.u.uTerrSeed) gl.uniform1f(wat.u.uTerrSeed, frame.terrainSeed ?? 0);
       if (wat.u.uRain) gl.uniform1f(wat.u.uRain, env.rain ?? 0);
+      if (wat.u.uBio) gl.uniform1f(wat.u.uBio, env.bioGlow ?? 0); // a vida no mar, ao vivo
       gl.enable(gl.BLEND);
       if (gl.blendFunc) gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.depthMask(false);
@@ -822,6 +823,8 @@ export class WebGL2Renderer {
       gl.uniform1f(post.u.uFar, cam.far ?? 600);
       gl.uniform1f(post.u.uVignette, frame.style?.vignette ?? 0);
       gl.uniform1f(post.u.uGrain, frame.style?.grain ?? 0);
+      gl.uniform1f(post.u.uBloomE, frame.style?.bloom ?? 0);
+      gl.uniform1f(post.u.uTone, frame.style?.tone ?? 0);
       gl.uniform1f(post.u.uTime, frame.tick ?? 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.enable(gl.DEPTH_TEST);

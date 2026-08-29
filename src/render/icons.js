@@ -34,6 +34,7 @@ export const ICONS = Object.freeze({
   app: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   chart: '<path d="M4 20V6M4 20h16"/><path d="M8 20v-6M12 20v-10M16 20v-4M20 20V8"/>',
   wave: '<path d="M2 12c2-2.4 4-2.4 6 0s4 2.4 6 0 4-2.4 6 0M2 17c2-2.4 4-2.4 6 0s4 2.4 6 0 4-2.4 6 0"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
 });
 
 /** the complete sprite as an injectable <svg> block (symbols per icon) */

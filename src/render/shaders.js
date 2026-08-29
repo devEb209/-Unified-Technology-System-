@@ -297,6 +297,7 @@ uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter; uniform float
 uniform vec2 uWindDir;
 uniform float uTerrSeed; // a semente REAL do mundo (a silhueta refletida é DESTE mundo)
 uniform float uRain;     // a chuva QUEBRA a superfície (especular cai, espuma sobe)
+uniform float uBio;      // plâncton vivo (bioluminescência — a vida no mar)
 out vec4 fragColor;
 void main(){
   vec3 view = normalize(uCamPos - vPos);
@@ -321,6 +322,11 @@ void main(){
   col = mix(col, refl, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
   col += vec3(0.10, 0.11, 0.12) * uRain * fres; // a chuva PRATEIA a superfície (gotas espalham a luz do céu)
+  // BIOLUMINESCÊNCIA: no escuro, a água PERTURBADA brilha (dinoflagelados
+  // emitem luz mecânica) — densidade vem da vida real (plâncton do mundo)
+  float nightW = 1.0 - clamp(uAmbient * 1.4, 0.0, 1.0);
+  float stir = clamp(vWave * 0.9 + 0.5, 0.0, 1.0) * 0.6 + vFoam * 0.8;
+  col += vec3(0.18, 0.85, 0.62) * (uBio * nightW * stir * 0.5);
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
     float lumS = dot(col, vec3(0.299, 0.587, 0.114));
@@ -502,6 +508,8 @@ uniform float uNear; uniform float uFar;
 uniform float uVignette; // vinheta natural cos⁴ (óptica da lente)
 uniform float uGrain;    // grão do sensor (ruído de fóton ∝ 1/√sinal)
 uniform float uTime;     // semente do grão (o sensor é vivo)
+uniform float uBloomE;   // corona ciliar (bloom fisiológico das brilhas)
+uniform float uTone;     // tonemap de display (a tela não é energia infinita)
 const float ACUITY_ECC = 0.0384; // 2.2° em radianos (fóvea)
 void main(){
   vec2 c = vUV - 0.5;
@@ -548,5 +556,16 @@ void main(){
   // GRÃO DO SENSOR: ruído de fóton — menos sinal, MAIS grão (real)
   float n = fract(sin(dot(vUV * (1.0 + fract(uTime)), vec2(12.9898, 78.233))) * 43758.5453);
   col += uGrain * (n - 0.5) / sqrt(max(dot(col, vec3(0.299, 0.587, 0.114)), 0.02) + 0.05) * 0.35;
+  // BLOOM FISIOLÓGICO: a corona ciliar espalha o brilho (limiar + halo largo)
+  if (uBloomE > 0.001) {
+    vec3 bl = vec3(0.0);
+    bl += max(texture(uScene, vUV + uTexel * 14.0).rgb - 0.75, 0.0);
+    bl += max(texture(uScene, vUV - uTexel * 14.0).rgb - 0.75, 0.0);
+    bl += max(texture(uScene, vUV + vec2(uTexel.x, -uTexel.y) * 14.0).rgb - 0.75, 0.0);
+    bl += max(texture(uScene, vUV + vec2(-uTexel.x, uTexel.y) * 14.0).rgb - 0.75, 0.0);
+    col += uBloomE * bl * 0.25;
+  }
+  // TONEMAP de display: Reinhard — o brilho entra, a tela respeita 1.0
+  col = mix(col, col / (1.0 + col), uTone);
   fragColor = vec4(col, 1.0);
 }`;

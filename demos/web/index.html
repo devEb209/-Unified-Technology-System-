@@ -132,6 +132,7 @@ button{display:inline-flex;align-items:center;gap:5px}
   <button id="w-rain">chuva</button>
   <button id="w-storm">tempestade</button>
   <button id="w-dust">poeira</button>
+  <button id="w-night"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg><span>noite</span></button>
   <button id="fire">raio/fogo</button>
   <button id="save">save</button>
   <button id="load">load</button>
@@ -323,6 +324,7 @@ button{display:inline-flex;align-items:center;gap:5px}
   $('w-rain').onclick = () => world.setWeather('rain');
   $('w-storm').onclick = () => world.setWeather('storm');
   $('w-dust').onclick = () => world.setWeather('dust');
+  $('w-night').onclick = () => { world.clock.time = 0; logLine('[tempo] madrugada — o olho escuro (Purkinje) e o mar brilhando se houver plâncton'); };
   $('fire').onclick = () => {
     // reality: lightning strikes where it strikes; fire only exists where FUEL exists
     const c = ues.camera.pos;

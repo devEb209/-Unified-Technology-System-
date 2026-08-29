@@ -32,6 +32,7 @@ export class Ecology {
     /** id -> tree { id, pos, species, biome, age, maturity, health, biomass, state } */
     this.trees = new Map();
     this.stats = { seeded: 0, died: 0, burnt: 0, grown: 0 };
+    this.plankton = 0.15; // densidade de dinoflagelados no mar (0..1) — a VIDA que brilha
   }
 
   speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
@@ -73,11 +74,12 @@ export class Ecology {
 
   /** the RRW persistence contract */
   snapshot() {
-    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats } };
+    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton };
   }
   restore(s) {
     this.nextId = s.nextId; this.maxTrees = s.maxTrees;
     this.trees = new Map(s.trees ?? []);
+    this.plankton = s.plankton ?? 0.15;
     Object.assign(this.stats, s.stats ?? {});
     return this;
   }
@@ -122,8 +124,12 @@ export class Ecology {
     return n === 0 ? 0 : Math.min(1, (sum / n) * Math.min(1, n / 40)); // densidade × maturidade
   }
 
-  step(dt, { sunEl = 1, soilWet = 0.4, combustion = null, siltAt = null } = {}) {
+  step(dt, { sunEl = 1, soilWet = 0.4, combustion = null, siltAt = null, seaSilt = 0 } = {}) {
     const w = this.world;
+    // PLÂNCTON: floresce com nutrientes que chegam ao mar (o SILT da erosão
+    // escorrido para a costa) + luz; decai sozinho. Determinístico.
+    this.plankton = Math.max(0, Math.min(1,
+      this.plankton + dt * 0.05 * (seaSilt * 2.2 * (0.3 + 0.7 * Math.max(0, Math.min(1, sunEl))) - 0.01 * this.plankton)));
     let grown = 0;
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water
     for (const tree of this.trees.values()) {
