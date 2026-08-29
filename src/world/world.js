@@ -318,6 +318,8 @@ export class World {
     // BIOLUMINESCÊNCIA: densidade de plâncton × presença de mar (o shader
     // soma o brilho ONDE a água é perturbada e NO ESCURO)
     env.bioGlow = this.ecology.plankton * (env.seaHumidity ?? 0);
+    // A TEIA sobe pelo ar: aves marinhas seguem os peixes (que seguem o plâncton)
+    env.seabirds = this.ecology.seabirds ?? 0;
     // PERF HONESTO: EMA do custo de cada fenômeno (a plataforma se mede)
     const ema = (k, v) => { this.perf[k] = (this.perf[k] ?? v) * 0.9 + v * 0.1; };
     ema('reallife', tRl - t0); ema('climate', tCl - tRl); ema('atmosphere', tAt - tCl);
@@ -376,6 +378,25 @@ export class World {
   updateNPCs(dt) {
     const every = this.do15?.strategy.updateEveryTicks ?? { full: 1, partial: 4, abstract: 0 };
     const tick = this.clock.tick;
+    // IMPACTO DERRUBA: energia cinética de perto põe o NPC no chão — a
+    // mente continua existindo, o CORPO obedece à física (levanta depois).
+    for (const im of this.physics.recentImpacts ?? []) {
+      // a física roda DEPOIS das mentes neste tick: o impacto do tick T
+      // é visto na janela T..T+1 (nunca perdido, nunca dobrado)
+      if ((im.tick !== tick && im.tick !== tick - 1) || im.energy < 12) continue;
+      for (const id of this.rrw.query({ kind: 'npc' })) {
+        const sp = this.rrw.getComponent(id, 'spatial');
+        const d2 = (sp.pos[0] - im.pos[0]) ** 2 + (sp.pos[2] - im.pos[2]) ** 2;
+        if (d2 < 2.5 * 2.5) {
+          const npc = this.rrw.getComponent(id, 'npc');
+          if (tick >= (npc.downedUntil ?? 0)) {
+            npc.downedUntil = tick + 120;
+            this.rrw.emitEvent({ type: 'npc.downed', subject: id, cause: null,
+                                 data: { energy: +im.energy.toFixed(1) }, tick });
+          }
+        }
+      }
+    }
     for (const id of this.rrw.query({ kind: 'npc' })) {
       const e = this.rrw.get(id);
       const mat = e.materialization;
@@ -395,6 +416,8 @@ export class World {
     for (const id of this.rrw.query({ kind: 'npc', hasComponent: 'intent' })) {
       const sp = this.rrw.getComponent(id, 'spatial');
       const intent = this.rrw.getComponent(id, 'intent');
+      const npcC = this.rrw.getComponent(id, 'npc');
+      if (npcC?.downedUntil != null && this.clock.tick < npcC.downedUntil) continue; // caído não anda
       if (!intent.target) { this.rrw.removeComponent(id, 'intent'); continue; }
       const dx = intent.target[0] - sp.pos[0], dz = intent.target[2] - sp.pos[2];
       const d = Math.hypot(dx, dz);

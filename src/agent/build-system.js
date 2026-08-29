@@ -85,6 +85,24 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit },
     };
   }
+  if (target === 'android') {
+    // KIT ANDROID REAL: o projeto gradle COMPLETO (manifest, MainActivity,
+    // www/) embalado com INSTALL — o que falta (java+gradle) é DITO, não
+    // fingido. O APK sai do `gradle assembleDebug` na máquina que tem a
+    // toolchain; o projeto já está pronto e buildável.
+    const kit = zipCreate([
+      ...files.map((f) => ({ name: f.name, data: f.data })),
+      { name: 'INSTALL.txt', data: `${name} — GENESIS (android-kit)\n1) instale Java 17 + Android SDK + gradle\n2) gradle assembleDebug -> app/build/outputs/apk/debug/app-debug.apk\nO projeto esta PRONTO e buildavel; sem toolchain nao fingimos compilar.\n` },
+    ]);
+    return {
+      ok: true,
+      target: 'android',
+      kind: 'android-kit (projeto gradle completo: manifest + MainActivity + www)',
+      honest: 'APK precisa de java+gradle (assembleDebug) — o kit traz o projeto buildável, documentado no INSTALL.txt',
+      files: out.files,
+      artifact: { name: `${name}-android-kit.zip`, bytes: kit.length, data: kit },
+    };
+  }
   const needs = TARGETS[target].needs;
   const missing = needs.filter((n) => !(probeToolchains())[n]);
   out.ok = missing.length === 0;

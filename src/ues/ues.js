@@ -27,6 +27,7 @@ export class UES {
     this.scheduler = new Scheduler({ globalBudgetMs: schedulerBudgetMs, perf });
 
     // ---- canonical system order (D-3 temporal ordering of reality)
+    this.scheduler.add({ name: 'cutscene', priority: 5, fn: dt => this._stepCutscene(dt) });
     this.scheduler.add({ name: 'weather', priority: 10, fn: dt => world.updateWeather(dt) });
     this.scheduler.add({ name: 'ecology', priority: 20, fn: dt => world.updateEcology(dt) });
     this.scheduler.add({ name: 'economy', priority: 30, fn: dt => world.updateEconomy(dt) });
@@ -64,6 +65,35 @@ export class UES {
   setSystemEnabled(name, enabled) {
     this.scheduler.setEnabled(name, enabled);
     return this;
+  }
+
+  /**
+   * O DIRETOR assume a câmera: a cutscene rola por cima da live cam
+   * (letterbox no frame) e, no fim, DEVOLVE o enquadramento do jogo.
+   */
+  playCutscene(cs, { restore = true } = {}) {
+    if (!cs || !Array.isArray(cs.shots) || cs.shots.length === 0) throw new Error('playCutscene precisa de uma Cutscene com planos');
+    this._camSaved = restore ? { ...this.camera } : null;
+    cs.t = null; // começa no primeiro update (o mesmo contrato da classe)
+    this.cutscene = cs;
+    return { playing: cs.name ?? 'cena', duration: cs.duration };
+  }
+
+  _stepCutscene(dt) {
+    if (!this.cutscene) return null;
+    const r = this.cutscene.update(dt);
+    if (r.ended) {
+      if (this._camSaved) Object.assign(this.camera, this._camSaved);
+      if (this.frame) this.frame.letterbox = false;
+      this.cutscene = null;
+      return { ended: true };
+    }
+    const pose = this.cutscene.pose(this.cutscene.t);
+    this.camera.pos = pose.pos;
+    this.camera.yaw = pose.yaw;
+    this.camera.pitch = pose.pitch;
+    if (this.frame) this.frame.letterbox = true;
+    return { time: r.time ?? pose.time, shot: pose.shot };
   }
 
   moveCamera(pos, yaw = this.camera.yaw, pitch = this.camera.pitch) {

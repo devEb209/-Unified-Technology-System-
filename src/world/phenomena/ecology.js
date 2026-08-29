@@ -34,6 +34,8 @@ export class Ecology {
     this.stats = { seeded: 0, died: 0, burnt: 0, grown: 0 };
     this.plankton = 0.15; // densidade de dinoflagelados no mar (0..1) — a VIDA que brilha
     this.planktonField = new Map(); // correnteza: bloom por célula (key→0..1), ADVECTADO pelo vento
+    this.fishField = new Map();     // TEIA: peixes por célula (comem o plâncton, 0..1)
+    this.seabirds = 0;              // TEIA: aves seguem os peixes (contagem suave)
   }
 
   speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
@@ -75,13 +77,15 @@ export class Ecology {
 
   /** the RRW persistence contract */
   snapshot() {
-    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton, planktonField: [...this.planktonField] };
+    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton, planktonField: [...this.planktonField], fishField: [...this.fishField], seabirds: this.seabirds };
   }
   restore(s) {
     this.nextId = s.nextId; this.maxTrees = s.maxTrees;
     this.trees = new Map(s.trees ?? []);
     this.plankton = s.plankton ?? 0.15;
     this.planktonField = new Map(s.planktonField ?? []);
+    this.fishField = new Map(s.fishField ?? []);
+    this.seabirds = s.seabirds ?? 0;
     Object.assign(this.stats, s.stats ?? {});
     return this;
   }
@@ -139,10 +143,10 @@ export class Ecology {
       const wind = w.environment?.wind ?? 0.2;
       const wd = w.environment?.windDir ?? [1, 0];
       const CELL = 64;
+      const shift = Math.max(1, Math.round(wind * dt * 0.35));
       const next = new Map();
       for (const [key, v] of this.planktonField) {
         const [i, j] = key.split(',').map(Number);
-        const shift = Math.max(1, Math.round(wind * dt * 0.35));
         const ni = i + Math.round(wd[0] * shift), nj = j + Math.round(wd[1] * shift);
         next.set(`${ni},${nj}`, Math.max(next.get(`${ni},${nj}`) ?? 0, v * (1 - 0.004 * dt)));
       }
@@ -154,6 +158,45 @@ export class Ecology {
         next.set(k, Math.min(1, (next.get(k) ?? 0) + seaSilt * 0.1));
       }
       this.planktonField = next;
+      // O CARDUME SEGUE O BANCO DE COMIDA: os peixes advectam com a MESMA
+      // correnteza do plâncton (escola viaja com a comida, não para onde
+      // a comida estava) — a teia se move junta.
+      const advFish = new Map();
+      for (const [key, f] of this.fishField) {
+        const [i, j] = key.split(',').map(Number);
+        const nk = `${i + Math.round(wd[0] * shift)},${j + Math.round(wd[1] * shift)}`;
+        advFish.set(nk, Math.max(advFish.get(nk) ?? 0, f));
+      }
+      this.fishField = advFish;
+    }
+    // ---- A TEIA (biologia local): PEIXES comem o plâncton da PRÓPRIA
+    // célula (crescimento logístico; fome sem comida); larvas CHEGAM do
+    // mar aberto onde a comida concentra (p>0.4 semeia). AVES seguem os
+    // peixes com atraso (chegam depois do banco, vão embora quando ele sai).
+    if (this.planktonField.size > 0 || this.fishField.size > 0) {
+      const nextFish = new Map(this.fishField);
+      for (const [key, p] of this.planktonField) {
+        const f = nextFish.get(key) ?? 0;
+        const grow = 0.06 * dt * p * f * (1 - f);
+        const starve = (p < 0.01 ? 0.05 : 0.012) * dt * f;
+        let nf = f + grow - starve;
+        if (p > 0.4 && nf < 0.02) nf = 0.02; // larvas do mar aberto
+        nextFish.set(key, Math.max(0, Math.min(1, nf)));
+      }
+      // células SEM comida: fome pura — e a teia não guarda mortos
+      // (cardume que perde o banco dissolve; célula vazia sai do mapa)
+      const dead = [];
+      for (const [key, f] of nextFish) {
+        if (this.planktonField.has(key)) continue;
+        const nf = f - 0.05 * dt * f;
+        if (nf <= 1e-3) dead.push(key); else nextFish.set(key, nf);
+      }
+      for (const k of dead) nextFish.delete(k);
+      this.fishField = nextFish;
+      let fishTotal = 0;
+      for (const v of this.fishField.values()) fishTotal += v;
+      const birdsTarget = Math.min(60, Math.round(fishTotal * 90));
+      this.seabirds += (birdsTarget - this.seabirds) * Math.min(1, 0.03 * dt);
     }
     let grown = 0;
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water

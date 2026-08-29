@@ -16,7 +16,52 @@ import { SCATTER_GLSL } from './scattering.js';
 import { CLOUD_GLSL } from './clouds.js';
 import { OCEAN_GLSL } from './ocean.js';
 import { SMOKE_GLSL } from './smoke.js';
-export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + SMOKE_GLSL + `
+// ARCO-ÍRIS: a gota de água refrata DUAS vezes e reflete UMA (arco
+// primário, mínimo de desvio ~138° ⇒ anel a 42° do ponto ANTISSOLAR) ou
+// DUAS (secundário ~51°, cores INVERTIDAS, ~43% da luz). Entre os arcos o
+// céu ESCURECE (banda de Alexander — raios que caem entre os desvios
+// mínimos). Espelho JS = GLSL com as MESMAS constantes (fidelidade provada).
+export function rainbowTintJS(dir, sunDir, amt) {
+  const d = Math.hypot(dir[0], dir[1], dir[2]) || 1;
+  const dn = [dir[0] / d, dir[1] / d, dir[2] / d];
+  const sn = Math.hypot(sunDir[0], sunDir[1], sunDir[2]) || 1;
+  const cosA = -(dn[0] * sunDir[0] + dn[1] * sunDir[1] + dn[2] * sunDir[2]) / sn;
+  const ang = Math.acos(Math.max(-1, Math.min(1, cosA))) * 180 / Math.PI;
+  const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const prim = ss(38.0, 41.0, ang) * (1.0 - ss(42.0, 45.0, ang));
+  const sec = ss(49.5, 51.0, ang) * (1.0 - ss(53.0, 56.0, ang)) * 0.43;
+  const alex = 1.0 - 0.35 * ss(41.0, 46.0, ang) * (1.0 - ss(46.0, 51.0, ang));
+  const r = prim * ss(40.8, 42.0, ang) + sec * (1.0 - ss(50.8, 52.0, ang));
+  const b2 = prim * (1.0 - ss(40.6, 41.8, ang)) + sec * ss(50.6, 51.8, ang);
+  const g = 0.35 * (r + b2);
+  return [r * amt * alex, g * amt * alex, b2 * amt * alex];
+}
+
+/** fator de ESCURECIMENTO de Alexander (espelho do mesmo trecho no GLSL):
+ *  o céu entre os arcos perde ~28% de luz quando o arco está ativo */
+export function rainbowDarkenJS(dir, sunDir, amt) {
+  const sn = Math.hypot(sunDir[0], sunDir[1], sunDir[2]) || 1;
+  const d = Math.hypot(dir[0], dir[1], dir[2]) || 1;
+  const cosA = -(dir[0] * sunDir[0] + dir[1] * sunDir[1] + dir[2] * sunDir[2]) / (d * sn);
+  const ang = Math.acos(Math.max(-1, Math.min(1, cosA))) * 180 / Math.PI;
+  const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  return 1.0 - 0.28 * ss(41.0, 46.0, ang) * (1.0 - ss(46.0, 51.0, ang)) * amt;
+}
+
+const RAINBOW_GLSL = `
+vec3 rainbowTint(vec3 dir, vec3 sunDir, float amt){
+  float cosA = -dot(normalize(dir), normalize(sunDir));
+  float ang = degrees(acos(clamp(cosA, -1.0, 1.0)));
+  #define SS(a, b, x) ( smoothstep((a), (b), (x)) )
+  float prim = SS(38.0, 41.0, ang) * (1.0 - SS(42.0, 45.0, ang));
+  float sec  = SS(49.5, 51.0, ang) * (1.0 - SS(53.0, 56.0, ang)) * 0.43;
+  float alex = 1.0 - 0.35 * SS(41.0, 46.0, ang) * (1.0 - SS(46.0, 51.0, ang));
+  float r = prim * SS(40.8, 42.0, ang) + sec * (1.0 - SS(50.8, 52.0, ang));
+  float bl = prim * (1.0 - SS(40.6, 41.8, ang)) + sec * SS(50.6, 51.8, ang);
+  return vec3(r, 0.35*(r+bl), bl) * (amt * alex);
+}
+`;
+export const SKY_FS = SCATTER_GLSL + CLOUD_GLSL + SMOKE_GLSL + RAINBOW_GLSL + `
 in vec2 vUV;
 uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
 uniform float uTanF; uniform float uAspect;
@@ -30,6 +75,7 @@ uniform vec3 uStyleTint; uniform float uVeil; uniform vec3 uAfter;
 uniform vec4 uSmoke[4]; uniform int uSmokeN; uniform float uSmokeWind;
 uniform vec2 uSmokeDir;
 uniform vec3 uCamPos;
+uniform float uRainbow;
 out vec4 fragColor;
 void main(){
   vec2 ndc = vUV*2.0 - 1.0;
@@ -45,6 +91,13 @@ void main(){
   vec3 smokeCol = smokeMarch(uCamPos, dir, uSmoke, uSmokeN, uTime0, uSmokeWind, uSmokeDir, clamp(uAirI/22.0, 0.05, 1.2), smokeT);
   col = col*smokeT + smokeCol;
   col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
+  // ARCO-ÍRIS: o anel de 42° do antissolar quando CHUVE com sol na cena;
+  // a BANDA DE ALEXANDER escurece o céu ENTRE os arcos (o céu está lá)
+  {
+    float rAng = degrees(acos(clamp(-dot(normalize(dir), normalize(uSunDir)), -1.0, 1.0)));
+    col *= 1.0 - 0.28 * SS(41.0, 46.0, rAng) * (1.0 - SS(46.0, 51.0, rAng)) * uRainbow;
+    col += rainbowTint(dir, uSunDir, uRainbow);
+  }
   { // STYLE LENS (re-representação D-O15 da luz JÁ resolvida — nunca refísica)
     float lumS = dot(col, vec3(0.299, 0.587, 0.114));
     col = mix(vec3(lumS), col, uStyleSat);

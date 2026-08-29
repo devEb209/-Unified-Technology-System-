@@ -13,7 +13,7 @@ import { dubScript, LANGS } from '../media/dub.js';
 import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
-import { composeOptics, EFFECTS } from '../agent/shader-smith.js';
+import { composeOptics, forgeLook, EFFECTS } from '../agent/shader-smith.js';
 import { DeltaStream } from '../net/sync.js';
 import { UserApps } from '../platform/user-apps.js';
 import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
@@ -60,10 +60,11 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     fn: async (p) => { const clip = walkClip(p); return { name: clip.name, duration: clip.duration, pose: clip.pose(0.25) }; },
   });
   tools.register('media.cutscene', {
-    desc: 'monta cutscene (timeline de planos de câmera) a partir de beats',
-    schema: { beats: { type: 'array' } },
+    desc: 'monta cutscene (timeline de planos de câmera) a partir de beats; play:true ROLA na câmera viva (com letterbox e devolução do enquadramento no fim)',
+    schema: { beats: { type: 'array' }, name: { type: 'string' }, play: { type: 'boolean' } },
     fn: async (p) => {
       const cs = Cutscene.fromBrief({ beats: p.beats ?? [], name: p.name });
+      if (p.play) return { name: cs.name, duration: cs.duration, shots: cs.shots.length, playback: ues.playCutscene(cs) };
       return { name: cs.name, duration: cs.duration, shots: cs.shots.length };
     },
   });
@@ -127,10 +128,24 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
       };
     },
   });
+  tools.register('genesis.critique', {
+    desc: 'o OLHO DO DIRETOR: a IA lê o próprio mundo e devolve crítica honesta + sugestões derivadas do estado',
+    schema: {},
+    fn: async () => core.critique(),
+  });
   tools.register('agent.shader', {
     desc: 'o AGENTE GRÁFICO forja óptica real da biblioteca verificada (vinheta cos⁴, grão de sensor): devolve params + GLSL + autoteste do espelho e aplica na lente viva',
-    schema: { effects: { type: 'array' }, grain: { type: 'number' }, vignette: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' }, ca: { type: 'number' }, sharp: { type: 'number' } },
+    schema: { effects: { type: 'array' }, look: { type: 'string' }, grain: { type: 'number' }, vignette: { type: 'number' }, bloom: { type: 'number' }, tone: { type: 'number' }, ca: { type: 'number' }, sharp: { type: 'number' } },
     fn: async (p) => {
+      if (p.look) {
+        // FORJA POR DESCRIÇÃO: o chat descreve o olhar, o smith compõe a
+        // óptica do léxico verificado e aplica na lente viva (que ele
+        // PRÓPRIO cria se ainda não existir — nunca no-op silencioso)
+        const forged = forgeLook(p.look);
+        if (!world.style?.params) new StyleEngine(world).apply('realista', {});
+        world.style.params = { ...world.style.params, ...forged.params };
+        return { ...forged, applied: true };
+      }
       const amount = {};
       if (p.vignette !== undefined) amount.vinheta = p.vignette;
       if (p.grain !== undefined) amount.grao = p.grain;

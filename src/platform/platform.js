@@ -12,6 +12,7 @@ import { AppHost } from './apps.js';
 import { AIService } from './services/ai-service.js';
 import { ResearchService, MemorySearchProvider } from './services/research-service.js';
 import { HttpSearchProvider } from './services/research-service.js';
+import { CloudStorageProvider } from './services/cloud-storage.js';
 import { GitHubService } from './services/github-service.js';
 import { CreationProjectManager } from './projects.js';
 import { Comm } from '../core/comm.js';
@@ -20,7 +21,7 @@ import { MemoryStorage } from '../persistence/storage.js';
 import { registerPlatformTools } from '../singularity/platform-tools.js';
 
 export class UTSPlatform {
-  constructor({ storage = null, search = null } = {}) {
+  constructor({ storage = null, search = null, cloud = null } = {}) {
     this.services = new ServiceRegistry();
     this.bus = new EventBus();
     this.comm = new Comm();          // OUR inter-module communication
@@ -32,6 +33,9 @@ export class UTSPlatform {
       search: search ?? (HttpSearchProvider.available() ? new HttpSearchProvider() : null),
     });
     this.github = new GitHubService();
+    // NUVEM HONESTA: espelho externo quando configurado por env; sem env a
+    // plataforma é local e DIZ que é local (nunca fingimos backup)
+    this.cloud = cloud ?? (CloudStorageProvider.available() ? new CloudStorageProvider() : null);
     this.apps = new AppHost({ storage: this.storage, bus: this.bus });
     this.projects = null; // wired at attachCore (needs the Singularity Core)
 
@@ -106,13 +110,14 @@ export class UTSPlatform {
       apps: this.apps.status(),
       projects: this.projects?.status() ?? { active: 0, cached: 0 },
       research: this.research.status(),
+      cloud: this.cloud ? { provider: this.cloud.name, honest: 'espelho externo ativo (env UTS_CLOUD_URL)' } : { provider: null, honest: 'LOCAL — nenhuma nuvem configurada (env: UTS_CLOUD_URL); nada é fingido' },
     };
   }
 }
 
 /** factory with sensible defaults */
-export function createPlatform({ storage = null, search = null } = {}) {
-  return new UTSPlatform({ storage: storage ?? new MemoryStorage(), search });
+export function createPlatform({ storage = null, search = null, cloud = null } = {}) {
+  return new UTSPlatform({ storage: storage ?? new MemoryStorage(), search, cloud });
 }
 
 export { MemorySearchProvider };

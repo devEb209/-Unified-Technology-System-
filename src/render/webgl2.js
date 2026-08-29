@@ -457,6 +457,7 @@ export class WebGL2Renderer {
         gl.uniform1f(sky.u.uSmokeWind, env.wind ?? 0.2);
         gl.uniform2f(sky.u.uSmokeDir, env.windDir?.[0] ?? 1, env.windDir?.[1] ?? 0);
         if (sky.u.uTime0) gl.uniform1f(sky.u.uTime0, frame.time ?? 0);
+      if (sky.u.uRainbow) gl.uniform1f(sky.u.uRainbow, frame.rainbow ?? 0);
       }
     }
     gl.uniform3f(sky.u.uSkyTop, env.skyTop[0], env.skyTop[1], env.skyTop[2]);

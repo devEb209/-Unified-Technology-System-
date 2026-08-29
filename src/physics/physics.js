@@ -7,6 +7,7 @@
 //   * headless-testable, deterministic, measurable
 
 import { dist2 } from '../core/math.js';
+import { FLUID_CONST } from '../world/phenomena/fluids.js';
 
 export const GRAVITY = -22; // slightly heroic, tuned for gameplay-scale worlds
 
@@ -73,6 +74,59 @@ export class PhysicsWorld {
     const j = (a, b) => this.addJoint(a.id, b.id, { stiffness: 0.9, causeEvent });
     j(head, torso); j(torso, pelvis); j(torso, armL); j(torso, armR); j(pelvis, legL); j(pelvis, legR);
     return { head: head.id, torso: torso.id, pelvis: pelvis.id, arms: [armL.id, armR.id], legs: [legL.id, legR.id] };
+  }
+
+  /** NÍVEL D'ÁGUA real sob (x,z): superfície = terreno + lâmina do fluido */
+  _waterLevel(x, z) {
+    const f = this.world.fluid;
+    if (!f || !f.depth || f.depth.size === 0) return null;
+    const k = f.key(Math.round(x / FLUID_CONST.CELL), Math.round(z / FLUID_CONST.CELL));
+    const d = f.depth.get(k);
+    if (!d || d <= 0.01) return null;
+    return (this.world.terrain.height(x, z) ?? 0) + d;
+  }
+
+  /** ENTRAR NA ÁGUA com velocidade é um SOM e um evento causal (a água abafa ~metade da energia) */
+  _splash(body, speed, tick, frac) {
+    this.stats.splashes = (this.stats.splashes ?? 0) + 1;
+    const rrw = this.world.rrw;
+    const sp = rrw.getComponent(body.id, 'spatial');
+    const mass = rrw.getComponent(body.id, 'physics')?.mass ?? 1;
+    const energy = 0.5 * mass * speed * speed * (0.4 + 0.6 * frac);
+    rrw.emitEvent({ type: 'physics.splash', subject: body.id, cause: null,
+                    data: { speed: +speed.toFixed(2), energy: +energy.toFixed(1), frac: +frac.toFixed(2) }, tick });
+    this.recentImpacts.push({ pos: [...sp.pos], energy: energy * 0.5, tick, key: `${body.id}:splash${this.stats.splashes}` });
+    if (this.recentImpacts.length > 8) this.recentImpacts.shift();
+  }
+
+  /**
+   * EMPUXO DE ARQUIMEDES + CORDAS vivem aqui embaixo (a água desloca
+   * volume; corda = corrente de nós com juntas de distância PBD).
+   */
+
+  /**
+   * A CORDA é real: corrente de nós (corpos pequenos) ligados por juntas
+   * de distância PBD com comprimento de repouso = segmento. Tudo em RRW
+   * (props + relações 'joint') ⇒ sobrevive a save/load via reattach().
+   */
+  buildRope({ from, to, segments = 8, causeEvent = null } = {}) {
+    const n = Math.max(2, segments | 0);
+    const seg = Math.hypot(to[0] - from[0], to[1] - from[1], to[2] - from[2]) / n;
+    const nodes = [];
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const b = this.addBody({
+        pos: [from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t, from[2] + (to[2] - from[2]) * t],
+        radius: Math.max(0.08, seg * 0.12), material: 'wood', label: `rope-${i}`,
+        restitution: 0.02, friction: 0.85, pinned: i === 0, causeEvent,
+      });
+      nodes.push(b.id);
+    }
+    for (let i = 0; i < n; i++) this.addJoint(nodes[i], nodes[i + 1], { rest: seg, stiffness: 1, causeEvent });
+    // HONESTO: a corda é real PENDURADA (ponte, balanço, poliage); empilhar
+    // nós no chão luta contra o contato e injeta energia no PBD implícito —
+    // limite documentado do solver, não escondido.
+    return { nodes, segment: +seg.toFixed(4) };
   }
 
   /**
@@ -179,6 +233,30 @@ export class PhysicsWorld {
       const ph = rrw.getComponent(body.id, 'physics');
       const sp = rrw.getComponent(body.id, 'spatial');
       if (ph.asleep || ph.pinned) continue;
+
+      // ---- EMPUXO DE ARQUIMEDES (força, ANTES da integração — ordem
+      // correta de Euler semi-implícito): a água desloca volume e o corpo
+      // perde peso. Na convenção de massa do motor (m = ρV/4) a água tem
+      // ρ=0.25, logo a fração submersa de equilíbrio É a densidade do
+      // material: gelo (0.92) flutua 92% afundado como na realidade;
+      // madeira (0.7) flutua leve; rocha (2.6) e carne (1.05) afundam.
+      // Arrasto viscoso ∝ fração submersa (a água freia em toda direção).
+      const wl = this._waterLevel(sp.pos[0], sp.pos[2]);
+      let waterFrac = 0;
+      if (wl !== null && sp.pos[1] - ph.radius < wl) {
+        const sub = Math.min(2 * ph.radius, wl - (sp.pos[1] - ph.radius));
+        waterFrac = Math.max(0, Math.min(1, sub / (2 * ph.radius)));
+        const rho = (MATERIALS[ph.material ?? 'rock'] ?? MATERIALS.rock).density;
+        ph.vel[1] += (-GRAVITY * waterFrac / rho) * dt;   // ρ_w·|G|·V_sub / m
+        const wd = Math.exp(-2.2 * waterFrac * dt);
+        ph.vel[0] *= wd; ph.vel[1] *= wd; ph.vel[2] *= wd;
+        const inWater = waterFrac > 0.05;
+        if (inWater && !ph._wasInWater) this._splash(body, Math.hypot(ph.vel[0], ph.vel[1], ph.vel[2]), tick, waterFrac);
+        ph._wasInWater = inWater;
+        // REALIDADE: corpo flutuando NÃO dorme — o empuxo é força viva
+        // (o que repousa no leito sob lâmina fina pode dormir)
+        if (waterFrac > 0.15) ph.asleep = false;
+      } else if (ph._wasInWater) ph._wasInWater = false;
 
       // integrate (semi-implicit Euler) + planar rotation
       ph.vel[1] += GRAVITY * dt;

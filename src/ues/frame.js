@@ -162,6 +162,10 @@ export function extractFrame(ues, perf = null) {
         yaw: world.observer?.yaw ?? 0, pitch: world.observer?.pitch ?? 0,
       });
     })(),
+    // ARCO-ÍRIS: precisa de CHUVA suspensa e SOL atrás do observador
+    // (o clima já mede ambos — o arco é consequência, não efeito)
+    rainbow: Math.max(0, Math.min(1, (world.environment.rain ?? 0) * 1.6)) *
+             Math.max(0, Math.min(1, (world.clock.sunElevation ?? 0) * 3.2)),
     // the observer's eye gain — the saccade MASKS the gain (the eye blinks fast)
     exposure: (world.observer?.exposure ?? 1) * (1 - (world._eye?.suppress ?? 0)),
     // THE STYLE (D-O15 re-representation): params for the lens in the shaders

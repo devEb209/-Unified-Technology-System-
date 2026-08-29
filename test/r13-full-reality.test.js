@@ -178,12 +178,12 @@ test('r13: COMPILADOR — web builda AGORA (zip real verificado); apk/exe honest
   assert.ok(entries.has('package.json') && entries.has('index.html'), 'zip válido e completo');
   const pkg = JSON.parse(new TextDecoder().decode(entries.get('package.json')));
   assert.equal(pkg.name, 'meujogo');
-  // android: projeto REAL de gradle; toolchain ausente é HONESTA
+  // android: KIT REAL (R20) — projeto gradle completo embalado; o que falta é DITO
   const apk = await build({ name: 'AppVila', target: 'android', manifest: {} });
   assert.ok(apk.files.some((f) => f.endsWith('AndroidManifest.xml')), `layout: ${apk.files.slice(0, 4)}`);
   assert.ok(apk.files.some((f) => f.endsWith('MainActivity.java')));
-  assert.equal(apk.ok, probeToolchains().java && probeToolchains().gradle, 'ok só COM toolchain (nunca apk falso)');
-  if (!apk.ok) assert.match(apk.honest, /toolchain ausente/);
+  assert.equal(apk.ok, true, 'o kit é real (projeto buildável embalado, verificável)');
+  assert.match(apk.honest, /gradle/, 'a toolchain ausente é DITA, nunca fingida');
   // layout válido direto
   const layout = scaffoldProject({ name: 'X', target: 'exe' });
   assert.ok(layout.every(f => f.name.startsWith('X/')));

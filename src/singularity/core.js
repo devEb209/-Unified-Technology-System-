@@ -76,6 +76,46 @@ export class SingularityCore {
     return this.processObjective(objective, opts);
   }
 
+  /**
+   * O OLHO DO DIRETOR: a IA LÊ o próprio mundo (o que criou, o que o
+   * clima está fazendo, quem caiu) e devolve uma crítica HONESTA com
+   * sugestões determinísticas derivadas do estado — não de texto pronto.
+   */
+  critique() {
+    const w = this.world;
+    const rrw = w.rrw;
+    const env = w.environment;
+    const findings = [];
+    const suggestions = [];
+    const settlements = rrw.query({ kind: 'settlement' });
+    if (settlements.length === 0) {
+      findings.push({ level: 'warn', sobre: 'gente', detail: 'o mundo não tem nenhum assentamento — ninguém vive aqui ainda' });
+      suggestions.push('crie uma vila (ex.: "crie uma vila chamada Porto Novo")');
+    }
+    const trees = w.ecology?.trees?.size ?? 0;
+    if (trees < 10) {
+      findings.push({ level: 'warn', sobre: 'mata', detail: `${trees} árvore(s) — a terra está pelada; sem mata não há sombra, lenha nem abrigo` });
+      suggestions.push('plante floresta (ex.: "plante uma floresta de pinheiros")');
+    }
+    const plankton = w.ecology?.plankton ?? 0;
+    if (plankton > 0.1 || (w.ecology?.fishField?.size ?? 0) > 0) {
+      findings.push({ level: 'info', sobre: 'mar vivo', detail: `plâncton ${plankton.toFixed(2)}; a cadeia silt→plâncton→peixe→aves está de pé` });
+      suggestions.push('peça a noite e veja a água brilhar (botão noite ou "coloque a noite")');
+    }
+    if ((env.rain ?? 0) > 0.25 && (w.clock.sunElevation ?? 0) > 0.1) {
+      findings.push({ level: 'info', sobre: 'arco-íris', detail: `chuva ${(env.rain).toFixed(2)} com sol — o anel de 42° do antissolar está no céu` });
+      suggestions.push('gire a câmera para LONGE do sol e procure o arco');
+    }
+    const downed = rrw.query({ kind: 'npc' }).filter((id) => {
+      const n = rrw.getComponent(id, 'npc');
+      return n?.downedUntil != null && w.clock.tick < n.downedUntil;
+    }).length;
+    if (downed > 0) findings.push({ level: 'warn', sobre: 'feridos', detail: `${downed} NPC(s) no chão por impacto — levantam em instantes` });
+    const birds = env.seabirds ?? 0;
+    if (birds >= 1) findings.push({ level: 'info', sobre: 'aves', detail: `${birds.toFixed(0)} aves marinhas seguindo o cardume` });
+    return { ok: true, tick: w.clock.tick, findings, suggestions, honest: 'crítica derivada do ESTADO do mundo, não de texto pronto' };
+  }
+
   async interpretObjectiveStream(objective, chosen = undefined, onChunk = null, opts = {}) {
     if (chosen == null) chosen = await this.chooseModel(objective, {});
     const r = await this.interpretObjective(objective, chosen, opts);

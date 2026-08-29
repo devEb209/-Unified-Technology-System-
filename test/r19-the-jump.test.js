@@ -113,9 +113,11 @@ test('r19: KIT DE IMPLANTAÇÃO REAL — exe vira zip executável (app + run.sh 
   assert.ok(entries.has('AppVila/main.js') && entries.has('AppVila/package.json'));
   const run = new TextDecoder().decode(entries.get('run.sh'));
   assert.match(run, /node main\.js/, 'o kit roda de verdade');
-  // android segue honesto (sem gradle)
+  // android também virou KIT REAL (R20): projeto gradle completo, honesto sobre a toolchain
   const apk = await build({ name: 'AppVila', target: 'android', manifest: {} });
-  assert.equal(apk.ok, false, 'sem toolchain apk é HONESTO');
+  assert.equal(apk.ok, true);
+  assert.match(apk.kind, /android-kit/);
+  assert.match(apk.honest, /gradle/, 'sem toolchain o que falta é DITO');
 });
 
 test('r19: SMITH COMPLETO — aberração e nitidez forjadas, espelho = GLSL, lente viva recebe', async () => {

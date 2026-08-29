@@ -64,6 +64,49 @@ export const EFFECTS = Object.freeze({
  * Returns params (what the style/frame carries), the GLSL block, and a
  * self-verification (the mirror sampled on a grid, ranges asserted).
  */
+// O LÉXICO DO OLHAR: palavras que o usuário diz no chat viram ÓPTICA.
+// Cada look é uma receita de parâmetros dos efeitos VERIFICADOS — nada
+// aqui inventa shader; tudo compõe a biblioteca testada.
+export const LOOKS = Object.freeze({
+  sonho:    { nome: 'sonho',    efeitos: { bloom: 0.7, tonemap: 0.8, vinheta: 0.25, grao: 0.08 } },
+  noir:     { nome: 'noir',     efeitos: { vinheta: 0.75, grao: 0.32, tonemap: 0.35 } },
+  retrato:  { nome: 'retrato',  efeitos: { nitidez: 0.6, aberracao: 0.2, vinheta: 0.3 } },
+  vintage:  { nome: 'vintage',  efeitos: { grao: 0.45, vinheta: 0.6, tonemap: 0.55, aberracao: 0.8 } },
+  pesadelo: { nome: 'pesadelo', efeitos: { aberracao: 1.5, nitidez: 1.0, vinheta: 0.6, grao: 0.28 } },
+  cristalino: { nome: 'cristalino', efeitos: { nitidez: 1.2, aberracao: 0.35, bloom: 0.15, tonemap: 0.5 } },
+});
+
+/**
+ * FORJA POR DESCRIÇÃO: o chat diz "estilo sonho suave" e o smith compõe a
+ * óptica a partir do léxico (cruzando looks com MÉDIA dos parâmetros).
+ * Palavra fora do léxico é HONESTA: entra no nome como "(criado)" e a
+ * receita usa a base média do que foi reconhecido.
+ */
+export function forgeLook(text) {
+  const words = String(text ?? '').toLowerCase().split(/[^a-zà-ú]+/).filter(Boolean);
+  const hits = words.filter((w) => LOOKS[w]);
+  const unknown = words.filter((w) => !LOOKS[w]);
+  const base = {};
+  const recipes = hits.length ? hits.map((w) => LOOKS[w].efeitos) : [Object.values(LOOKS).reduce((acc, l) => {
+    for (const [k, v] of Object.entries(l.efeitos)) acc[k] = (acc[k] ?? 0) + v / Object.keys(LOOKS).length;
+    return acc;
+  }, {})];
+  for (const rec of recipes) for (const [k, v] of Object.entries(rec)) base[k] = (base[k] ?? 0) + v / recipes.length;
+  const effects = Object.keys(base);
+  const amount = {};
+  for (const k of effects) amount[k] = +base[k].toFixed(3);
+  const optics = composeOptics({ effects, amount });
+  const name = (hits.join('-') || 'lente') + (unknown.length ? `-${unknown.slice(0, 2).join('-')}(criado)` : '');
+  return {
+    name,
+    effects,
+    amount,
+    unknown,
+    honest: unknown.length ? `palavras fora do léxico viraram lente pelos parâmetros médios: ${unknown.join(', ')} (criado)` : null,
+    ...optics,
+  };
+}
+
 export function composeOptics(brief = {}) {
   const names = brief.effects ?? [];
   if (!Array.isArray(names) || names.length === 0) {

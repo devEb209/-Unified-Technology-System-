@@ -340,7 +340,80 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R19 — O SALTO (física + ecologia + áudio + fio + empacotamento num lote só; 93.02 → 94.70)
+## R20 — A TEIA VIVA (a cadeia subiu pelo ar + o diretor assumiu a câmera; 94.70 → 96.48)
+
+**EMPUXO DE ARQUIMEDES (physics):** a água desloca volume e o corpo perde
+peso. Na convenção de massa do motor (m = ρV/4) a água tem ρ = 0.25, logo
+a fração submersa de equilíbrio É a densidade do material: GELO flutua
+92% afundado como na realidade (medido 0.90), madeira (0.7) leve, rocha
+(2.6) e carne (1.05) afundam. Arrasto viscoso ∝ fração submersa; entrar
+na água com velocidade é SPLASH — evento causal com energia abafada na
+fila da acústica. Corpo flutuando não dorme (empuxo é força viva). Ordem
+correta de Euler semi-implícito: força ANTES da integração (o empuxo que
+vem depois da integração é zerado pelo contato — bug encontrado e morto).
+
+**CORDAS PBD (buildRope):** corrente de nós (props) com juntas de
+distância rest = segmento; pendurada com ~7% de esticão; TODOS os nós e
+relações vivem no RRW ⇒ save/load recria a MESMA corda (juntas renascem
+no reattach; esticão idêntica após restaurar). Honestidade: corda
+empilhada no chão luta contra o contato e injeta energia no PBD
+implícito — limite documentado, não escondido.
+
+**IMPACTO DERRUBA NPC:** energia cinética de impacto a menos de 2.5m põe
+o NPC no chão (downedUntil, evento npc.downed); caído NÃO anda (o
+movimento obedece ao corpo); levanta quando o tempo do corpo cumpre.
+A janela T..T+1 (mentes rodam antes da física no tick) não perde nem
+dobra impacto.
+
+**A TEIA (ecology):** PEIXES por célula comem o plâncton (crescimento
+logístico; larvas chegam do mar aberto onde a comida concentra) e
+SEGUEM o banco advectado (a escola viaja COM a comida, não para onde a
+comida estava); célula sem comida esvazia (a teia não guarda mortos).
+AVES seguem os peixes com atraso. Persistem no snapshot/restore; sem
+plâncton não nasce peixe.
+
+**O ARCO-ÍRIS (shaders, espelho JS = GLSL):** a gota refrata duas vezes
+e reflete uma — anel a 42° do ponto ANTISSOLAR (vermelho por fora, azul
+por dentro), secundário a 51° com cores INVERTIDAS e ~43% da luz, e a
+BANDA DE ALEXANDER escurecendo o céu ~28% entre os arcos. Só existe com
+chuva suspensa + sol (frame.rainbow = chuva × elevação solar):
+consequência, não efeito.
+
+**O SMITH POR DESCRIÇÃO (forgeLook):** o LÉXICO DO OLHAR — sonho, noir,
+retrato, vintage, pesadelo, cristalino — o chat diz o olhar e a lente
+carrega (média dos parâmetros quando cruza looks). Palavra fora do
+léxico é HONESTA: entra no nome como "(criado)" e usa a média verificada;
+autoteste numérico sempre. A lente viva é criada na hora se não existir
+(nunca no-op silencioso).
+
+**O DIRETOR VIVO (media/cutscene + ues):** dentro de um plano a câmera
+VOA de cam→cam2 com easing easeInOutQuad e MIRA o alvo (yaw/pitch
+derivados da geometria, mesma convenção do renderer); letterbox no
+frame; no fim o jogo recebe o enquadramento DE VOLTA. Rola pelo chat:
+media.cutscene { play: true }.
+
+**A NUVEM HONESTA (cloud-storage):** interface estruturada put/get/list;
+bytes sobem em base64 fiel; a chave vai SÓ no header Authorization,
+configurada por ambiente (UTS_CLOUD_URL/UTS_CLOUD_KEY — nunca no código);
+transporte injetável para teste determinístico; sem env é LOCAL e DIZ
+que é local (CloudError CLOUD_OFFLINE codificado).
+
+**O KIT ANDROID REAL (build):** android vira android-kit: projeto gradle
+COMPLETO embalado (manifest + MainActivity + www/) com INSTALL.txt
+ensinando o assembleDebug — o projeto é buildável; sem toolchain não
+fingimos compilar (o contrato honesto do apk continua, agora com
+artefato real).
+
+**O OLHO DO DIRETOR (core.critique + genesis.critique):** a IA lê o
+próprio mundo — quem vive nele, o que o clima está fazendo, quem caiu —
+e devolve crítica honesta com sugestões DERIVADAS DO ESTADO
+(determinísticas; nada de texto pronto).
+
+**Fixes colaterais:** ordem do empuxo no integrador (força antes da
+integração); agent.shader cria a lente se não existe; schema do
+world.style já aceitava ca/sharp (R19). **367/367 testes.**
+
+
 
 **LÂMINA D'ÁGUA (fluids, atrito de leito):** o escoamento rasante perde
 energia no LEITO: drop × min(1, 0.3 + (h/0.4)·0.7). A película de 2cm
