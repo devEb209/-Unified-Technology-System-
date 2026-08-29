@@ -46,6 +46,7 @@ export class World {
     this._lastRainEventId = null;
     // ---- REALITY PHENOMENA (ADR-019: the world models reality, not tricks)
     this.atmosphere = new Atmosphere();                       // air → sky IS scattering
+    this.observer = { adapt: 1, exposure: 1 };                // the eye ADAPTS to real light
     this.hydrology = new Hydrology({ world: this });          // water as substance
     this.combustion = new Combustion({ world: this, tese });  // fire as fuel process
     this.ecology = new Ecology({ world: this });              // vegetation as population
@@ -241,6 +242,14 @@ export class World {
     env.skyTop = air.skyTop; env.skyBottom = air.skyBottom;
     env.fog = air.fog; env.haze = air.haze; env.sunVisible = air.sunVisible;
     env.sunColor = air.sunColor;
+    // ---- PERCEPTION (physical, not artistic): exposure is the eye's gain —
+    // constricts FAST under a flash, dilates SLOWLY in the dark (Weber-like
+    // target on ambient+flash luminance; asymmetric time constants)
+    const L = (env.ambient ?? 1) + (env.flash ?? 0) * 2.5;
+    const targetExp = Math.min(3.4, Math.max(0.5, 0.9 / Math.pow(Math.max(L, 0.05), 0.75)));
+    const tauExp = targetExp < this.observer.adapt ? 0.35 : 11;
+    this.observer.adapt += (targetExp - this.observer.adapt) * (1 - Math.exp(-dt / tauExp));
+    this.observer.exposure = this.observer.adapt;
     this.hydrology.step(dt, {
       focus: this.ues?.camera?.pos ?? this.cameraFocusFallback?.() ?? [512, 0, 512],
       radius: 160, rain: env.rain, sunEl,

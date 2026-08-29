@@ -49,6 +49,11 @@ export function densityAt(p, cov, seedT = 0) {
   return c01((n * prof * 1.9 - (1 - cov)) * 4.5);
 }
 
+/** Cloud transmittance toward the sun from a WORLD point (cloud shadows). */
+export function transmitToward(pos, sunDir, cov, seedT = 0) {
+  return march(pos, sunDir, sunDir, cov, { intensity: 1 }, { seedT, steps: 8 }).T;
+}
+
 // Henyey–Greenstein phase for cloud droplets (forward peak toward the sun)
 export function phaseHG(cosT, g = CLOUD_CONST.HG) {
   const g2 = g * g;

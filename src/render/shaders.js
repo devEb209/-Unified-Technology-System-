@@ -18,6 +18,7 @@ uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
 uniform float uTanF; uniform float uAspect;
 uniform vec3 uSunDir; uniform float uAirMie; uniform float uAirI;
 uniform float uFlash; uniform float uCloudCov; uniform float uCloudSeed;
+uniform float uExposure;
 uniform vec3 uCamPos;
 out vec4 fragColor;
 void main(){
@@ -29,6 +30,7 @@ void main(){
   marchClouds(uCamPos, dir, uSunDir, uCloudCov, uAirI*clamp(uSunDir.y*4.0+0.12,0.0,1.0), uCloudSeed, cCol, cT);
   col = col*cT + cCol;
   col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
+  col *= uExposure; // the observer's eye gain (adapts to real light)
   fragColor = vec4(col, 1.0);
 }`;
 
@@ -65,6 +67,7 @@ in vec3 vPos; in vec3 vNorm; in float vBiome;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform float uWetness;
 uniform float uAirMie; uniform float uAirI;
+uniform float uCloudCov; uniform float uCloudSeed; uniform float uExposure;
 uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
@@ -84,6 +87,7 @@ float shadowSample(vec3 wp, float ndl){
   }}
   return sum/9.0;
 }
+` + CLOUD_GLSL + `
 void main(){
   vec3 cs[6];
   cs[0]=vec3(0.10,0.32,0.55); cs[1]=vec3(0.78,0.71,0.50); cs[2]=vec3(0.32,0.55,0.25);
@@ -93,7 +97,11 @@ void main(){
   vec3 n = normalize(vNorm);
   float ndl = max(dot(n,uSunDir),0.0);
   float sh = shadowSample(vPos, ndl);
-  vec3 col = base * (uAmbient*0.55 + ndl*0.75*sh) * uSunColor;
+  // CLOUD SHADOW: the SAME integrated slab, sampled from the ground toward
+  // the sun — the storm you SEE above is the storm that darkens you
+  vec3 cSh; float cloudT = 1.0;
+  if (uCloudCov > 0.02) marchClouds(vPos + uSunDir*0.5, uSunDir, uSunDir, uCloudCov, 1.0, uCloudSeed, cSh, cloudT);
+  vec3 col = base * (uAmbient*0.55*mix(0.6,1.0,cloudT) + ndl*0.75*sh*cloudT) * uSunColor;
   for (int i=0;i<4;i++){
     if (i>=uPointCount) break;
     vec3 L = uPointPos[i]-vPos;
@@ -104,6 +112,7 @@ void main(){
   col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
   // AERIAL PERSPECTIVE: the air between camera and terrain IS the atmosphere
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col *= uExposure;
   fragColor = vec4(col, uAlpha);
 }`;
 
@@ -131,7 +140,7 @@ precision highp float;
 in vec3 vNorm; in vec3 vWorld; in vec4 vA1; in vec4 vA2;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
-uniform float uAirMie; uniform float uAirI;
+uniform float uAirMie; uniform float uAirI; uniform float uExposure;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
 uniform float uAlpha;
@@ -172,6 +181,7 @@ void main(){
   }
   col += albedo * emissive * 1.5;
   col = aerial(col, normalize(vWorld-uCamPos), length(vWorld-uCamPos), uSunDir, uAirMie, uAirI);
+  col *= uExposure;
   fragColor = vec4(col, uAlpha);
   fragColor = vec4(col,1.0);
 }`;
@@ -221,6 +231,7 @@ in vec3 vPos; in float vWave;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
 uniform float uWetness; uniform float uAlpha; uniform float uAirMie; uniform float uAirI;
+uniform float uExposure;
 out vec4 fragColor;
 void main(){
   vec3 view = normalize(uCamPos - vPos);
@@ -236,6 +247,7 @@ void main(){
   col = mix(col, skyRef, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col *= uExposure;
   fragColor = vec4(col, uAlpha);
 }
 `;
@@ -324,7 +336,7 @@ export const TREE_FS = SCATTER_GLSL + `
 precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vCanopy; in float vHealth;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
-uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI;
+uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI; uniform float uExposure;
 out vec4 fragColor;
 void main(){
   vec3 bark = vec3(0.27, 0.19, 0.12);
@@ -334,6 +346,7 @@ void main(){
   float ndl = max(dot(normalize(vNorm), uSunDir), 0.0);
   col = col*(uSunColor*ndl + vec3(uAmbient*0.9));
   col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col *= uExposure;
   fragColor = vec4(col, 1.0);
 }`;
 

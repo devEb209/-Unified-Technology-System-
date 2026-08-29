@@ -267,3 +267,26 @@ de fogo, malha de árvores, nuvens volumétricas, pós-processo.
   aCanopy/aT0/aT1 (atributos não listados ficavam soltos no navegador).
 - **259/259 testes.** Falta em render: broadleaf, sombra de nuvem no solo,
   pós-processo.
+
+## R9 — REALIDADE COMPLETA (a ofensiva ADR-020 vira sistema nervoso)
+
+**Tese:** o que supera Unreal/Unity/RAGE/Anvil não é um gráfico bonito — é a
+REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
+
+- **Sombra de nuvem no solo:** TERRAIN_FS importa o MESMO CLOUD_GLSL
+  gerado e amostra a transmitância da lâmina DO SOLO PARA O SOL — a nuvem
+  que o jogador vê é a que escurece o chão (móvel: deriva com o vento).
+  Testado: monótona na cobertura; tempestade corta >70% do sol direto.
+- **UM vento causal:** `atmosphere.state.cloudDrift` integra env.wind —
+  o mesmo campo que dobra árvores e espalha fogo ADVECTA as nuvens.
+  Testado: forte ≫ fraco; determinístico; frame compartilha a fonte.
+- **Exposição física:** `world.observer` adapta o ganho do olho à luz real
+  (constrige τ=0.35s no flash, dilata τ=11s no escuro; alvo Weber-like
+  0.9/L^0.75). Multiplicada nos 5 shaders que produzem imagem. Relâmpago
+  ofusca e o mundo escurece de verdade por um instante; a noite dilata.
+- **Floresta mista:** espécies por NOME + lista por bioma — FOREST semeia
+  pine E broadleaf (rng determinístico). `treeMesh('broadleaf')` = copa
+  blob com 3 lóbulos + tronco. Fixes: `speciesFor` preserva name; linha
+  `fragColor` duplicada latente em ENTITY_FS removida.
+- **267/267 testes.** Falta em render: ondas direcionais, fumaça
+  volumétrica iluminada, neblina por altura.

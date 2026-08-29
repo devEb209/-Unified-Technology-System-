@@ -15,10 +15,14 @@
 
 import { clamp01 } from '../../core/math.js';
 
+// Species are keyed by NAME (a forest is a MIXED stand — reality is not
+// monoculture); each biome carries its species list.
 const SPECIES = {
-  2: { name: 'grass-shrub', mature: 4, lifespan: 900, growth: 0.010, seedDist: 14, fuel: 0.25, height: 1.2 },
-  3: { name: 'pine',        mature: 26, lifespan: 5200, growth: 0.0035, seedDist: 22, fuel: 1.4, height: 9 },
+  'grass-shrub': { mature: 4, lifespan: 900, growth: 0.010, seedDist: 14, fuel: 0.25, height: 1.2 },
+  'pine':        { mature: 26, lifespan: 5200, growth: 0.0035, seedDist: 22, fuel: 1.4, height: 9 },
+  'broadleaf':   { mature: 20, lifespan: 3600, growth: 0.005, seedDist: 18, fuel: 1.1, height: 7 },
 };
+const BIOME_SPECIES = { 2: ['grass-shrub'], 3: ['pine', 'broadleaf'] };
 
 export class Ecology {
   constructor({ world, maxTrees = 240 } = {}) {
@@ -30,7 +34,8 @@ export class Ecology {
     this.stats = { seeded: 0, died: 0, burnt: 0, grown: 0 };
   }
 
-  speciesFor(biome) { return SPECIES[biome] ?? null; }
+  speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
+  speciesListFor(biome) { return (BIOME_SPECIES[biome] ?? []).map(n => ({ ...SPECIES[n], name: n })); }
 
   /** is this terrain spot plantable? (honest: no trees in deep water/rock/snow) */
   plantable(x, z) {
@@ -45,8 +50,10 @@ export class Ecology {
     const t = this.world.terrain;
     const h = t.height(x, z);
     const b = biome ?? t.biomeAt(x, z, h);
-    const sp = this.speciesFor(b);
-    if (!sp || !this.plantable(x, z)) return null;
+    const list = this.speciesListFor(b);
+    if (!list.length || !this.plantable(x, z)) return null;
+    // mixed stands: the seeded rng picks the species (deterministic)
+    const sp = list[Math.floor(this.world.rng.next() * list.length) % list.length];
     const id = `tree${this.nextId++}`;
     const tree = {
       id, pos: [x, h, z], biome: b, species: sp.name,
@@ -108,7 +115,7 @@ export class Ecology {
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water
     for (const tree of this.trees.values()) {
       if (tree.state === 'dead') continue;
-      const sp = SPECIES[tree.biome] ?? SPECIES[3];
+      const sp = SPECIES[tree.species] ?? SPECIES.pine;
       // ---- growth (logistic toward maturity; stress shrinks health first)
       const stress = (soilWet < 0.15 && clamp01(sunEl) > 0.5) ? 1 : 0; // drought under hot sun
       tree.health = clamp01(tree.health - stress * 0.004 * dt + (soilWet > 0.3 ? 0.001 * dt : 0));
@@ -137,7 +144,7 @@ export class Ecology {
       const mature = [...this.trees.values()].filter(t => t.state === 'mature');
       if (mature.length) {
         const parent = mature[this.world.rng.int(0, mature.length - 1)];
-        const sp = SPECIES[parent.biome] ?? SPECIES[3];
+        const sp = SPECIES[parent.species] ?? SPECIES.pine;
         const a = this.world.rng.range(0, Math.PI * 2);
         const d = (0.4 + this.world.rng.next() * 0.6) * sp.seedDist;
         const x = parent.pos[0] + Math.cos(a) * d, z = parent.pos[2] + Math.sin(a) * d;
@@ -180,7 +187,7 @@ export class Ecology {
     }
     out.sort((a, b) => a.dist - b.dist);
     return out.slice(0, budget).map(({ tree }) => ({
-      pos: tree.pos, height: (SPECIES[tree.biome] ?? SPECIES[3]).height * tree.maturity,
+      pos: tree.pos, height: (SPECIES[tree.species] ?? SPECIES.pine).height * tree.maturity,
       health: tree.health, species: tree.species, id: tree.id,
     }));
   }

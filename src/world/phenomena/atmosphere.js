@@ -38,6 +38,8 @@ export class Atmosphere {
     const targetH = clamp01(0.3 + env.rain * 0.7 - env.dust * 0.2);
     const targetD = clamp01(env.dust + (env.weather === 'storm' ? 0.15 : 0));
     const k = 1 - Math.exp(-dt / 6); // air has inertia (~6s to follow weather)
+    // the SAME wind that bends trees and spreads fire ADVECTS the cloud field
+    this.state.cloudDrift = (this.state.cloudDrift ?? 0) + (env.wind ?? 0.2) * dt * 0.05;
     this.state.humidity += (targetH - this.state.humidity) * k;
     this.state.dust += (targetD - this.state.dust) * k;
     return this.state;

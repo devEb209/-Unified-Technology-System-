@@ -133,8 +133,13 @@ export class WebGL2Renderer {
       box: cubeMesh(), sphere: sphereMesh(), cone: coneMesh(),
       dome: domeMesh(), capsule: sphereMesh(6, 8),
     };
-    this.treeMesh = treeMesh('pine'); // real geometry for pine (grass-shrub stays a point under D-O15)
-    this.treeMesh.handle = this.createBuffer(this.treeMesh.data); // RHI-tracked
+    // real geometry for the MESHED species (grass-shrub stays a point under D-O15)
+    this.treeMeshes = {
+      pine: treeMesh('pine'),
+      broadleaf: treeMesh('broadleaf'),
+    };
+    this.treeMeshes.pine.handle = this.createBuffer(this.treeMeshes.pine.data);
+    this.treeMeshes.broadleaf.handle = this.createBuffer(this.treeMeshes.broadleaf.data);
     for (const m of Object.values(this.meshes)) {
       m.handle = this.createBuffer(m.data); // RHI-tracked; raw buffer lives in handle.meta.gl
     }
@@ -407,6 +412,7 @@ export class WebGL2Renderer {
         gl.uniform1f(sky.u.uCloudSeed, frame.clouds?.seedT ?? 0);
         gl.uniform3f(sky.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
       }
+      if (sky.u.uExposure) gl.uniform1f(sky.u.uExposure, frame.exposure ?? 1);
     }
     gl.uniform3f(sky.u.uSkyTop, env.skyTop[0], env.skyTop[1], env.skyTop[2]);
     gl.uniform3f(sky.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);
@@ -421,6 +427,7 @@ export class WebGL2Renderer {
     const bindLights = (p) => {
       gl.uniform3f(p.u.uSunDir, frame.lights.sun.dir[0], frame.lights.sun.dir[1], frame.lights.sun.dir[2]);
       if (p.u.uAirMie) { gl.uniform1f(p.u.uAirMie, air.mie); gl.uniform1f(p.u.uAirI, air.intensity); }
+      if (p.u.uExposure) gl.uniform1f(p.u.uExposure, frame.exposure ?? 1); // the eye's real gain
       gl.uniform3f(p.u.uSunColor, frame.lights.sun.color[0], frame.lights.sun.color[1], frame.lights.sun.color[2]);
       gl.uniform1f(p.u.uAmbient, frame.lights.sun.ambient);
       if (p.u.uLightVP) gl.uniformMatrix4fv(p.u.uLightVP, false, lightVP ?? identity());
@@ -454,6 +461,10 @@ export class WebGL2Renderer {
     gl.uniform3f(terr.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);
     gl.uniform1f(terr.u.uFog, env.fog);
     gl.uniform1f(terr.u.uWetness, env.wetness);
+    if (terr.u.uCloudCov) {
+      gl.uniform1f(terr.u.uCloudCov, frame.clouds?.coverage ?? 0);
+      gl.uniform1f(terr.u.uCloudSeed, frame.clouds?.seedT ?? 0);
+    }
     gl.uniform3f(terr.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
     if (terr.u.uAlpha) gl.uniform1f(terr.u.uAlpha, 1);
     for (const patch of frame.terrain.patches) {
@@ -605,8 +616,12 @@ export class WebGL2Renderer {
 
     // ---- TREES: the pine population as REAL geometry (health colors the
     // canopy; wind bends it; the SAME aerial air surrounds it)
-    const pines = (frame.vegetation ?? []).filter(t => t.species === 'pine');
-    if (pines.length > 0 && this.treeMesh) {
+    const meshedTrees = (frame.vegetation ?? []).filter(t => t.species === 'pine' || t.species === 'broadleaf');
+    for (const spName of ['pine', 'broadleaf']) {
+      const pines = meshedTrees.filter(t => t.species === spName);
+      const treeMesh = this.treeMeshes[spName];
+      if (pines.length === 0 || !treeMesh) continue;
+      {
       const tree = this.programs.tree;
       gl.useProgram(tree.prog);
       gl.uniformMatrix4fv(tree.u.uVP, false, vp);
@@ -623,7 +638,7 @@ export class WebGL2Renderer {
       if (!this._treeInstHandle) { this._treeInstHandle = this.createBuffer(data, { dynamic: true }); this._treeInstBuf = this._treeInstHandle.meta.gl; }
       else { gl.bindBuffer(gl.ARRAY_BUFFER, this._treeInstBuf); gl.bufferData(gl.ARRAY_BUFFER, data, GL.DYNAMIC_DRAW); }
       // mesh: [pos3, norm3, canopy1] stride 7 — instances: [pos3,h, health,wind,phase,pad] stride 8
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.treeMesh.handle.meta.gl);
+      gl.bindBuffer(gl.ARRAY_BUFFER, treeMesh.handle.meta.gl);
       gl.enableVertexAttribArray(tree.a.aPos);
       gl.vertexAttribPointer(tree.a.aPos, 3, gl.FLOAT, false, 7 * 4, 0);
       if (tree.a.aNorm >= 0) { gl.enableVertexAttribArray(tree.a.aNorm); gl.vertexAttribPointer(tree.a.aNorm, 3, gl.FLOAT, false, 7 * 4, 3 * 4); }
@@ -633,7 +648,7 @@ export class WebGL2Renderer {
       if (gl.drawArraysInstanced) {
         div(tree.a.aT0, 1); gl.vertexAttribPointer(tree.a.aT0, 4, gl.FLOAT, false, 8 * 4, 0);
         div(tree.a.aT1, 1); gl.vertexAttribPointer(tree.a.aT1, 4, gl.FLOAT, false, 8 * 4, 4 * 4);
-        gl.drawArraysInstanced(gl.TRIANGLES, 0, this.treeMesh.count, pines.length);
+        gl.drawArraysInstanced(gl.TRIANGLES, 0, treeMesh.count, pines.length);
         this.stats.treeInstances = (this.stats.treeInstances ?? 0) + pines.length;
         div(tree.a.aT0, 0); div(tree.a.aT1, 0);
         drawCalls++;
@@ -649,10 +664,11 @@ export class WebGL2Renderer {
           one[6] = ph; one[7] = 0;
           gl.bindBuffer(gl.ARRAY_BUFFER, this._treeInstBuf);
           gl.bufferData(gl.ARRAY_BUFFER, one, GL.DYNAMIC_DRAW);
-          gl.drawArrays(gl.TRIANGLES, 0, this.treeMesh.count);
+          gl.drawArrays(gl.TRIANGLES, 0, treeMesh.count);
           this.stats.treeInstances = (this.stats.treeInstances ?? 0) + 1;
           drawCalls++;
         }
+      }
       }
     }
 

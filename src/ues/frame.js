@@ -143,8 +143,10 @@ export function extractFrame(ues, perf = null) {
     // cloud coverage FROM the represented air (the renderer only integrates)
     clouds: world.atmosphere?.cloudCoverage ? {
       coverage: world.atmosphere.cloudCoverage(world.environment),
-      seedT: world.clock.timeOfDay * 2.7,
+      seedT: world.atmosphere.state?.cloudDrift ?? 0, // the wind advects the field
     } : null,
+    // the observer's eye gain (adapts to the REAL light; the renderer multiplies)
+    exposure: world.observer?.exposure ?? 1,
     // TRUE sun direction (unclamped — the sky must be able to set)
     sunDirTrue: (() => {
       const a = world.clock.timeOfDay * Math.PI * 2 - Math.PI / 2;
