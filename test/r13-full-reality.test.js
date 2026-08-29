@@ -10,7 +10,7 @@ import { SCALES, scaleFor, aggregate, ScaleLadder } from '../src/world/scales.js
 import { eyeState, purkinjeTint, rodMix, contrastFrac } from '../src/render/vision.js';
 import { AgentFS } from '../src/agent/fs-agent.js';
 import { ProcAgent } from '../src/agent/proc-agent.js';
-import { build, probeToolchains, scaffoldProject } from '../src/agent/build-system.js';
+import { build, inspect, probeToolchains, scaffoldProject } from '../src/agent/build-system.js';
 import { zipCreate, zipRead } from '../src/util/zip.js';
 import { generate, DIMS } from '../src/media/models.js';
 import { generateTexture } from '../src/media/textures.js';
@@ -187,6 +187,22 @@ test('r13: COMPILADOR — web builda AGORA (zip real verificado); apk/exe honest
   // layout válido direto
   const layout = scaffoldProject({ name: 'X', target: 'exe' });
   assert.ok(layout.every(f => f.name.startsWith('X/')));
+});
+
+test('r13: DESCOMPILAR — o pacote volta inteiro: arquivos nomeados + manifestos lidos', async () => {
+  const web = await build({ name: 'Decompile', target: 'web', manifest: { title: 'X' } });
+  const d = inspect(web.artifact.data);
+  assert.equal(d.ok, true);
+  assert.equal(d.count, web.files.length, 'todo arquivo que entrou SAI nomeado');
+  assert.ok(d.manifests['package.json'].includes('"decompile"'), 'o package.json é lido de volta como texto');
+  // binário não é fingido
+  const fake = zipCreate([{ name: 'classes.dex', data: new Uint8Array([0x64, 0x65, 0x78, 1, 2, 3]) }]);
+  const d2 = inspect(fake);
+  assert.match(d2.manifests['classes.dex'], /binário: 6 bytes/);
+  // corrompido → erro honesto
+  const broken = new Uint8Array(web.artifact.data);
+  broken[broken.length - 22] ^= 0xFF; // o EOCD (a âncora do zip) — leitor honesto recusa
+  assert.throws(() => inspect(new Uint8Array(broken)), /corrompido|EOCD/);
 });
 
 test('r13: PERFIS de aparelho — o A01 joga o MESMO mundo com orçamentos D-O15 menores', () => {

@@ -86,7 +86,7 @@ Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch> <url> uts`, `npm start`
 ## Quick start
 
 ```bash
-npm test              # 305/305 testes determinísticos
+npm test              # 305/306 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)

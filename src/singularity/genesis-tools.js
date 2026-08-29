@@ -4,7 +4,7 @@
 // animações, cutscenes, dublagem, escalas da realidade, perfis de aparelho.
 import { AgentFS } from '../agent/fs-agent.js';
 import { ProcAgent } from '../agent/proc-agent.js';
-import { build as buildApp, probeToolchains, TARGETS } from '../agent/build-system.js';
+import { build as buildApp, inspect as inspectApp, probeToolchains, TARGETS } from '../agent/build-system.js';
 import { generate as generateModel, DIMS } from '../media/models.js';
 import { generateTexture } from '../media/textures.js';
 import { walkClip, Clip, Track, blendPoses } from '../media/animation.js';
@@ -25,6 +25,11 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     tools.register(name, { desc: def.desc, schema: def.schema, fn: def.fn });
   }
 
+  tools.register('agent.inspect', {
+    description: 'DECOMPILA um pacote (.zip/.apk/.aab): lista todo o conteúdo, tamanhos e manifestos (package.json, AndroidManifest). Binários são relatados como bytes — nunca fingidos.',
+    input: '{ data: Uint8Array }',
+    fn: async (p) => inspectApp(p.data),
+  });
   tools.register('agent.build', {
     desc: `gera e compila um app: alvos ${Object.keys(TARGETS).join(', ')} (web builda AGORA; apk/exe geram projeto real e relatam toolchain com honestidade)`,
     schema: { name: { type: 'string' }, target: { type: 'string' }, title: { type: 'string' } },

@@ -8,7 +8,7 @@
 > Meta: GÊNESIS = a visão COMPLETA (vision.md), usável por todos, UTS+UES
 > funcionais. Recalculado **a cada rodada**, sem inflar nada.
 
-## % ATUAL: **89%** (após R13 — QUINZE sistemas: escada átomo→universo, OLHO HUMANO (Purkinje/glare/CSF), IA com sistema de arquivos, executor de comandos com guarda, compilar APK/EXE/AAB/web (+zip determinístico), frontend 100% auditado, perfis D-O15 A01→desktop, modelos 2d/2.5d/3d/3.5d/4d, texturas proceduais, animação/blending, cutscenes, auto-dublagem pt/en/es/ja, estilo pelo chat, 305 testes; 89.08 exato)
+## % ATUAL: **89%** (após R13 — QUINZE sistemas: escada átomo→universo, OLHO HUMANO (Purkinje/glare/CSF), IA com sistema de arquivos, executor de comandos com guarda, compilar APK/EXE/AAB/web (+zip determinístico), frontend 100% auditado, perfis D-O15 A01→desktop, modelos 2d/2.5d/3d/3.5d/4d, texturas proceduais, animação/blending, cutscenes, auto-dublagem pt/en/es/ja, estilo pelo chat, 306 testes; 89.08 exato)
 
 | # | Categoria | Peso | Completo | Contribuição | Evidência / o que falta |
 |---|---|---|---|---|---|
@@ -38,7 +38,7 @@
 |---|---|---|
 | (régua antiga) Gênesis→Autosave→4 sistemas→LOD→fade/água/IA | 62→89% | ver git; media "implementado+testes", não fidelidade |
 | **Re-baseline ADR-019 (4e0ae5f)** | **70%** | visão como lei, auditoria honesta A–G |
-| **R13 QUINZE SISTEMAS** | **89%** (89.08) | escada da realidade átomo→universo (15 níveis causais); O OLHO HUMANO (Purkinje+glare+CSF nos shaders); IA com sistema de arquivos (sandbox+journal); IA executa comandos (guarda+opt-in); compilar/descompilar APK/EXE/AAB/web (zip determinístico próprio); frontend 100% auditado; perfis D-O15 A01→desktop; modelos em todos os Ds; texturas proceduais; animação com blend; cutscenes; auto-dublagem pt/en/es/ja; estilo pelo chat; 305 testes |
+| **R13 QUINZE SISTEMAS** | **89%** (89.08) | escada da realidade átomo→universo (15 níveis causais); O OLHO HUMANO (Purkinje+glare+CSF nos shaders); IA com sistema de arquivos (sandbox+journal); IA executa comandos (guarda+opt-in); compilar/descompilar APK/EXE/AAB/web (zip determinístico próprio); frontend 100% auditado; perfis D-O15 A01→desktop; modelos em todos os Ds; texturas proceduais; animação com blend; cutscenes; auto-dublagem pt/en/es/ja; estilo pelo chat; 306 testes |
 | **R12 NOVE SISTEMAS** | **87%** (87.18) | fluidos escoando; clima regional advectado (fogo vê a chuva local); fumaça volumétrica de horizonte; agente CODER com código real verificado; streaming progressivo + SSE; absorção por material; deltas comprimidos; genesis 1-comando; 290 testes |
 | **R11 CINCO SISTEMAS** | **85%** (84.98) | quaternions livres + ragdoll que sobrevive save/load; pinna + reverb por ambiente; deltas por-entidade do RRW; névoa por altura; galeria de mundos; 281 testes |
 | **R10 O MAR E O AR RESPONDEM** | **84%** (83.86) | ondas direcionais com dispersão ω=√gk ∝ vento + espuma física; fumaça espalha a luz do céu e a do fogo; neblina de radiação (nasce úmida, sol/vento queimam); 274 testes |

@@ -398,11 +398,17 @@ Bug real encontrado e corrigido no caminho: writeHead antes do await
 mata o processo com ERR_HTTP_HEADERS_SENT — agora trabalho primeiro,
 header depois.
 
-**Testes:** r13-full-reality.test.js — 15 testes (305 no total): escada
+**Descompilar (agent.inspect):** a porta de volta — `inspect(data)` lê
+qualquer zip/apk/aab: nomeia TODO arquivo com tamanho, extrai package.json
+e AndroidManifest.xml como texto, e relata binário como bytes (nunca finge
+texto). Registrada como tool `agent.inspect` (a IA descompila pelo chat).
+
+**Testes:** r13-full-reality.test.js — 16 testes (306 no total): escada
 (conservação + vizinhos), olho (Purkinje/glare/CSF no frame), 5 Ds,
 texturas, animação, cutscene, dublagem, sandbox de arquivos, guarda de
 comandos, compilador (web real + honestidade apk/exe), perfis, tools
-registradas, /api/fs por HTTP (incluindo fuga → 400), auditoria de
+registradas, DESCOMPILAÇÃO (arquivos nomeados + manifestos + binário
+honesto), /api/fs por HTTP (incluindo fuga → 400), auditoria de
 botões, zip roundtrip + corrupção → erro.
 
 ## R12 — NOVE SISTEMAS DE UMA VEZ (o maior round; 84.98 → 87.18)

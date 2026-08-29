@@ -102,3 +102,25 @@ public class MainActivity extends Activity {
     w.loadUrl("file:///android_asset/www/index.html"); setContentView(w);
   }
 }\n`;
+
+/**
+ * DECOMPILE — the reverse door: read ANY store zip back (our own builds,
+ * and honest listing of foreign .apk/.aab/.zip). Names every entry, sizes,
+ * and pulls out known manifests (package.json / AndroidManifest.xml) as
+ * text. Binary entries are reported as bytes, never faked as text.
+ */
+export function inspect(data) {
+  const entries = zipRead(data);
+  const files = [];
+  const manifests = {};
+  for (const [name, bytes] of entries) {
+    files.push({ name, bytes: bytes.length });
+    if (name === 'package.json' || name.endsWith('AndroidManifest.xml') || name === 'index.html') {
+      try { manifests[name] = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+      catch { manifests[name] = `<binário: ${bytes.length} bytes>`; }
+    } else if (/\.(png|jpg|dex|so|bin)$/i.test(name)) {
+      manifests[name] = `<binário: ${bytes.length} bytes>`;
+    }
+  }
+  return { ok: true, count: files.length, totalBytes: data.length, files, manifests };
+}
