@@ -106,13 +106,20 @@ test('r19: HRTF DE LITERATURA — grade 13×6, sombra contralateral ≈ -18dB, n
 test('r19: KIT DE IMPLANTAÇÃO REAL — exe vira zip executável (app + run.sh + INSTALL), SEA honesto', async () => {
   const exe = await build({ name: 'AppVila', target: 'exe', manifest: { title: 'Vila' } });
   assert.equal(exe.ok, true);
-  assert.match(exe.kind, /deploy-kit/);
-  assert.match(exe.honest, /postject/, 'o que falta para o binário único está DITO');
-  const entries = zipRead(exe.artifact.data);
-  assert.ok(entries.has('run.sh') && entries.has('INSTALL.txt'));
-  assert.ok(entries.has('AppVila/main.js') && entries.has('AppVila/package.json'));
-  const run = new TextDecoder().decode(entries.get('run.sh'));
-  assert.match(run, /node main\.js/, 'o kit roda de verdade');
+  if (/binário único/.test(exe.kind)) {
+    // máquina COM postject: o binário SEA é REAL (R21) — ELF e executa
+    const head = exe.artifact.data.slice(0, 4);
+    assert.ok(head[0] === 0x7f && head[1] === 0x45, 'artefato é executável nativo');
+  } else {
+    // máquina SEM postject: kit honesto (app + run.sh + INSTALL)
+    assert.match(exe.kind, /deploy-kit/);
+    assert.match(exe.honest, /postject/, 'o que falta para o binário único está DITO');
+    const entries = zipRead(exe.artifact.data);
+    assert.ok(entries.has('run.sh') && entries.has('INSTALL.txt'));
+    assert.ok(entries.has('AppVila/main.js') && entries.has('AppVila/package.json'));
+    const run = new TextDecoder().decode(entries.get('run.sh'));
+    assert.match(run, /node main\.js/, 'o kit roda de verdade');
+  }
   // android também virou KIT REAL (R20): projeto gradle completo, honesto sobre a toolchain
   const apk = await build({ name: 'AppVila', target: 'android', manifest: {} });
   assert.equal(apk.ok, true);

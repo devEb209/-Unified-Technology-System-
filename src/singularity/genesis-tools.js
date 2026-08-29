@@ -13,7 +13,7 @@ import { dubScript, LANGS } from '../media/dub.js';
 import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
-import { composeOptics, forgeLook, EFFECTS } from '../agent/shader-smith.js';
+import { composeOptics, forgeLook, composeColorPipeline, COLOR_STAGES, COLOR_PRESETS, EFFECTS } from '../agent/shader-smith.js';
 import { DeltaStream } from '../net/sync.js';
 import { UserApps } from '../platform/user-apps.js';
 import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
@@ -126,6 +126,23 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
         build: TARGETS ? Object.keys(TARGETS) : null,
         media: { models: '2d/2.5d/3d/3.5d/4d', textures: 3, dubLangs: Object.keys(LANGS).length },
       };
+    },
+  });
+  tools.register('agent.colorist', {
+    desc: `o COLORISTA gera um SHADER DE COR NOVO por composição arbitrária de leis verificadas (${Object.keys(COLOR_STAGES).join(', ')}; presets: ${Object.keys(COLOR_PRESETS).join(', ')}) — espelho JS = GLSL, autoteste; a lente viva recebe o resumo escalar (D-O15)`,
+    schema: { pipeline: { type: 'array' }, preset: { type: 'string' } },
+    fn: async (p) => {
+      const pipeline = p.pipeline ?? COLOR_PRESETS[p.preset ?? 'quente'];
+      const r = composeColorPipeline(pipeline);
+      // RESUMO ESCALAR (D-O15): o que a lente viva carrega hoje é o que o
+      // pipeline faz com o cinza médio — o GLSL completo viaja no build
+      const mid = r.js([0.5, 0.5, 0.5]);
+      if (!world.style?.params) new StyleEngine(world).apply('realista', {}); // a lente nasce se não existe
+      world.style.params = {
+        ...world.style.params,
+        tint: mid.map((x) => Math.max(0, Math.min(2, x / 0.5))),
+      };
+      return { ...r, applied: true, lensSummary: 'tint = pipeline(cincza médio); GLSL completo no artefato do build' };
     },
   });
   tools.register('genesis.critique', {

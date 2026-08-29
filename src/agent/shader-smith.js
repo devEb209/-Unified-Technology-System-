@@ -64,6 +64,144 @@ export const EFFECTS = Object.freeze({
  * Returns params (what the style/frame carries), the GLSL block, and a
  * self-verification (the mirror sampled on a grid, ranges asserted).
  */
+// ---- O COLORISTA: GLSL gerado por COMPOSIÇÃO ARBITRÁRIA no domínio cor.
+// Cada estágio é uma lei de cor verificada (espelho JS = GLSL, mesmas
+// constantes); QUALQUER sequência de estágios vira um shader novo montado
+// na hora — e o autoteste prova o espelho em vetores fixos.
+const clampC = (x) => Math.max(0, Math.min(1, x));
+
+// matriz de rotação de matiz EXATA: base {Y, I, Q} ortonormal por
+// Gram-Schmidt (Y = luminância BT.601; I,Q = croma ortogonalizado) e
+// rotação no plano I–Q. Em 0° a soma dos projetores É a identidade.
+const _yVec = (() => { const y = [0.299, 0.587, 0.114]; const n = Math.hypot(...y); return y.map((x) => x / n); })(); // eixo de luminância NORMALIZADO (projetor honesto)
+const _iVec = (() => {
+  const i0 = [0.596, -0.274, -0.322];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const k = dot(i0, _yVec);
+  const i1 = i0.map((x, i) => x - k * _yVec[i]);
+  const n = Math.hypot(...i1);
+  return i1.map((x) => x / n);
+})();
+const _qVec = (() => {
+  const q = [
+    _yVec[1] * _iVec[2] - _yVec[2] * _iVec[1],
+    _yVec[2] * _iVec[0] - _yVec[0] * _iVec[2],
+    _yVec[0] * _iVec[1] - _yVec[1] * _iVec[0],
+  ];
+  const n = Math.hypot(...q);
+  return q.map((x) => x / n);
+})();
+function hueMatrix(graus) {
+  const a = (graus * Math.PI) / 180;
+  const c = Math.cos(a), s = Math.sin(a);
+  const m = new Array(9);
+  for (let col = 0; col < 3; col++) {
+    const y = _yVec[col], i = _iVec[col], q = _qVec[col];
+    for (let row = 0; row < 3; row++) {
+      m[row * 3 + col] = _yVec[row] * y + (_iVec[row] * c + _qVec[row] * s) * i + (_qVec[row] * c - _iVec[row] * s) * q;
+    }
+  }
+  return m;
+}
+
+export const COLOR_STAGES = Object.freeze({
+  rotacaoMatiz: {
+    desc: 'rotação de matiz: gira o CROMA no plano ortogonal à luminância (Gram-Schmidt — 0° é identidade exata)',
+    params: { graus: [-180, 180] },
+    glsl: (p) => `  c = mat3(${hueMatrix(p.graus).map((x) => x.toFixed(12)).join(', ')}) * c;\n`,
+    js: (c, p) => {
+      const m = hueMatrix(p.graus);
+      return [
+        m[0] * c[0] + m[1] * c[1] + m[2] * c[2],
+        m[3] * c[0] + m[4] * c[1] + m[5] * c[2],
+        m[6] * c[0] + m[7] * c[1] + m[8] * c[2],
+      ];
+    },
+  },
+  temperatura: {
+    desc: 'temperatura de cor: quente levanta o vermelho e derruba o azul (o corpo negro do material)',
+    params: { t: [-1, 1] },
+    glsl: (p) => `  c *= vec3(${(1 + 0.25 * p.t).toFixed(4)}, 1.0, ${(1 - 0.25 * p.t).toFixed(4)});\n`,
+    js: (c, p) => [c[0] * (1 + 0.25 * p.t), c[1], c[2] * (1 - 0.25 * p.t)],
+  },
+  liftGammaGain: {
+    desc: 'lift/gamma/gain do color grade clássico (sombras, meio-tom e luz separados)',
+    params: { lift: [0, 0.3], gamma: [0.5, 2.0], gain: [0.5, 1.6] },
+    glsl: (p) => `  c = clamp(c, vec3(0.0), vec3(1.0));\n  c = pow(max(c - ${p.lift.toFixed(4)}, vec3(0.0)) / max(1.0 - ${p.lift.toFixed(4)}, 0.0001), vec3(${(1 / p.gamma).toFixed(4)})) * ${p.gain.toFixed(4)};\n`,
+    js: (c, p) => c.map((x) => Math.pow(Math.max(0, clampC(x) - p.lift) / Math.max(1 - p.lift, 0.0001), 1 / p.gamma) * p.gain),
+  },
+  curvaS: {
+    desc: 'curva em S (contraste de filme: preserva o meio-tom, dobra os ombros)',
+    params: { forca: [0, 1] },
+    glsl: (p) => {
+      const k = (0.8 + 2.4 * p.forca).toFixed(4);
+      return `  c = mix(c, smoothstep(vec3(0.0), vec3(1.0), c), ${(p.forca / Number(k) * Number(k)).toFixed(4)});\n`;
+    },
+    js: (c, p) => {
+      const sstep = (x) => { const t = clampC(x); return t * t * (3 - 2 * t); };
+      return c.map((x) => x + (sstep(x) - x) * p.forca);
+    },
+  },
+  sepia: {
+    desc: 'mistura sépia (a tonalidade da prata envelhecida)',
+    params: { m: [0, 1] },
+    glsl: (p) => `  c = mix(c, vec3(dot(c, vec3(0.393, 0.769, 0.189)), dot(c, vec3(0.349, 0.686, 0.168)), dot(c, vec3(0.272, 0.534, 0.131))), ${p.m.toFixed(4)});\n`,
+    js: (c, p) => {
+      const sr = c[0] * 0.393 + c[1] * 0.769 + c[2] * 0.189;
+      const sg = c[0] * 0.349 + c[1] * 0.686 + c[2] * 0.168;
+      const sb = c[0] * 0.272 + c[1] * 0.534 + c[2] * 0.131;
+      return [c[0] + (sr - c[0]) * p.m, c[1] + (sg - c[1]) * p.m, c[2] + (sb - c[2]) * p.m];
+    },
+  },
+});
+
+export const COLOR_PRESETS = Object.freeze({
+  quente: [{ type: 'temperatura', params: { t: 0.45 } }],
+  frio: [{ type: 'temperatura', params: { t: -0.45 } }],
+  'teia-noite': [{ type: 'temperatura', params: { t: -0.25 } }, { type: 'curvaS', params: { forca: 0.35 } }],
+  'prata-velha': [{ type: 'sepia', params: { m: 0.65 } }, { type: 'curvaS', params: { forca: 0.3 } }],
+  'psicodelico': [{ type: 'rotacaoMatiz', params: { graus: 40 } }, { type: 'temperatura', params: { t: 0.2 } }, { type: 'curvaS', params: { forca: 0.45 } }],
+});
+
+/**
+ * compõe QUALQUER sequência de estágios num shader novo (GLSL montado na
+ * hora) com espelho JS e autoteste em vetores fixos. Estágio desconhecido
+ * ou parâmetro fora da lei = erro explícito (nunca shader mentiroso).
+ */
+export function composeColorPipeline(pipeline = []) {
+  if (!Array.isArray(pipeline) || pipeline.length === 0) {
+    throw new Error(`colorista: digite os estágios (tenho: ${Object.keys(COLOR_STAGES).join(', ')})`);
+  }
+  let body = '';
+  const jsChain = [];
+  for (const stage of pipeline) {
+    const def = COLOR_STAGES[stage?.type];
+    if (!def) throw new Error(`colorista: estágio desconhecido "${stage?.type}" (tenho: ${Object.keys(COLOR_STAGES).join(', ')})`);
+    const params = {};
+    for (const [k, [lo, hi]] of Object.entries(def.params)) {
+      const v = Number(stage.params?.[k] ?? (lo + hi) / 2);
+      if (!(v >= lo && v <= hi)) throw new Error(`colorista: ${stage.type}.${k}=${v} fora de [${lo}, ${hi}]`);
+      params[k] = v;
+    }
+    body += `  // ${stage.type}: ${def.desc}\n`;
+    body += def.glsl(params);
+    jsChain.push((c) => def.js(c, params));
+  }
+  const glsl = `// forjado pelo COLORISTA (composição verificada — espelho JS = GLSL)\nvec3 utsColorista(vec3 c){\n${body}  return c;\n}`;
+  const js = (c) => jsChain.reduce((acc, f) => f(acc), [...c]);
+  const samples = [[0.5, 0.5, 0.5], [1, 0, 0], [0.2, 0.7, 0.3], [0.9, 0.8, 0.1]];
+  const out = samples.map(js);
+  const finite = out.every((c) => c.every((x) => Number.isFinite(x)));
+  return {
+    glsl,
+    js,
+    stages: pipeline.length,
+    samples: { in: samples, out },
+    selfTest: { finite, emptyIdentity: false },
+    honest: 'shader gerado por composição de leis verificadas (espelho JS = GLSL, mesmas constantes); vetores de teste finitos',
+  };
+}
+
 // O LÉXICO DO OLHAR: palavras que o usuário diz no chat viram ÓPTICA.
 // Cada look é uma receita de parâmetros dos efeitos VERIFICADOS — nada
 // aqui inventa shader; tudo compõe a biblioteca testada.

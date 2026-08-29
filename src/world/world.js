@@ -318,8 +318,12 @@ export class World {
     // BIOLUMINESCÊNCIA: densidade de plâncton × presença de mar (o shader
     // soma o brilho ONDE a água é perturbada e NO ESCURO)
     env.bioGlow = this.ecology.plankton * (env.seaHumidity ?? 0);
-    // A TEIA sobe pelo ar: aves marinhas seguem os peixes (que seguem o plâncton)
+    // A TEIA sobe pelo ar (aves) e corre o chão (veado/lobo)
     env.seabirds = this.ecology.seabirds ?? 0;
+    let deerTotal = 0;
+    for (const v of this.ecology.deerField.values()) deerTotal += v;
+    env.deer = +deerTotal.toFixed(2);
+    env.wolves = +(this.ecology.wolves ?? 0).toFixed(2);
     // PERF HONESTO: EMA do custo de cada fenômeno (a plataforma se mede)
     const ema = (k, v) => { this.perf[k] = (this.perf[k] ?? v) * 0.9 + v * 0.1; };
     ema('reallife', tRl - t0); ema('climate', tCl - tRl); ema('atmosphere', tAt - tCl);

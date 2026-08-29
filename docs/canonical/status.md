@@ -340,7 +340,51 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R20 — A TEIA VIVA (a cadeia subiu pelo ar + o diretor assumiu a câmera; 94.70 → 96.48)
+## R21 — A TEIA NA TERRA E O BINÁRIO VIVO (a cadeia fechou no chão; 96.48 → 97.76)
+
+**FAUNA TERRESTRE (ecology):** a teia desceu do mar para o chão. CAPIM
+por célula (64m) bebe a água do solo (logístico; SECA MATA o mato —
+planta seca, não "para de crescer"). VEADO come o capim da célula
+(Holling funcional) e MIGRA 10% do rebanho para a vizinha mais verde —
+o pasto PERSEGUE a onda de comida e come atrás dela. LOBO COME o veado
+(resposta Holling-II saturada pelo rebanho global — o lobo não come
+infinito). Imigração: rebanho vindo de fora recoloniza quando o campo
+é bom. Cadeia medida: seca → capim morre → veado colapsa → lobo cai
+ATRASADO; chuva de volta → tudo recoloniza. Teto de materialização
+(D-O15): o capim é campo real em até ~400 células; além disso é
+re-representado, nunca descartado. Persiste no snapshot.
+
+**CÁPSULA REAL (physics):** NPC de pé é cápsula para a física: corpo
+rápido (v>2) que cruza a cápsula derruba (mesma lei do impacto, evento
+npc.downed com by: corpo) e PERDE MOMENTO (14 → 0.93 na prova — o corpo
+SENTIU a pessoa, conservação honesta). A base da cápsula é a ALTURA DO
+TERRENO (o y guardado pode estar stale — bug encontrado e corrigido).
+
+**BINÁRIO ÚNICO REAL (build):** com postject na máquina, o alvo exe
+agora EXECUTA o SEA de verdade: node --experimental-sea-config → blob →
+postject injeta no fuse → EXECUTÁVEL NATIVO com o app embutido (servidor
+dentro; `--version` responde DO BINÁRIO). ELF provado no teste. Sem
+postject: cai para o kit honesto da R19. A assinatura de código segue
+honesto (passo de distribuição).
+
+**O COLORISTA (shader-smith):** shaders de COR NOVOS por composição
+ARBITRÁRIA de estágios-verdade: rotação de matiz (base ortonormal por
+Gram-Schmidt sobre a luminância — 0° é IDENTIDADE EXATA a 1e-9; a
+rotação é ortogonal: não inventa luz), temperatura (corpo negro do
+material), lift/gamma/gain, curva S, sépia. GLSL montado na hora +
+espelho JS com as MESMAS constantes + vetores de teste finitos; estágio
+desconhecido ou parâmetro fora da lei = erro explícito. A lente viva
+recebe o RESUMO ESCALAR (tint = pipeline do cinza médio — D-O15
+honesto); o GLSL completo viaja no artefato do build. Tool
+agent.colorist com presets (quente, frio, teia-noite, prata-velha,
+psicodelico).
+
+**Fixes colaterais:** capim semeia UMA vizinha por tentativa (a onda
+não explode); lente viva criada na hora para o colorista; r19/r13
+aceitam os DOIS contratos do exe (SEA quando há postject, kit quando
+não). **371/371 testes.**
+
+
 
 **EMPUXO DE ARQUIMEDES (physics):** a água desloca volume e o corpo perde
 peso. Na convenção de massa do motor (m = ρV/4) a água tem ρ = 0.25, logo

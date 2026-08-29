@@ -36,6 +36,10 @@ export class Ecology {
     this.planktonField = new Map(); // correnteza: bloom por célula (key→0..1), ADVECTADO pelo vento
     this.fishField = new Map();     // TEIA: peixes por célula (comem o plâncton, 0..1)
     this.seabirds = 0;              // TEIA: aves seguem os peixes (contagem suave)
+    this.grassField = new Map();    // TEIA EM TERRA: capim por célula (0..1), come veado
+    this.deerField = new Map();     // TEIA: veados por célula (comem capim, 0..1)
+    this.wolves = 0;                // TEIA: lobos seguem os veados (contagem suave)
+    this._fieldT = 0;               // relógio interno dos campos (determinístico)
   }
 
   speciesFor(biome) { const l = BIOME_SPECIES[biome]; return l ? { ...SPECIES[l[0]], name: l[0] } : null; }
@@ -77,7 +81,7 @@ export class Ecology {
 
   /** the RRW persistence contract */
   snapshot() {
-    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, plankton: this.plankton, planktonField: [...this.planktonField], fishField: [...this.fishField], seabirds: this.seabirds };
+    return { nextId: this.nextId, maxTrees: this.maxTrees, trees: [...this.trees], stats: { ...this.stats }, _fieldT: this._fieldT, plankton: this.plankton, planktonField: [...this.planktonField], fishField: [...this.fishField], seabirds: this.seabirds, grassField: [...this.grassField], deerField: [...this.deerField], wolves: this.wolves };
   }
   restore(s) {
     this.nextId = s.nextId; this.maxTrees = s.maxTrees;
@@ -86,6 +90,10 @@ export class Ecology {
     this.planktonField = new Map(s.planktonField ?? []);
     this.fishField = new Map(s.fishField ?? []);
     this.seabirds = s.seabirds ?? 0;
+    this._fieldT = s._fieldT ?? 0;
+    this.grassField = new Map(s.grassField ?? []);
+    this.deerField = new Map(s.deerField ?? []);
+    this.wolves = s.wolves ?? 0;
     Object.assign(this.stats, s.stats ?? {});
     return this;
   }
@@ -197,6 +205,91 @@ export class Ecology {
       for (const v of this.fishField.values()) fishTotal += v;
       const birdsTarget = Math.min(60, Math.round(fishTotal * 90));
       this.seabirds += (birdsTarget - this.seabirds) * Math.min(1, 0.03 * dt);
+    }
+    // ---- A TEIA EM TERRA: CAPIM bebe a água do solo (logístico); VEADO
+    // come o capim da própria célula e MIGRA para a célula vizinha mais
+    // verde quando a sua esvazia; LOBO segue o veado com atraso. Seca →
+    // capim morre → veado esvazia → lobo sai (a teia respira atrasada).
+    {
+      const wet = soilWet;
+      this._fieldT += dt;
+      const nGrass = new Map();
+      const cells = new Set([...this.grassField.keys(), ...this.deerField.keys()]);
+      for (const key of cells) {
+        const g = this.grassField.get(key) ?? 0;
+        // seca MATA o mato (a planta seca — não é só "para de crescer")
+        const dry = wet < 0.1 ? 0.012 : 0;
+        const ng = Math.max(0, Math.min(1, g + 0.08 * dt * wet * (1 - g) - dry * dt * g - (this.deerField.get(key) ?? 0) * 0.05 * dt * g));
+        if (ng > 1e-3) nGrass.set(key, ng);
+        // o campo SE ESPALHA devagar e SEMPRE NO MESMO RITMO (portão
+        // determinístico no tempo ~1/5s) com TETO DE MATERIALIZAÇÃO
+        // (D-O15): o capim é campo REAL em até 400 células (~1,6 km²);
+        // além disso é re-representado como densidade, não descartado
+        if (g > 0.75 && wet > 0.2 && nGrass.size < 400) {
+          const [i, j] = key.split(',').map(Number);
+          if ((Math.floor(this._fieldT) * 7 + i * 13 + j * 3) % 5 === 0) {
+            const [di, dj] = [[1, 0], [-1, 0], [0, 1], [0, -1]][(i * 3 + j + Math.floor(this._fieldT)) & 3];
+            const nk = `${i + di},${j + dj}`;
+            if (!nGrass.has(nk) && !(this.deerField.get(nk) ?? 0)) nGrass.set(nk, 0.02);
+          }
+        }
+      }
+      this.grassField = nGrass;
+      // semente de capim onde o solo é úmido e ninguém pisou (a clínica do
+      // campo: grama nasce sozinha na terra viva)
+      if (wet > 0.25 && this.grassField.size === 0) {
+        const focus = w.ues?.camera?.pos ?? [512, 0, 512];
+        this.grassField.set(`${Math.round(focus[0] / 64)},${Math.round(focus[2] / 64)}`, 0.15);
+      }
+      const nDeer = new Map();
+      let deerPrev = 0;
+      for (const v of this.deerField.values()) deerPrev += v;
+      for (const [key, g] of this.grassField) {
+        const d = this.deerField.get(key) ?? 0;
+        const eat = 0.10 * dt * g * d * (1 - d);
+        const starve = (g < 0.02 ? 0.06 : 0.015) * dt * d;
+        // PREDACÃO: o lobo COME o veado (resposta funcional pelo rebanho
+        // global — muitos lobos para pouco rebanho = morte alta por célula)
+        // Holling-II: a caçada SATURA (o lobo não come infinito)
+        const predation = (0.08 * dt * d * this.wolves) / (deerPrev + 4);
+        let nd = d + eat - starve - predation;
+        // MIGRAÇÃO SUAVE: 10% do rebanho segue a vizinha mais verde
+        // (o campo persegue a onda de capim — pasto cortado atrás dele)
+        if (nd > 1e-3 && nd < 0.9) {
+          const [i, j] = key.split(',').map(Number);
+          let bestK = null, bestG = g + 0.2;
+          for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nk = `${i + di},${j + dj}`;
+            const g2 = this.grassField.get(nk) ?? 0;
+            if (g2 > bestG) { bestG = g2; bestK = nk; }
+          }
+          if (bestK) { nd *= 0.9; nDeer.set(bestK, Math.min(1, (nDeer.get(bestK) ?? 0) + d * 0.1)); }
+        }
+        if (nd > 1e-3) nDeer.set(key, Math.min(1, nd));
+        else {
+          // MIGRAÇÃO: a célula esvaziou — o rebanho tenta a vizinha mais verde
+          const [i, j] = key.split(',').map(Number);
+          let bestK = null, bestG = 0.12;
+          for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nk = `${i + di},${j + dj}`;
+            const g2 = this.grassField.get(nk) ?? 0;
+            if (g2 > bestG) { bestG = g2; bestK = nk; }
+          }
+          if (bestK) nDeer.set(bestK, Math.min(1, (nDeer.get(bestK) ?? 0) + 0.5 * d));
+        }
+      }
+      // IMIGRAÇÃO: rebanho vindo de fora recoloniza quando o campo é bom
+      // (depois de colapso por seca/predação a vida volta — a teia respira)
+      if (deerPrev < 0.02) {
+        let bestK = null, bestG = 0.5;
+        for (const [k, g] of this.grassField) if (g > bestG) { bestG = g; bestK = k; }
+        if (bestK) nDeer.set(bestK, 0.05);
+      }
+      this.deerField = nDeer;
+      let deerTotal = 0;
+      for (const v of this.deerField.values()) deerTotal += v;
+      const wolfTarget = Math.min(24, Math.round(deerTotal * 8));
+      this.wolves += (wolfTarget - this.wolves) * Math.min(1, 0.02 * dt);
     }
     let grown = 0;
     const day = clamp01(sunEl) * (0.35 + 0.65 * soilWet); // photosynthesis: light × water

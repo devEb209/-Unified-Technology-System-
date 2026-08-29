@@ -76,6 +76,41 @@ export class PhysicsWorld {
     return { head: head.id, torso: torso.id, pelvis: pelvis.id, arms: [armL.id, armR.id], legs: [legL.id, legR.id] };
   }
 
+  /**
+   * NPC de pé = CÁPSULA para a física: corpo rápido que atravessa a pessoa
+   * derruba (mesma lei do impacto) e PERDE MOMENTO (o corpo sente a
+   * pessoa — conservação honesta, não fantasmo atravessando gente).
+   */
+  _collideNPCs(body, ph, sp, tick) {
+    const rrw = this.world.rrw;
+    const grid = this.world.grid;
+    if (!grid?.queryCircle) return 0;
+    const speed = Math.hypot(ph.vel[0], ph.vel[1], ph.vel[2]);
+    if (speed < 2) return 0;
+    let hits = 0;
+    const r = ph.radius + 0.6;
+    for (const id of grid.queryCircle(sp.pos[0], sp.pos[2], r)) {
+      const npcC = rrw.getComponent(id, 'npc');
+      if (!npcC) continue;
+      const nsp = rrw.getComponent(id, 'spatial');
+      const dx = nsp.pos[0] - sp.pos[0], dz = nsp.pos[2] - sp.pos[2];
+      // a cápsula do NPC nasce NO TERRENO (o y guardado pode ser stale)
+      const dv = (this.world.terrain.height(nsp.pos[0], nsp.pos[2]) ?? nsp.pos[1]) - sp.pos[1];
+      if (dx * dx + dz * dz > r * r || Math.abs(dv) > 1.9) continue;
+      hits++;
+      const energy = 0.5 * (ph.mass ?? 1) * speed * speed;
+      if (tick >= (npcC.downedUntil ?? 0)) {
+        npcC.downedUntil = tick + 120;
+        rrw.emitEvent({ type: 'npc.downed', subject: id, cause: null,
+                        data: { energy: +energy.toFixed(1), by: 'corpo' }, tick });
+      }
+      ph.vel[0] *= 0.45; ph.vel[2] *= 0.45; // o corpo SENTIU a pessoa
+      ph.vel[1] *= 0.7;
+    }
+    if (hits) this.stats.npcHits = (this.stats.npcHits ?? 0) + hits;
+    return hits;
+  }
+
   /** NÍVEL D'ÁGUA real sob (x,z): superfície = terreno + lâmina do fluido */
   _waterLevel(x, z) {
     const f = this.world.fluid;
@@ -281,6 +316,7 @@ export class PhysicsWorld {
         ph.omega = w[1];
       }
 
+      this._collideNPCs(body, ph, sp, tick);
       // ground collision from the REPRESENTED heightfield
       const h = terrain.height(sp.pos[0], sp.pos[2]);
       if (sp.pos[1] - ph.radius < h) {

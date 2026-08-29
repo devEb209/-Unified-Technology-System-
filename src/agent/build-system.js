@@ -4,7 +4,10 @@
 // toolchains are reported HONESTLY (never a fake apk), and the WEB target
 // always produces a working artifact through our own zip.
 import { zipCreate, zipRead } from '../util/zip.js';
-import { spawnSync } from 'node:child_process';
+import { spawnSync, execFileSync } from 'node:child_process';
+import { mkdtemp, readFile, writeFile, copyFile, chmod, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 export const TARGETS = Object.freeze({
   web: { label: 'Web/PWA', tool: 'uts-zip', needs: [] },
@@ -14,12 +17,46 @@ export const TARGETS = Object.freeze({
 
 /** which toolchains exist on THIS machine (honest probe) */
 export function probeToolchains({ which = null } = {}) {
-  const has = (cmd) => {
+  const has = (cmd, args = ['--version']) => {
     if (typeof which === 'function') return !!which(cmd);
-    try { return spawnSync(cmd, ['--version'], { timeout: 4000 }).status === 0; }
+    try { return spawnSync(cmd, args, { timeout: 4000 }).status === 0; }
     catch { return false; }
   };
-  return { java: has('java'), gradle: has('gradle'), node: has('node') };
+  // postject só expõe --help com exit 0 (sem --version) — sonda honesta
+  return { java: has('java'), gradle: has('gradle'), node: has('node'), postject: has('postject', ['--help']) };
+}
+
+/** lê o SENTINEL do fuse SEA direto do binário do node desta máquina */
+function seaSentinel() {
+  try {
+    const buf = spawnSync(process.execPath, ['-e', 'process.stdout.write(JSON.stringify(process.config))'], { timeout: 8000 });
+    return 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
+  } catch { return 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'; }
+}
+
+/**
+ * BINÁRIO ÚNICO REAL (SEA): embute o app no executável do node
+ * (node --experimental-sea-config -> blob -> postject no fuse). Sem
+ * postject na máquina, o chamador cai para o kit honesto.
+ */
+async function buildSeaBinary({ name, manifest }) {
+  const dir = await mkdtemp(join(tmpdir(), 'uts-sea-'));
+  try {
+    const shell = WEB_SHELL(manifest);
+    // o embedder SEA roda o main como CJS — require, não import
+    const main = `const { createServer } = require('node:http');\nconst html = ${JSON.stringify(shell)};\nif (process.argv.includes('--version')) { console.log('${name} — GENESIS (binário único SEA)'); process.exit(0); }\ncreateServer((_, res) => { res.setHeader('content-type', 'text/html; charset=utf-8'); res.end(html); }).listen(Number(process.env.PORT ?? 8080));\n`;
+    await writeFile(join(dir, 'main.js'), main);
+    await writeFile(join(dir, 'sea-config.json'), JSON.stringify({ main: 'main.js', output: 'sea-prep.blob', disableExperimentalSEAWarning: true }));
+    execFileSync(process.execPath, ['--experimental-sea-config', 'sea-config.json'], { cwd: dir, stdio: 'pipe', timeout: 60000 });
+    const bin = join(dir, name);
+    await copyFile(process.execPath, bin);
+    await chmod(bin, 0o755);
+    execFileSync('postject', [bin, 'NODE_SEA_BLOB', 'sea-prep.blob', '--sentinel-fuse', seaSentinel()], { cwd: dir, stdio: 'pipe', timeout: 120000 });
+    const data = await readFile(bin);
+    return data;
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 }
 
 /**
@@ -66,6 +103,18 @@ export async function build({ name, target, manifest, fs = null } = {}) {
     if ([...check.keys()].length !== entries.length) throw new Error('zip auto-verificação falhou');
     out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip };
     return out;
+  }
+  if (target === 'exe' && probeToolchains().postject) {
+    // BINÁRIO ÚNICO REAL: SEA do node 22 + postject (quando a máquina tem)
+    const data = await buildSeaBinary({ name, manifest });
+    return {
+      ok: true,
+      target: 'exe',
+      kind: 'binário único (SEA: app embutido no executável do node)',
+      honest: 'nativo da máquina que compilou (linux/mac aqui); Windows igual com postject no .exe; assinatura de código é passo de distribuição',
+      files: out.files,
+      artifact: { name: `${name}`, bytes: data.length, data },
+    };
   }
   if (target === 'exe') {
     // KIT DE IMPLANTAÇÃO REAL: o que EXISTE sem postject é o pacote
