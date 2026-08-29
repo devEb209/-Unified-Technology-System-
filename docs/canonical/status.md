@@ -221,3 +221,26 @@ luzes), árvores como point-sprites (malha própria em rodada futura).
   clima → fogo → save/load), destaca o painel de cada passo, uma vez por
   visitante (localStorage), botão pular.
 - Testes: 242/242.
+
+## R7 — OFENSIVA GRÁFICA (ADR-020): aparência é consequência
+
+**Doutrina:** vencer em gráficos modelando a realidade, não pintando
+aparências. **Feito e testado (9 testes novos, suite 251/251):**
+
+- `src/render/scattering.js`: física do céu — Rayleigh (β λ⁻⁴ [1.16, 2.70,
+  6.62]) + Mie (g=0.76, pico direto), march 8 amostras com caminho
+  dependente da inclinação (o pôr-do-sol é vermelho porque o feixe cruza
+  ~8× mais ar), disco solar, piso noturno. Espelho JS `skyColor()/aerial()`
+  + `SCATTER_GLSL` GERADO das mesmas constantes (consistência testada).
+- `shaders.js`: SKY_FS substituída — sem gradiente pintado; integra
+  `skyColor()` por pixel com base de câmera real (fwd/right/up derivados do
+  MESMO lookAt). TERRAIN/ENTITY/WATER: fog cinza `mix(col,uSkyBottom,…)`
+  removido → `aerial()` (perspectiva aérea física). Água reflete o céu REAL.
+- `atmosphere.js`: `optics()` — mie de poeira/poluição/umidade, intensidade
+  atenuada por chuva. `frame.js`: `frame.air` + `frame.sunDirTrue` (sol não
+  clampado — o céu vê o pôr-do-sol de verdade).
+- `webgl2.js`: uniformes de ar em sky/terrain/entity/water; luz relâmpago
+  continua ADICIONANDO luz ao ar (físico).
+
+**Régua:** 81.66 → **82.46** (render 70 → 76). Falta em render: partículas
+de fogo, malha de árvores, nuvens volumétricas, pós-processo.

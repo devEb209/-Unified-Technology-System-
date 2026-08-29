@@ -89,4 +89,16 @@ export class Atmosphere {
       sunColor,
     };
   }
+
+  /**
+   * The air's OPTICAL properties for the renderer (ADR-020: appearance is a
+   * consequence of the represented atmosphere). mie = aerosol loading
+   * multiplier; intensity = how much sun reaches the air (clouds/rain dim).
+   */
+  optics(env = {}) {
+    const st = this.state;
+    const mie = 1 + st.dust * 3 + st.pollution * 1.5 + Math.max(0, st.humidity - 0.3) * 1.0;
+    const intensity = 22 * clamp01(env.ambient ?? 1) * (1 - 0.55 * clamp01(env.rain ?? 0));
+    return { mie, intensity };
+  }
 }

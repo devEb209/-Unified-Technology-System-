@@ -86,7 +86,7 @@ Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch> <url> uts`, `npm start`
 ## Quick start
 
 ```bash
-npm test              # 242/242 testes determinísticos
+npm test              # 251/251 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
@@ -163,7 +163,7 @@ const chain = uts.rrw.causalityChain(algumEventoId); // causalidade audível
 
 Veja [`docs/canonical/status.md`](docs/canonical/status.md) e
 [`docs/canonical/progress.md`](docs/canonical/progress.md) — nada é
-declarado funcional sem teste que prove. **GÊNESIS: 82%** (régua de
+declarado funcional sem teste que prove. **GÊNESIS: 82% (82.46 — render 70→76 com ADR-020)** (régua de
 fidelidade ADR-019). Funcional hoje: RRW causal, Tese dos D operacional,
 D-O15 adaptativo, percepção indexada (158× @10k NPCs), NMN,
 sociedade/economia, Frames, WebGL2 (7 programas), persistência

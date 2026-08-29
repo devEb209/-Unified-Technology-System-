@@ -7,15 +7,23 @@ layout(location=0) in vec2 aPos;
 out vec2 vUV;
 void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.999, 1.0); }`;
 
-export const SKY_FS = `#version 300 es
-precision highp float;
+// SKY_FS: the sky IS the integral of sunlight scattered by the AIR along
+// the view ray (Rayleigh+Mie, generated physics in SCATTER_GLSL). D-O15
+// governs sample cost elsewhere; the phenomenon here is integrated whole.
+import { SCATTER_GLSL } from './scattering.js';
+export const SKY_FS = SCATTER_GLSL + `
 in vec2 vUV;
-uniform vec3 uSkyTop; uniform vec3 uSkyBottom; uniform float uFlash;
+uniform vec3 uCamFwd; uniform vec3 uCamRight; uniform vec3 uCamUp;
+uniform float uTanF; uniform float uAspect;
+uniform vec3 uSunDir; uniform float uAirMie; uniform float uAirI;
+uniform float uFlash;
 out vec4 fragColor;
 void main(){
-  vec3 col = mix(uSkyBottom, uSkyTop, pow(clamp(vUV.y,0.,1.),0.75));
-  col += vec3(uFlash*0.5);
-  fragColor = vec4(col,1.0);
+  vec2 ndc = vUV*2.0 - 1.0;
+  vec3 dir = normalize(uCamFwd + uCamRight*(ndc.x*uAspect*uTanF) + uCamUp*(ndc.y*uTanF));
+  vec3 col = skyColor(dir, uSunDir, uAirMie, uAirI, 8);
+  col += vec3(uFlash*0.5); // lightning ADDS light to the air (physical)
+  fragColor = vec4(col, 1.0);
 }`;
 
 export const SHADOW_VS = `#version 300 es
@@ -50,6 +58,7 @@ precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vBiome;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform float uWetness;
+uniform float uAirMie; uniform float uAirI;
 uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
@@ -87,8 +96,8 @@ void main(){
     col += base * uPointColor[i] * att * att * max(dot(n, L/max(d,0.01)),0.0) * 2.2;
   }
   col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
-  float dcam = length(vPos-uCamPos);
-  col = mix(col, uSkyBottom, clamp(1.0-exp(-dcam*uFog*0.008),0.0,0.9));
+  // AERIAL PERSPECTIVE: the air between camera and terrain IS the atmosphere
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
   fragColor = vec4(col, uAlpha);
 }`;
 
@@ -116,6 +125,7 @@ precision highp float;
 in vec3 vNorm; in vec3 vWorld; in vec4 vA1; in vec4 vA2;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
+uniform float uAirMie; uniform float uAirI;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
 uniform float uAlpha;
@@ -155,8 +165,7 @@ void main(){
     col += albedo * uPointColor[i] * att * att * max(dot(n,L/max(d,0.01)),0.0) * 2.4;
   }
   col += albedo * emissive * 1.5;
-  float dcam = length(vWorld-uCamPos);
-  col = mix(col, uSkyBottom, clamp(1.0-exp(-dcam*uFog*0.008),0.0,0.9));
+  col = aerial(col, normalize(vWorld-uCamPos), length(vWorld-uCamPos), uSunDir, uAirMie, uAirI);
   fragColor = vec4(col, uAlpha);
   fragColor = vec4(col,1.0);
 }`;
@@ -205,7 +214,7 @@ precision highp float;
 in vec3 vPos; in float vWave;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
-uniform float uWetness; uniform float uAlpha;
+uniform float uWetness; uniform float uAlpha; uniform float uAirMie; uniform float uAirI;
 out vec4 fragColor;
 void main(){
   vec3 view = normalize(uCamPos - vPos);
@@ -217,10 +226,10 @@ void main(){
   vec3 col = mix(deep, shallow, clamp(vWave*0.5 + 0.5, 0.0, 1.0));
   float spec = pow(max(dot(reflect(-uSunDir, n), view), 0.0), 90.0);
   col += uSunColor * spec * 0.9;
-  col = mix(col, uSkyBottom, fres*0.65);
+  vec3 skyRef = skyColor(reflect(-view, n), uSunDir, uAirMie, uAirI, 4); // the water mirrors the REAL sky
+  col = mix(col, skyRef, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
-  float dc = length(uCamPos - vPos);
-  col = mix(col, uSkyBottom, clamp(1.0-exp(-dc*uFog*0.008),0.0,0.9));
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
   fragColor = vec4(col, uAlpha);
 }
 `;

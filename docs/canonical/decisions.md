@@ -184,3 +184,31 @@ demonstração real, independência de engine externa, e REPRESENTAR
 CORRETAMENTE O FENÔMENO que afirma representar. Auditado em
 `audit-vision.md` (re-baseline honesto: 89% → 70% sob a régua correta).
 Visão completa em `vision.md`.
+
+## ADR-020 — OFENSIVA GRÁFICA: APARÊNCIA É CONSEQUÊNCIA DA REALIDADE
+
+**Status:** adotado (R7).
+
+O UTS vai competir — e vencer — no eixo gráfico pelo único caminho que não
+expira: **modelar a realidade que produz a aparência**, em vez de pintar a
+aparência. A história confirma: luz assada → ray tracing; shaders ad-hoc →
+PBR; sprites → volumétrico. Quem modela a física não reescreve o truque a
+cada geração de hardware.
+
+**Implementação (R7):** o céu do UTS é a INTEGRAL do espalhamento da luz
+solar pelo ar ao longo do raio de visão (Rayleigh λ⁻⁴ + Mie com pico direto,
+coisa de dezenas de linhas de física real — `src/render/scattering.js`).
+A mesma constante física alimenta o espelho JS (testado: meio-dia azul,
+sol poente vermelho, disco solar, noite, poeira dessatura) e o GLSL GERADO
+(`SCATTER_GLSL`) que roda por pixel na GPU. A névoa cinza pintada foi
+substituída por PERSPECTIVA AÉREA: `aerial()` integra o mesmo ar entre a
+câmera e cada vértice/pixel — no infinito, objetos CONVERGEM para a cor do
+céu porque É a mesma física. A atmosfera (`atmosphere.optics()`) é dona da
+óptica (carga de aerossóis; nuvem/chuva atenuam); o renderer só integra —
+nunca inventa cor. `frame.air` e `frame.sunDirTrue` carregam a verdade
+física (sol não clampado — o céu vê o pôr-do-sol).
+
+**Regra permanente:** toda técnica gráfica nova no UTS DEVE SER o fenômeno
+(integração de física, solução de equações, propagação de onda/energia),
+nunca pintura/ad-hoc. Proibido: gradientes de céu pintados, fog de cor
+fixa, sprites de fumaça, HDR fake por LUT.

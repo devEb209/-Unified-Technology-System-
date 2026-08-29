@@ -322,6 +322,7 @@ export class WebGL2Renderer {
       gl.viewport(0, 0, w, h);
       this._lastSize = [w, h];
     }
+    this._w = w; this._h = h; this.fovDeg = cam.fovDeg ?? 60;
     const proj = perspective((cam.fovDeg * Math.PI) / 180, w / h, 0.5, cam.far ?? 600);
     const view = lookAt(cam.pos, [
       cam.pos[0] + Math.sin(cam.yaw) * Math.cos(cam.pitch),
@@ -330,6 +331,15 @@ export class WebGL2Renderer {
     ], [0, 1, 0]);
     const vp = multiply(proj, view);
     frame._vp = vp; // culling uses the same matrix
+    // camera basis for the sky integration (identical convention to lookAt):
+    const cz = Math.cos(cam.pitch) * 30;
+    const target = [cam.pos[0] + Math.sin(cam.yaw) * Math.cos(cam.pitch), cam.pos[1] - Math.sin(cam.pitch) * 30, cam.pos[2] + cz];
+    const fl = Math.hypot(target[0]-cam.pos[0], target[1]-cam.pos[1], target[2]-cam.pos[2]) || 1;
+    const f = [(target[0]-cam.pos[0])/fl, (target[1]-cam.pos[1])/fl, (target[2]-cam.pos[2])/fl];
+    const rl = Math.hypot(f[2], 0, -f[0]) || 1;                 // cross(f, [0,1,0])
+    const r = [f[2]/rl, 0, -f[0]/rl];
+    const u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]];
+    this._camBasis = () => ({ f, r, u });
 
     // ---- OUR culling (frustum + distance) BEFORE anything touches the GPU
     const focus = [cam.pos[0] + Math.sin(cam.yaw) * 60, cam.pos[1], cam.pos[2] + Math.cos(cam.yaw) * 60];
@@ -369,9 +379,25 @@ export class WebGL2Renderer {
       this.stats.shadowPasses++;
     }
 
+    // ---- optical air + TRUE sun (ADR-020: the renderer integrates reality)
+    // (cam basis derived below in this scope)
+    const air = frame.air ?? { mie: 1, intensity: 22 };
+    const sd = frame.sunDirTrue ?? frame.lights.sun.dir;
+
     // ---- sky
     const sky = this.programs.sky;
     gl.useProgram(sky.prog);
+    // the sky is INTEGRATED per pixel from the real camera through the real air
+    if (sky.u.uCamFwd) {
+      const fwd = this._camBasis(vp);
+      gl.uniform3f(sky.u.uCamFwd, fwd.f[0], fwd.f[1], fwd.f[2]);
+      gl.uniform3f(sky.u.uCamRight, fwd.r[0], fwd.r[1], fwd.r[2]);
+      gl.uniform3f(sky.u.uCamUp, fwd.u[0], fwd.u[1], fwd.u[2]);
+      gl.uniform1f(sky.u.uTanF, Math.tan((this.fovDeg ?? 60) * Math.PI / 180 / 2));
+      gl.uniform1f(sky.u.uAspect, (this._w || 1) / (this._h || 1));
+      gl.uniform3f(sky.u.uSunDir, sd[0], sd[1], sd[2]);
+      gl.uniform1f(sky.u.uAirMie, air.mie); gl.uniform1f(sky.u.uAirI, air.intensity);
+    }
     gl.uniform3f(sky.u.uSkyTop, env.skyTop[0], env.skyTop[1], env.skyTop[2]);
     gl.uniform3f(sky.u.uSkyBottom, env.skyBottom[0], env.skyBottom[1], env.skyBottom[2]);
     gl.uniform1f(sky.u.uFlash, env.flash ?? 0);
@@ -384,6 +410,7 @@ export class WebGL2Renderer {
     // ---- shared lighting uniforms
     const bindLights = (p) => {
       gl.uniform3f(p.u.uSunDir, frame.lights.sun.dir[0], frame.lights.sun.dir[1], frame.lights.sun.dir[2]);
+      if (p.u.uAirMie) { gl.uniform1f(p.u.uAirMie, air.mie); gl.uniform1f(p.u.uAirI, air.intensity); }
       gl.uniform3f(p.u.uSunColor, frame.lights.sun.color[0], frame.lights.sun.color[1], frame.lights.sun.color[2]);
       gl.uniform1f(p.u.uAmbient, frame.lights.sun.ambient);
       if (p.u.uLightVP) gl.uniformMatrix4fv(p.u.uLightVP, false, lightVP ?? identity());

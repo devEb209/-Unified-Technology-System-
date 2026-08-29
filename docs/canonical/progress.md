@@ -8,12 +8,12 @@
 > Meta: GÊNESIS = a visão COMPLETA (vision.md), usável por todos, UTS+UES
 > funcionais. Recalculado **a cada rodada**, sem inflar nada.
 
-## % ATUAL: **81%** (após R6 — workers, LLM real, busca real, onboarding)
+## % ATUAL: **82%** (após R7 — OFENSIVA GRÁFICA ADR-020: céu = física integrada; 82.46 exato, era 81.66)
 
 | # | Categoria | Peso | Completo | Contribuição | Evidência / o que falta |
 |---|---|---|---|---|---|
 | 1 | **Núcleo da realidade** — RRW, Tese dos D, D-O15, SpatialGrid, NMN, sociedade/economia, **RealLife→fenômenos reais** | 18 | 88% | 15.84 | R1+R2: ar/água/fogo/vida/som/energia causais e verificados; falta: clima regional (escalas R3), agentes comendo a paisagem direto |
-| 2 | **Render como MATERIALIZAÇÃO** — RHI, pipeline WebGL2 (8 programas), sombras PCF, instancing, culling, LOD 3-tier, **céu = espalhamento do AR**, **vegetação = população viva**, **mar segue a câmera**, **lâmina d'água RENDERIZADA**, **CINZAS/QUEIMADO VISÍVEL (desvanece com idade real)**, **chuva re-representada sob pressão (menos+maior+mais rápida)**, horizonte vivo | 14 | 70% | 9.80 | falta: partículas de fogo, malha própria p/ árvores, pós-processo |
+| 2 | **Render como MATERIALIZAÇÃO** — RHI, pipeline WebGL2 (8 programas), sombras PCF, instancing, culling, LOD 3-tier, **CÉU = INTEGRAL DO ESPALHAMENTO RAYLEIGH+MIE POR PIXEL (espelho JS testado + GLSL GERADO das mesmas constantes)**, **PERSPECTIVA AÉREA física no lugar de fog pintado (terreno/entidades/água; água reflete o CÉU REAL)**, **atmosfera dona da óptica (frame.air), sol verdadeiro não-clampado**, vegetação = população viva, mar segue a câmera, lâmina d'água RENDERIZADA, cinzas/queimado visíveis, chuva re-representada, horizonte vivo | 14 | 76% | 10.64 | falta: partículas de fogo, malha própria p/ árvores, nuvens volumétricas, pós-processo |
 | 3 | **Singularity AI** — Core, **GRAMÁTICA DE CRIAÇÃO**, **ANEXOS VALIDADOS**, **LLM REAL NO LOOP (env: UTS_LLM_API_KEY/URL/MODEL; objetivos com raciocínio vão direto ao modelo; chave nunca entra em logs/snapshots — testado)**, providers, agentes, memória | 14 | 86% | 12.04 | falta: agentes geradores de código real, streaming SSE no UI |
 | 4 | **Plataforma UTS** — serviços, apps, CreationProjects, research triangulado **com HttpSearchProvider real (env: UTS_SEARCH_URL/KEY)**, GitHub, Comm | 12 | 88% | 10.56 | funcional; falta: storage externo, apps de usuário reais |
 | 5 | **Usabilidade para todos** — demo browser completo **COM TOUR GUIADO (5 passos, destaca painéis, uma vez por visitante)**, render + IA cria mundo + anexos + áudio + save/load + HUD de fenômenos, CLI, docs, Termux | 10 | 89% | 8.90 | falta: galeria de mundos-exemplo, empacotamento 1-comando |
@@ -38,6 +38,7 @@
 |---|---|---|
 | (régua antiga) Gênesis→Autosave→4 sistemas→LOD→fade/água/IA | 62→89% | ver git; media "implementado+testes", não fidelidade |
 | **Re-baseline ADR-019 (4e0ae5f)** | **70%** | visão como lei, auditoria honesta A–G |
+| **R7 OFENSIVA GRÁFICA (ADR-020)** | **82%** (82.46) | céu = integral Rayleigh+Mie por pixel (espelho JS validado: meio-dia azul, sol poente vermelho, disco, noite, poeira dessatura); perspectiva aérea física substitui fog pintado em terreno/entidades/água; água reflete o céu real; atmosphere.optics dona da óptica; 251 testes |
 | **R1 FENÔMENOS I** | **73%** | **atmosfera (céu=espalhamento do ar), hidrologia (água=substância), combustão (fogo=combustível+vento+umidade), ecologia (vegetação=população viva); reallife re-ligado à realidade; fenômenos persistem; 210 testes** |
 | **R2 FENÔMENOS II** | **75%** | **acústica (som=onda de pressão: atraso d/343, sombra de terreno, absorção do ar; trovão longe=rumble grave), física de energia (½mv², materiais rocha/madeira/gelo, deformação persistente), comida=clima (solo rega bushes; seca mata com evento); 219 testes** |
 | **R3 ESCALA** | **77%** | **mar segue a câmera, lâmina d'água renderizada, horizonte vivo (brilho/marcador causal, sem dupla representação); 226 testes** |

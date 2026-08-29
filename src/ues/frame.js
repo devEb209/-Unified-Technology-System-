@@ -135,6 +135,15 @@ export function extractFrame(ues, perf = null) {
     burntGround: world.combustion ? world.combustion.burntNear(cam.pos, 240, 90) : null,
     horizon: buildHorizon(world, cam, radius),
     environment: { ...world.environment },
+    // the air's optical truth (scattering physics consumes THIS, not colors)
+    air: world.atmosphere?.optics ? world.atmosphere.optics(world.environment) : null,
+    // TRUE sun direction (unclamped — the sky must be able to set)
+    sunDirTrue: (() => {
+      const a = world.clock.timeOfDay * Math.PI * 2 - Math.PI / 2;
+      const el = world.clock.sunElevation;
+      const l = Math.hypot(Math.cos(a) * 0.6, el, 0.35) || 1;
+      return [Math.cos(a) * 0.6 / l, el / l, 0.35 / l];
+    })(),
     stats: {
       patches: patches.length,
       terrain: { meshes: meshPatches, impostors: impostorPatches, fades },
