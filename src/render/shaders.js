@@ -69,6 +69,7 @@ uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform float uWetness;
 uniform float uAirMie; uniform float uAirI;
 uniform float uCloudCov; uniform float uCloudSeed; uniform float uExposure;
+uniform float uAirFog;
 uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
@@ -112,7 +113,7 @@ void main(){
   }
   col = mix(col, col*vec3(0.55,0.58,0.7), uWetness*0.65);
   // AERIAL PERSPECTIVE: the air between camera and terrain IS the atmosphere
-  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   col *= uExposure;
   fragColor = vec4(col, uAlpha);
 }`;
@@ -141,7 +142,7 @@ precision highp float;
 in vec3 vNorm; in vec3 vWorld; in vec4 vA1; in vec4 vA2;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
-uniform float uAirMie; uniform float uAirI; uniform float uExposure;
+uniform float uAirMie; uniform float uAirI; uniform float uExposure; uniform float uAirFog;
 uniform sampler2D uShadowMap; uniform mat4 uLightVP; uniform float uShadowOn;
 uniform vec3 uPointPos[4]; uniform vec3 uPointColor[4]; uniform int uPointCount;
 uniform float uAlpha;
@@ -181,7 +182,7 @@ void main(){
     col += albedo * uPointColor[i] * att * att * max(dot(n,L/max(d,0.01)),0.0) * 2.4;
   }
   col += albedo * emissive * 1.5;
-  col = aerial(col, normalize(vWorld-uCamPos), length(vWorld-uCamPos), uSunDir, uAirMie, uAirI);
+  col = aerial(col, normalize(vWorld-uCamPos), length(vWorld-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vWorld.y, 0.0));
   col *= uExposure;
   fragColor = vec4(col, uAlpha);
   fragColor = vec4(col,1.0);
@@ -238,7 +239,7 @@ uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
 uniform vec3 uSkyBottom; uniform float uFog; uniform vec3 uCamPos;
 uniform float uTime; uniform float uWind;
 uniform float uWetness; uniform float uAlpha; uniform float uAirMie; uniform float uAirI;
-uniform float uExposure;
+uniform float uExposure; uniform float uAirFog;
 uniform vec2 uWindDir;
 out vec4 fragColor;
 void main(){
@@ -257,7 +258,7 @@ void main(){
   vec3 skyRef = skyColor(reflect(-view, n), uSunDir, uAirMie, uAirI, 4); // the water mirrors the REAL sky
   col = mix(col, skyRef, fres*0.65);
   col = mix(col, col*vec3(0.6,0.62,0.72), uWetness*0.5); // rain darkens water
-  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   col *= uExposure;
   fragColor = vec4(col, uAlpha);
 }
@@ -347,7 +348,7 @@ export const TREE_FS = SCATTER_GLSL + `
 precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vCanopy; in float vHealth;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
-uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI; uniform float uExposure;
+uniform vec3 uCamPos; uniform float uAirMie; uniform float uAirI; uniform float uExposure; uniform float uAirFog;
 out vec4 fragColor;
 void main(){
   vec3 bark = vec3(0.27, 0.19, 0.12);
@@ -356,7 +357,7 @@ void main(){
   vec3 col = vCanopy > 0.5 ? mix(dry, lush, clamp(vHealth, 0.0, 1.0)) : bark;
   float ndl = max(dot(normalize(vNorm), uSunDir), 0.0);
   col = col*(uSunColor*ndl + vec3(uAmbient*0.9));
-  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI);
+  col = aerial(col, normalize(vPos-uCamPos), length(vPos-uCamPos), uSunDir, uAirMie, uAirI, uAirFog, max(vPos.y, 0.0));
   col *= uExposure;
   fragColor = vec4(col, 1.0);
 }`;

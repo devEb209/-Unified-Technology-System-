@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createUTS } from '../src/index.js';
-import { skyColor, aerial, SCATTER_CONST, SCATTER_GLSL } from '../src/render/scattering.js';
+import { skyColor, aerial, beamTransmittance, SCATTER_CONST, SCATTER_GLSL } from '../src/render/scattering.js';
 
 const sat = (v) => (Math.max(...v) - Math.min(...v)) / (0.3 * v[0] + 0.6 * v[1] + 0.1 * v[2] + 1e-6);
 const sunHigh = [0.3, 0.95, 0.35];
@@ -20,10 +20,15 @@ test('r7: céu do meio-dia é azul porque o azul espalha mais (Rayleigh λ⁻⁴
 });
 
 test('r7: o sol POENTE é vermelho porque o feixe cruza mais ar (transmitância)', () => {
-  const noonDisk = skyColor(sunHigh, sunHigh, noon);
+  // o FEIXE DIRETO é o invariante físico (o pixel do disco inclui a aureola
+  // de Mie espalhada perto do observador, que é pálida por natureza)
+  const noonBeam = beamTransmittance(sunHigh, noon);
+  const duskBeam = beamTransmittance([sunLow[0], 0.06, sunLow[2]], { mie: 1, intensity: 18 });
+  const rNoon = noonBeam[2] / noonBeam[0], rDusk = duskBeam[2] / duskBeam[0];
+  assert.ok(rDusk < rNoon / 100, `poente 100× mais vermelho no feixe: ${rDusk.toExponential(1)} vs ${rNoon.toFixed(2)}`);
+  assert.ok(noonBeam[2] / noonBeam[0] < 0.9, 'até ao meio-dia o feixe perde mais azul (o céu é azul por isso)');
   const duskDisk = skyColor([sunLow[0], 0.06, sunLow[2]], [sunLow[0], 0.06, sunLow[2]], { mie: 1, intensity: 18 });
-  assert.ok(duskDisk[2] < duskDisk[0] * 0.5, `disco poente vermelho: ${duskDisk.map(v => v.toFixed(2))}`);
-  assert.ok(noonDisk[2] / noonDisk[0] > duskDisk[2] / duskDisk[0], 'poente mais vermelho que meio-dia');
+  assert.ok(duskDisk[0] > duskDisk[2], `pixel poente avermelhado: ${duskDisk.map(v => v.toFixed(2))}`);
 });
 
 test('r7: o disco solar tem pico direto Mie ≫ céu ao redor', () => {

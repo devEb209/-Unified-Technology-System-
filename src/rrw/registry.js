@@ -125,7 +125,8 @@ export class RRW {
   }
 
   /** merge patch into a component (plain data only) */
-  patchComponent(id, type, patch) {
+  patchComponent(id, type, patch, tick = null) {
+    if (patch && typeof patch === 'object' && tick != null) patch.__v = tick; // per-entity delta stamp
     const c = this.getComponent(id, type);
     if (!c) throw new RRWError(`component ${type} missing on ${id}`);
     deepPatch(c, patch);
@@ -138,6 +139,39 @@ export class RRW {
     if (!sp) { sp = { pos: [0, 0, 0], yaw: 0 }; e.components.set('spatial', sp); }
     sp.pos = [pos[0], pos[1] ?? 0, pos[2] ?? 0];
     return sp;
+  }
+
+  /**
+   * PER-ENTITY DELTAS: components stamped with a tick (__v) can be shipped
+   * after a full snapshot — streaming only what CHANGED (D-O15: transfer
+   * less, represent everything).
+   */
+  deltaSince(tick) {
+    const out = [];
+    for (const e of this.entities.values()) {
+      const comps = {};
+      let any = false;
+      for (const [type, c] of e.components) {
+        if (c && typeof c === 'object' && c.__v != null && c.__v > tick) { comps[type] = c; any = true; }
+      }
+      if (any) out.push({ id: e.id, kind: e.kind, comps });
+    }
+    return out;
+  }
+
+  applyDelta(deltas) {
+    let applied = 0;
+    for (const d of deltas ?? []) {
+      const e = this.entities.get(d.id);
+      if (!e) continue; // honest: a delta never invents entities
+      for (const [type, c] of Object.entries(d.comps)) {
+        const clean = { ...c }; delete clean.__v;
+        this.patchComponent(d.id, type, clean, null);
+        Object.assign(e.components.get(type), c); // keep the stamp
+        applied++;
+      }
+    }
+    return applied;
   }
 
   // --------------------------------------------------------------- relations

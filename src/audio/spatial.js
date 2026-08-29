@@ -52,6 +52,27 @@ function onePole(samples, cutoffHz, sr) {
   return out;
 }
 
+/**
+ * PINNA (concha): the fold reflects sound into the canal tens of µs later,
+ * creating a DIRECTION-DEPENDENT spectral notch — this is how the ear tells
+ * front from back and reads elevation (the listener's own HRTF). The notch
+ * rises with elevation; sources behind are darker (torso/shoulder shadow).
+ */
+export function pinnaApply(samples, { elev = 0, behind = 0, sr = 22050 } = {}) {
+  const fNotch = 5500 + Math.max(0, Math.min(1, (elev + 1) / 2)) * 5000; // 5.5–10.5 kHz
+  const d = Math.max(2, Math.round(sr / fNotch));
+  const g = 0.6 + 0.25 * Math.max(0, Math.min(1, behind)); // the concha notch is DEEP (−10..−20 dB)
+  const low = onePole(samples, 900, sr);
+  const lb = 0.35 + 0.3 * Math.max(0, Math.min(1, behind));
+  const out = new Float32Array(samples.length);
+  for (let i = 0; i < samples.length; i++) {
+    const ref = i >= d ? samples[i - d] : 0;
+    const v = samples[i] - g * ref; // destructive interference = the notch
+    out[i] = v * (1 - lb) + low[i] * lb;
+  }
+  return out;
+}
+
 /** render an emitter's samples into LEFT/RIGHT ear signals (binaural). */
 export function renderBinaural(samples, { emitterPos, listener, sr = 22050, refDist = 8, maxDist = 160 } = {}) {
   const sp = spatialize({ emitterPos, listener, refDist, maxDist });
@@ -73,6 +94,19 @@ export function renderBinaural(samples, { emitterPos, listener, sr = 22050, refD
     const mixed = new Float32Array(right.length);
     for (let i = 0; i < right.length; i++) mixed[i] = right[i] * 0.25 + dark[i] * 0.75;
     right = mixed;
+  }
+  // PINNA: spectral cues from elevation and front/back (both ears receive them)
+  if (listener && listener.pos) {
+    const dx = emitterPos[0] - listener.pos[0], dy = emitterPos[1] - listener.pos[1], dz = emitterPos[2] - listener.pos[2];
+    const l = Math.hypot(dx, dy, dz) || 1;
+    const fy = listener.pitch ?? 0, yw = listener.yaw ?? 0;
+    const cf = Math.cos(fy);
+    const fwd = [Math.sin(yw) * cf, -Math.sin(fy), Math.cos(yw) * cf]; // same convention as the camera
+    const front = Math.max(-1, Math.min(1, (dx * fwd[0] + dy * fwd[1] + dz * fwd[2]) / l));
+    const elev = dy / l;
+    const behind = (1 - front) / 2;
+    left = pinnaApply(left, { elev, behind, sr });
+    right = pinnaApply(right, { elev, behind, sr });
   }
   for (let i = 0; i < samples.length; i++) {
     left[i] *= sp.gain;

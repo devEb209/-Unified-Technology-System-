@@ -354,6 +354,7 @@ export class World {
       const stepLen = Math.min(speed, d);
       sp.pos[0] += (dx / d) * stepLen;
       sp.pos[2] += (dz / d) * stepLen;
+      sp.__v = this.clock.tick; // per-entity delta stamp (streaming)
       sp.yaw = Math.atan2(dx, dz);
       this.grid.update(id, sp.pos[0], sp.pos[2]);   // index stays synchronized (D-4)
       this.tese?.touch('D-4', `moved ${id} -> (${sp.pos[0].toFixed(1)},${sp.pos[2].toFixed(1)})`, this.clock.tick);

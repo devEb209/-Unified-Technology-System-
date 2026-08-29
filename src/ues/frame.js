@@ -139,7 +139,9 @@ export function extractFrame(ues, perf = null) {
     horizon: buildHorizon(world, cam, radius),
     environment: { ...world.environment },
     // the air's optical truth (scattering physics consumes THIS, not colors)
-    air: world.atmosphere?.optics ? world.atmosphere.optics(world.environment) : null,
+    air: world.atmosphere?.optics
+      ? { ...world.atmosphere.optics(world.environment), fogH: world.atmosphere.state?.fog ?? 0 }
+      : null,
     // cloud coverage FROM the represented air (the renderer only integrates)
     clouds: world.atmosphere?.cloudCoverage ? {
       coverage: world.atmosphere.cloudCoverage(world.environment),

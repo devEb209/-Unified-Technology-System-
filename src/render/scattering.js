@@ -62,7 +62,9 @@ export function skyColor(dir, sunDir, air = {}, N = 8) {
     const y = d[1] * t;
     const hR = Math.exp(-Math.max(y, 0) * HR);
     const hM = Math.exp(-Math.max(y, 0) * HM);
-    odR += hR * step; odM += hM * step * mie;
+    // the in-transmittance counts air UP TO the sample (trapezoid: its own
+    // half segment too) — counting the full segment twice killed the horizon
+    const odRm = odR + hR * step * 0.5, odMm = odM + hM * step * 0.5 * mie;
     let lR = 0, lM = 0;
     for (let j = 0; j < 4; j++) {
       const qy = Math.max(y + s[1] * (j + 0.5) * 0.25 * tEnd, 0);
@@ -70,10 +72,11 @@ export function skyColor(dir, sunDir, air = {}, N = 8) {
       lM += Math.exp(-qy * HM) * 0.25; // local aerosol ≠ a thicker sun path
     }
     for (let c = 0; c < 3; c++) {
-      const att = Math.exp(-(BETA_R[c] * (odR + lR) + BETA_M * (odM + lM)));
+      const att = Math.exp(-(BETA_R[c] * (odRm + lR) + BETA_M * (odMm + lM)));
       sumR[c] += hR * step * att;
     }
-    sumM += hM * step * Math.exp(-(BETA_R[1] * (odR + lR) + BETA_M * (odM + lM)));
+    sumM += hM * step * Math.exp(-(BETA_R[1] * (odRm + lR) + BETA_M * (odMm + lM)));
+    odR += hR * step; odM += hM * step * mie;
   }
   const pR = phaseR(cosT), pM = phaseM(cosT);
   const col = [0, 0, 0];
@@ -95,11 +98,38 @@ export function skyColor(dir, sunDir, air = {}, N = 8) {
  * physics. Applied to terrain/entities/water — distance stops being "gray
  * fog" and becomes the atmosphere it physically is.
  */
-export function aerial(color, rayDir, dist, sunDir, air = {}) {
+/**
+ * Transmittance of the sun's DIRECT beam along its own path (Rayleigh+Mie
+ * through the airmass) — the pure physical reddening of the sun, without
+ * the forward-scattered aureole that contaminates the disk pixel.
+ */
+export function beamTransmittance(sunDir, air = {}, N = 8) {
+  const { BETA_R, BETA_M, HR, HM } = SCATTER_CONST;
+  const mie = air.mie ?? 1;
+  const s = [sunDir[0], Math.max(sunDir[1], 0.02), sunDir[2]];
+  const sl = Math.hypot(...s) || 1;
+  const d = [s[0] / sl, s[1] / sl, s[2] / sl];
+  const tEnd = clamp(1 / Math.max(d[1], 0.05), 1, 8);
+  const step = tEnd / N;
+  let odR = 0, odM = 0;
+  for (let i = 0; i < N; i++) {
+    const y = Math.max(d[1] * ((i + 0.5) * step), 0);
+    odR += Math.exp(-y * HR) * step;
+    odM += Math.exp(-y * HM) * step * mie;
+  }
+  return [Math.exp(-(BETA_R[0] * odR + BETA_M * odM)),
+          Math.exp(-(BETA_R[1] * odR + BETA_M * odM)),
+          Math.exp(-(BETA_R[2] * odR + BETA_M * odM))];
+}
+
+export function aerial(color, rayDir, dist, sunDir, air = {}, h = 30) {
   const { BETA_R, BETA_M } = SCATTER_CONST;
   const mie = air.mie ?? 1;
-  const d = Math.min(dist, 900) / 500; // domain: full scattering by ~500m
-  const insc = skyColor(rayDir, sunDir, air, 4);
+  // radiation fog POOLS at the ground: the air toward a low object is
+  // thicker (the fog amount comes from the atmosphere itself)
+  const fogH = Math.max(0, air.fogH ?? 0);
+  const d = (Math.min(dist, 900) / 500) * (1 + fogH * 2.6 * Math.exp(-Math.max(0, h) / 20));
+  const insc = skyColor(rayDir, sunDir, air, rayDir[1] < 0.15 ? 8 : 4);
   const out = [0, 0, 0];
   for (let c = 0; c < 3; c++) {
     const T = Math.exp(-(BETA_R[c] + BETA_M * mie * 0.35) * d);
@@ -141,16 +171,17 @@ vec3 skyColor(vec3 dir, vec3 sunDir, float mie, float intensity, const int N){
     float t = (float(i)+0.5)*stepL;
     float y = d.y*t;
     float hR = exp(-max(y,0.0)*HR), hM = exp(-max(y,0.0)*HM);
-    odR += hR*stepL; odM += hM*stepL*mie;
+    float odRm = odR + hR*stepL*0.5, odMm = odM + hM*stepL*0.5*mie;
     float lR = 0.0, lM = 0.0;
     for (int j = 0; j < 4; j++) {
       float qy = max(y + s.y*(float(j)+0.5)*0.25*tEnd, 0.0);
       lR += exp(-qy*HR)*0.25;
       lM += exp(-qy*HM)*0.25; // local aerosol ≠ a thicker sun path
     }
-    vec3 att = exp(-(BETA_R*(odR+lR) + vec3(BETA_M*(odM+lM))));
+    vec3 att = exp(-(BETA_R*(odRm+lR) + vec3(BETA_M*(odMm+lM))));
     sumR += hR*stepL*att;
-    sumM += hM*stepL*exp(-(BETA_R.g*(odR+lR) + BETA_M*(odM+lM)));
+    sumM += hM*stepL*exp(-(BETA_R.g*(odRm+lR) + BETA_M*(odMm+lM)));
+    odR += hR*stepL; odM += hM*stepL*mie;
   }
   float pR = phaseR(cosT), pM = phaseM(cosT);
   vec3 col = intensity*(sumR*BETA_R*pR + vec3(sumM*BETA_M*pM))*dayFade;
@@ -160,9 +191,21 @@ vec3 skyColor(vec3 dir, vec3 sunDir, float mie, float intensity, const int N){
   }
   return max(col, NIGHT_AIR*(0.6+0.4*min(mie,3.0)/3.0));
 }
-vec3 aerial(vec3 color, vec3 rayDir, float dist, vec3 sunDir, float mie, float intensity){
-  float dd = min(dist, 900.0)/500.0;
-  vec3 insc = skyColor(rayDir, sunDir, mie, intensity, 4);
+vec3 beamTransmittance(vec3 sunDir, float mie, const int N){
+  vec3 s = normalize(vec3(sunDir.x, max(sunDir.y, 0.02), sunDir.z));
+  float tEnd = clamp(1.0/max(s.y, 0.05), 1.0, 8.0);
+  float stepL = tEnd/float(N);
+  float odR = 0.0, odM = 0.0;
+  for (int i = 0; i < N; i++) {
+    float y = max(s.y*((float(i)+0.5)*stepL), 0.0);
+    odR += exp(-y*HR)*stepL;
+    odM += exp(-y*HM)*stepL*mie;
+  }
+  return exp(-(BETA_R*odR + vec3(BETA_M*odM)));
+}
+vec3 aerial(vec3 color, vec3 rayDir, float dist, vec3 sunDir, float mie, float intensity, float fogH, float h){
+  float dd = (min(dist, 900.0)/500.0) * (1.0 + max(fogH,0.0)*2.6*exp(-max(h,0.0)/20.0));
+  vec3 insc = skyColor(rayDir, sunDir, mie, intensity, rayDir.y < 0.15 ? 8 : 4);
   vec3 T = exp(-(BETA_R + vec3(BETA_M*mie*0.35))*dd);
   return color*T + insc*(1.0-T);
 }

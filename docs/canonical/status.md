@@ -311,3 +311,31 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   nuvens). TREE_VS dobra NA direção do vento.
 - **274/274 testes** (7 novos). Falta: fumaça volumétrica 3D, neblina
   por altura no aerial, reflexo de terreno na água.
+
+## R11 — CINCO SISTEMAS DE UMA VEZ (mais fundo na realidade completa)
+
+- **Física:** rotação LIVRE 3D por quaternion (q̇=½ω⊗q, renormalizada;
+  atrito do solo freia o spin; yaw do renderer DERIVADO da orientação —
+  uma verdade, sem estado duplo). RAGDOLL: 7 segmentos de carne
+  (MATERIALS.flesh: deforma fácil, quase não quica) ligados por 6 juntas
+  PBD; o pescoço segura após a queda; SOBREVIVE save/load via reattach().
+- **Áudio:** PINNA — a concha reflete som para o canal ~30µs depois:
+  notch espectral dependente da elevação (5.5–10.5kHz) + sombra do torso
+  (atrás é mais escuro) = frente vs fundo SEM visão. REVERB POR AMBIENTE:
+  Schroeder (4 combs+2 allpass) com RT60/pre-delay por espaço
+  (sala 0.35s / vale 1.3s / cânion 2.9s); cânion soa 4×+ maior.
+- **Streaming:** DELTAS POR-ENTIDADE — componentes carimbados com __v;
+  deltaSince(T)/applyDelta: um clone restaurado em T acompanha o original
+  recebendo SÓ o que mudou (testado com NPCs; sem delta diverge; delta
+  nunca inventa entidade).
+- **Render:** NÉVOA POR ALTURA no aerial() (JS+GLSL): boost de extinção
+  ∝ fogH·e^(−h/20) — o baixio se afoga na neblina de radiação, a
+  montanha escapa; uAirFog nos 4 FS; frame.air.fogH do estado causal.
+- **Usabilidade:** GALERIA DE MUNDOS (4 presets REAIS via ?world=:
+  alvorada úmida com névoa, arquipélago ventoso, vale em chamas com fogo
+  aceso de verdade, cidade viva com settlement).
+- **Fixes físicos:** dupla-contagem do OD no march (horizonte morria no
+  piso noturno) → trapezoidal; beamTransmittance() expõe o feixe direto
+  (invariante honesto do pôr-do-sol: B/R 0.48→1.4e-5); aerial insc com
+  N dinâmico (8 amostras perto do horizonte).
+- **281/281 testes.**

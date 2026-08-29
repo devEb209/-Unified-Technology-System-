@@ -72,6 +72,15 @@
   <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
 </div>
 
+<div class="panel" id="gallery" style="margin-top:8px">
+  <b>🌍 Galeria de mundos</b>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">
+    <button data-world="vale">🌅 Vale do Alvorecer</button>
+    <button data-world="arquipelago">🏝️ Arquipélago</button>
+    <button data-world="incendio">🔥 Vale em Chamas</button>
+    <button data-world="cidade">🏛️ Cidade Viva</button>
+  </div>
+</div>
 <div class="panel" id="controls">
   <button id="w-audio">🔊 áudio</button>
   <button id="w-clear">limpar</button>
@@ -96,8 +105,37 @@
   import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
 
   const canvas = document.getElementById('gl');
-  const uts = createUTS({ seed: 'uts-web-demo', log: { level: 'warn' } }); // browser: streaming síncrono (worker_threads não existe aqui — fallback honesto)
+
+  // ---- GALERIA DE MUNDOS: cada entrada é um mundo REAL (semente + estado
+  // causal inicial), não uma cena decorada
+  const WORLDS = {
+    vale: { seed: 'vale-do-alvorecer', setup: (u) => {
+      u.world.clock.time = 0.235 * u.world.clock.dayLengthSec; // alvorada
+      u.world.setWeather('rain'); // a madrugada úmida cria NEBLINA de radiação
+    } },
+    arquipelago: { seed: 'arquipelago-do-sul', setup: (u) => {
+      u.world.setWeather('windy'); // o vento esculpe o MAR (dispersão real)
+      u.ues.moveCamera([512 + 160, 26, 512 + 160], 2.3, 0.42); // sobre a água
+    } },
+    incendio: { seed: 'vale-do-alvorecer', setup: (u) => {
+      const strike = u.rrw.emitEvent({ type: 'reallife.lightning.strike', cause: null, data: {}, tick: 0 });
+      for (let x = 440; x <= 600; x += 6) for (let z = 440; z <= 600; z += 6) {
+        if (u.world.reallife.igniteFire([x, 0, z], strike)) { u.ues.moveCamera([x, 22, z - 38], 0, 0.05); return; }
+      }
+    } },
+    cidade: { seed: 'uts-web-demo', setup: (u) => {
+      u.core.tools.execute('ues.create_settlement', { name: 'Vila da Serra', pop: 34, nearRiver: false });
+      u.ues.moveCamera([512, 34, 560], 0.2, 0.25);
+    } },
+  };
+  const wanted = new URLSearchParams(location.search).get('world');
+  const preset = WORLDS[wanted] ?? { seed: 'uts-web-demo', setup: () => {} };
+  const uts = createUTS({ seed: preset.seed, log: { level: 'warn' } }); // browser: streaming síncrono (worker_threads não existe aqui — fallback honesto)
+  preset.setup(uts);
   const { ues, core, world, rrw, do15, clock, tese } = uts;
+  document.querySelectorAll('#gallery button').forEach((b) => {
+    b.onclick = () => { location.search = '?world=' + b.dataset.world; };
+  });
 
   // ---- [phenomena] ADR-019: the world is born WITH its reality systems.
   // sky = atmospheric scattering from AIR STATE; water = substance in cells;

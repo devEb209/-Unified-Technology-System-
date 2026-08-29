@@ -16,6 +16,7 @@ export const MATERIALS = {
   rock: { density: 2.6, hardness: 0.85, toughness: 60 },
   wood: { density: 0.7, hardness: 0.4, toughness: 18 },
   ice:  { density: 0.92, hardness: 0.18, toughness: 7 },
+  flesh: { density: 1.05, hardness: 0.08, toughness: 3.5 },
 };
 
 export class PhysicsWorld {
@@ -52,6 +53,29 @@ export class PhysicsWorld {
   }
 
   /**
+   * A RAGDOLL is real anatomy: rigid segments linked by distance joints
+   * (PBD), flesh material (deforms easily, barely bounces). All state in
+   * the RRW — it survives save/load through reattach().
+   */
+  buildRagdoll(pos, { causeEvent = null, scale = 1 } = {}) {
+    const mk = (dx, dy, dz, r, label) => this.addBody({
+      pos: [pos[0] + dx * scale, pos[1] + dy * scale, pos[2] + dz * scale],
+      radius: r * scale, material: 'flesh', label: `ragdoll-${label}`,
+      restitution: 0.05, friction: 0.92, causeEvent,
+    });
+    const head = mk(0, 1.45, 0, 0.22, 'head');
+    const torso = mk(0, 1.0, 0, 0.30, 'torso');
+    const pelvis = mk(0, 0.55, 0, 0.26, 'pelvis');
+    const armL = mk(-0.45, 1.0, 0, 0.12, 'arm');
+    const armR = mk(0.45, 1.0, 0, 0.12, 'arm');
+    const legL = mk(-0.18, 0.18, 0, 0.14, 'leg');
+    const legR = mk(0.18, 0.18, 0, 0.14, 'leg');
+    const j = (a, b) => this.addJoint(a.id, b.id, { stiffness: 0.9, causeEvent });
+    j(head, torso); j(torso, pelvis); j(torso, armL); j(torso, armR); j(pelvis, legL); j(pelvis, legR);
+    return { head: head.id, torso: torso.id, pelvis: pelvis.id, arms: [armL.id, armR.id], legs: [legL.id, legR.id] };
+  }
+
+  /**
    * Rebuild the derived caches (bodies + joints) FROM the RRW — called by
    * snapshot.load() so a restored world keeps its physics exactly. This is
    * the fix for "bodies vanish across save/load": RRW is the truth.
@@ -77,7 +101,7 @@ export class PhysicsWorld {
   addBody({
     pos, vel = [0, 0, 0], radius = 0.6, mass = null,
     restitution = 0.35, friction = 0.7, causeEvent = null, label = 'rock',
-    omega = 0, pinned = false, material = 'rock',
+    omega = 0, pinned = false, material = 'rock', spin = null,
   }) {
     // REALITY: mass comes from the MATERIAL's density and the body's volume
     // (rock is heavy, wood is light); deformation behavior follows the material.
@@ -95,7 +119,8 @@ export class PhysicsWorld {
       yaw: 0,
       components: {
         physics: { vel: [...vel], radius, mass: m, restitution, friction, asleep: false, causeEvent,
-                   omega, inertia, spinFriction: 0.9, pinned, material, deformation: 0 },
+                   omega, inertia, spinFriction: 0.9, pinned, material, deformation: 0,
+                   spin: spin ? [...spin] : [0, 0, 0], quat: [0, 0, 0, 1] },
       },
     });
     this.world.grid.update(ent.id, pos[0], pos[2]);
@@ -159,6 +184,24 @@ export class PhysicsWorld {
       ph.vel[1] += GRAVITY * dt;
       for (let i = 0; i < 3; i++) sp.pos[i] += ph.vel[i] * dt;
       sp.yaw = (sp.yaw ?? 0) + ph.omega * dt;
+      sp.__v = tick ?? sp.__v; // stamped for per-entity deltas
+      // ---- FREE 3D ROTATION (quaternion): q̇ = ½·ω⊗q, renormalized. The
+      // renderer's planar yaw is DERIVED from q (one truth, no double state).
+      const w = ph.spin;
+      if (w && (w[0] !== 0 || w[1] !== 0 || w[2] !== 0)) {
+        const q = ph.quat;
+        const hx = w[0] * dt * 0.5, hy = w[1] * dt * 0.5, hz = w[2] * dt * 0.5;
+        const x = q[0], y = q[1], z = q[2], qw = q[3];
+        q[0] = x + (hx * qw + hy * z - hz * y);
+        q[1] = y + (hy * qw + hz * x - hx * z);
+        q[2] = z + (hz * qw + hx * y - hy * x);
+        q[3] = qw - (hx * x + hy * y + hz * z);
+        const lq = Math.hypot(q[0], q[1], q[2], q[3]) || 1;
+        q[0] /= lq; q[1] /= lq; q[2] /= lq; q[3] /= lq;
+        // yaw DERIVED from the UPDATED orientation (one truth, no stale frame)
+        sp.yaw = Math.atan2(2 * (q[3] * q[2] + q[0] * q[1]), 1 - 2 * (q[1] * q[1] + q[2] * q[2]));
+        ph.omega = w[1];
+      }
 
       // ground collision from the REPRESENTED heightfield
       const h = terrain.height(sp.pos[0], sp.pos[2]);
@@ -176,6 +219,8 @@ export class PhysicsWorld {
           this.stats.torques++;
         }
         ph.vel[1] = impactSpeed > 1 ? impactSpeed * ph.restitution : 0;
+        const gd = 1 - Math.min(0.9, ph.friction * dt * 4); // the ground brakes the spin
+        ph.spin[0] *= gd; ph.spin[1] *= gd; ph.spin[2] *= gd;
         // rolling contact: spin decays slower than sliding; rolling couples
         const rolling = Math.abs(ph.omega) * ph.radius;
         const damp = Math.exp(-ph.friction * dt * (hSpeed > rolling + 0.05 ? 8 : 1.2));
