@@ -9,6 +9,8 @@
 //
 //   Chain: UTS -> RRW -> D -> D-O15 -> UES -> Frame -> RendererBackend -> GPU
 
+import { ScaleLadder } from './world/scales.js';
+import { registerGenesisTools } from './singularity/genesis-tools.js';
 import { RNG } from './core/rng.js';
 import { Clock } from './core/clock.js';
 import { EventBus } from './core/events.js';
@@ -170,7 +172,13 @@ export function createUTS({
     world, perf: thePerf, tese: theTese, do15: theDo15, schedulerBudgetMs,
   });
 
+  // THE REALITY LADDER: every body is TAGGED by its scale (do átomo ao universo)
+  world.scales = new ScaleLadder({ world });
+
   const core = buildSingularity({ ues, world, rrw, memory: coreMemory ?? undefined, log: logger, providers });
+
+  // GENESIS surface: the AI operates files, commands, builds and the media stack
+  registerGenesisTools({ core, ues, world, workspace: process.env.UTS_WORKSPACE ?? null });
 
   // UTS platform: when provided, the engine registers as a platform consumer
   // and the platform AI (Singularity) gains services, apps and durable projects.

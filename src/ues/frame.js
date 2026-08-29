@@ -4,6 +4,7 @@
 // fire point lights), aggregates, audio state, D-O15 quality. The renderer
 // only manifests this; it invents nothing.
 
+import { eyeState } from '../render/vision.js';
 import { dist2 } from '../core/math.js';
 
 const SHAPE_BY_KIND = {
@@ -149,6 +150,8 @@ export function extractFrame(ues, perf = null) {
     } : null,
     // the observer's eye gain (adapts to the REAL light; the renderer multiplies)
     exposure: world.observer?.exposure ?? 1,
+    // THE HUMAN EYE: purkinje tint, glare, contrast (vision.js from REAL light)
+    vision: eyeState({ ambient: world.environment.ambient ?? 1, flash: world.environment.flash ?? 0, exposure: world.observer?.exposure ?? 1 }),
     // TRUE sun direction (unclamped — the sky must be able to set)
     sunDirTrue: (() => {
       const a = world.clock.timeOfDay * Math.PI * 2 - Math.PI / 2;

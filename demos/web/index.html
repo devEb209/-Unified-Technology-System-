@@ -72,6 +72,15 @@
   <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
 </div>
 
+<div class="panel" id="agent-panel" style="margin-top:8px">
+  <b>🤖 IA no seu aparelho</b>
+  <div style="display:grid;gap:4px;margin-top:6px">
+    <button id="fs-demo">📝 criar arquivo no workspace</button>
+    <button id="exec-demo">⚙️ executar comando (precisa UTS_ALLOW_EXEC)</button>
+    <button id="build-demo">📦 gerar app web (.zip baixa)</button>
+  </div>
+  <div id="agent-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:auto"></div>
+</div>
 <div class="panel" id="gallery" style="margin-top:8px">
   <b>🌍 Galeria de mundos</b>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">
@@ -136,6 +145,32 @@
   document.querySelectorAll('#gallery button').forEach((b) => {
     b.onclick = () => { location.search = '?world=' + b.dataset.world; };
   });
+
+  // ---- painel do agente: arquivos, comandos, build (TUDO funcional)
+  const agentOut = $('agent-out');
+  const say = (t) => { if (agentOut) { agentOut.textContent = t; } };
+  if ($('fs-demo')) $('fs-demo').onclick = async () => {
+    const r = await fetch('/api/fs', { method: 'POST', body: JSON.stringify({ op: 'write', path: 'genesis/ola.txt', data: `criado pelo GENESIS em ${new Date().toISOString()}\nmundo: ${uts.seed}\n` }) });
+    const j = await r.json();
+    const chk = await (await fetch('/api/fs', { method: 'POST', body: JSON.stringify({ op: 'read', path: 'genesis/ola.txt' }) })).json();
+    say(j.error ? `❌ ${j.error}` : `✅ arquivo criado e relido: ${JSON.stringify(chk.content).slice(0, 80)}…`);
+  };
+  if ($('exec-demo')) $('exec-demo').onclick = async () => {
+    const r = await fetch('/api/exec', { method: 'POST', body: JSON.stringify({ cmd: 'echo GENESIS no seu aparelho' }) });
+    const j = await r.json();
+    say(j.ok ? `✅ saída: ${j.out?.trim()}` : `⛔ honesto: ${j.error ?? 'execução desabilitada (UTS_ALLOW_EXEC=1 liga)'}`);
+  };
+  if ($('build-demo')) $('build-demo').onclick = async () => {
+    say('… gerando app web');
+    const r = await fetch('/api/build', { method: 'POST', body: JSON.stringify({ name: 'MeuJogo', target: 'web', title: 'Meu Jogo (Genesis)' }) });
+    if (!r.ok) { say('❌ falha no build'); return; }
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'MeuJogo.zip';
+    a.click();
+    say('✅ app web gerado (.zip baixado) — projeto real, roda com npm start');
+  };
 
   // ---- [phenomena] ADR-019: the world is born WITH its reality systems.
   // sky = atmospheric scattering from AIR STATE; water = substance in cells;

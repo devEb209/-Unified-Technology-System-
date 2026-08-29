@@ -86,10 +86,17 @@ Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch> <url> uts`, `npm start`
 ## Quick start
 
 ```bash
-npm test              # 290/290 testes determinísticos
+npm test              # 305/305 testes determinísticos
 npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
 node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
+```
+
+```bash
+# R13: a IA opera a sua máquina (opt-in para comandos)
+UTS_WORKSPACE=./workspace npm start          # a IA cria arquivos em ./workspace
+UTS_ALLOW_EXEC=1 npm start                   # + executor de comandos (guarda ativa)
+# no demo: painel "IA no seu aparelho" → arquivo, comando, app .zip
 npm run demo          # demo WebGL2 no browser (http://localhost:8080)
 npm run bench         # percepção (500→10000 NPCs) + frame extraction
 ```

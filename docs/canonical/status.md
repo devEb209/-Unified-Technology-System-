@@ -340,6 +340,71 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R13 — QUINZE SISTEMAS DE UMA VEZ (a escada inteira + o olho + a IA operando a máquina; 87.18 → 89.08)
+
+**A escada da realidade (world/scales.js):** 15 níveis do quantum (1e-12 m)
+ao universo (8.8e26 m), cada um com escala de tempo própria. `scaleFor`
+etiqueta qualquer corpo (um NPC é 'human', um próton é 'quantum');
+`aggregate` sobe a estatística SÓ entre vizinhos (a rede é causal — célula
+vira tecido, tecido vira órgão; quantum NÃO pula para human);
+`ScaleLadder.propagateUp` faz o evento de baixo virar estado de cima.
+O mundo etiqueta os corpos no spawn (`world.scales`).
+
+**O OLHO HUMANO (render/vision.js):** mais que fotorrealismo — o que o OLHO
+pega. Bastonetes assumem no escuro (mix por log10 da luminância);
+Purkinje: a noite tinta de azul e o vermelho MORRE (tint=[1−.22r, 1−.06r,
+1+.16r]); glare PSF (.06·log10 L/3) no relâmpago; CSF: contraste cai no
+escuro (.55+.45·(1−rod)). `frame.vision` alimenta `uEyeTint` nos 5 shaders
+(webgl2 envia o tint do frame — o olho chega à tela).
+
+**IA com sistema de arquivos (agent/fs-agent.js):** AgentFS com sandbox
+duro (absoluto e '..' rejeitados ANTES do resolve), journal de 500
+operações, read/write/mkdir/list/remove/move. **Executor de comandos
+(agent/proc-agent.js):** sh -c com timeout 20s, guarda regex contra
+destruição (rm -rf /, mkfs, fork bomb, dd, shutdown), opt-in honesto
+(UTS_ALLOW_EXEC=1; desligado é o padrão e o teste exige isso).
+
+**Compilar e descompilar (agent/build-system.js + util/zip.js):** zip
+store determinístico próprio (CRC32, EOCD, erro honesto se corrompido).
+web: builda AGORA — projeto npm real empacotado, verificado lendo o zip
+de volta (o teste baixa o .zip do servidor e lê). android/exe: scaffold
+REAL (gradle/manifest/MainActivity; SEA) e erro honesto se a toolchain
+não existe (`toolchain ausente: …`) — nunca apk falso.
+
+**Mídia em todos os Ds (media/):** models (2d estrela/polígono, 2.5d
+extrusão, 3d torus/prisma, 3.5d voxel com value noise, 4d frames
+animados); textures (madeira com anéis, tijolo com fiada offset e
+rejunte, mármore com veios — determinísticas); animation (Track/Clip,
+smoothstep, blendPoses — o andar 'cansado' amortece de verdade);
+cutscene (diretor com planos/letterbox/fim honesto); dub (pt/en/es/ja
+com cps por idioma — japonês dura mais; tradução só do que está no BOOK,
+nunca fake).
+
+**Perfis D-O15 (ues/devices.js):** a01 (33ms, 40 vegetais, sem sombra) →
+desktop (11ms, 500, 300 npcs). O MESMO mundo com orçamento menor —
+deferir/reduzir/re-representar, nunca descartar.
+
+**Estilo pelo chat (world.style):** 'anime', 'realista' etc. viram ESTADO
+do mundo (evento world.style.changed no RRW) — não string solta.
+
+**Frontend 100%:** painel novo 'IA no seu aparelho' (criar arquivo no
+workspace, executar comando, gerar app .zip que baixa) + teste que
+AUDITA o HTML: todo `<button id>` tem handler — se um botão nascer
+morto, a suíte falha.
+
+**Endpoints HTTP reais:** /api/fs (sandbox; fuga = 400), /api/exec
+(403 honesto sem opt-in), /api/build (application/zip com o app dentro).
+Bug real encontrado e corrigido no caminho: writeHead antes do await
+mata o processo com ERR_HTTP_HEADERS_SENT — agora trabalho primeiro,
+header depois.
+
+**Testes:** r13-full-reality.test.js — 15 testes (305 no total): escada
+(conservação + vizinhos), olho (Purkinje/glare/CSF no frame), 5 Ds,
+texturas, animação, cutscene, dublagem, sandbox de arquivos, guarda de
+comandos, compilador (web real + honestidade apk/exe), perfis, tools
+registradas, /api/fs por HTTP (incluindo fuga → 400), auditoria de
+botões, zip roundtrip + corrupção → erro.
+
 ## R12 — NOVE SISTEMAS DE UMA VEZ (o maior round; 84.98 → 87.18)
 
 1. **Fluidos** (`fluids.js`): água rasa por pipe-model atômico — chuva

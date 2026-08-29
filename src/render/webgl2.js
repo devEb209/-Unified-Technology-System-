@@ -441,6 +441,7 @@ export class WebGL2Renderer {
       if (p.u.uAirMie) { gl.uniform1f(p.u.uAirMie, air.mie); gl.uniform1f(p.u.uAirI, air.intensity); }
       if (p.u.uAirFog) gl.uniform1f(p.u.uAirFog, air.fogH ?? 0); // névoa de radiação no ar
       if (p.u.uExposure) gl.uniform1f(p.u.uExposure, frame.exposure ?? 1); // the eye's real gain
+      if (p.u.uEyeTint) { const tnt = frame.vision?.tint ?? [1, 1, 1]; gl.uniform3f(p.u.uEyeTint, tnt[0], tnt[1], tnt[2]); }
       gl.uniform3f(p.u.uSunColor, frame.lights.sun.color[0], frame.lights.sun.color[1], frame.lights.sun.color[2]);
       gl.uniform1f(p.u.uAmbient, frame.lights.sun.ambient);
       if (p.u.uLightVP) gl.uniformMatrix4fv(p.u.uLightVP, false, lightVP ?? identity());

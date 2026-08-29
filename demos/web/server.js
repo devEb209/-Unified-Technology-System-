@@ -3,6 +3,9 @@
 // Serves the repository so browser ES modules can import src/ directly.
 
 import { createServer } from 'node:http';
+import { AgentFS } from '../../src/agent/fs-agent.js';
+import { ProcAgent } from '../../src/agent/proc-agent.js';
+import { build as buildApp } from '../../src/agent/build-system.js';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,10 +27,61 @@ const MIME = {
   '.md': 'text/plain; charset=utf-8',
 };
 
+const WORKSPACE = process.env.UTS_WORKSPACE || join(ROOT, 'workspace');
+const agentFS = new AgentFS({ root: WORKSPACE });
+const agentProc = new ProcAgent({ allow: process.env.UTS_ALLOW_EXEC === '1' });
+
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
     let path = decodeURIComponent(url.pathname);
+
+    // ---- /api/fs: the AI's files on the CONNECTED folder (sandboxed hard)
+    if (path === '/api/fs' && req.method === 'POST') {
+      let body = '';
+      for await (const ch of req) body += ch;
+      const { op, path: vp, data, to } = JSON.parse(body || '{}');
+      try {
+        // IMPORTANTE: o trabalho PRIMEIRO, o writeHead DEPOIS — se o await
+        // lançar depois do header 200, o catch não pode mais responder.
+        let out;
+        if (op === 'write') out = await agentFS.write(vp, data ?? '');
+        else if (op === 'read') out = { content: (await agentFS.read(vp)).toString() };
+        else if (op === 'list') out = { entries: await agentFS.list(vp) };
+        else if (op === 'mkdir') out = await agentFS.mkdir(vp);
+        else if (op === 'remove') out = await agentFS.remove(vp);
+        else if (op === 'move') out = await agentFS.move(vp, to);
+        else { res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: `operação desconhecida: ${op}` })); return; }
+        res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(out));
+      } catch (e) {
+        if (!res.headersSent) res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: e.message }));
+      }
+      return;
+    }
+
+    // ---- /api/exec: the AI runs commands (HONEST: default OFF)
+    if (path === '/api/exec' && req.method === 'POST') {
+      let body = '';
+      for await (const ch of req) body += ch;
+      const { cmd, cwd } = JSON.parse(body || '{}');
+      const r = await agentProc.run(String(cmd ?? '').slice(0, 2000), { cwd });
+      res.writeHead(r.ok ? 200 : 403).end(JSON.stringify(r));
+      return;
+    }
+
+    // ---- /api/build: apk/exe/web — web builda AGORA (zip real)
+    if (path === '/api/build' && req.method === 'POST') {
+      let body = '';
+      for await (const ch of req) body += ch;
+      const { name, target, title } = JSON.parse(body || '{}');
+      const r = await buildApp({ name: name ?? 'GenesisApp', target: target ?? 'web', manifest: { title: title ?? name }, fs: agentFS });
+      if (r.artifact) {
+        res.writeHead(200, { 'content-type': 'application/zip', 'content-disposition': `attachment; filename="${r.artifact.name}"` });
+        res.end(Buffer.from(r.artifact.data));
+      } else res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(r));
+      return;
+    }
+
 
     // ---- SSE: real LLM token streaming (env-configured), honest 503 without
     if (path === '/api/llm/stream' && req.method === 'POST') {
