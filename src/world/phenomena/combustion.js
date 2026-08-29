@@ -118,6 +118,7 @@ export class Combustion {
           c.burning = false;
           c.intensity = 0;
           c.burnt = true;         // burnt state persists in the field
+          c.burntAt = w.clock.tick; // ash fades with TIME (a real timescale)
           this.cells.set(k, c);
           this.stats.burntCells++;
           extinctions++;
@@ -157,6 +158,28 @@ export class Combustion {
     this.stats.consumed += consumed;
     this.stats.extinctions += extinctions;
     return { spreads, consumed: +consumed.toFixed(3), extinctions, ignitions: ignitions.length };
+  }
+
+  /**
+   * D-O15 materialization of BURNT GROUND: burnt cells near the camera,
+   * FRESHEST ASH FIRST, budget-capped. The renderer draws THESE (the burn
+   * scar is field state; ash fades on a real timescale, not a texture).
+   */
+  burntNear(camPos, radius = 240, cap = 90) {
+    const out = [];
+    const t = this.world.terrain;
+    const now = this.world.clock.tick;
+    for (const [k, c] of this.cells) {
+      if (!c.burnt) continue;
+      const [cx, cz] = k.split(',').map(Number);
+      const wx = cx * this.cell + this.cell / 2, wz = cz * this.cell + this.cell / 2;
+      const d = Math.hypot(wx - camPos[0], wz - camPos[2]);
+      if (d > radius) continue;
+      const age = now - (c.burntAt ?? now);
+      out.push({ pos: [wx, t.height(wx, wz) + 0.1, wz], age, alpha: Math.max(0, 1 - age / 3000) });
+    }
+    out.sort((a, b) => a.age - b.age);
+    return out.slice(0, cap);
   }
 
   /** burning cell centers near a position (renderer/audio/NMN perception) */

@@ -50,9 +50,10 @@
 <div class="panel" id="ai-panel">
   <div style="color:#8fd0ff;font-weight:600">IA · crie seu mundo</div>
   <div style="display:flex;gap:6px;margin-top:6px">
-    <input id="goal-input" placeholder="ex.: crie uma vila chamada Vale perto de um rio" style="flex:1;background:#0a0f1e;border:1px solid #2a3a5f;color:#dfe7ff;padding:4px 8px;border-radius:6px;font:inherit" />
+    <input id="goal-input" placeholder="ex.: crie uma vila chamada Vale perto de um rio e 20 npcs" style="flex:1;background:#0a0f1e;border:1px solid #2a3a5f;color:#dfe7ff;padding:4px 8px;border-radius:6px;font:inherit" />
     <button id="goal-go">criar</button>
   </div>
+  <textarea id="goal-attach" rows="2" placeholder="anexo opcional — csv: 'x,z,name' por linha · texto 'nomes.txt': lista de nomes" style="width:100%;margin-top:6px;background:#0a0f1e;border:1px solid #2a3a5f;color:#9fb3d9;padding:4px 8px;border-radius:6px;font:inherit;font-size:11px;box-sizing:border-box"></textarea>
   <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
 </div>
 
@@ -199,9 +200,18 @@
     const log = $('goal-log');
     log.textContent += '> ' + txt + '\n';
     try {
-      const r = await core.processObjective(txt);
+      // R5: attachments are validated context (csv positions / name lists)
+      const attRaw = ($('goal-attach')?.value ?? '').trim();
+      const attachments = [];
+      if (attRaw) {
+        const firstLine = attRaw.split('\n')[0].trim().toLowerCase();
+        if (/^x\s*,\s*z/.test(firstLine)) attachments.push({ kind: 'csv', name: 'vilas.csv', content: attRaw });
+        else attachments.push({ kind: 'text', name: 'nomes.txt', content: attRaw });
+      }
+      const r = await core.processObjective(txt, { attachments });
       const steps = (r?.executed ?? []).map(x => '  • ' + (x.tool ?? x.kind) + (x.error ? ' ✗ ' + String(x.error).slice(0, 40) : ' ✓')).join('\n');
-      log.textContent += `  [${r?.intent ?? '?'} · ${r?.chosen?.provider ?? '?'}/${r?.chosen?.model ?? '?'}]\n`
+      const cmds = r?.interpretation?.commands?.length;
+      log.textContent += `  [${r?.intent ?? '?'} · ${r?.chosen?.provider ?? '?'}/${r?.chosen?.model ?? '?'}${cmds > 1 ? ` · ${cmds} comandos (gramática)` : ''}]\n`
         + (steps ? steps + '\n' : '')
         + `  = ${r?.ok ? 'REALIDADE CRIADA ✓' : 'falhou (ver logs)'}${r?.corrections?.length ? ' · correções: ' + r.corrections.length : ''}\n`;
       log.scrollTop = log.scrollHeight;

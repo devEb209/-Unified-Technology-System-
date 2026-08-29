@@ -164,15 +164,16 @@ void main(){
 export const POINTS_VS = `#version 300 es
 layout(location=0) in float aSeed;
 uniform mat4 uVP; uniform vec3 uCamPos; uniform float uTime; uniform float uWind; uniform float uCount;
+uniform float uSize; uniform float uFall;
 out float vAlpha;
 void main(){
   float x = (fract(aSeed*0.738)*2.0-1.0)*60.0;
   float z = (fract(aSeed*0.417)*2.0-1.0)*60.0;
-  float fall = fract(aSeed*0.913 + uTime*(0.35+uWind*0.3));
+  float fall = fract(aSeed*0.913 + uTime*(0.35+uWind*0.3)*uFall);
   float y = 36.0*(1.0-fall);
   vec3 wp = vec3(uCamPos.x + x + uWind*12.0*fall, y, uCamPos.z + z);
   gl_Position = uVP*vec4(wp,1.0);
-  gl_PointSize = 2.2;
+  gl_PointSize = uSize;
   vAlpha = step(aSeed, uCount);
 }`;
 

@@ -524,7 +524,14 @@ export class WebGL2Renderer {
       gl.uniform3f(pts.u.uCamPos, cam.pos[0], cam.pos[1], cam.pos[2]);
       gl.uniform1f(pts.u.uTime, frame.time);
       gl.uniform1f(pts.u.uWind, env.wind);
-      gl.uniform1f(pts.u.uCount, 500 * Math.min(1, density));
+      const effDensity = Math.min(1, density);
+      gl.uniform1f(pts.u.uCount, 500 * effDensity);
+      // D-O15 RE-REPRESENTATION under pressure: fewer particles but each one
+      // bigger + faster — the PERCEIVED intensity is preserved (streaks/sheets),
+      // never a thinning drizzle just because the GPU is busy.
+      const comp = 1 / Math.sqrt(Math.max(0.15, effDensity));
+      gl.uniform1f(pts.u.uSize, 2.2 * comp);
+      gl.uniform1f(pts.u.uFall, Math.min(2.2, comp));
       const color = env.dust > env.rain ? [0.75, 0.65, 0.45] : [0.6, 0.7, 0.9];
       gl.uniform3f(pts.u.uColor, color[0], color[1], color[2]);
       gl.enable(gl.BLEND);
@@ -557,20 +564,25 @@ export class WebGL2Renderer {
       this.stats.vegDraws = (this.stats.vegDraws ?? 0) + 1;
     }
 
-    // ---- HYDROLOGY FILM + HORIZON MARKERS (scale materialized; shared program)
+    // ---- FILM + BURN SCARS + HORIZON (scale materialized; shared program)
     const film = frame.waterFilm ?? [];
     const horizon = frame.horizon ?? [];
-    if (film.length + horizon.length > 0) {
+    const burnt = frame.burntGround ?? [];
+    if (film.length + horizon.length + burnt.length > 0) {
       const hor = this.programs.horizon;
       gl.useProgram(hor.prog);
       gl.uniformMatrix4fv(hor.u.uVP, false, vp);
       gl.uniform1f(hor.u.uPointScale, (this.canvas?.height ?? 720) * 0.9);
       gl.uniform1f(hor.u.uTime, frame.time ?? 0);
-      const data = new Float32Array((film.length + horizon.length) * 8);
+      const data = new Float32Array((film.length + horizon.length + burnt.length) * 8);
       let n = 0;
       for (const f of film) {
         const k = Math.min(1, f.depth * 30);
         data.set([f.pos[0], f.pos[1], f.pos[2], 16 + k * 14, 0.32, 0.46, 0.6, 0.25 + k * 0.5], n * 8); n++;
+      }
+      for (const b of burnt) {
+        // fresh ash is dark charcoal; it FADES with its own age (real timescale)
+        data.set([b.pos[0], b.pos[1], b.pos[2], 26, 0.14, 0.12, 0.11, 0.5 * b.alpha], n * 8); n++;
       }
       for (const h of horizon) {
         data.set([h.pos[0], h.pos[1], h.pos[2], h.size, h.color[0], h.color[1], h.color[2], h.alpha], n * 8); n++;

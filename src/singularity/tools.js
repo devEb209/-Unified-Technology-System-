@@ -70,11 +70,15 @@ export function builtinTools({ ues, world, rrw, core }) {
   const tools = new ToolRegistry();
 
   tools.register('ues.create_settlement', {
-    desc: 'Found a settlement, optionally near a river',
+    desc: 'Found a settlement, optionally near a river / a named anchor / at explicit data positions',
     schema: {
       name: { type: 'string', required: true, maxLength: 40 },
       pop: { type: 'number', min: 1, max: 300, default: 24 },
       nearRiver: { type: 'boolean', default: false },
+      pos: { type: 'array' },                    // explicit data (CSV attachment)
+      nearName: { type: 'string', maxLength: 40 },   // RELATION: perto de "X"
+      dir: { type: 'string' },                       // norte|sul|leste|oeste
+      of: { type: 'string', maxLength: 40 },         // … de "Y"
     },
     fn: (p) => {
       // idempotent by name — corrective retries never duplicate reality
@@ -84,7 +88,21 @@ export function builtinTools({ ues, world, rrw, core }) {
       }
       const t = world.terrain;
       let pos;
-      if (p.nearRiver) {
+      if (p.pos) {
+        // explicit coordinates from validated DATA (attachment) — honest source
+        pos = t.findLand(p.pos[0], p.pos[2], 60) ?? [p.pos[0], 0, p.pos[2]];
+      } else if (p.nearName || (p.dir && p.of)) {
+        // RELATION from the grammar: anchor on the named settlement, offset
+        // by the cardinal direction (or a ring around the anchor)
+        const anchorName = p.nearName ?? p.of;
+        const anchorId = rrw.query({ kind: 'settlement', predicate: e => e.name?.toLowerCase().includes(String(anchorName).toLowerCase()) })[0];
+        if (!anchorId) return { ok: false, reason: `anchor settlement '${anchorName}' not found` };
+        const ap = rrw.getComponent(anchorId, 'spatial').pos;
+        const off = p.dir === 'norte' ? [0, -90] : p.dir === 'sul' ? [0, 90]
+          : p.dir === 'leste' ? [90, 0] : p.dir === 'oeste' ? [-90, 0]
+          : [40, 40];
+        pos = t.findLand(ap[0] + off[0], ap[2] + off[1], 60) ?? [ap[0] + off[0], 0, ap[2] + off[1]];
+      } else if (p.nearRiver) {
         const water = t.findWater(t.size / 2, t.size / 2, 500);
         pos = water ? t.findLand(water[0] + 14, water[2] + 8, 260) : t.findLand(t.size / 2, t.size / 2, 260);
       } else {
@@ -100,6 +118,26 @@ export function builtinTools({ ues, world, rrw, core }) {
       world.spawnResourceNodes(pos, { radius: 90, bushes: 20, trees: 30 });
       ues.moveCamera([pos[0], 34, pos[2] + 70]);
       return { ok: true, settlementId: ent.id, name: p.name, pos, pop: p.pop };
+    },
+  });
+
+  tools.register('world.plant_forest', {
+    desc: 'Plant REAL trees (ecology population) near the camera or a position',
+    schema: {
+      count: { type: 'number', min: 1, max: 200, default: 40 },
+      pos: { type: 'array' },
+    },
+    fn: (p) => {
+      const anchor = p.pos ?? ues.camera.pos;
+      let seeded = 0;
+      for (let i = 0; i < p.count; i++) {
+        const a = world.rng.next() * Math.PI * 2;
+        const r = 8 + Math.sqrt(world.rng.next()) * 110;
+        const x = anchor[0] + Math.cos(a) * r, z = anchor[2] + Math.sin(a) * r;
+        if (world.ecology.seed(x, z, { age: world.rng.range(2, 30) })) seeded++;
+      }
+      ues.tese?.touch('D-9', `plant_forest seeded ${seeded}/${p.count} (real ecology)`, world.clock.tick);
+      return { ok: seeded > 0, seeded, alive: world.ecology.aliveCount() };
     },
   });
 

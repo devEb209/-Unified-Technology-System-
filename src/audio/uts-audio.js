@@ -142,12 +142,16 @@ export class AudioDirector {
       if (ac && !ac.audible && !deep) continue; // beyond the acoustic horizon
       if (shot.name === 'thunder') {
         const arrivalGain = ac ? Math.min(1, Math.max(0.05, ac.gain)) : 1;
-        mixer.add(this.thunder({ sr, deep }), { gain: 0.9 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
+        let samples = this.thunder({ sr, deep });
+        if (ac && ac.muffle > 1.4) samples = lowpass(samples, (deep ? 110 : 220) / Math.min(ac.muffle, 4), sr);
+        mixer.add(samples, { gain: 0.9 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
         voices++;
       } else if (shot.name === 'impact') {
         const arrivalGain = ac ? Math.min(1, Math.max(0, ac.gain)) : 1;
         if (arrivalGain <= 0.02) continue; // honestly inaudible
-        mixer.add(this.impact({ sr, power: shot.power ?? 1 }), { gain: 0.75 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
+        let samples = this.impact({ sr, power: shot.power ?? 1 });
+        if (ac && ac.muffle > 1.4) samples = lowpass(samples, 500 / Math.min(ac.muffle, 4), sr);
+        mixer.add(samples, { gain: 0.75 * arrivalGain, at: 0.02 + (ac?.delay ?? 0) });
         voices++;
       }
     }
@@ -159,7 +163,10 @@ export class AudioDirector {
       if (!sp.audible) continue;
       const acG = light.acoustic ? Math.max(0, Math.min(1, light.acoustic.gain)) : 1;
       if (acG <= 0.02) continue; // deep acoustic shadow: honestly inaudible
-      const crackle = this.fireCrackle({ sr, dur: Math.min(seconds, 1.5), seed: light.sourceId });
+      let crackle = this.fireCrackle({ sr, dur: Math.min(seconds, 1.5), seed: light.sourceId });
+      if (light.acoustic && light.acoustic.muffle > 1.4) {
+        crackle = lowpass(crackle, 900 / Math.min(light.acoustic.muffle, 4), sr);
+      }
       mixer.add(crackle, { gain: 0.5 * sp.gain * light.intensity * acG, pan: sp.pan, at: 0 });
       voices++;
     }

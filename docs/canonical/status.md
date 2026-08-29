@@ -166,3 +166,35 @@ luzes), árvores como point-sprites (malha própria em rodada futura).
 - Renderer: 8º programa (`horizon`), pass único film+horizonte com blend.
 - Testes: 226/226 (7 novos: mar-segue, filme, brilho, marcador-causal,
   sem-dupla, orçamento, determinismo com escala).
+
+
+## R4 + R5 — RE-REPRESENTAÇÃO + GRAMÁTICA (esta rodada)
+
+**R4 (D-O15 fecha como re-representação):**
+- MUFFLE é FILTRO REAL: as duas vias de áudio (stream + renderFrameAudio)
+  aplicam lowpass guiado pelo `muffle` da acústica — o fogo atrás da serra
+  crepita ABFAFADO (testado por taxa de cruzamentos de zero), não só baixo.
+- Cinzas VISÍVEIS: `combustion.burntNear` materializa a cicatriz de queimado
+  (campo real, fresco primeiro) e o alpha DESVANECE com a idade (3.000 ticks
+  — um tempo real, não um decal permanente).
+- Chuva sob pressão D-O15 = RE-REPRESENTAÇÃO: menos gotas, cada uma maior e
+  mais rápida (compensação 1/√densidade) — a intensidade PERCEBIDA sobrevive;
+  o contador de partículas nunca foi a realidade.
+- Pass único de escala: filme d'água + cinzas + horizonte (1 draw).
+
+**R5 (Singularity AI cria com gramática e contexto):**
+- `singularity/grammar.js` — gramática de criação determinística:
+  multi-comando ("crie X e depois Y e 15 npcs e clima Z"), relações
+  estruturadas (perto do rio / perto de "X" / ao norte de "Y"), contagens,
+  nomes que terminam em stop-words, CADA comando cita o fragmento que o
+  gerou (`source`) e o que não foi entendido volta honesto (`unknown`).
+- Anexos VALIDADOS: csv com cabeçalho x,z,name,pop → assentamentos nas
+  posições EXATAS (dados, auditáveis); texto "nomes" → uma vila por nome;
+  imagem → registrada como NÃO VISTA (providers offline são vision:false —
+  nenhuma percepção fingida). Validação estrita (tipos + 64KB).
+- `world.plant_forest`: ferramenta nova que planta ÁRVORES REAIS (população
+  da ecologia R1) — verificação = crescimento da população.
+- `ues.create_settlement` evolui: `pos` (dados), `nearName`/`dir`/`of`
+  (relações de âncora: Porto Sul fica ao sul de Ancora de verdade).
+- Demo: painel de IA aceita anexo (csv/nomes) e mostra "N comandos (gramática)".
+- Testes: 237/237.

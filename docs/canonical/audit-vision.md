@@ -53,7 +53,9 @@
   energia acumulada, deformação, materiais, fluidos.
 - **D-O15 em áudio/partículas**: corta CONTAGEM (voices, densidade) em vez
   de RE-REPRESENTAR — **trovão longe → rumble grave RESOLVIDO no R2**;
-  **fogo longe → brilho no horizonte RESOLVIDO no R3**; falta partículas.
+  **fogo longe → brilho no horizonte RESOLVIDO no R3**; **partículas
+  re-representadas (chuva pressão = menos+maior+mais rápida) RESOLVIDO no
+  R4**; muffle do crepitar = filtro real (R4). Restam: partículas de fogo.
 - **Streaming**: cache LRU persistido existe mas é opcional; sem workers.
 
 ## C) Onde caiu em mentalidade de engine tradicional (confissão honesta)
@@ -194,3 +196,13 @@ falta — sem inflar nada.
 - "Água da hidrologia renderizada onde importa": CUMPRIDO —
   `waterFilm` materializa as células com lâmina > 4mm perto da câmera.
 - "Mar infinito": o quad agora SEGUE a câmera com ondas fixas no mundo.
+
+
+## G) R4+R5 (fechados nesta rodada)
+
+- "D-O15 nunca corta quando pode re-representar": trovão (R2), fogo (R3),
+  chuva sob pressão (R4) — os três casos canônicos fechados.
+- "Linguagem natural + anexos + contexto → interpretar": a interface de
+  criação agora tem gramática própria (componível, determinística, com
+  fontes citadas) e anexos validados (csv→dados, nomes→entidades, imagem
+  honestamente não vista). Zero percepção fingida.

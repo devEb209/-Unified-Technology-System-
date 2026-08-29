@@ -12,6 +12,7 @@
 import { ModelRegistry } from './models.js';
 import { AgentRegistry, builtinAgents } from './agents.js';
 import { ToolRegistry, builtinTools, ToolValidationError } from './tools.js';
+import { parseCreation } from './grammar.js';
 import { MemorySystem } from './memory.js';
 import { registerPlatformTools } from './platform-tools.js';
 
@@ -113,8 +114,64 @@ export class SingularityCore {
 
   // -------------------------------------------------------------------- plan
 
-  /** deterministic decomposition — the Tese dos D applied to objectives */
+  /** deterministic decomposition — the Tese dos D applied to objectives.
+   *  R5: the CREATION GRAMMAR may yield a LIST of commands; each becomes a
+   *  task in causal order (anchors before neighbors, world before camera). */
   planFromInterpretation(interpretation) {
+    if (Array.isArray(interpretation.commands) && interpretation.commands.length > 0) {
+      const tasks = [];
+      let settlementIdx = 0;
+      let ecologyBefore = null;
+      for (const cmd of interpretation.commands) {
+        switch (cmd.intent) {
+          case 'create_settlement': {
+            settlementIdx++;
+            tasks.push({
+              tool: 'ues.create_settlement',
+              params: {
+                name: cmd.params.name ?? `Nova Aurora ${settlementIdx}`,
+                pop: Math.max(1, Math.min(300, Number(cmd.params.pop ?? 24))),
+                nearRiver: !!cmd.params.nearRiver,
+                ...(cmd.params.pos ? { pos: cmd.params.pos } : {}),
+                ...(cmd.params.nearName ? { nearName: cmd.params.nearName } : {}),
+                ...(cmd.params.dir ? { dir: cmd.params.dir } : {}),
+                ...(cmd.params.of ? { of: cmd.params.of } : {}),
+              },
+              capability: 'world',
+              reason: `grammar command from: "${cmd.source}"`,
+            });
+            break;
+          }
+          case 'plant_forest': {
+            if (ecologyBefore == null) ecologyBefore = this.world.ecology.aliveCount();
+            tasks.push({
+              tool: 'world.plant_forest',
+              params: { count: Math.max(1, Math.min(200, Number(cmd.params.count ?? 40))) },
+              capability: 'world',
+              reason: `grammar command from: "${cmd.source}"`,
+            });
+            break;
+          }
+          case 'set_weather':
+            tasks.push({ tool: 'world.set_weather', params: { weather: cmd.params.weather }, capability: 'world', reason: `grammar command from: "${cmd.source}"` });
+            break;
+          case 'spawn_population':
+            tasks.push({ tool: 'ues.spawn_npcs', params: { count: Math.max(1, Math.min(200, Number(cmd.params.count ?? 10))), ...(cmd.params.settlementName ? { settlementName: cmd.params.settlementName } : {}) }, capability: 'world', reason: `grammar command from: "${cmd.source}"` });
+            break;
+          case 'start_fire':
+            tasks.push({ tool: 'world.start_fire', params: cmd.params ?? {}, capability: 'world', reason: `grammar command from: "${cmd.source}"` });
+            break;
+          case 'focus_camera':
+            tasks.push({ tool: 'ues.focus_camera', params: cmd.params ?? {}, capability: 'world', reason: `grammar command from: "${cmd.source}"` });
+            break;
+          default:
+            break; // unknown commands NEVER become tasks (no unsafe state)
+        }
+      }
+      const plan = { intent: interpretation.commands[0].intent, tasks, grammar: true, commands: interpretation.commands.length };
+      if (ecologyBefore != null) plan.ecologyBefore = ecologyBefore;
+      return plan;
+    }
     const tasks = [];
     switch (interpretation.intent) {
       case 'create_settlement': {
@@ -195,22 +252,60 @@ export class SingularityCore {
       if (task.tool === 'world.start_fire') {
         add('fire.exists', this.rrw.count('hazard') > 0, this.rrw.count('hazard'));
       }
+      if (task.tool === 'world.plant_forest') {
+        // REAL verification: the population GREW (trees exist as individuals)
+        const baseline = plan.ecologyBefore ?? 0;
+        add('forest.grew', this.world.ecology.aliveCount() > baseline,
+          `${baseline} -> ${this.world.ecology.aliveCount()}`);
+      }
     });
     return checks;
   }
 
   // -------------------------------------------------------------- main flow
 
-  async processObjective(objective, { preferredProvider = null } = {}) {
+  /** R5: attachments are VALIDATED context — kinds text/csv/image, size-capped.
+   *  Images are honestly recorded as NOT seen (offline providers are vision:false). */
+  validateAttachments(attachments = []) {
+    const out = [];
+    for (const att of attachments) {
+      const kind = att.kind ?? 'text';
+      if (!['text', 'csv', 'image'].includes(kind)) throw new Error(`attachment kind '${kind}' not supported`);
+      const name = String(att.name ?? 'anexo').slice(0, 80);
+      const content = att.content != null ? String(att.content) : '';
+      if (content.length > 65536) throw new Error(`attachment '${name}' exceeds 64KB`);
+      out.push({ name, kind, content, seen: kind !== 'image' });
+    }
+    return out;
+  }
+
+  async processObjective(objective, { preferredProvider = null, attachments = [] } = {}) {
     const memory = this.memory;
-    memory.addMessage('user', objective);
+    const validated = this.validateAttachments(attachments);
+    const attNote = validated.length
+      ? ` [anexos: ${validated.map(a => `${a.name}(${a.kind}${a.seen ? '' : ', não visto'})`).join(', ')}]`
+      : '';
+    memory.addMessage('user', objective + attNote);
     const startedProviders = this.providers.names();
 
     // 1) model + provider (capability/cost driven, with availability checks)
     const chosen = await this.chooseModel(objective, { preferredProvider });
 
-    // 2) interpretation (with correction loop + heuristic fallback)
-    const interpretation = await this.interpretObjective(objective, chosen);
+    // 2) interpretation (correction loop + heuristic fallback), then the
+    //    CREATION GRAMMAR augments/overrides when it captures MORE of the
+    //    objective (multi-command) or the provider guessed 'unknown'.
+    let interpretation = await this.interpretObjective(objective, chosen);
+    const parsed = parseCreation(objective, { attachments: validated });
+    if (parsed.commands.length > 0 && (interpretation.intent === 'unknown' || parsed.commands.length > 1)) {
+      interpretation = {
+        intent: parsed.commands[0].intent,
+        params: parsed.commands[0].params,
+        commands: parsed.commands,
+        unknown: parsed.unknown,
+        grammar: true,
+        provider: interpretation.provider,
+      };
+    }
 
     // 3) decomposition (planning through the agent specialized in architecture)
     const architect = this.agents.select(['architecture']);
@@ -261,6 +356,7 @@ export class SingularityCore {
       verifications,
       corrections,
       toolErrors: executed.filter(e => e.error).length,
+      attachments: validated.map(a => ({ name: a.name, kind: a.kind, seen: a.seen })),
     };
 
     // 6) memory — decisions and project state persist (never secrets: only names)

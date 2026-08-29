@@ -142,7 +142,7 @@ const chain = uts.rrw.causalityChain(algumEventoId); // causalidade audível
 
 Veja [`docs/canonical/status.md`](docs/canonical/status.md) e
 [`docs/canonical/progress.md`](docs/canonical/progress.md) — nada é
-declarado funcional sem teste que prove. **GÊNESIS: 77%** (régua de
+declarado funcional sem teste que prove. **GÊNESIS: 79%** (régua de
 fidelidade ADR-019). Funcional hoje: RRW causal, Tese dos D operacional,
 D-O15 adaptativo, percepção indexada (158× @10k NPCs), NMN,
 sociedade/economia, Frames, WebGL2 (7 programas), persistência
@@ -151,11 +151,14 @@ os **fenômenos reais R1**: atmosfera (o céu é espalhamento do AR),
 hidrologia (água é substância com lâmina/solo), combustão (fogo é
 combustível+vento+umidade), ecologia (vegetação é população viva), e os
 **R2**: acústica (som tem atraso d/343, sombra de terreno; trovão longe é
-rumble grave), energia/deformação com materiais, comida = clima, e **R3:
-escala** (o mar segue a câmera com ondas fixas no mundo, poças da chuva
-aparecem, fogo distante brilha no horizonte, vila distante é um marcador
-causal com população — nunca uma textura).
-Próximo (R4): re-representação de partículas; (R5) gramática de criação.
+rumble grave), energia/deformação com materiais, comida = clima; **R3:
+escala** (o mar segue a câmera, poças aparecem, fogo distante brilha, vila
+distante é marcador causal); **R4: re-representação** (fogo abafado atrás
+da serra é um filtro real, cinzas desvanecem com a idade, chuva sob
+pressão fica menos+maior+mais rápida); **R5: criação** (gramática própria
+multi-comando com relações "perto de/ao norte de", anexos csv/nomes
+viram realidade, florestas plantadas são árvores individuais).
+Próximo (R6): workers, LLM real, onboarding.
 
 ## Especificação
 

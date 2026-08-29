@@ -17,6 +17,7 @@
 
 import { RNG } from '../core/rng.js';
 import { spatialize, renderBinaural } from './spatial.js';
+import { lowpass } from './synth.js';
 
 const AMBIENCE_GAIN = { full: 0.32, reduced: 0.4, coarse: 0.5 };
 // how long the ambience envelope takes to follow a change (seconds)
@@ -124,12 +125,18 @@ export class AudioStream {
       // acoustic horizon it fades to silence honestly.
       const deep = ac ? (ac.dist > 120 || ac.occlusion > 0.4) : false;
       if (ac && !ac.audible && !deep) { this._lastShot.set(lockKey, from); continue; }
-      const samples = shot.name === 'thunder'
+      let samples = shot.name === 'thunder'
         ? this.synth?.thunder({ sr: this.sr, deep })
         : shot.name === 'impact'
           ? this.synth?.impact({ sr: this.sr, power: shot.power ?? 1 })
           : null;
       if (!samples) continue;
+      // the arrival truth includes SPECTRAL loss: high frequencies die on the
+      // way (air + occlusion). Muffle is applied as a real filter, not a guess.
+      if (ac && ac.muffle > 1.4) {
+        const base = shot.name === 'thunder' ? (deep ? 110 : 220) : 500;
+        samples = lowpass(samples, base / Math.min(ac.muffle, 4), this.sr);
+      }
       const at = from + 0.02 + (ac?.delay ?? 0); // THE SPEED OF SOUND IS FINITE
       const arrivalGain = ac ? Math.min(1, Math.max(deep ? 0.05 : 0.0, ac.gain)) : 1;
       const base = shot.name === 'thunder' ? 0.9 : 0.75;
@@ -148,8 +155,11 @@ export class AudioStream {
       if (!probe.audible || alive) continue;
       const loop = (this._crackleLoop.get(light.sourceId) ?? 0) + 1;
       this._crackleLoop.set(light.sourceId, loop);
-      const samples = this.synth?.fireCrackle({ sr: this.sr, dur: FIRE_CRACKLE_DUR, seed: `${light.sourceId}:${loop}` });
+      let samples = this.synth?.fireCrackle({ sr: this.sr, dur: FIRE_CRACKLE_DUR, seed: `${light.sourceId}:${loop}` });
       if (!samples) continue;
+      if (light.acoustic && light.acoustic.muffle > 1.4) {
+        samples = lowpass(samples, 900 / Math.min(light.acoustic.muffle, 4), this.sr);
+      }
       const bin = renderBinaural(samples, { emitterPos: light.pos, listener, sr: this.sr, refDist: 8 });
       if (!bin.audible) continue;
       const acG = light.acoustic ? Math.max(0, Math.min(1, light.acoustic.gain)) : 1;
