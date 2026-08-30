@@ -340,6 +340,32 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R31 — O REDESIGN TOTAL (a casca nova; o módulo vivo intacto)
+
+**O que mudou:** o usuário validou a pilha de shaders no aparelho
+(logs + criação OK) e mandou refazer 100% do frontend — "todas as abas,
+botões, submenus, menus, tudoooo". A casca (`demos/web/index.html`) foi
+reescrita por inteiro: 5 abas (MUNDO/CRIAR/ESTILO/JOGOS/SISTEMA),
+paleta preto + verde neon + azul elétrico, 30 ícones SVG próprios
+(`icons.js`, zero emoji — a régua varre codepoints ≥ U+2190), chuva
+matrix em canvas (glifos verdes, 12% raios azuis), scanlines + vigneta,
+tipografia Space Grotesk + JetBrains Mono, telemetria completa, terminal
+com cursor, sugestões clicáveis, tour e espelho ws-live — tudo
+responsivo com `prefers-reduced-motion`.
+
+**A lei do redesign (a que importa):** nada que a IA cria pode ser
+invisível. Mundos por objetivo, jogos .zip e apps instalados agora
+ENTRAM numa galeria de cards viva (`#criacoes`, `localStorage
+uts.criacoes.v1`, máx 40) via o gancho `window.__addCriacao` — 3 pontos
+de injeção no módulo vivo (mundo criado, jogo zipado, app instalado),
+zero linha da lógica real tocada. O contrato dos 72 IDs do módulo foi
+verificado por diff automático: TODOS presentes na casca nova.
+
+**A auditoria r13 pegou um bug real do redesign:** `goal-attach` era um
+TEXTAREA de anexo e a casca nova o tinha virado botão — o `.value` do
+módulo leria vazio. Restaurado como textarea estilizado. Auditado:
+391/391 (1 skip intencional — banco HRTF medido aguardando o dono).
+
 ## R30 — O AÉREO CEGO (aerial() sem declaração; 99.92 → 99.96)
 
 **O terceiro erro do banner, a classe mais grave:** o driver denunciou

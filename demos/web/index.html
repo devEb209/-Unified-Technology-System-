@@ -2,186 +2,536 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>UTS — Unified Technology System :: UES / RRW / D-O15 / WebGL2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>UTS GENESIS — a plataforma onde realidade é representada</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%2300ff9c' stroke-width='1.8' d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z'/%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%2300ff9c'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet" />
 <script src="https://js.puter.com/v2/"></script>
 <style>
-  /* BANNER DE BOOT: se QUALQUER coisa morrer na inicialização, o erro
-     aparece NA TELA — a página nunca fica muda diante de um defeito. */
-  #boot-erro { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99;
-    background: #5a1020; color: #ffd9df; font: 12px/1.5 ui-monospace, monospace;
-    padding: 8px 12px; border-bottom: 1px solid #ff8f8f; white-space: pre-wrap; }
-  :root { color-scheme: dark; }
+  :root {
+    --bg: #020604;
+    --painel: rgba(3, 13, 9, 0.72);
+    --painel-borda: rgba(0, 255, 156, 0.20);
+    --verde: #00ff9c;
+    --verde-2: #7dffc8;
+    --azul: #00c2ff;
+    --azul-2: #4da3ff;
+    --tinta: #dcfff0;
+    --fraca: #6fa893;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; background: #05070d; color: #cfe3ff;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-x: hidden; }
-  #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  /* A PILHA: todos os painéis em FLUXO numa única coluna — sobreposição
-     é impossível por construção (desktop: coluna sobre o mundo; celular:
-     mundo em card no topo + coluna embaixo). */
-  #pilha { position: relative; z-index: 5; width: min(480px, calc(100vw - 16px));
-    margin: 0; padding: 10px 8px 72px; display: flex; flex-direction: column; gap: 10px; }
-  .panel { position: relative; backdrop-filter: blur(6px); background: rgba(8, 14, 28, 0.72);
-    border: 1px solid rgba(90, 140, 255, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; }
-  #hud { min-width: 290px; line-height: 1.55; }
-  #hud b { color: #8fd0ff; font-weight: 600; }
-  #singularity { width: auto; }
-  #controls { text-align: left; }
-  button, input[type=text] {
-    font: inherit; background: #0d1730; color: #cfe3ff; border: 1px solid #2b4a8a;
-    border-radius: 6px; padding: 5px 9px; cursor: pointer;
-  }
-  button:hover { background: #16244d; }
-  #objective { width: 300px; }
-  /* TELA PEQUENA (celular): painéis não vazam da tela */
-  /* TELA PEQUENA (celular): NADA de painéis fixed colidindo — a página
-     vira PILHA rolável: o mundo em card no topo, painéis embaixo em
-     fluxo. O desktop continua com o overlay de sempre. */
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--tinta);
+    font-family: var(--sans); overflow-x: hidden; }
+  ::selection { background: rgba(0, 255, 156, 0.30); }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background: rgba(0, 255, 156, 0.25); border-radius: 9px; }
+  ::-webkit-scrollbar-track { background: #030a07; }
+
+  /* ---- CAMADAS: mundo 3D (0) · matrix (1) · scanlines (2) · UI (5+) ---- */
+  #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+  #matrix { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.13; }
+  .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px); }
+  .vigneta { position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(0, 0, 0, 0.55) 100%); }
+
+  /* ---- TOPBAR ---- */
+  #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    display: flex; align-items: center; gap: 12px; padding: 9px 14px;
+    background: rgba(2, 8, 6, 0.82); backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0, 255, 156, 0.14); }
+  #topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--verde) 20%, var(--azul) 80%, transparent); opacity: 0.7; }
+  .marca { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .marca .logotipo { width: 26px; height: 26px; color: var(--verde);
+    filter: drop-shadow(0 0 6px rgba(0, 255, 156, 0.8)); }
+  .marca b { font: 700 15px/1 var(--sans); letter-spacing: 0.14em; white-space: nowrap;
+    background: linear-gradient(90deg, var(--verde), var(--azul));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .marca small { display: block; font: 400 9px/1.2 var(--mono); color: var(--fraca); letter-spacing: 0.22em; }
+  .chips { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .chip { display: flex; align-items: center; gap: 6px; font: 600 10px/1 var(--mono);
+    color: var(--verde-2); border: 1px solid rgba(0, 255, 156, 0.25); border-radius: 999px;
+    padding: 5px 10px; background: rgba(0, 255, 156, 0.05); white-space: nowrap; }
+  .chip .led { width: 6px; height: 6px; border-radius: 50%; background: var(--verde);
+    box-shadow: 0 0 8px var(--verde); animation: pulso 2.2s infinite; }
+  .chip.azul { color: var(--azul-2); border-color: rgba(0, 194, 255, 0.3); background: rgba(0, 194, 255, 0.06); }
+  .chip.azul .led { background: var(--azul); box-shadow: 0 0 8px var(--azul); }
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* ---- TABS ---- */
+  #tabs { position: fixed; top: 52px; left: 0; right: 0; z-index: 19; display: flex; gap: 6px;
+    padding: 8px 14px; overflow-x: auto; scrollbar-width: none;
+    background: linear-gradient(180deg, rgba(2, 8, 6, 0.85), rgba(2, 8, 6, 0)); }
+  #tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: none; display: flex; align-items: center; gap: 7px; cursor: pointer;
+    font: 600 11px/1 var(--mono); letter-spacing: 0.12em; color: var(--fraca);
+    background: rgba(3, 13, 9, 0.6); border: 1px solid rgba(0, 255, 156, 0.14);
+    border-radius: 10px; padding: 9px 14px; transition: all 0.22s ease; }
+  .tab .ic { width: 14px; height: 14px; }
+  .tab:hover { color: var(--verde-2); border-color: rgba(0, 255, 156, 0.45); }
+  .tab.on { color: #03140c; background: linear-gradient(90deg, var(--verde), var(--azul));
+    border-color: transparent; box-shadow: 0 0 22px rgba(0, 255, 156, 0.35); font-weight: 800; }
+
+  /* ---- PILHA DE PAINÉIS ---- */
+  #pilha { position: relative; z-index: 5; max-width: 860px; margin: 0;
+    padding: 118px 14px 90px; display: block; }
+  .vista { display: none; flex-direction: column; gap: 14px; }
+  .vista.on { display: flex; animation: sobe 0.38s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @keyframes sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  .card { position: relative; background: var(--painel); backdrop-filter: blur(14px);
+    border: 1px solid var(--painel-borda); border-radius: 14px; padding: 14px 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(0, 255, 156, 0.06); }
+  .card::before, .card::after { content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none; }
+  .card::before { top: -1px; left: -1px; border-top: 2px solid var(--verde); border-left: 2px solid var(--verde);
+    border-top-left-radius: 14px; opacity: 0.85; }
+  .card::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--azul); border-right: 2px solid var(--azul);
+    border-bottom-right-radius: 14px; opacity: 0.85; }
+  .card h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
+    font: 700 12px/1 var(--mono); letter-spacing: 0.2em; color: var(--verde);
+    text-shadow: 0 0 12px rgba(0, 255, 156, 0.45); }
+  .card h2 .ic { width: 15px; height: 15px; }
+  .card h2 small { margin-left: auto; font: 500 9px/1 var(--mono); color: var(--fraca); letter-spacing: 0.18em; }
+
+  /* ---- BOTÕES ---- */
+  .btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+    font: 600 11px/1 var(--mono); letter-spacing: 0.06em; color: #baffde;
+    background: rgba(0, 255, 156, 0.05); border: 1px solid rgba(0, 255, 156, 0.35);
+    border-radius: 9px; padding: 9px 13px; transition: all 0.18s ease; }
+  .btn .ic { width: 14px; height: 14px; color: var(--verde); }
+  .btn:hover { background: rgba(0, 255, 156, 0.13); box-shadow: 0 0 18px rgba(0, 255, 156, 0.25);
+    transform: translateY(-1px); }
+  .btn:active { transform: translateY(1px); }
+  .btn.azul { color: #c9ecff; border-color: rgba(0, 194, 255, 0.4); background: rgba(0, 194, 255, 0.06); }
+  .btn.azul .ic { color: var(--azul); }
+  .btn.azul:hover { background: rgba(0, 194, 255, 0.14); box-shadow: 0 0 18px rgba(0, 194, 255, 0.25); }
+  .btn.forte { color: #03140c; font-weight: 800; border: none;
+    background: linear-gradient(90deg, var(--verde), var(--azul)); }
+  .btn.forte .ic { color: #03140c; }
+  .btn.forte:hover { box-shadow: 0 0 26px rgba(0, 255, 156, 0.5); }
+  select, input[type="text"] { font: 500 12px/1 var(--mono); color: var(--tinta);
+    background: #04120c; border: 1px solid rgba(0, 255, 156, 0.3); border-radius: 9px; padding: 10px 12px; outline: none; }
+  select:focus, input[type="text"]:focus { border-color: var(--verde); box-shadow: 0 0 14px rgba(0, 255, 156, 0.25); }
+
+  /* ---- MUNDO: presets, clima, telemetria ---- */
+  #gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #gallery button { display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+    cursor: pointer; text-align: left; font: 600 12px/1.3 var(--sans); color: var(--tinta);
+    background: rgba(0, 255, 156, 0.04); border: 1px solid rgba(0, 255, 156, 0.22);
+    border-radius: 12px; padding: 12px; transition: all 0.2s ease; }
+  #gallery button .ic { width: 20px; height: 20px; color: var(--verde);
+    filter: drop-shadow(0 0 6px rgba(0, 255, 156, 0.6)); }
+  #gallery button small { font: 500 9px/1.3 var(--mono); color: var(--fraca); letter-spacing: 0.14em; }
+  #gallery button:hover { border-color: var(--verde); background: rgba(0, 255, 156, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 156, 0.2); transform: translateY(-2px); }
+  .linha { display: flex; flex-wrap: wrap; gap: 8px; }
+  .telemetria { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .stat { background: rgba(0, 255, 156, 0.04); border: 1px solid rgba(0, 255, 156, 0.14);
+    border-radius: 10px; padding: 8px 10px; }
+  .stat small { display: block; font: 500 8.5px/1 var(--mono); letter-spacing: 0.16em;
+    color: var(--fraca); margin-bottom: 5px; text-transform: uppercase; }
+  .stat b { font: 600 13px/1 var(--mono); color: var(--verde-2); }
+  .stat.azul b { color: var(--azul-2); }
+  .barra { height: 9px; background: #051510; border: 1px solid rgba(0, 255, 156, 0.2);
+    border-radius: 6px; overflow: hidden; margin-top: 7px; }
+  .barra > div { height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--verde), var(--azul));
+    box-shadow: 0 0 14px rgba(0, 255, 156, 0.55); transition: width 0.5s ease;
+    background-size: 200% 100%; animation: desliza 3s linear infinite; }
+  @keyframes desliza { from { background-position: 0 0; } to { background-position: 200% 0; } }
+
+  /* ---- CRIAR: terminal + streaming + galeria ---- */
+  .terminal { background: #010805; border: 1px solid rgba(0, 255, 156, 0.18); border-radius: 11px;
+    padding: 12px; box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6); }
+  .terminal .cabecalho { display: flex; gap: 6px; margin-bottom: 9px; }
+  .terminal .cabecalho i { width: 9px; height: 9px; border-radius: 50%; }
+  .terminal .cabecalho i:nth-child(1) { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
+  .terminal .cabecalho i:nth-child(2) { background: var(--azul); box-shadow: 0 0 6px var(--azul); }
+  .terminal .cabecalho i:nth-child(3) { background: #234536; }
+  #log, #ai-out, #goal-log, #agent-out, #style-out, #apps-out {
+    font: 400 11px/1.75 var(--mono); color: #8dffcf; white-space: pre-wrap; word-break: break-word; }
+  #log { max-height: 240px; overflow: auto; }
+  #ai-out { color: var(--azul-2); max-height: 130px; overflow: auto; margin-top: 9px; min-height: 16px; }
+  .cursor::after { content: '\258A'; color: var(--verde); animation: pisca 1s steps(1) infinite; }
+  @keyframes pisca { 50% { opacity: 0; } }
+  .sugestoes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .sugestoes button { cursor: pointer; font: 500 10px/1 var(--mono); color: var(--fraca);
+    background: transparent; border: 1px dashed rgba(0, 255, 156, 0.3); border-radius: 999px;
+    padding: 6px 11px; transition: all 0.18s; }
+  .sugestoes button:hover { color: var(--verde-2); border-style: solid; border-color: var(--verde);
+    box-shadow: 0 0 12px rgba(0, 255, 156, 0.2); }
+  #criacoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; }
+  .cria-card { display: flex; align-items: center; gap: 10px; background: rgba(0, 255, 156, 0.04);
+    border: 1px solid rgba(0, 255, 156, 0.2); border-radius: 11px; padding: 10px;
+    animation: sobe 0.4s ease; }
+  .cria-card .ic { width: 18px; height: 18px; color: var(--verde); flex: none;
+    filter: drop-shadow(0 0 5px rgba(0, 255, 156, 0.6)); }
+  .cria-card b { display: block; font: 600 11px/1.25 var(--sans); color: var(--tinta);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
+  .cria-card small { font: 500 8.5px/1 var(--mono); letter-spacing: 0.16em; color: var(--fraca);
+    text-transform: uppercase; }
+  .cria-card.jogo .ic { color: var(--azul); filter: drop-shadow(0 0 5px rgba(0, 194, 255, 0.6)); }
+  #criacoes .vazio { grid-column: 1 / -1; font: 400 10.5px/1.6 var(--mono); color: var(--fraca);
+    border: 1px dashed rgba(0, 255, 156, 0.2); border-radius: 11px; padding: 14px; text-align: center; }
+
+  /* ---- ESTILO / JOGOS / SISTEMA ---- */
+  .presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+  .grade-form { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+  #apps-out:empty::before, #style-out:empty::before, #agent-out:empty::before { content: '— aguardando ação —'; color: #2e5a48; }
+
+  /* ---- TOUR ---- */
+  #tour { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 40;
+    display: flex; align-items: center; gap: 10px; max-width: min(560px, 94vw);
+    background: rgba(2, 10, 7, 0.92); backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 156, 0.35); border-radius: 12px; padding: 11px 14px;
+    box-shadow: 0 0 30px rgba(0, 255, 156, 0.18); font: 500 11.5px/1.5 var(--sans); color: var(--tinta); }
+  #tour b { color: var(--verde); }
+  #tour button { font: 700 10px/1 var(--mono); cursor: pointer; color: #03140c; border: none;
+    border-radius: 8px; padding: 8px 12px; background: linear-gradient(90deg, var(--verde), var(--azul)); }
+  #tour button#tour-skip { background: transparent; color: var(--fraca); border: 1px solid rgba(0, 255, 156, 0.25); }
+  #tour-step { font: 600 9px/1 var(--mono); color: var(--fraca); letter-spacing: 0.1em; }
+
+  /* ---- ERRO DE BOOT ---- */
+  #boot-erro { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+    background: #4a0d1a; color: #ffd9df; font: 12px/1.5 var(--mono);
+    padding: 9px 13px; border-bottom: 1px solid #ff8f8f; white-space: pre-wrap; }
+
+  .ic { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;
+    stroke-linejoin: round; flex: none; }
+
   @media (max-width: 700px) {
-    #gl { position: relative; inset: auto; width: 100%; height: 46vh; touch-action: none; }
-    #pilha { width: auto; padding: 0 0 24px; }
-    .panel { margin: 0 8px; }
-    #hud { min-width: 0; }
-    #objective { width: auto; max-width: 100%; }
-    #controls button, #controls select { max-width: 100%; }
+    #topbar { padding: 8px 10px; gap: 8px; }
+    .marca small { display: none; }
+    .chip { padding: 4px 8px; font-size: 9px; }
+    #tabs { top: 48px; padding: 7px 10px; }
+    #pilha { padding: 108px 8px 90px; }
+    #gallery { grid-template-columns: 1fr 1fr; }
+    .telemetria { grid-template-columns: repeat(3, 1fr); }
+    .card { padding: 12px; }
   }
-  #log { max-height: 180px; overflow: auto; margin-top: 8px; white-space: pre-wrap; color: #9fb8e8; }
-  .ok { color: #7fe3a0; } .bad { color: #ff8f8f; }
-  h1 { font-size: 13px; margin: 0 0 6px; color: #8fd0ff; letter-spacing: 0.08em; }
-  .bar { height: 6px; background: #101c3a; border-radius: 3px; overflow: hidden; margin: 3px 0 8px; }
-  .bar > i { display: block; height: 100%; background: linear-gradient(90deg,#2b6cff,#8fd0ff); width: 0%; }
-  #tour { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 30;
-          background: rgba(10,15,30,.92); border: 1px solid #2a3a5f; border-radius: 10px;
-          padding: 10px 14px; max-width: 520px; font-size: 12.5px; color: #dfe7ff; display: none; }
-  #tour b { color: #8fd0ff; }
-  #tour .step { color: #7d8db3; font-size: 11px; }
-  #tour button { margin-left: 8px; }
-.ic{width:1em;height:1em;vertical-align:-0.12em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-button{display:inline-flex;align-items:center;gap:5px}
+  @media (prefers-reduced-motion: reduce) {
+    #matrix { display: none; }
+    * { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
 <div id="boot-erro"></div>
 <div id="icon-sprite"></div>
 <canvas id="gl"></canvas>
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+<div class="vigneta"></div>
 
 <script>
-  // A PÁGINA NUNCA FICA MUDA: qualquer erro de boot (exceção, rejeição
-  // não tratada, falha de módulo) aparece AQUI — diagnosticável de longe.
+  // A PÁGINA NUNCA FICA MUDA: qualquer erro de boot aparece NO BANNER.
   (function () {
     const mostra = (msg) => { const b = document.getElementById('boot-erro'); if (!b) return; b.style.display = 'block'; b.textContent = 'ERRO DE BOOT: ' + msg; };
     window.addEventListener('error', (e) => mostra(e.message + ' @ ' + String(e.filename ?? '').split('/').pop() + ':' + e.lineno));
     window.addEventListener('unhandledrejection', (e) => mostra(String(e.reason?.message ?? e.reason)));
   })();
+
+  // ---- TABS: as vistas da plataforma
+  (function () {
+    document.querySelectorAll('.tab').forEach((t) => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
+        document.querySelectorAll('.vista').forEach((v) => v.classList.toggle('on', v.id === 'vista-' + t.dataset.tab));
+      });
+    });
+  })();
+
+  // ---- EFEITO MATRIX: a chuva digital (verde com raios azuis)
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = document.getElementById('matrix');
+    const ctx = cv.getContext('2d');
+    const G = '\u30A2\u30AB\u30B5\u30BF\u30CA\u30CF\u30DE\u30E4\u30E9\u30EF0123456789UTSGENESIS<>/\\|=+*';
+    let colunas = [], larg = 0;
+    const mede = () => {
+      cv.width = innerWidth; cv.height = innerHeight;
+      larg = Math.floor(cv.width / 15);
+      colunas = Array.from({ length: larg }, () => Math.random() * -cv.height);
+    };
+    mede(); addEventListener('resize', mede);
+    const azul = () => Math.random() < 0.12;
+    setInterval(() => {
+      if (document.hidden) return;
+      ctx.fillStyle = 'rgba(2, 6, 4, 0.10)';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.font = '13px JetBrains Mono, monospace';
+      for (let i = 0; i < colunas.length; i++) {
+        const y = colunas[i];
+        const ch = G[(Math.random() * G.length) | 0];
+        ctx.fillStyle = azul() ? '#00c2ff' : '#00ff9c';
+        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 7;
+        ctx.fillText(ch, i * 15, y);
+        ctx.shadowBlur = 0;
+        colunas[i] = y > cv.height + Math.random() * 400 ? 0 : y + 15;
+      }
+    }, 66);
+  })();
+
+  // ---- GALERIA DE CRIAÇÕES: o que a IA cria vira CARD visível (e persiste)
+  (function () {
+    const ICONE = { mundo: 'i-wand', jogo: 'i-gamepad', app: 'i-app' };
+    const RÓTULO = { mundo: 'MUNDO', jogo: 'JOGO', app: 'APP' };
+    const chave = 'uts.criacoes.v1';
+    const le = () => { try { return JSON.parse(localStorage.getItem(chave)) ?? []; } catch { return []; } };
+    const grava = (l) => { try { localStorage.setItem(chave, JSON.stringify(l.slice(0, 40))); } catch {} };
+    window.__addCriacao = function (tipo, nome, ok) {
+      if (!ok) return;
+      const lista = le();
+      lista.unshift({ tipo, nome: String(nome).slice(0, 60), t: Date.now() });
+      grava(lista);
+      render();
+    };
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+    function render() {
+      const el = document.getElementById('criacoes');
+      if (!el) return;
+      const lista = le();
+      el.innerHTML = lista.length
+        ? lista.map((c) => `<div class="cria-card ${esc(c.tipo)}"><svg class="ic" viewBox="0 0 24 24"><use href="#${ICONE[c.tipo] ?? 'i-box'}"/></svg><div><b>${esc(c.nome)}</b><small>${RÓTULO[c.tipo] ?? c.tipo} · criado pela IA</small></div></div>`).join('')
+        : '<div class="vazio">NADA CRIADO AINDA — descreva um objetivo na aba CRIAR (ex.: "criar uma pequena vila próxima a um rio chamada Vila Aurora") e ele NASCE AQUI como card.</div>';
+    }
+    render();
+  })();
+
+  // ---- SUGESTÕES: um clique enche o objetivo
+  (function () {
+    document.querySelectorAll('.sugestoes button').forEach((b) => {
+      b.addEventListener('click', () => {
+        const alvo = document.getElementById('objective');
+        if (alvo) { alvo.value = b.dataset.p ?? b.textContent.trim(); alvo.focus(); }
+      });
+    });
+  })();
 </script>
 
+<header id="topbar">
+  <div class="marca">
+    <svg class="logotipo ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
+    <div><b>UTS · GENESIS</b><small>UNIFIED TECHNOLOGY SYSTEM</small></div>
+  </div>
+  <div class="chips">
+    <span class="chip" id="ws-live"><span class="led"></span>conectando</span>
+    <span class="chip azul"><span class="led"></span>IA: PUTER + LOCAL</span>
+  </div>
+</header>
+
+<nav id="tabs" aria-label="vistas da plataforma">
+  <button class="tab on" data-tab="mundo"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>MUNDO</button>
+  <button class="tab" data-tab="criar"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>CRIAR</button>
+  <button class="tab" data-tab="estilo"><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg>ESTILO</button>
+  <button class="tab" data-tab="jogos"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>JOGOS</button>
+  <button class="tab" data-tab="sistema"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>SISTEMA</button>
+</nav>
+
 <main id="pilha">
-<div class="panel" id="hud">
-  <h1>UTS PLATFORM :: UES ENGINE :: RRW → D → D-O15 → FRAME → WEBGL2</h1>
-  <div>tick <b id="s-tick">0</b> · fps <b id="s-fps">–</b> · draw calls <b id="s-draw">–</b></div>
-  <div>NPCs <b id="s-npc">0</b> (mat <b id="s-mat">0</b> / par <b id="s-par">0</b>) · patches <b id="s-pat">0</b> (malha <b id="s-lodm">0</b> / impostor <b id="s-lodi">0</b>) · agregados <b id="s-agg">0</b></div>
-  <div>clima <b id="s-weather">–</b> · chuva <b id="s-rain">0</b> · molhado <b id="s-wet">0</b> · vento <b id="s-wind">0</b> · poeira <b id="s-dust">0</b></div>
-  <div>percepção <b id="s-perc">full</b> · eventos causais <b id="s-ev">0</b></div>
-  <div style="color:#7d8db3">— FENÔMENOS (estado real) —</div>
-  <div>árvores <b id="s-trees">0</b> · fogo <b id="s-fire">0</b> células · solo úmido <b id="s-soil">0</b> · lâmina d'água <b id="s-film">0</b>m</div>
-  <div>ESCALA: poças <b id="s-puddles">0</b> · horizonte <b id="s-hor">0</b> (fogo longe brilha, vila longe é estado)</div>
-  <div>céu (Rayleigh) topo <b id="s-sky" style="font-family:monospace">–</b> · umidade <b id="s-hum">0</b></div>
-  <div style="margin-top:6px">pressão D-O15 <b id="s-pressure">0.00</b></div>
-  <div class="bar"><i id="s-pressurebar"></i></div>
-  <div style="color:#7d8db3">arraste = orbitar · roda = zoom</div>
-</div>
 
-<div id="tour">
-  <div class="step" id="tour-step">passo 1/5</div>
-  <div id="tour-text"></div>
-  <div style="margin-top:6px;text-align:right">
-    <button id="tour-next">próximo</button>
-    <button id="tour-skip" style="background:transparent;border:1px solid #2a3a5f;color:#7d8db3">pular</button>
-  </div>
-</div>
-
-<div class="panel" id="ai-panel">
-  <div style="color:#8fd0ff;font-weight:600">IA · crie seu mundo</div>
-  <div style="display:flex;gap:6px;margin-top:6px">
-    <input id="goal-input" placeholder="ex.: crie uma vila chamada Vale perto de um rio e 20 npcs" style="flex:1;background:#0a0f1e;border:1px solid #2a3a5f;color:#dfe7ff;padding:4px 8px;border-radius:6px;font:inherit" />
-    <button id="goal-go">criar</button>
-  </div>
-  <textarea id="goal-attach" rows="2" placeholder="anexo opcional — csv: 'x,z,name' por linha · texto 'nomes.txt': lista de nomes" style="width:100%;margin-top:6px;background:#0a0f1e;border:1px solid #2a3a5f;color:#9fb3d9;padding:4px 8px;border-radius:6px;font:inherit;font-size:11px;box-sizing:border-box"></textarea>
-  <pre id="goal-log" style="margin:8px 0 0;max-height:110px;overflow:auto;color:#9fb3d9;font-size:11px;white-space:pre-wrap"></pre>
-</div>
-
-<div class="panel" id="style-panel" style="margin-top:8px">
-  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-palette"/></svg> Estilo (você fala, o mundo obedece — a física é UMA, a lente muda)</b>
-  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
-    <button id="style-realista">Realista</button>
-    <button id="style-anime">Anime</button>
-    <button id="style-noir">Noir</button>
-    <button id="style-pastel">Pastel</button>
-    <button id="style-cyberpunk">Cyberpunk</button>
-    <button id="style-carvao">Carvão</button>
-  </div>
-  <div style="display:flex;gap:4px;margin-top:4px">
-    <input id="style-custom-name" placeholder="seu estilo (ex: sonho)" style="flex:1;min-width:80px" />
-    <input id="style-custom-json" placeholder='params {"sat":1.2,"rim":0.8}' style="flex:1.4;min-width:110px" />
-    <button id="style-apply">aplicar</button>
-  </div>
-  <div id="style-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap"></div>
-</div>
-<div class="panel" id="agent-panel" style="margin-top:8px">
-  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-terminal"/></svg> IA no seu aparelho</b>
-  <div style="display:grid;gap:4px;margin-top:6px">
-    <button id="fs-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-folder"/></svg> criar arquivo no workspace</button>
-    <button id="exec-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg> executar comando (precisa UTS_ALLOW_EXEC)</button>
-    <button id="build-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-box"/></svg> gerar app web (.zip baixa)</button>
-    <div style="display:flex;gap:4px">
-      <select id="create-genre" style="flex:1">
-        <option value="corrida">corrida</option>
-        <option value="plataforma">plataforma</option>
-        <option value="rpg">rpg</option>
-        <option value="torre">torre</option>
-        <option value="sobrevivencia">sobrevivência</option>
-      </select>
-      <button id="create-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gamepad"/></svg><span>criar jogo (zip)</span></button>
-      <button id="install-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg><span>instalar na plataforma</span></button>
+  <!-- ============ MUNDO ============ -->
+  <section class="vista on" id="vista-mundo">
+    <div class="card" id="hud">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>TELEMETRIA DO MUNDO <small>RRW → FRAME → GPU</small></h2>
+      <div class="telemetria">
+        <div class="stat"><small>tick</small><b id="s-tick">0</b></div>
+        <div class="stat"><small>fps</small><b id="s-fps">–</b></div>
+        <div class="stat"><small>draws</small><b id="s-draw">–</b></div>
+        <div class="stat"><small>população</small><b id="s-npc">–</b></div>
+        <div class="stat"><small>parcial</small><b id="s-par">–</b></div>
+        <div class="stat"><small>patches</small><b id="s-pat">–</b></div>
+        <div class="stat"><small>agregados</small><b id="s-agg">–</b></div>
+        <div class="stat"><small>percepção</small><b id="s-perc">–</b></div>
+        <div class="stat"><small>eventos</small><b id="s-ev">–</b></div>
+        <div class="stat"><small>materializa</small><b id="s-mat">–</b></div>
+        <div class="stat"><small>árvores</small><b id="s-trees">–</b></div>
+        <div class="stat"><small>fogo</small><b id="s-fire">–</b></div>
+      </div>
+      <div class="telemetria" style="margin-top:8px">
+        <div class="stat azul"><small>clima</small><b id="s-weather">–</b></div>
+        <div class="stat azul"><small>chuva</small><b id="s-rain">–</b></div>
+        <div class="stat azul"><small>molhado</small><b id="s-wet">–</b></div>
+        <div class="stat azul"><small>vento</small><b id="s-wind">–</b></div>
+        <div class="stat azul"><small>poeira</small><b id="s-dust">–</b></div>
+        <div class="stat azul"><small>umidade</small><b id="s-hum">–</b></div>
+        <div class="stat azul"><small>solo</small><b id="s-soil">–</b></div>
+        <div class="stat azul"><small>lâmina</small><b id="s-film">–</b></div>
+        <div class="stat azul"><small>poças</small><b id="s-puddles">–</b></div>
+        <div class="stat azul"><small>horizonte</small><b id="s-hor">–</b></div>
+        <div class="stat azul"><small>lod malha</small><b id="s-lodm">–</b></div>
+        <div class="stat azul"><small>lod imp.</small><b id="s-lodi">–</b></div>
+      </div>
+      <div style="margin-top:10px" class="linha">
+        <span class="chip azul" style="border-radius:8px">céu <b id="s-sky" style="margin-left:4px">–</b></span>
+      </div>
     </div>
-    <div style="font-size:10px;opacity:.7;display:flex;align-items:center;gap:4px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-link"/></svg><span id="ws-live">transporte: conectando…</span></div>
-  </div>
-  <div style="display:flex;gap:4px;align-items:center;margin-top:4px">
-      <button id="apps-demo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-app"/></svg><span>apps instalados</span></button>
-      <span id="apps-out" style="font-size:10px;opacity:.8"></span>
-    </div>
-    <div id="agent-out" style="font-size:11px;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:auto"></div>
-</div>
-<div class="panel" id="gallery" style="margin-top:8px">
-  <b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-earth"/></svg> Galeria de mundos</b>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">
-    <button data-world="vale"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dawn"/></svg> Vale do Alvorecer</button>
-    <button data-world="arquipelago"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-island"/></svg> Arquipélago</button>
-    <button data-world="incendio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fire"/></svg> Vale em Chamas</button>
-    <button data-world="cidade"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-temple"/></svg> Cidade Viva</button>
-  </div>
-</div>
-<div class="panel" id="controls">
-  <button id="w-audio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-speaker"/></svg><span>áudio</span></button>
-  <button id="w-clear">limpar</button>
-  <button id="w-rain">chuva</button>
-  <button id="w-storm">tempestade</button>
-  <button id="w-dust">poeira</button>
-  <button id="w-night"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg><span>noite</span></button>
-  <button id="fire">raio/fogo</button>
-  <button id="save">save</button>
-  <button id="load">load</button>
-</div>
 
-<div class="panel" id="singularity">
-  <h1>SINGULARITY AI</h1>
-  <form id="objform">
-    <input id="objective" type="text" placeholder='objetivo: "criar uma pequena vila próxima a um rio chamada Vila Aurora"' />
-    <button>executar</button>
-  </form>
-  <div id="log">o núcleo interpreta objetivos, planeja, seleciona agentes/modelos, executa ferramentas validadas e verifica o resultado.</div>
-</div>
+    <div class="card">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>GÊNESIS: ESCOLHA O MUNDO</h2>
+      <div id="gallery">
+        <button data-world="vale"><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>Vale do Alvorecer<small>VALE · DIA · RIO</small></button>
+        <button data-world="arquipelago"><svg class="ic" viewBox="0 0 24 24"><use href="#i-island"/></svg>Arquipélago<small>MAR · ILHAS · ONDAS</small></button>
+        <button data-world="incendio"><svg class="ic" viewBox="0 0 24 24"><use href="#i-fire"/></svg>Vale em Chamas<small>FOGO REAL · COMBUSTÍVEL</small></button>
+        <button data-world="cidade"><svg class="ic" viewBox="0 0 24 24"><use href="#i-temple"/></svg>Cidade Viva<small>VILA · NPCS · SOCIEDADE</small></button>
+      </div>
+    </div>
+
+    <div class="card" id="controls">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>CLIMA E CAUSALIDADE <small>CHUVA → MOLHADO → EROSÃO</small></h2>
+      <div class="linha">
+        <button id="w-audio" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg><span>áudio</span></button>
+        <button id="w-clear" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cross"/></svg>limpar</button>
+        <button id="w-rain" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-drop"/></svg>chuva</button>
+        <button id="w-storm" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wave"/></svg>tempestade</button>
+        <button id="w-dust" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>poeira</button>
+        <button id="w-night" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-moon"/></svg><span>noite</span></button>
+        <button id="fire" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-fire"/></svg>raio/fogo</button>
+        <button id="save" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>save</button>
+        <button id="load" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>load</button>
+      </div>
+      <div style="margin-top:12px">
+        <h2 style="margin:0 0 4px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-scales"/></svg>PRESSÃO D-O15 <small>DEFER, NUNCA DESCARTAR</small></h2>
+        <b id="s-pressure" style="font:600 12px/1 var(--mono); color:var(--verde-2)">0.00</b>
+        <div class="barra"><div id="s-pressurebar"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CRIAR ============ -->
+  <section class="vista" id="vista-criar">
+    <div class="card" id="singularity">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>SINGULARITY AI <small>DESCRIÇÃO → REALIDADE VERIFICADA</small></h2>
+      <form id="objform" class="grade-form">
+        <input id="objective" type="text" style="flex:1; min-width:200px" placeholder='descreva a criação: "criar uma pequena vila próxima a um rio chamada Vila Aurora"' />
+        <button class="btn forte" type="submit"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>EXECUTAR</button>
+      </form>
+      <div class="sugestoes">
+        <button data-p="criar uma pequena vila próxima a um rio chamada Vila Aurora">vila à beira do rio</button>
+        <button data-p="criar uma floresta densa ao norte do vale">floresta densa</button>
+        <button data-p="criar um acampamento de caçadores com 8 npcs">acampamento de caçadores</button>
+        <button data-p="criar uma cidade com 30 habitantes perto da montanha">cidade na montanha</button>
+      </div>
+      <div class="terminal" style="margin-top:12px">
+        <div class="cabecalho"><i></i><i></i><i></i></div>
+        <div id="ai-out"></div>
+        <div id="log" class="cursor">o núcleo interpreta objetivos, planeja, seleciona agentes/modelos, executa ferramentas validadas e verifica o resultado.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>SUAS CRIAÇÕES <small>TUDO QUE A IA JÁ FEZ</small></h2>
+      <div id="criacoes"></div>
+    </div>
+  </section>
+
+  <!-- ============ ESTILO ============ -->
+  <section class="vista" id="vista-estilo">
+    <div class="card">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg>O COLORISTA <small>O OLHAR DO MUNDO PELO CHAT</small></h2>
+      <div class="presets">
+        <button id="style-realista" class="btn">realista</button>
+        <button id="style-anime" class="btn">anime</button>
+        <button id="style-noir" class="btn">noir</button>
+        <button id="style-pastel" class="btn">pastel</button>
+        <button id="style-cyberpunk" class="btn">cyberpunk</button>
+        <button id="style-carvao" class="btn">carvão</button>
+      </div>
+      <div class="grade-form" style="margin-top:12px">
+        <input id="style-custom-name" type="text" placeholder="nome do estilo (ex.: sonho)" style="flex:1; min-width:150px" />
+        <input id="style-custom-json" type="text" placeholder='parâmetros JSON (ex.: {"bands":5,"sat":1.3})' style="flex:2; min-width:200px" />
+        <button id="style-apply" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-brush"/></svg>APLICAR</button>
+      </div>
+      <div class="terminal" style="margin-top:12px">
+        <div class="cabecalho"><i></i><i></i><i></i></div>
+        <div id="style-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOGOS ============ -->
+  <section class="vista" id="vista-jogos">
+    <div class="card" id="ai-panel">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>FÁBRICA DE JOGOS <small>GÊNERO → ZIP JOGÁVEL EM SEGUNDOS</small></h2>
+      <div class="grade-form">
+        <select id="create-genre">
+          <option value="corrida">corrida</option>
+          <option value="plataforma">plataforma</option>
+          <option value="rpg">rpg</option>
+          <option value="torre">torre (defesa)</option>
+        </select>
+        <button id="create-demo" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>CRIAR JOGO (ZIP)</button>
+        <button id="install-demo" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg>INSTALAR NA PLATAFORMA</button>
+        <button id="build-demo" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>GERAR APP WEB (.ZIP)</button>
+      </div>
+      <div class="terminal" style="margin-top:12px">
+        <div class="cabecalho"><i></i><i></i><i></i></div>
+        <div id="agent-out"></div>
+      </div>
+      <div style="margin-top:12px">
+        <h2 style="margin:0 0 8px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-app"/></svg>APPS INSTALADOS</h2>
+        <div id="apps-out"></div>
+        <button id="apps-demo" class="btn"  style="margin-top:9px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>LISTAR APPS</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SISTEMA ============ -->
+  <section class="vista" id="vista-sistema">
+    <div class="card" id="agent-panel">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>A IA OPERA A SUA MÁQUINA <small>ARQUIVOS · COMANDOS · OBJETIVOS</small></h2>
+      <div class="linha">
+        <button id="fs-demo" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>arquivo</button>
+        <button id="exec-demo" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>comando</button>
+      </div>
+      <div class="terminal" style="margin-top:12px">
+        <div class="cabecalho"><i></i><i></i><i></i></div>
+        <div id="agent-out2"></div>
+      </div>
+      <div class="grade-form" style="margin-top:12px">
+        <input id="goal-input" type="text" style="flex:1; min-width:180px" placeholder='objetivo para a IA da sua máquina' />
+        <button id="goal-go" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>IR</button>
+      </div>
+      <textarea id="goal-attach" rows="2" placeholder="anexo opcional — csv: 'x,z,name' por linha · texto 'nomes.txt': lista de nomes" style="width:100%;margin-top:8px;box-sizing:border-box"></textarea>
+      <div class="terminal" style="margin-top:10px">
+        <div class="cabecalho"><i></i><i></i><i></i></div>
+        <div id="goal-log"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>A PLATAFORMA SE VÊ <small>HONESTIDADE ACIMA DE TUDO</small></h2>
+      <div style="font:400 11px/1.8 var(--mono); color:var(--fraca)">
+        transporte: <span style="color:var(--verde-2)" id="ws-live-2">conectando…</span><br />
+        núcleo: RRW (fonte da verdade) → Tese dos D → D-O15 → UES → Frame → WebGL2<br />
+        IA: Puter (User Pays, sem chave) + interpretador local + LLM via env<br />
+        lançamento: GENESIS v1 — artefatos assinados ed25519 (web · android · EXE SEA)
+      </div>
+    </div>
+  </section>
+
 </main>
+
+<div id="tour" style="display:none">
+  <span id="tour-step">1/5</span>
+  <span id="tour-text"></span>
+  <button id="tour-next">próximo</button>
+  <button id="tour-skip">pular</button>
+</div>
+
+<script>
+  // ---- ESPELHO do rótulo de transporte na aba SISTEMA
+  (function () {
+    const alvo = document.getElementById('ws-live-2');
+    if (!alvo) return;
+    new MutationObserver(() => { alvo.textContent = document.getElementById('ws-live').textContent.replace(/^transporte:\s*/, ''); })
+      .observe(document.getElementById('ws-live'), { childList: true, subtree: true, characterData: true });
+  })();
+</script>
 
 <script type="module">
   import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
@@ -297,6 +647,7 @@ button{display:inline-flex;align-items:center;gap:5px}
     a.download = `meu-${genre}.zip`;
     a.click();
     say(`JOGO COMPLETO de ${genre} criado do nada (.zip baixado) — abre o index.html e joga`);
+    window.__addCriacao?.('jogo', 'Meu ' + genre, true);
   };
   if ($('install-demo')) $('install-demo').onclick = async () => {
     say('… instalando ' + lastCreated.name + ' na plataforma');
@@ -304,6 +655,7 @@ button{display:inline-flex;align-items:center;gap:5px}
     const j = await r.json();
     if (!r.ok) { say('ERRO: ' + (j.error ?? 'falhou')); return; }
     say('INSTALADO: ' + j.url + ' (com storage próprio em apps/) — abra e jogue');
+    window.__addCriacao?.('app', lastCreated.name, true);
   };
   if ($('apps-demo')) $('apps-demo').onclick = async () => {
     const r = await (await fetch('/api/apps')).json();
@@ -469,6 +821,7 @@ button{display:inline-flex;align-items:center;gap:5px}
       logLine(`  interpretação: ${r.interpretation.intent} ${JSON.stringify(r.interpretation.params)} (${r.chosen.provider}/${r.chosen.model})`);
       for (const v of r.verifications) logLine(`  verificação ${v.check}: ${v.ok ? 'OK' : 'FAIL'}`, !v.ok);
       logLine(`  resultado: ${r.ok ? 'OK: verificado' : 'FALHOU'}`, !r.ok);
+      window.__addCriacao?.('mundo', objective, r.ok);
     } catch (err) {
       logLine(`  erro: ${err.message}`, true);
     }
@@ -619,6 +972,7 @@ button{display:inline-flex;align-items:center;gap:5px}
   $('tour-next').addEventListener('click', () => showTour(tourStep + 1));
   $('tour-skip').addEventListener('click', endTour);
   if (!tourDone) setTimeout(() => showTour(0), 800);
+
 </script>
 </body>
 </html>
