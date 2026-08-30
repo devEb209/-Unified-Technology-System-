@@ -295,6 +295,19 @@ export class PhysicsWorld {
 
       // integrate (semi-implicit Euler) + planar rotation
       ph.vel[1] += GRAVITY * dt;
+      // ACOPLAMENTO FLUIDO-ESTRUTURA: o vento EMPURRA corpos (arrasto
+      // ½ρ·Cd·A·v² — a área do corpo e a DENSIDADE do material decidem;
+      // a lâmina leve voa, a rocha nem sente). Determinístico.
+      const env = this.world.environment;
+      const ws = env?.wind ?? 0;
+      if (ws > 0.05 && !ph.pinned) {
+        const wd = env.windDir ?? [1, 0];
+        const rhoMat = (MATERIALS[ph.material ?? 'rock'] ?? MATERIALS.rock).density;
+        const area = Math.PI * ph.radius * ph.radius;
+        const f = (1.2 * 0.9 * ws * ws * area * 1.1) / (ph.mass ?? 1) * (2.6 / rhoMat);
+        ph.vel[0] += wd[0] * f * dt;
+        ph.vel[2] += wd[1] * f * dt;
+      }
       for (let i = 0; i < 3; i++) sp.pos[i] += ph.vel[i] * dt;
       sp.yaw = (sp.yaw ?? 0) + ph.omega * dt;
       sp.__v = tick ?? sp.__v; // stamped for per-entity deltas

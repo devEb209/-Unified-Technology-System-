@@ -14,6 +14,7 @@ import { StyleEngine } from '../render/style.js';
 import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
 import { composeOptics, forgeLook, composeColorPipeline, COLOR_STAGES, COLOR_PRESETS, composeSurfacePipeline, SURFACE_STAGES, SURFACE_PRESETS, EFFECTS } from '../agent/shader-smith.js';
+import { composeGeometry, GEOMETRY_KINDS } from '../agent/geometry-smith.js';
 import { DeltaStream } from '../net/sync.js';
 import { UserApps } from '../platform/user-apps.js';
 import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
@@ -158,6 +159,17 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
       if (!world.style?.params) new StyleEngine(world).apply('realista', {});
       world.style.params = { ...world.style.params, surface: { glsl: r.glsl, hash: r.hash, stages: r.stages } };
       return { ok: true, hash: r.hash, stages: r.stages, selfTest: r.selfTest, honest: r.honest, applied: true };
+    },
+  });
+  tools.register('agent.geometry', {
+    desc: `a FORJA DE GEOMETRIA gera malhas NOVAS por regras determinísticas (${Object.keys(GEOMETRY_KINDS).join(', ')}) com autoteste — contagens pela fórmula, mesma semente = mesma malha`,
+    // params ACHATADOS (a validação da registry é por campo tipado)
+    schema: { kind: { type: 'string' }, seed: { type: 'string' }, 'níveis': { type: 'number' }, comprimento: { type: 'number' }, galhos: { type: 'number' }, faces: { type: 'number' }, altura: { type: 'number' }, raio: { type: 'number' }, subdiv: { type: 'number' }, rugosidade: { type: 'number' } },
+    fn: async (p) => {
+      const params = {};
+      for (const k of ['níveis', 'comprimento', 'galhos', 'faces', 'altura', 'raio', 'subdiv', 'rugosidade']) if (p[k] !== undefined) params[k] = p[k];
+      const r = composeGeometry({ kind: p.kind ?? 'arvore', params, seed: p.seed ?? 'genesis' });
+      return { kind: r.kind, stats: r.stats, selfTest: r.selfTest, honest: r.honest, ok: r.selfTest.ok };
     },
   });
   tools.register('genesis.critique', {

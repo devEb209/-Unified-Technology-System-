@@ -118,6 +118,31 @@ export class SingularityCore {
 
   async interpretObjectiveStream(objective, chosen = undefined, onChunk = null, opts = {}) {
     if (chosen == null) chosen = await this.chooseModel(objective, {});
+    // ---- TOKEN STREAMING REAL: quando o provider sabe streamar (SSE,
+    // OpenAI-compatível), os TOKENS atravessam o onChunk um a um e a
+    // validação continua sendo a MESMA lei (muda o transporte, nunca a
+    // verdade). Sem provider de stream, cai para o caminho fatiado.
+    if (onChunk && typeof chosen.provider?.stream === 'function') {
+      let errorHint = null;
+      const maxCorrections = opts.maxCorrections ?? 2;
+      for (let attempt = 0; attempt <= maxCorrections; attempt++) {
+        let text = '';
+        try {
+          for await (const tok of chosen.provider.stream({
+            messages: this._interpretationMessages(objective, errorHint),
+            model: chosen.model?.id,
+          })) { text += tok; onChunk(tok); }
+        } catch (err) {
+          return this._fallbackInterpretation(objective, `${chosen.provider.name} stream failed: ${err.message}`);
+        }
+        let parsed = null;
+        try { parsed = JSON.parse(text); } catch { /* verifier cuida */ }
+        const valid = this._validInterpretation(parsed);
+        if (valid) return { ...valid, provider: chosen.provider.name, model: chosen.model?.id ?? null, corrections: attempt, streamed: text.length };
+        errorHint = parsed ? 'schema mismatch' : 'not JSON';
+      }
+      return this._fallbackInterpretation(objective, 'invalid answers exhausted');
+    }
     const r = await this.interpretObjective(objective, chosen, opts);
     if (onChunk) {
       const text = JSON.stringify(r, null, 1);

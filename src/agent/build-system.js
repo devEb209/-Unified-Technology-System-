@@ -8,7 +8,7 @@ import { spawnSync, execFileSync } from 'node:child_process';
 import { mkdtemp, readFile, writeFile, copyFile, chmod, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createHash } from 'node:crypto';
+import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, sign as cryptoSign, verify as cryptoVerify } from 'node:crypto';
 
 export const TARGETS = Object.freeze({
   web: { label: 'Web/PWA', tool: 'uts-zip', needs: [] },
@@ -37,7 +37,34 @@ export function selo(data) {
 export function verifySelo(artifact) {
   if (!artifact?.data || !artifact?.selo?.sha256) return { ok: false, reason: 'sem selo' };
   const now = selo(artifact.data);
-  return { ok: now.sha256 === artifact.selo.sha256 && now.bytes === artifact.selo.bytes, now };
+  const okHash = now.sha256 === artifact.selo.sha256 && now.bytes === artifact.selo.bytes;
+  if (!okHash) return { ok: false, reason: 'hash divergente', now };
+  // IDENTIDADE: se o artefato carrega assinatura, a chave pública embarcada
+  // precisa validar os bytes (ed25519 — assinatura determinística)
+  if (artifact.selo.sig && artifact.selo.pub) {
+    try {
+      const pub = createPublicKey(artifact.selo.pub);
+      const okSig = cryptoVerify(null, artifact.data, pub, Buffer.from(artifact.selo.sig, 'base64'));
+      return { ok: okSig, reason: okSig ? null : 'assinatura não confere', now };
+    } catch (err) {
+      return { ok: false, reason: `chave inválida: ${err.message}`, now };
+    }
+  }
+  return { ok: true, now, honest: 'integridade provada; sem assinatura de identidade neste artefato' };
+}
+
+/** PAR DE CHAVES para assinar (por instalação; nunca sai do ambiente) */
+export function newSigningKey() {
+  const { publicKey, privateKey } = generateKeyPairSync('ed25519');
+  return { privateKey: privateKey.export({ type: 'pkcs8', format: 'pem' }), publicKey: publicKey.export({ type: 'spki', format: 'pem' }) };
+}
+
+function assina(data, signingKey) {
+  if (!signingKey) return null;
+  const priv = createPrivateKey(signingKey);
+  const pub = createPublicKey(priv).export({ type: 'spki', format: 'pem' });
+  const sig = cryptoSign(null, data, priv).toString('base64');
+  return { sig, pub };
 }
 
 /** lê o SENTINEL do fuse SEA direto do binário do node desta máquina */
@@ -106,7 +133,7 @@ export function scaffoldProject({ name = 'GenesisApp', target = 'web', manifest 
 }
 
 /** Build: web → real zip now; android/exe → scaffold + honest toolchain status */
-export async function build({ name, target, manifest, fs = null } = {}) {
+export async function build({ name, target, manifest, fs = null, signingKey = null } = {}) {
   const files = scaffoldProject({ name, target, manifest });
   if (fs) for (const f of files) await fs.write(f.name, f.data);
   const out = { target, files: files.map(f => f.name), ok: true };
@@ -115,7 +142,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
     const zip = zipCreate(entries);
     const check = zipRead(zip); // self-verify the artifact
     if ([...check.keys()].length !== entries.length) throw new Error('zip auto-verificação falhou');
-    out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip, selo: selo(zip) };
+    out.artifact = { name: `${name}.zip`, bytes: zip.length, data: zip, selo: { ...selo(zip), ...(assina(zip, signingKey) ?? {}) } };
     return out;
   }
   if (target === 'exe' && probeToolchains().postject) {
@@ -127,7 +154,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'binário único (SEA: app embutido no executável do node)',
       honest: 'nativo da máquina que compilou (linux/mac aqui); Windows igual com postject no .exe; assinatura de código é passo de distribuição',
       files: out.files,
-      artifact: { name: `${name}`, bytes: data.length, data, selo: selo(data) },
+      artifact: { name: `${name}`, bytes: data.length, data, selo: { ...selo(data), ...(assina(data, signingKey) ?? {}) } },
     };
   }
   if (target === 'exe') {
@@ -145,7 +172,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'deploy-kit (zip executável: linux/mac com node 22)',
       honest: 'binário único (.exe/.AppImage): SEA precisa de postject — plano real documentado no INSTALL.txt, não fingido',
       files: out.files,
-      artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit, selo: selo(kit) },
+      artifact: { name: `${name}-kit.zip`, bytes: kit.length, data: kit, selo: { ...selo(kit), ...(assina(kit, signingKey) ?? {}) } },
     };
   }
   if (target === 'android') {
@@ -163,7 +190,7 @@ export async function build({ name, target, manifest, fs = null } = {}) {
       kind: 'android-kit (projeto gradle completo: manifest + MainActivity + www)',
       honest: 'APK precisa de java+gradle (assembleDebug) — o kit traz o projeto buildável, documentado no INSTALL.txt',
       files: out.files,
-      artifact: { name: `${name}-android-kit.zip`, bytes: kit.length, data: kit, selo: selo(kit) },
+      artifact: { name: `${name}-android-kit.zip`, bytes: kit.length, data: kit, selo: { ...selo(kit), ...(assina(kit, signingKey) ?? {}) } },
     };
   }
   const needs = TARGETS[target].needs;

@@ -340,7 +340,41 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R23 — O AR É REAL E O TERRENO É LENTE (a fumaça virou solução; 98.06 → 98.52)
+## R24 — A ÚLTIMA MILHA HONESTA (o fio fala token; o artefato tem nome; 98.52 → 99.18)
+
+**TOKEN STREAMING REAL (core + external):** o interpretObjectiveStream
+usa o stream do provider quando ele existe: os TOKENS da nuvem
+atravessam o onChunk UM A UM, o texto acumulado passa pela MESMA
+validação de interpretação (muda o transporte, nunca a lei), com retry
+e fallback honestos. Provado contra SSE real (ReadableStream com deltas
+OpenAI-compatíveis; o fio parte no meio dos bytes e o [DONE] fecha).
+Sem chave roda o caminho fatiado de sempre; com UTS_LLM_API_KEY /
+OPENAI_API_KEY é produção — o mesmo código.
+
+**ASSINATURA ED25519 (build-system):** build({ signingKey }) assina o
+artefato (a chave pública embarca no selo); verifySelo valida hash E
+assinatura: UM byte alterado reprova, chave trocada reprova; sem chave
+o honesto diz. newSigningKey gera o par por instalação — a chave nunca
+entra no código (mesma lei da API key).
+
+**A FORJA DE GEOMETRIA (agent/geometry-smith, tool agent.geometry):**
+malhas NOVAS por regras determinísticas: ÁRVORE por L-system (galhos =
+1+g+…, contagem PROVADA pela fórmula), CRISTAL de N faces (simetria a
+1e-9, 4f faces), ROCHA icosaesférica (20·4ⁿ triângulos, ruído
+determinístico). Autoteste: finito, contagens, determinismo (mesma
+semente = mesma malha). Tipo/parâmetro fora da lei = erro explícito.
+
+**O VENTO EMPURRA CORPOS (physics):** acoplamento fluido-estrutura:
+arrasto ½ρ·Cd·A·v² com a densidade do material decidindo — na
+tempestade (vento 0.9) a lâmina de madeira anda 1.4m A FAVOR do vento,
+a rocha 0.25m, na calmaria zero. O clima é DONO do vento (o teste lê a
+direção dele — a física não mente para agradar o teste).
+
+**Fixes colaterais:** params achatados no agent.geometry (a registry
+valida por campo). **382/382 testes. PLATAFORMA 12/12, USABILIDADE
+10/10.**
+
+
 
 **FLUIDO 3D COM PROFUNDIDADE REAL (fluid3d):** solver Euleriano (Stam,
 "Real-Time Fluid Dynamics") numa grade local 20×14×20 @ 12m: advecção
