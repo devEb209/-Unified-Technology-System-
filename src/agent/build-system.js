@@ -17,14 +17,26 @@ export const TARGETS = Object.freeze({
 });
 
 /** which toolchains exist on THIS machine (honest probe) */
+/** onde está o postjet: PATH global primeiro, node_modules/.bin do projeto
+ *  depois (build REPRODUZÍVEL: `npm i` basta — a toolchain declarada conta) */
+export function postjectBin() {
+  if (spawnSync('postject', ['--help'], { timeout: 4000 }).status === 0) return 'postject';
+  const local = join(process.cwd(), 'node_modules', '.bin', 'postject');
+  try {
+    if (spawnSync(local, ['--help'], { timeout: 4000 }).status === 0) return local;
+  } catch {}
+  return null;
+}
+
 export function probeToolchains({ which = null } = {}) {
   const has = (cmd, args = ['--version']) => {
     if (typeof which === 'function') return !!which(cmd);
     try { return spawnSync(cmd, args, { timeout: 4000 }).status === 0; }
     catch { return false; }
   };
-  // postject só expõe --help com exit 0 (sem --version) — sonda honesta
-  return { java: has('java'), gradle: has('gradle'), node: has('node'), postject: has('postject', ['--help']) };
+  // postject só expõe --help com exit 0 (sem --version) — sonda honesta,
+  // PATH global OU node_modules/.bin (devDependency declarada)
+  return { java: has('java'), gradle: has('gradle'), node: has('node'), postject: postjectBin() !== null };
 }
 
 /** SELO DE INTEGRIDADE: sha256 dos bytes do artefato (o pacote que chega
@@ -92,7 +104,9 @@ async function buildSeaBinary({ name, manifest }) {
     const bin = join(dir, name);
     await copyFile(process.execPath, bin);
     await chmod(bin, 0o755);
-    execFileSync('postject', [bin, 'NODE_SEA_BLOB', 'sea-prep.blob', '--sentinel-fuse', seaSentinel()], { cwd: dir, stdio: 'pipe', timeout: 120000 });
+    const pj = postjectBin();
+    if (!pj) throw new Error('postject ausente (npm i -D postject) — honesto: sem toolchain não há binário');
+    execFileSync(pj, [bin, 'NODE_SEA_BLOB', 'sea-prep.blob', '--sentinel-fuse', seaSentinel()], { cwd: dir, stdio: 'pipe', timeout: 120000 });
     const data = await readFile(bin);
     return data;
   } finally {

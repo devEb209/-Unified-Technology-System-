@@ -19,5 +19,8 @@
     "genesis:help": "node -e \"console.log('UTS GENESIS — npm run genesis (demo web) | npm test | npm run demo:cli')\""
   },
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "postject": "^1.0.0-alpha.6"
+  }
 }
