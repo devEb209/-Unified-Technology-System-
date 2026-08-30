@@ -12,6 +12,7 @@ import { WSHub } from '../../src/net/transport.js';
 import { UserApps } from '../../src/platform/user-apps.js';
 import { createSSEParser } from '../../src/net/sse.js';
 import { readFile } from 'node:fs/promises';
+import os from 'node:os';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -226,5 +227,15 @@ setInterval(() => {
 }, 2000).unref?.();
 
 server.listen(PORT, HOST, () => {
-  console.log(`UTS demo server: http://${HOST}:${PORT} (root: ${ROOT})`);
+  // HONESTO: 0.0.0.0 é "escutando em todas as interfaces" — NÃO é URL.
+  // O que abre no navegador é localhost (mesmo aparelho) ou o IP local
+  // (outro aparelho na mesma rede Wi-Fi).
+  const ips = [];
+  for (const lista of Object.values(os.networkInterfaces())) {
+    for (const r of lista ?? []) if (r.family === 'IPv4' && !r.internal) ips.push(r.address);
+  }
+  console.log(`UTS demo server (root: ${ROOT})`);
+  console.log(`  no navegador DESTE aparelho: http://localhost:${PORT}`);
+  if (ips.length) console.log(`  em OUTRO aparelho na mesma rede: http://${ips[0]}:${PORT}`);
+  console.log(`  (escutando em ${HOST}:${PORT} — 0.0.0.0 é "todas as interfaces", não é endereço para digitar)`);
 });
