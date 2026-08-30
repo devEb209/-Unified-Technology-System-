@@ -1,0 +1,1947 @@
+# PROMPT SUPREMO — FRONTEND COMPLETO DA GENESIS
+# UTS + SINGULARITY AI + UES
+# IMPLEMENTAÇÃO COMPLETA, FUNCIONAL E FINAL
+
+Você deve construir AGORA o FRONTEND COMPLETO da Genesis.
+
+ATENÇÃO:
+
+Não quero um mockup.
+Não quero wireframes.
+Não quero telas demonstrativas.
+Não quero placeholders.
+Não quero somente uma landing page.
+
+Quero a interface REAL, FUNCIONAL, INTEGRADA À UTS/UES EXISTENTE e suficientemente completa para representar tudo que já foi construído no sistema.
+
+A Genesis é a interface principal da UTS.
+
+============================================================
+01 — ARQUITETURA FUNDAMENTAL
+============================================================
+
+A arquitetura oficial é:
+
+                    GENESIS
+                       │
+                       ▼
+                      UTS
+             Plataforma AI-first
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+ Singularity AI      Apps           Services
+        │
+        ▼
+       UES
+     Engine
+        │
+        ▼
+ Experiences / Worlds / Games / Apps
+
+Portanto:
+
+UTS ≠ UES.
+
+UTS = PLATAFORMA.
+
+UES = ENGINE DENTRO DA PLATAFORMA.
+
+Singularity AI = inteligência/orquestração da plataforma.
+
+A Genesis é a interface através da qual o usuário acessa tudo isso.
+
+A primeira experiência do usuário deve ser a UTS/IA.
+
+A UES NÃO deve ser a tela inicial.
+
+============================================================
+02 — FILOSOFIA DA INTERFACE
+============================================================
+
+A Genesis deve parecer uma plataforma de inteligência artificial extremamente avançada capaz de:
+
+- conversar;
+- pesquisar;
+- raciocinar;
+- planejar;
+- criar;
+- programar;
+- construir mundos;
+- construir aplicações;
+- operar ferramentas;
+- trabalhar com arquivos;
+- trabalhar com imagens;
+- trabalhar com áudio;
+- trabalhar com vídeo;
+- trabalhar com documentos;
+- trabalhar com código;
+- conectar serviços;
+- trabalhar com GitHub;
+- executar projetos longos;
+- utilizar agentes;
+- utilizar múltiplos modelos;
+- pesquisar e triangular informações;
+- criar experiências através da UES;
+- observar resultados;
+- verificar resultados;
+- corrigir resultados;
+- memorizar contexto;
+- continuar trabalhos posteriormente.
+
+A IA NÃO deve ser apresentada como um chatbot comum.
+
+Ela é o principal operador da UTS.
+
+A interface deve transmitir:
+
+"Você descreve o que quer.
+A UTS entende.
+A UTS planeja.
+A UTS executa.
+A UTS verifica.
+A UTS entrega."
+
+============================================================
+03 — LOGIN
+============================================================
+
+Antes de qualquer coisa, criar uma tela de LOGIN.
+
+A aplicação inicia no login.
+
+Visual extremamente premium.
+
+Elementos:
+
+GENESIS
+
+"Unified Technology System"
+
+Campos:
+
+Email / Username
+Password
+
+Botões:
+
+[ LOGIN ]
+
+[ CREATE ACCOUNT ]
+
+[ CONTINUE WITH GOOGLE ]
+
+[ CONTINUE WITH GITHUB ]
+
+[ FORGOT PASSWORD ]
+
+[ CONTINUE AS GUEST ]
+
+(se guest for suportado pela arquitetura)
+
+Estados:
+
+- loading;
+- authentication;
+- success;
+- invalid credentials;
+- connection error;
+- offline;
+- session expired.
+
+Adicionar animações.
+
+============================================================
+04 — VISUAL DO LOGIN
+============================================================
+
+O login deve possuir identidade:
+
+- Matrix;
+- cybernetic;
+- futuristic;
+- AI;
+- scientific;
+- technological;
+- premium.
+
+Criar background 3D animado.
+
+Não utilizar simplesmente uma imagem.
+
+Background:
+
+- grid 3D;
+- partículas;
+- linhas;
+- nós;
+- fluxos de dados;
+- formas geométricas;
+- estruturas abstratas;
+- profundidade;
+- parallax;
+- iluminação;
+- pequenos elementos holográficos;
+- animações procedurais.
+
+O fundo deve reagir ao estado da interface.
+
+============================================================
+05 — APÓS LOGIN
+============================================================
+
+Após autenticação:
+
+ABRIR AUTOMATICAMENTE:
+
+# UTS — AI
+
+Esta é a HOME principal.
+
+NÃO abrir UES.
+
+NÃO abrir World Editor.
+
+NÃO abrir dashboard genérico.
+
+NÃO abrir lista de mundos.
+
+A primeira coisa que o usuário deve encontrar é a inteligência da UTS.
+
+============================================================
+06 — ESTRUTURA PRINCIPAL DA APLICAÇÃO
+============================================================
+
+Layout desktop:
+
+┌──────────────────────────────────────────────────────────────┐
+│ GENESIS / UTS        SEARCH     STATUS     NOTIFICATIONS USER│
+├──────────────┬──────────────────────────────────┬────────────┤
+│              │                                  │            │
+│ LEFT         │                                  │ CHAT       │
+│ SIDEBAR      │          MAIN WORKSPACE          │ HISTORY    │
+│              │                                  │            │
+│ UTS AI       │                                  │            │
+│ Projects     │                                  │            │
+│ Create       │                                  │            │
+│ Research     │                                  │            │
+│ UES          │                                  │            │
+│ Apps         │                                  │            │
+│ Worlds       │                                  │            │
+│ ...          │                                  │            │
+│              │                                  │            │
+└──────────────┴──────────────────────────────────┴────────────┘
+
+IMPORTANTE:
+
+O HISTÓRICO DE CHAT FICA APENAS NA ABA INICIAL DA UTS/IA.
+
+NÃO criar histórico de chat permanente no lado direito de todas as páginas.
+
+Nas outras abas, o lado direito deve ser utilizado pelo conteúdo daquela área quando necessário.
+
+============================================================
+07 — SIDEBAR ESQUERDA
+============================================================
+
+Todas as principais áreas devem ficar na esquerda.
+
+Criar sidebar fixa/recolhível.
+
+Itens principais:
+
+01. UTS AI
+02. CREATE
+03. PROJECTS
+04. RESEARCH
+05. UES
+06. WORLDS
+07. SCENES
+08. APPS
+09. ASSETS
+10. FILES
+11. AGENTS
+12. MODELS
+13. TOOLS
+14. CODE
+15. RENDER
+16. PHYSICS
+17. AUDIO
+18. ENVIRONMENT
+19. NATURE
+20. SOCIETY
+21. ECONOMY
+22. NPC / NMN
+23. DATA
+24. STORAGE
+25. SERVICES
+26. CONNECTORS
+27. GITHUB
+28. PERFORMANCE
+29. DEBUG
+30. LOGS
+31. PUBLISH
+32. SETTINGS
+
+Não necessariamente mostrar todos expandidos simultaneamente.
+
+Criar categorias e submenus elegantes.
+
+============================================================
+08 — SIDEBAR: UTS AI
+============================================================
+
+Primeiro item:
+
+UTS AI
+
+Submenus:
+
+New Chat
+Recent
+Projects
+Memories
+Tasks
+Agents
+Models
+Tools
+Research
+Automations
+
+A aba UTS AI deve ser especial.
+
+============================================================
+09 — TELA UTS AI
+============================================================
+
+A tela inicial deve ter uma interface de IA extremamente sofisticada.
+
+Centro:
+
+GENESIS
+
+"How can I help you create?"
+
+ou equivalente em português conforme idioma selecionado.
+
+Campo principal:
+
+[ What do you want to create? ]
+
+Esse campo é o principal ponto de interação da plataforma.
+
+Abaixo:
+
+Attach
+Image
+Video
+Audio
+Document
+Code
+URL
+File
+
+Também permitir drag & drop.
+
+============================================================
+10 — CHAT UTS
+============================================================
+
+O chat deve suportar:
+
+- mensagens;
+- respostas em streaming;
+- markdown;
+- código;
+- tabelas;
+- imagens;
+- arquivos;
+- previews;
+- ferramentas;
+- resultados;
+- planos;
+- execução;
+- verificações;
+- erros;
+- correções;
+- ações.
+
+A IA deve poder executar operações.
+
+Exemplo:
+
+Usuário:
+
+"Crie um mundo medieval com um rio, três cidades e uma floresta."
+
+A interface deve mostrar:
+
+Understanding request
+Planning
+Creating terrain
+Creating river
+Creating settlements
+Creating ecosystem
+Verifying
+Completed
+
+E então mostrar o resultado.
+
+============================================================
+11 — TOGGLE DA IA
+============================================================
+
+Criar um controle claramente visível para diferenciar:
+
+CHAT
+BUILD
+
+CHAT:
+
+A IA conversa e responde.
+
+BUILD:
+
+A IA pode executar alterações reais.
+
+Também criar:
+
+AUTO
+
+Quando ativado:
+
+Interpret
+→ Plan
+→ Execute
+→ Verify
+→ Correct
+→ Complete
+
+O usuário deve poder alternar entre esses modos.
+
+============================================================
+12 — HISTÓRICO DE CHAT
+============================================================
+
+O histórico deve aparecer SOMENTE na aba UTS AI.
+
+Local:
+
+lado direito.
+
+Mostrar:
+
+- conversas recentes;
+- título;
+- data;
+- projeto;
+- contexto;
+- última atividade.
+
+Botões:
+
+[ + NEW CHAT ]
+
+Search
+
+Filter
+
+Sort
+
+Archive
+
+Delete
+
+Rename
+
+Pin
+
+O histórico NÃO deve ocupar o lado direito das outras abas.
+
+============================================================
+13 — CHAT CONTEXTUAL
+============================================================
+
+Nas outras áreas, a IA continua acessível através de um botão global.
+
+Exemplo:
+
+[ AI ]
+
+Ao abrir:
+
+drawer/modal/painel contextual.
+
+Ela deve saber onde o usuário está.
+
+Exemplo:
+
+Dentro do Physics:
+
+"Otimize a física dessa cena."
+
+Dentro do Renderer:
+
+"Melhore a iluminação desta cena."
+
+Dentro do World:
+
+"Adicione uma cidade nessa região."
+
+Dentro de NPC:
+
+"Por que esse NPC está fugindo?"
+
+A IA deve receber o contexto correto.
+
+============================================================
+14 — CREATE
+============================================================
+
+Criar área dedicada:
+
+# CREATE
+
+Categorias:
+
+Create World
+Create Game
+Create App
+Create Scene
+Create Simulation
+Create Asset
+Create Code
+Create System
+Create Project
+
+Mas o usuário também pode simplesmente descrever qualquer coisa.
+
+Interface:
+
+Prompt
+
+Attachments
+
+Context
+
+Tools
+
+Models
+
+Agents
+
+[ CREATE ]
+
+============================================================
+15 — PROJECTS
+============================================================
+
+Projects deve representar trabalhos de longa duração.
+
+Mostrar:
+
+Project
+Goal
+Progress
+Tasks
+Agents
+Files
+Memory
+Checkpoints
+History
+Errors
+Verification
+
+Botões:
+
+[ RUN ]
+[ PAUSE ]
+[ RESUME ]
+[ STOP ]
+[ VERIFY ]
+[ CONTINUE ]
+[ DUPLICATE ]
+[ EXPORT ]
+
+============================================================
+16 — RESEARCH
+============================================================
+
+Pesquisa triangulada.
+
+Mostrar:
+
+Question
+
+Models
+
+Sources
+
+Answers
+
+Consensus
+
+Conflicts
+
+Confidence
+
+Final result
+
+Criar visualização de consenso.
+
+Nunca fingir certeza.
+
+============================================================
+17 — UES
+============================================================
+
+UES deve ser uma grande área da plataforma.
+
+Ao clicar:
+
+# UES ENGINE
+
+Mostrar:
+
+Overview
+Experiences
+Worlds
+Scenes
+Entities
+Systems
+Rulesets
+Simulation
+Renderer
+Physics
+Audio
+Environment
+Nature
+Society
+Economy
+NPC/NMN
+Tools
+Debug
+Performance
+
+IMPORTANTE:
+
+A UES não deve substituir a UTS.
+
+Ela é acessada pela UTS.
+
+============================================================
+18 — UES EXPERIENCE
+============================================================
+
+Permitir criar:
+
+World
+Game
+Simulation
+Interactive Experience
+Application
+
+Cada Experience possui:
+
+Manifest
+Systems
+State
+Entities
+Rulesets
+Assets
+Scripts
+Memory
+Events
+History
+
+============================================================
+19 — WORLDS
+============================================================
+
+Biblioteca de mundos.
+
+Cards grandes com preview 3D vivo.
+
+Informações:
+
+Population
+Entities
+Biome
+Weather
+Time
+Simulation
+Performance
+
+Botões:
+
+OPEN
+PLAY
+EDIT
+FORK
+DUPLICATE
+EXPORT
+PUBLISH
+
+============================================================
+20 — SCENE
+============================================================
+
+Hierarchy baseada na realidade UES.
+
+Mostrar:
+
+Terrain
+Water
+Atmosphere
+Entities
+NPCs
+Animals
+Vegetation
+Buildings
+Particles
+Environment
+
+A hierarquia deve representar entidades/sistemas reais, não apenas objetos gráficos.
+
+============================================================
+21 — INSPECTOR
+============================================================
+
+Ao selecionar qualquer entidade:
+
+Identity
+State
+Position
+Velocity
+Physics
+Environment
+Needs
+Memory
+Relations
+Processes
+Events
+Causes
+History
+Rendering
+Audio
+
+Adicionar:
+
+WHY?
+
+A IA pode explicar causalmente o estado.
+
+============================================================
+22 — CAUSAL GRAPH
+============================================================
+
+Criar visualizador de causalidade.
+
+Exemplo:
+
+RAIN
+↓
+SOIL MOISTURE
+↓
+GRASS
+↓
+DEER
+↓
+WOLF
+↓
+HUNTING
+↓
+FOOD
+↓
+VILLAGE
+
+Permitir clicar em qualquer elemento.
+
+Mostrar:
+
+Cause
+Effect
+Timestamp
+Entity
+Process
+Verification
+
+============================================================
+23 — RENDER
+============================================================
+
+Área:
+
+Camera
+Materials
+Lighting
+Atmosphere
+Terrain
+Water
+Vegetation
+Shadows
+Particles
+Post Processing
+Streaming
+D-O15
+
+Mostrar preview vivo.
+
+Não transformar a interface em uma lista de presets gráficos convencionais.
+
+Os controles devem representar propriedades e fenômenos da realidade UES.
+
+============================================================
+24 — PHYSICS
+============================================================
+
+Mostrar:
+
+Bodies
+Forces
+Velocity
+Acceleration
+Collision
+Constraints
+Materials
+Contacts
+Events
+
+Debugger visual.
+
+============================================================
+25 — AUDIO
+============================================================
+
+Mostrar:
+
+Master
+Environment
+Ambience
+Sources
+Listener
+Spatialization
+HRTF
+Weather
+Events
+Voices
+
+Visualização espacial.
+
+============================================================
+26 — ENVIRONMENT
+============================================================
+
+Mostrar:
+
+Temperature
+Pressure
+Humidity
+Wind
+Rain
+Clouds
+Atmosphere
+Day/Night
+Season
+Water
+Terrain
+
+Timeline:
+
+PLAY
+PAUSE
+1x
+10x
+100x
+1000x
+
+============================================================
+27 — NATURE
+============================================================
+
+Mostrar:
+
+Flora
+Fauna
+Soil
+Water
+Resources
+Migration
+Reproduction
+Predation
+Food Chains
+Ecosystems
+
+Visualizar relações.
+
+============================================================
+28 — SOCIETY
+============================================================
+
+Mostrar:
+
+Settlements
+Population
+Families
+Professions
+Relationships
+Culture
+Migration
+Conflict
+Politics
+
+============================================================
+29 — ECONOMY
+============================================================
+
+Mostrar:
+
+Resources
+Production
+Consumption
+Trade
+Supply
+Demand
+Prices
+Banks
+Wealth
+
+============================================================
+30 — NPC / NMN
+============================================================
+
+Mostrar:
+
+Needs
+Goals
+Memory
+Knowledge
+Relations
+Fear
+Decision
+Perception
+History
+
+Botão:
+
+[ ASK AI WHY ]
+
+============================================================
+31 — AGENTS
+============================================================
+
+Mostrar agentes disponíveis.
+
+Exemplos:
+
+Architect
+Coder
+Researcher
+Designer
+Graphics
+Physics
+Audio
+World
+QA
+Optimizer
+etc.
+
+Cada agente:
+
+Status
+Goal
+Model
+Tools
+Memory
+Tasks
+Results
+
+============================================================
+32 — MODELS
+============================================================
+
+Model Registry.
+
+Mostrar:
+
+Model
+Provider
+Capability
+Context
+Cost
+Latency
+Availability
+
+Modos:
+
+AUTO
+FAST
+QUALITY
+REASONING
+LOW COST
+CUSTOM
+
+============================================================
+33 — TOOLS
+============================================================
+
+Mostrar:
+
+Tools
+Schemas
+Permissions
+Status
+Calls
+Errors
+History
+
+============================================================
+34 — CODE
+============================================================
+
+Editor profissional.
+
+Recursos:
+
+Tabs
+Files
+Syntax highlighting
+Autocomplete
+Search
+Diagnostics
+Diff
+Terminal
+Tests
+AI assistance
+
+============================================================
+35 — FILES
+============================================================
+
+File manager.
+
+Tipos:
+
+Images
+Videos
+Audio
+Documents
+Code
+Models
+Textures
+Datasets
+Worlds
+Experiences
+
+Busca semântica.
+
+Preview.
+
+Drag & drop.
+
+============================================================
+36 — ASSETS
+============================================================
+
+Asset browser.
+
+Categorias:
+
+3D
+Materials
+Textures
+Audio
+Animation
+Particles
+Shaders
+Images
+Video
+Data
+
+Preview em 3D quando aplicável.
+
+============================================================
+37 — CONNECTORS / SERVICES
+============================================================
+
+Central de serviços.
+
+GitHub
+Cloud
+AI providers
+Research
+Storage
+External services
+
+Cada conexão:
+
+Connect
+Disconnect
+Permissions
+Status
+Usage
+
+Nunca mostrar secrets.
+
+============================================================
+38 — GITHUB
+============================================================
+
+Mostrar:
+
+Repositories
+Branches
+Commits
+Files
+Issues
+Pull Requests
+Changes
+
+Operações:
+
+Read
+Edit
+Commit
+Branch
+Push
+
+Sempre mostrar alterações importantes antes de ações destrutivas.
+
+============================================================
+39 — STORAGE
+============================================================
+
+Mostrar:
+
+Projects
+Worlds
+Snapshots
+Databases
+Events
+Checkpoints
+Backups
+
+Mostrar:
+
+Version
+Integrity
+Checksum
+Last save
+Restore
+
+============================================================
+40 — PERFORMANCE
+============================================================
+
+Dashboard:
+
+FPS
+Frame time
+CPU
+GPU
+Memory
+Tick
+Simulation
+Render
+Physics
+Audio
+Network
+Streaming
+D-O15
+
+Gráficos em tempo real.
+
+============================================================
+41 — D-O15
+============================================================
+
+Painel próprio.
+
+Mostrar:
+
+PRESSURE
+
+↓
+
+STRATEGY
+
+↓
+
+SIMULATION
+RENDER
+AUDIO
+STREAMING
+MEMORY
+
+Mostrar:
+
+Active
+Deferred
+Materialized
+Abstract
+
+Mostrar claramente o comportamento adaptativo.
+
+============================================================
+42 — DEBUG
+============================================================
+
+Ferramentas:
+
+Event Viewer
+Causal Graph
+Entity Inspector
+Physics Debugger
+Renderer Debugger
+Audio Debugger
+AI Trace
+Tool Trace
+Memory Trace
+Performance Trace
+
+============================================================
+43 — LOGS
+============================================================
+
+Sistema de logs.
+
+Categorias:
+
+UTS
+UES
+AI
+WORLD
+RENDER
+PHYSICS
+AUDIO
+STORAGE
+NETWORK
+TOOLS
+
+Busca.
+
+Filtros.
+
+Export.
+
+============================================================
+44 — PUBLISH
+============================================================
+
+Mostrar:
+
+Web
+Android
+Desktop
+Standalone
+Package
+
+Informações:
+
+Build
+Size
+Platform
+Performance
+Dependencies
+Integrity
+Signature
+
+============================================================
+45 — SETTINGS
+============================================================
+
+Submenus:
+
+General
+Account
+Appearance
+AI
+Models
+Agents
+Memory
+Storage
+Rendering
+Physics
+Audio
+Network
+Connectors
+GitHub
+Security
+Performance
+Accessibility
+Mobile
+Experimental
+
+============================================================
+46 — TOP BAR
+============================================================
+
+Mostrar:
+
+Genesis logo
+
+Current area
+
+Search
+
+Command Palette
+
+System status
+
+AI status
+
+Notifications
+
+User
+
+No excesso de informação.
+
+============================================================
+47 — COMMAND PALETTE
+============================================================
+
+CTRL/CMD + K
+
+No mobile, botão/gesto.
+
+Comandos:
+
+Create
+Open
+Search
+Ask AI
+Build
+Run
+Pause
+Publish
+Research
+Open UES
+Open World
+Open Project
+Open GitHub
+Run tests
+Open settings
+etc.
+
+============================================================
+48 — NOTIFICATIONS
+============================================================
+
+Estados:
+
+INFO
+PROCESSING
+SUCCESS
+WARNING
+ERROR
+
+Animações sutis.
+
+============================================================
+49 — DESIGN SYSTEM
+============================================================
+
+Criar um Design System próprio da Genesis.
+
+Componentes:
+
+Buttons
+Inputs
+Textareas
+Cards
+Panels
+Tabs
+Dropdowns
+Menus
+Modals
+Drawers
+Tooltips
+Badges
+Progress
+Charts
+Tables
+Trees
+Timelines
+Command palette
+Toast
+Context menu
+Inspector
+Chat components
+
+Tudo deve compartilhar:
+
+- tipografia;
+- espaçamento;
+- radius;
+- sombras;
+- glow;
+- animações;
+- ícones;
+- estados.
+
+============================================================
+50 — ÍCONES SVG
+============================================================
+
+NÃO utilizar emojis como ícones.
+
+Criar sistema SVG próprio.
+
+Visual:
+
+- profissional;
+- tecnológico;
+- consistente;
+- minimalista;
+- preciso.
+
+Cada ícone deve ter:
+
+default
+hover
+active
+selected
+disabled
+
+============================================================
+51 — ANIMAÇÕES
+============================================================
+
+Criar sistema de motion global.
+
+Utilizar:
+
+- fade;
+- slide;
+- scale;
+- blur;
+- glow;
+- morph;
+- parallax;
+- stagger;
+- spring;
+- partículas.
+
+Tudo deve ser suave.
+
+Nada deve parecer aleatório ou excessivamente chamativo.
+
+============================================================
+52 — BACKGROUND 3D
+============================================================
+
+Criar background procedural.
+
+Elementos:
+
+3D grid
+Particles
+Data streams
+Nodes
+Lines
+Geometry
+Holographic surfaces
+Depth
+Parallax
+Lighting
+
+Reagir a:
+
+AI processing
+World creation
+Loading
+Success
+Error
+System activity
+
+============================================================
+53 — EFEITOS MATRIX
+============================================================
+
+Criar elementos inspirados no conceito Matrix, mas com identidade própria.
+
+Possibilidades:
+
+- falling data;
+- digital rain;
+- scanlines;
+- green glow;
+- code fragments;
+- grid;
+- terminal-like overlays;
+- data streams.
+
+Usar com moderação.
+
+============================================================
+54 — RESPONSIVIDADE
+============================================================
+
+Desktop:
+
+Sidebar esquerda
+Workspace central
+Painéis contextuais
+
+Mobile:
+
+Não simplesmente reduzir a interface desktop.
+
+Criar experiência mobile própria.
+
+Utilizar:
+
+- bottom navigation quando necessário;
+- drawers;
+- sheets;
+- fullscreen workspace;
+- gestures;
+- floating actions;
+- long press;
+- swipe.
+
+A Genesis deve ser totalmente utilizável em Android.
+
+============================================================
+55 — PERFORMANCE
+============================================================
+
+O frontend precisa funcionar também em hardware fraco.
+
+Integrar com D-O15 quando apropriado.
+
+Utilizar:
+
+Lazy loading
+Virtualization
+Caching
+Pooling
+GPU acceleration
+Incremental updates
+Reduced effects mode
+
+Criar níveis:
+
+AUTO
+LOW
+MEDIUM
+HIGH
+ULTRA
+
+O modo AUTO deve adaptar automaticamente.
+
+============================================================
+56 — TEMAS
+============================================================
+
+Tema padrão:
+
+GENESIS MATRIX
+
+Criar também:
+
+GENESIS DARK
+GENESIS LIGHT
+GENESIS TERMINAL
+GENESIS MONO
+
+O padrão deve ser o visual Matrix futurista.
+
+============================================================
+57 — ACESSIBILIDADE
+============================================================
+
+Suportar:
+
+Keyboard
+Touch
+Screen readers
+Contrast
+Font scaling
+Reduced motion
+Focus states
+
+============================================================
+58 — MICROINTERAÇÕES
+============================================================
+
+Tudo deve reagir.
+
+Exemplos:
+
+Hover em botão
+Seleção de entidade
+Processamento de IA
+Upload
+Build
+Save
+Publish
+Error
+Success
+
+Criar feedback visual claro.
+
+============================================================
+59 — IA GLOBAL
+============================================================
+
+Mesmo fora da UTS AI, deve existir acesso à IA.
+
+Botão:
+
+[ AI ]
+
+Ao clicar, abrir assistente contextual.
+
+A IA deve receber:
+
+current page
+selected entity
+selected project
+current world
+current scene
+current tool
+relevant logs
+relevant state
+
+Não exigir que o usuário explique novamente o contexto.
+
+============================================================
+60 — EXPERIÊNCIA PRINCIPAL
+============================================================
+
+A Genesis precisa transmitir:
+
+"Não estou usando uma engine."
+
+"Estou usando uma inteligência/plataforma que consegue criar e operar sistemas."
+
+O usuário pode:
+
+abrir a UTS
+conversar
+criar
+pesquisar
+planejar
+executar
+abrir a UES
+criar mundos
+criar jogos
+criar aplicações
+editar
+simular
+analisar
+publicar
+
+Tudo deve parecer parte de UM ÚNICO SISTEMA.
+
+============================================================
+61 — REALIDADE DA UES
+============================================================
+
+O frontend não pode criar abstrações falsas apenas para parecer funcional.
+
+Sempre que mostrar:
+
+- NPC;
+- mundo;
+- física;
+- clima;
+- economia;
+- fauna;
+- água;
+- áudio;
+- render;
+- causalidade;
+
+deve utilizar o estado REAL disponibilizado pela UES.
+
+Não inventar dados para preencher a interface.
+
+============================================================
+62 — PRINCÍPIO ADR-018
+============================================================
+
+O frontend também deve respeitar ADR-018.
+
+Antes de criar uma solução externa ou convencional:
+
+"Como isso deveria funcionar nativamente dentro da UTS/UES?"
+
+Somente depois:
+
+"Existe alguma dependência externa inevitável?"
+
+A UI deve ser uma camada de apresentação e interação da realidade existente, não uma simulação independente dela.
+
+============================================================
+63 — IA + UI
+============================================================
+
+A interface deve aproveitar a natureza AI-first da plataforma.
+
+Sempre que apropriado, permitir ao usuário substituir controles tradicionais por linguagem natural.
+
+Exemplo:
+
+Em vez de procurar manualmente:
+
+Lighting → Exposure → 1.2
+
+o usuário pode escrever:
+
+"Deixe a iluminação parecida com o final da tarde."
+
+A IA interpreta e executa.
+
+Controles manuais continuam disponíveis para precisão.
+
+Portanto:
+
+NATURAL LANGUAGE FIRST
++
+DIRECT MANIPULATION SECOND
+
+============================================================
+64 — ZERO PLACEHOLDER
+============================================================
+
+Não implementar:
+
+"Coming soon"
+
+"TODO"
+
+"Fake data"
+
+"Lorem ipsum"
+
+Botões que não fazem nada.
+
+Cards falsos.
+
+Gráficos falsos.
+
+Percentuais inventados.
+
+Se uma função ainda não estiver disponível no backend:
+
+- representar o estado honestamente;
+- explicar o motivo;
+- desabilitar a ação;
+- nunca fingir que funcionou.
+
+============================================================
+65 — IMPLEMENTAÇÃO
+============================================================
+
+Construa tudo de forma modular.
+
+Criar:
+
+- routing;
+- state management;
+- component system;
+- design system;
+- icon system;
+- animation system;
+- AI interface;
+- chat system;
+- history;
+- project UI;
+- UES UI;
+- world UI;
+- inspector;
+- debug UI;
+- settings;
+- responsive layout.
+
+Integrar com as APIs reais da UTS/UES.
+
+Não duplicar lógica que já existe no backend.
+
+============================================================
+66 — TESTES
+============================================================
+
+Criar testes para:
+
+- login;
+- navegação;
+- sidebar;
+- UTS AI;
+- chat;
+- histórico;
+- anexos;
+- AI execution;
+- projects;
+- UES;
+- world;
+- scene;
+- inspector;
+- render;
+- physics;
+- audio;
+- storage;
+- connectors;
+- settings;
+- mobile layout;
+- estados de erro;
+- estados de loading.
+
+Testar também integração real com UTS/UES.
+
+============================================================
+67 — RESPONSABILIDADE FINAL
+============================================================
+
+Não pare depois de criar a estrutura.
+
+Continue até:
+
+1. todas as telas existirem;
+2. todos os menus existirem;
+3. todos os submenus existirem;
+4. todos os componentes principais existirem;
+5. todas as rotas funcionarem;
+6. todas as áreas estarem conectadas;
+7. UTS AI funcionar como tela inicial;
+8. histórico existir SOMENTE na UTS AI;
+9. UES funcionar como área própria;
+10. IA contextual funcionar;
+11. responsividade mobile funcionar;
+12. efeitos e animações funcionarem;
+13. SVG icons estarem implementados;
+14. background 3D funcionar;
+15. estados de loading/error/success funcionarem;
+16. testes cobrirem o frontend;
+17. não existirem placeholders falsos.
+
+============================================================
+68 — DEFINIÇÃO DE "FRONTEND COMPLETO"
+============================================================
+
+Considere o frontend completo somente quando a Genesis puder ser aberta por um usuário, fazer login e, a partir da primeira tela UTS AI, navegar pela plataforma inteira.
+
+O fluxo final deve ser:
+
+LOGIN
+↓
+UTS AI
+↓
+CHAT / CREATE / RESEARCH / PROJECTS
+↓
+SERVICES / AGENTS / MODELS / TOOLS
+↓
+UES
+↓
+WORLDS / SCENES / EXPERIENCES
+↓
+RENDER / PHYSICS / AUDIO / ENVIRONMENT
+↓
+NATURE / SOCIETY / ECONOMY / NPC
+↓
+DEBUG / PERFORMANCE / STORAGE
+↓
+PUBLISH
+
+Tudo deve parecer uma única plataforma.
+
+============================================================
+69 — QUALIDADE VISUAL
+============================================================
+
+Quero qualidade visual de produto profissional.
+
+Não fazer:
+
+- dashboard genérico;
+- cards brancos comuns;
+- sidebar padrão;
+- botões Bootstrap;
+- aparência de template;
+- excesso de rounded cards;
+- emojis;
+- ícones inconsistentes;
+- animações infantis.
+
+Quero:
+
+- composição visual;
+- hierarquia;
+- profundidade;
+- iluminação;
+- movimento;
+- identidade;
+- precisão;
+- consistência;
+- excelente UX.
+
+A Genesis deve parecer uma plataforma de tecnologia de próxima geração.
+
+============================================================
+70 — REGRA FINAL
+============================================================
+
+NÃO REDUZA O ESCOPO.
+
+NÃO simplifique a arquitetura.
+
+NÃO transforme a Genesis em apenas um "frontend da UES".
+
+NÃO transforme a UTS em apenas um chatbot.
+
+NÃO transforme a UES em apenas um editor gráfico.
+
+A identidade correta é:
+
+GENESIS
+=
+INTERFACE DA UTS
+=
+PLATAFORMA AI-FIRST
++
+SINGULARITY AI
++
+UES
++
+APPS
++
+PROJECTS
++
+RESEARCH
++
+TOOLS
++
+SERVICES
++
+EXPERIENCES
+
+A UTS é a inteligência/plataforma.
+
+A UES é a engine.
+
+A Genesis é a experiência de usuário que une tudo.
+
+Implemente o frontend completo seguindo exatamente essa arquitetura.
+
+Antes de terminar, faça uma auditoria da interface inteira:
+
+- navegação;
+- telas;
+- submenus;
+- botões;
+- estados;
+- responsividade;
+- IA;
+- histórico;
+- UES;
+- integração;
+- performance;
+- acessibilidade;
+- visual;
+- animações.
+
+Corrija tudo que estiver incompleto.
+
+Somente então considere o FRONTEND GENESIS concluído.
