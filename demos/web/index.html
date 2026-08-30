@@ -4,7 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UTS — Unified Technology System :: UES / RRW / D-O15 / WebGL2</title>
+<script src="https://js.puter.com/v2/"></script>
 <style>
+  /* BANNER DE BOOT: se QUALQUER coisa morrer na inicialização, o erro
+     aparece NA TELA — a página nunca fica muda diante de um defeito. */
+  #boot-erro { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+    background: #5a1020; color: #ffd9df; font: 12px/1.5 ui-monospace, monospace;
+    padding: 8px 12px; border-bottom: 1px solid #ff8f8f; white-space: pre-wrap; }
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; background: #05070d; color: #cfe3ff;
@@ -55,8 +61,19 @@ button{display:inline-flex;align-items:center;gap:5px}
 </style>
 </head>
 <body>
+<div id="boot-erro"></div>
 <div id="icon-sprite"></div>
 <canvas id="gl"></canvas>
+
+<script>
+  // A PÁGINA NUNCA FICA MUDA: qualquer erro de boot (exceção, rejeição
+  // não tratada, falha de módulo) aparece AQUI — diagnosticável de longe.
+  (function () {
+    const mostra = (msg) => { const b = document.getElementById('boot-erro'); if (!b) return; b.style.display = 'block'; b.textContent = 'ERRO DE BOOT: ' + msg; };
+    window.addEventListener('error', (e) => mostra(e.message + ' @ ' + String(e.filename ?? '').split('/').pop() + ':' + e.lineno));
+    window.addEventListener('unhandledrejection', (e) => mostra(String(e.reason?.message ?? e.reason)));
+  })();
+</script>
 
 <main id="pilha">
 <div class="panel" id="hud">
@@ -195,7 +212,21 @@ button{display:inline-flex;align-items:center;gap:5px}
   };
   const wanted = new URLSearchParams(location.search).get('world');
   const preset = WORLDS[wanted] ?? { seed: 'uts-web-demo', setup: () => {} };
+  const tBoot0 = performance.now();
   const uts = createUTS({ seed: preset.seed, log: { level: 'warn' } }); // browser: streaming síncrono (worker_threads não existe aqui — fallback honesto)
+  logLine(`núcleo VIVO em ${(performance.now() - tBoot0).toFixed(0)}ms · providers: ${uts.core.providers.names().join(', ')}`);
+  // IA REAL pela camada Puter (User Pays: sem chave; o usuário final consome
+  // o próprio plano) — os MODELOS são os que a camada devolver, nunca inventados
+  try {
+    const pp = uts.core.providers.names().includes('puter') ? 'puter' : null;
+    if (pp && globalThis.puter?.ai?.listModels) {
+      const lista = await globalThis.puter.ai.listModels();
+      const flat = Array.isArray(lista) ? lista : Object.values(lista ?? {}).flatMap((v) => (Array.isArray(v) ? v : []));
+      logLine(`IA REAL via PUTER: ${flat.length} modelos na camada de acesso (sem chave — User Pays)`);
+    } else if (pp) {
+      logLine('IA REAL via PUTER ativa (User Pays, sem chave)');
+    }
+  } catch (e) { logLine(`[puter] camada presente, lista indisponível: ${e.message}`); }
   preset.setup(uts);
   const { ues, core, world, rrw, do15, clock, tese } = uts;
   document.querySelectorAll('#gallery button').forEach((b) => {

@@ -340,7 +340,31 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R26 — O FIO REAL E O TEMPO DE CONSTRUÇÃO (99.50 → 99.64)
+## R27 — A IA DO NAVEGADOR E A PÁGINA QUE NUNCA FICA MUDA (99.64 → 99.78)
+
+**A CAUSA RAIZ DE "NADA FUNCIONA" (a página morta):** o grafo de módulos
+do NAVEGADOR continha `node:fs`, `node:child_process`, `node:zlib` e
+leituras de `process` — o script inteiro do mundo morria na importação
+(em QUALQUER navegador, desde várias rodadas; os testes não pegavam
+porque rodam em Node). Conserto estrutural: ENV com guarda, zlib
+preguiçoso, ferramentas de máquina em módulo separado carregado por
+import dinâmico SÓ onde há Node; auditoria mecânica prova ZERO
+`node:` estático alcançável. Simulação de navegador: mundo constrói,
+objetivo verificado, status honesto.
+
+**A IA DO NAVEGADOR (Puter — User Pays, SEM CHAVE):** a página agora
+carrega js.puter.com/v2; o PuterProvider ganhou STREAM (iterável de
+partes → tokens um a um no fio do Core, MESMA lei de validação) e
+LISTA DE MODELOS (a que a camada devolver — nunca número inventado;
+a lista do dono tem 876). O registro só aceita a camada QUANDO ELA
+EXISTE — sem ela, interpretador nativo, nada fingido.
+
+**A PÁGINA NUNCA MAIS FICA MUDA:** banner vermelho de BOOT captura
+exceção/rejeição/falha de módulo e mostra o erro NA TELA; o boot se
+AUTORELATA no log (núcleo vivo em Xms + providers ativos + contagem
+de modelos Puter). **389/389 testes.**
+
+
 
 **O FIO REAL (IA 97 → 98):** o token streaming já era real (R24); agora o
 PROTOCOLO DA NUVEM está provado ponta a ponta NESTA MÁQUINA: um servidor

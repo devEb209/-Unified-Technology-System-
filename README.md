@@ -114,7 +114,7 @@ npm run genesis        # http://localhost:8080
 ## Comandos
 
 ```bash
-npm test               # 388/388 testes determinísticos (node:test, zero deps)
+npm test               # 389/389 testes determinísticos (node:test, zero deps)
 npm run genesis        # a plataforma viva no navegador (WebGL2 real)
 npm start              # mesmo servidor
 npm run demo:cli       # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
@@ -211,8 +211,8 @@ Nada é declarado funcional sem teste que prove.
 | Física (8) | **100** | FECHADO (fumaça empurra malhas compostas) |
 | Ferramentas (8) | **100** | FECHADO (forja de geometria + LUZ) |
 | Áudio (8) | 99 | falta o banco MEDIDO cru do dono (schema + interpoladora prontos: anexou, usa) |
-| IA (14) | 98 | protocolo da NUVEM provado ponta a ponta (SSE real por socket); falta a chave via env — o dono liga, o código não muda |
-| **TOTAL** | **99.64** | **GENESIS v1 LANÇADO** |
+| IA (14) | 99 | NAVEGADOR: camada Puter (User Pays, SEM chave) com stream e lista de modelos da camada; NUVEM: SSE por socket provado; chave via env opcional |
+| **TOTAL** | **99.78** | **GENESIS v1 LANÇADO** |
 
 **Lançamento:** artefatos web + android + **EXE único SEA** assinados
 (ed25519), ata pública em [`docs/launch/GENESIS-v1.json`](docs/launch/GENESIS-v1.json).
