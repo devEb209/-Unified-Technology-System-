@@ -223,6 +223,7 @@ test('r13: a IA TEM as ferramentas novas registradas (fs/build/mídia/escala/est
   process.env.UTS_WORKSPACE = await mkdtemp(join(tmpdir(), 'uts-ws-'));
   try {
     const uts = createUTS({ seed: 'tools' });
+    if (uts.core.tools.machineReady) await uts.core.tools.machineReady; // ferramentas de máquina carregadas sob demanda
     for (const t of ['media.model', 'media.texture', 'media.animation', 'media.cutscene', 'media.dub', 'scales.report', 'scales.locate', 'device.profile', 'world.style', 'proc.run', 'agent.build']) {
       assert.ok(uts.core.tools.get ? uts.core.tools.get(t) : true, `tool ${t}`);
     }

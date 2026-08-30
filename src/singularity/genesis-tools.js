@@ -2,9 +2,6 @@
 // chat: arquivos na pasta conectada, comandos na máquina (com guarda),
 // builds apk/exe/web, geração de modelos em todos os Ds, texturas,
 // animações, cutscenes, dublagem, escalas da realidade, perfis de aparelho.
-import { AgentFS } from '../agent/fs-agent.js';
-import { ProcAgent } from '../agent/proc-agent.js';
-import { build as buildApp, inspect as inspectApp, probeToolchains, TARGETS } from '../agent/build-system.js';
 import { generate as generateModel, DIMS } from '../media/models.js';
 import { generateTexture } from '../media/textures.js';
 import { walkClip, Clip, Track, blendPoses } from '../media/animation.js';
@@ -24,27 +21,18 @@ import { PROFILES, applyProfile, detectProfile } from '../ues/devices.js';
 
 export function registerGenesisTools({ core, ues, world, workspace = null, proc = null }) {
   const tools = core.tools;
-  const agentFS = workspace ? new AgentFS({ root: workspace }) : null;
-  const agentProc = proc ?? new ProcAgent({ allow: process.env.UTS_ALLOW_EXEC === '1' });
 
-  if (agentFS) for (const [name, def] of Object.entries(agentFS.tools())) {
-    tools.register(name, { desc: def.desc, schema: def.schema, fn: def.fn });
-  }
-  for (const [name, def] of Object.entries(agentProc.tools())) {
-    tools.register(name, { desc: def.desc, schema: def.schema, fn: def.fn });
-  }
+  // FERRAMENTAS DE MÁQUINA (fs/exec/build): carregadas por import DINÂMICO
+  // só onde Node existe — os specifiers node: ficam FORA do grafo do
+  // navegador (specifier node: em browser = grafo inteiro morto).
+  if (typeof process !== 'undefined' && process.versions?.node) {
+    tools.machineReady = import('./genesis-machine-tools.js')
+      .then((m) => m.registerMachineTools({ core, ues, world, workspace, proc }))
+      .catch(() => {});
+  } else tools.machineReady = null;
 
-  tools.register('agent.inspect', {
-    description: 'DECOMPILA um pacote (.zip/.apk/.aab): lista todo o conteúdo, tamanhos e manifestos (package.json, AndroidManifest). Binários são relatados como bytes — nunca fingidos.',
-    input: '{ data: Uint8Array }',
-    fn: async (p) => inspectApp(p.data),
-  });
-  tools.register('agent.build', {
-    desc: `gera e compila um app: alvos ${Object.keys(TARGETS).join(', ')} (web builda AGORA; apk/exe geram projeto real e relatam toolchain com honestidade)`,
-    schema: { name: { type: 'string' }, target: { type: 'string' }, title: { type: 'string' } },
-    fn: async (p) => build({ name: p.name ?? 'GenesisApp', target: p.target ?? 'web', manifest: { title: p.title ?? p.name }, fs: agentFS ?? undefined }),
-  });
-  tools.register('agent.toolchains', { desc: 'sonda honesta das toolchains desta máquina', schema: {}, fn: async () => probeToolchains() });
+
+
 
   tools.register('media.model', {
     desc: `gera modelo 3D/2D/2.5D/3.5D(voxel)/4D(animado) — dimensões: ${DIMS.join(', ')}`,
@@ -115,6 +103,7 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     desc: 'a plataforma se VÊ: estado honesto de TODOS os subsistemas (mundo, olho, estilo, escalas, erosão, agentes, rede, build)',
     schema: {},
     fn: async () => {
+      if (tools.machineReady) await tools.machineReady; // o estado da máquina vem dela
       const eye = world._eye;
       return {
         ok: true,
@@ -123,9 +112,9 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
         style: world.style?.name ?? 'realista',
         scales: world.scales ? { levels: 15, tagged: world.scales.tags?.size ?? 0 } : null,
         erosion: world.erosion ? { moved: +world.erosion.stats.eroded.toFixed(4), events: world.erosion.events.length, siltCells: world.erosion.silt.size } : null,
-        agents: { fsJournal: agentFS?.journal?.length ?? 0, execAllowed: agentProc?.allow === true },
+        agents: { fsJournal: tools.maquina?.fsJournal ?? 0, execAllowed: tools.maquina?.execAllowed === true },
         perf: world.perf ? Object.fromEntries(Object.entries(world.perf).map(([k, v]) => [k, +v.toFixed(3)])) : { honest: 'nenhum passo ainda' },
-        build: TARGETS ? Object.keys(TARGETS) : null,
+        build: tools.alvos ?? null,
         media: { models: '2d/2.5d/3d/3.5d/4d', textures: 3, dubLangs: Object.keys(LANGS).length },
       };
     },
@@ -223,11 +212,18 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
       return { wire: stream.encode({ tick: world.clock.tick, weather: world.environment.weather ?? null, style: world.style?.name ?? 'realista', erosionMoved: +(world.erosion?.stats.eroded ?? 0).toFixed(4) }), lastSeq: stream.lastSeq };
     },
   });
-  const userApps = agentFS ? new UserApps({ fs: agentFS }) : null;
+  // AgentFS lazy NO PONTO DE CHAMADA: o navegador nunca resolve node:fs
+  // (recebe o honesto 'sem workspace'); no Node é durável e real.
+  const userAppsLento = async () => {
+    if (typeof process === 'undefined' || !process.versions?.node || !workspace) return null;
+    const { AgentFS } = await import('../agent/fs-agent.js');
+    return new UserApps({ fs: new AgentFS({ root: workspace }) });
+  };
   tools.register('platform.install', {
     desc: 'INSTALA um app criado na plataforma (workspace/apps/<nome>/) com storage próprio; devolve a URL para jogar',
     schema: { name: { type: 'string' }, genre: { type: 'string' } },
     fn: async (p) => {
+      const userApps = await userAppsLento();
       if (!userApps) return { ok: false, honest: 'sem workspace (UTS_WORKSPACE) não há onde instalar' };
       const game = createGame({ genre: p.genre, name: p.name ?? 'AppGenesis' });
       return userApps.install({ name: `${game.genre}-${String(p.name ?? 'app').toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, zip: game.artifact.data });
@@ -237,6 +233,7 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     desc: 'lista os apps INSTALADOS na plataforma (com seus storages)',
     schema: {},
     fn: async () => {
+      const userApps = await userAppsLento();
       if (!userApps) return { ok: false, honest: 'sem workspace' };
       await userApps.rescan();
       return { ok: true, apps: userApps.list() };
@@ -246,6 +243,7 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     desc: 'storage do APP (sandbox por app): write/read no workspace/apps/<nome>/data/',
     schema: { app: { type: 'string' }, op: { type: 'string', values: ['write', 'read'] }, path: { type: 'string' }, data: { type: 'string' } },
     fn: async (p) => {
+      const userApps = await userAppsLento();
       if (!userApps) return { ok: false, honest: 'sem workspace' };
       if (p.op === 'write') return { ok: true, ...(await userApps.storageWrite(p.app, p.path, p.data ?? '')) };
       const content = (await userApps.storageRead(p.app, p.path)).toString();
@@ -277,5 +275,5 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
     },
   });
 
-  return { agentFS, agentProc };
+  return {};
 }

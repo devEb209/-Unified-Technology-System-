@@ -10,6 +10,11 @@
 //   Chain: UTS -> RRW -> D -> D-O15 -> UES -> Frame -> RendererBackend -> GPU
 
 import { ScaleLadder } from './world/scales.js';
+
+// NAVEGADOR: `process` não existe — o acesso ao ambiente é SEMPRE seguro
+// (o `?.` protege env, nunca o próprio process). Sem isso, o demo morre
+// na primeira leitura de ambiente e a página inteira fica sem vida.
+const ENV = (typeof process !== 'undefined' && process.env) ? process.env : {};
 import { registerGenesisTools } from './singularity/genesis-tools.js';
 import { RNG } from './core/rng.js';
 import { Clock } from './core/clock.js';
@@ -99,17 +104,17 @@ export function buildSingularity({ ues, world, rrw, memory = null, log = null, p
     if (puter._ai()) providerRegistry.register(puter);
     // R6: a REAL LLM joins the loop ONLY through secure configuration (env).
     // The key never enters logs/snapshots/memory (ExternalLLMProvider masks it).
-    const envKey = process.env?.UTS_LLM_API_KEY ?? process.env?.OPENAI_API_KEY ?? null;
+    const envKey = ENV.UTS_LLM_API_KEY ?? ENV.OPENAI_API_KEY ?? null;
     if (envKey) {
       providerRegistry.register(new ExternalLLMProvider({
         name: 'llm-env',
-        baseUrl: process.env?.UTS_LLM_BASE_URL ?? 'https://api.openai.com/v1',
+        baseUrl: ENV.UTS_LLM_BASE_URL ?? 'https://api.openai.com/v1',
         apiKey: envKey,
-        model: process.env?.UTS_LLM_MODEL ?? 'gpt-4o-mini',
-        costPer1k: Number(process.env?.UTS_LLM_COST ?? 0.5),
+        model: ENV.UTS_LLM_MODEL ?? 'gpt-4o-mini',
+        costPer1k: Number(ENV.UTS_LLM_COST ?? 0.5),
       }));
       modelRegistry.register({
-        id: 'llm-env', tier: 'B', provider: 'llm-env', costPer1k: Number(process.env?.UTS_LLM_COST ?? 0.5),
+        id: 'llm-env', tier: 'B', provider: 'llm-env', costPer1k: Number(ENV.UTS_LLM_COST ?? 0.5),
         latencyMs: 900, context: 128000,
         capabilities: { text: true, reasoning: true, code: true, vision: false, structured: true, tools: false },
       });
@@ -179,7 +184,7 @@ export function createUTS({
   const core = buildSingularity({ ues, world, rrw, memory: coreMemory ?? undefined, log: logger, providers });
 
   // GENESIS surface: the AI operates files, commands, builds and the media stack
-  registerGenesisTools({ core, ues, world, workspace: process.env.UTS_WORKSPACE ?? null });
+  registerGenesisTools({ core, ues, world, workspace: ENV.UTS_WORKSPACE ?? null });
 
   // UTS platform: when provided, the engine registers as a platform consumer
   // and the platform AI (Singularity) gains services, apps and durable projects.

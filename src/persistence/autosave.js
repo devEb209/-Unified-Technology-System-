@@ -20,7 +20,11 @@
 // or degrades a tick, and world determinism is untouched (checkpoints are
 // presentation-of-state, like frames).
 
-import { gzipSync, gunzipSync } from 'node:zlib';
+// zlib é a camada do SO: import DINÂMICO e PROTEGIDO — no navegador o
+// specifier node:zlib jamais é resolvido (a compressão é caminho de Node).
+const zlib = (typeof process !== 'undefined' && process.versions?.node)
+  ? await import('node:zlib')
+  : null;
 import { fnv1a } from '../core/math.js';
 import { serializeState, load, SnapshotError } from './snapshot.js';
 import { MemoryStorage } from './storage.js';
@@ -61,7 +65,7 @@ export class AutosaveManager {
       checksum: fnv1a(JSON.stringify(state)),
       state,
     });
-    const gz = gzipSync(Buffer.from(body, 'utf8'));
+    const gz = zlib.gzipSync(Buffer.from(body, 'utf8'));
     const data = gz.toString('base64');
     await this.db.put(this.col, genOf(tick), {
       tick, algo: 'gzip', data, sum: fnv1a(data), schemaVersion: state.schemaVersion,
@@ -88,7 +92,7 @@ export class AutosaveManager {
       try {
         if (!rec || rec.algo !== 'gzip' || typeof rec.data !== 'string') throw new Error('malformed record');
         if (fnv1a(rec.data) !== rec.sum) throw new Error('checksum mismatch');
-        const json = gunzipSync(Buffer.from(rec.data, 'base64')).toString('utf8');
+        const json = zlib.gunzipSync(Buffer.from(rec.data, 'base64')).toString('utf8');
         // full pipeline: integrity + migration + RRW validation (loud on purpose)
         const shim = new MemoryStorage();
         await shim.set('cp', json);
