@@ -340,7 +340,31 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R27 — A IA DO NAVEGADOR E A PÁGINA QUE NUNCA FICA MUDA (99.64 → 99.78)
+## R28 — A TDZ QUE MATAVA A PÁGINA (achada pelo banner; 99.78 → 99.86)
+
+**O banner de boot cumpriu o papel dele na primeira batalha:** o usuário
+colou o erro NA TELA — `Cannot access '$' before initialization @ :462`
+— e a aritmética fechou: linha 462 do HTML = linha 240 do módulo, onde
+`const styleOut = $('style-out')` roda no TOPO, mas `$` só era declarado
+na linha 398. TDZ: o script INTEIRO morria aí — em qualquer navegador,
+desde aquela edição. **Conserto estrutural:** `$` e `logLine` viraram
+declarações de função HOISTED no topo do módulo (declaração de função é
+inicializada antes de qualquer código de topo — TDZ impossível em
+qualquer ordem de linha, para sempre).
+
+**ROBUSTEZ REAL descoberta no mesmo passe:** sem WebGL2 (aparelho antigo
+ou GPU bloqueada), `new WebGL2Renderer(null)` matava a página DEPOIS do
+try do getContext. Agora: sem GPU = render de TEXTO honesto — UI, IA,
+física e clima inteiros vivos; só o material do quadro muda.
+
+**A GUARDA PERMANENTE (r28 — A PÁGINA VIVA):** o teste EXTRAI o módulo
+real do index.html e o EXECUTA de ponta a ponta com DOM simulado,
+afirmando que ele chega ao ÚLTIMO linha (o loop agendado no request-
+AnimationFrame). Qualquer TDZ, referência morta ou boot quebrado volta a
+ser FALHA DE TESTE — a página nunca mais morre em silêncio. Auditado:
+390/390 testes.
+
+
 
 **A CAUSA RAIZ DE "NADA FUNCIONA" (a página morta):** o grafo de módulos
 do NAVEGADOR continha `node:fs`, `node:child_process`, `node:zlib` e

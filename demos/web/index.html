@@ -186,6 +186,16 @@ button{display:inline-flex;align-items:center;gap:5px}
 <script type="module">
   import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
 
+  // HELPERS HOISTED (declaração de função: disponíveis antes de TODO o
+  // resto do módulo — a TDZ que matava a página inteira nunca mais volta).
+  function $(id) { return document.getElementById(id); }
+  function logLine(msg, bad = false) {
+    const el = $('log');
+    if (!el) return;
+    el.innerHTML += `\n<span class="${bad ? 'bad' : 'ok'}">${msg.replace(/</g, '&lt;')}</span>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
   const canvas = document.getElementById('gl');
 
   // ---- GALERIA DE MUNDOS: cada entrada é um mundo REAL (semente + estado
@@ -360,8 +370,15 @@ button{display:inline-flex;align-items:center;gap:5px}
   } catch (e) {
     logLine(`WebGL2 indisponível: ${e.message}`, true);
   }
-  const renderer = new WebGL2Renderer(gl, { canvas });
-  renderer.init();
+  let renderer;
+  if (gl) {
+    renderer = new WebGL2Renderer(gl, { canvas });
+    renderer.init();
+    logLine('GPU: WebGL2 real (o Frame chega à tela pela cadeia representação → GPU)');
+  } else {
+    renderer = new TextRenderer();
+    logLine('SEM WebGL2 neste aparelho — mundo VIVO em render de TEXTO honesto (UI, IA, física e clima inteiros)', true);
+  }
   // O OLHO: o BUFFER do canvas segue o ELEMENTO (devicePixelRatio até 2).
   // Antes o buffer ficava no default 300×150 esticado — borrado. O draw()
   // lê canvas.width/height a cada frame e reajusta viewport/FBO sozinho.
@@ -395,7 +412,6 @@ button{display:inline-flex;align-items:center;gap:5px}
   }, { passive: false });
 
   // ---- controls
-  const $ = id => document.getElementById(id);
   $('w-clear').onclick = () => world.setWeather('clear');
   $('w-rain').onclick = () => world.setWeather('rain');
   $('w-storm').onclick = () => world.setWeather('storm');
@@ -458,11 +474,6 @@ button{display:inline-flex;align-items:center;gap:5px}
     }
   });
 
-  function logLine(msg, bad = false) {
-    const el = $('log');
-    el.innerHTML += `\n<span class="${bad ? 'bad' : 'ok'}">${msg.replace(/</g, '&lt;')}</span>`;
-    el.scrollTop = el.scrollHeight;
-  }
 
 
   // ---- AI-first: the user describes the world; the Singularity Core
@@ -537,7 +548,7 @@ button{display:inline-flex;align-items:center;gap:5px}
     ues.tick(1 / 20);
 
     const frame = ues.renderFrame();
-    const { drawCalls } = renderer.render(frame);
+    const { drawCalls } = renderer.render(frame); // TextRenderer devolve {drawCalls:0} — a mesma cadeia
     pumpAudio(now, frame);
 
     if (++frameCount % 10 === 0) {

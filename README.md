@@ -114,7 +114,7 @@ npm run genesis        # http://localhost:8080
 ## Comandos
 
 ```bash
-npm test               # 389/389 testes determinísticos (node:test, zero deps)
+npm test               # 390/390 testes determinísticos (node:test, zero deps)
 npm run genesis        # a plataforma viva no navegador (WebGL2 real)
 npm start              # mesmo servidor
 npm run demo:cli       # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
