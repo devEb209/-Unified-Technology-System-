@@ -139,8 +139,7 @@ export function aerial(color, rayDir, dist, sunDir, air = {}, h = 30) {
 }
 
 /** GLSL — GENERATED from the same constants (single source of truth). */
-export const SCATTER_GLSL = `#version 300 es
-precision highp float;
+export const SCATTER_PROLOGUE = `precision highp float;
 // ==== UTS scattering constants (generated — do not hand-edit) ====
 const vec3 BETA_R = vec3(${SCATTER_CONST.BETA_R.map(fmt).join(',')});
 const float BETA_M = ${fmt(SCATTER_CONST.BETA_M)};
@@ -211,3 +210,7 @@ vec3 aerial(vec3 color, vec3 rayDir, float dist, vec3 sunDir, float mie, float i
 }
 // ==== end generated scattering ====
 `;
+
+// O BLOCO COMPLETO (com #version) para quem é shader INTEIRO (o céu):
+export const SCATTER_GLSL = `#version 300 es
+` + SCATTER_PROLOGUE;

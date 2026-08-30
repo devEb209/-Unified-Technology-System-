@@ -340,7 +340,26 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R29 — SHADERS ESTRICTOS (o driver do celular na GPU real; 99.86 → 99.92)
+## R30 — O AÉREO CEGO (aerial() sem declaração; 99.92 → 99.96)
+
+**O terceiro erro do banner, a classe mais grave:** o driver denunciou
+`aerial: no matching overloaded function found` no TERRAIN — e a raiz
+era estrutural: `aerial()` (a perspectiva aérea gerada da física de
+espalhamento) só era DECLARADA dentro do bloco do CÉU (SCATTER_GLSL);
+TERRAIN_FS, ENTITY_FS e WATER_FS CHAMAVAM a função sem nunca a incluir.
+TREE_FS tinha porque carrega o bloco inteiro. Conserto na FONTE: o
+scattering agora exporta SCATTER_PROLOGUE (constantes geradas +
+skyColor + aerial, SEM a linha #version) e os três shaders cegos o
+recebem — #version único garantido e verificado.
+
+**A guarda (r29 estendido, CLASSE 2):** o linter agora PARSEIA cada um
+dos 24 strings (comentários fora, macros contadas) e reprova qualquer
+função CHAMADA que não seja declarada no MESMO shader, nem builtin, nem
+palavra-chave, nem fornecida por composição — mais a lei do #version
+único e primeiro. A classe inteira do "compila no meu desktop, reprova
+no seu aparelho" está sob teste. Auditado: 391/391.
+
+
 
 **O segundo erro saiu do banner na primeira GPU REAL que a página
 enfrentou:** o compilador GLSL ES 3.0 do driver do aparelho é ESTRITO —

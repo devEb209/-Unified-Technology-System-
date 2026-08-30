@@ -12,7 +12,7 @@ void main(){ vUV = aPos*0.5+0.5; gl_Position = vec4(aPos, 0.999, 1.0); }`;
 // SKY_FS: the sky IS the integral of sunlight scattered by the AIR along
 // the view ray (Rayleigh+Mie, generated physics in SCATTER_GLSL). D-O15
 // governs sample cost elsewhere; the phenomenon here is integrated whole.
-import { SCATTER_GLSL } from './scattering.js';
+import { SCATTER_GLSL, SCATTER_PROLOGUE } from './scattering.js';
 import { CLOUD_GLSL } from './clouds.js';
 import { OCEAN_GLSL } from './ocean.js';
 import { SMOKE_GLSL } from './smoke.js';
@@ -140,6 +140,7 @@ void main(){
 }`;
 
 export function terrainFS(surfaceBlock = '') { return `#version 300 es
+` + SCATTER_PROLOGUE + `
 precision highp float;
 in vec3 vPos; in vec3 vNorm; in float vBiome;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
@@ -232,6 +233,7 @@ void main(){
 }`;
 
 export const ENTITY_FS = `#version 300 es
+` + SCATTER_PROLOGUE + `
 precision highp float;
 in vec3 vNorm; in vec3 vWorld; in vec4 vA1; in vec4 vA2;
 uniform vec3 uSunDir; uniform vec3 uSunColor; uniform float uAmbient;
@@ -340,6 +342,7 @@ void main(){
 }`;
 
 export const WATER_FS = `#version 300 es
+` + SCATTER_PROLOGUE + `
 precision highp float;
 ` + OCEAN_GLSL + TERRAIN_MIRROR_GLSL + `
 in vec3 vPos; in float vWave; in float vFoam;

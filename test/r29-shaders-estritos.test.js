@@ -64,4 +64,48 @@ test('r29: SHADERS ESTRICTOS — zero inteiros em float nos 24 strings de shader
   assert.ok(/const float C_LO = 190\.0;/.test(S.SKY_FS), 'nuvens: C_LO sai com ponto');
   assert.ok(/const float SM_R0 = 7\.0;/.test(S.SKY_FS), 'fumaça: SM_R0 sai com ponto');
   assert.ok(/= 0\.0;/.test(S.WATER_VS + S.WATER_FS), 'oceano: OS0 sai com ponto');
+
+  // ---- CLASSE 2: chamada de função NUNCA DECLARADA no mesmo shader
+  // (o bug do aerial(): TERRAIN/ENTITY/WATER chamavam a função que só
+  // existia no bloco do CÉU — o driver estrito reprova a chamada)
+  const PALAVRAS = new Set(['if', 'for', 'while', 'return', 'switch', 'case', 'discard', 'main',
+    'void', 'bool', 'int', 'uint', 'float', 'vec2', 'vec3', 'vec4', 'ivec2', 'ivec3', 'ivec4',
+    'uvec2', 'uvec3', 'uvec4', 'bvec2', 'bvec3', 'bvec4', 'mat2', 'mat3', 'mat4', 'struct',
+    'uniform', 'attribute', 'in', 'out', 'inout', 'const', 'precision', 'highp', 'mediump',
+    'lowp', 'layout', 'centroid', 'flat', 'smooth', 'noperspective', 'invariant', 'buffer',
+    'shared', 'coherent', 'volatile', 'restrict', 'readonly', 'writeonly', 'texture', 'true', 'false']);
+  const BUILTINS = new Set(['radians', 'degrees', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh',
+    'tanh', 'asinh', 'acosh', 'atanh', 'pow', 'exp', 'log', 'exp2', 'log2', 'sqrt', 'inversesqrt',
+    'abs', 'sign', 'floor', 'ceil', 'fract', 'trunc', 'round', 'roundEven', 'mod', 'modf', 'min', 'max',
+    'clamp', 'mix', 'step', 'smoothstep', 'length', 'distance', 'dot', 'cross', 'normalize', 'faceforward',
+    'reflect', 'refract', 'matrixCompMult', 'outerProduct', 'transpose', 'determinant', 'inverse',
+    'lessThan', 'lessThanEqual', 'greaterThan', 'greaterThanEqual', 'equal', 'notEqual', 'any', 'all', 'not',
+    'uaddCarry', 'usubBorrow', 'umulExtended', 'imulExtended', 'bitfieldExtract', 'bitfieldInsert',
+    'bitfieldReverse', 'bitCount', 'findLSB', 'findMSB', 'textureSize', 'textureProj', 'textureLod',
+    'textureOffset', 'texelFetch', 'texelFetchOffset', 'textureProjLod', 'textureGather', 'dFdx', 'dFdy',
+    'fwidth', 'noise1', 'noise2', 'noise3', 'noise4', 'atomicAdd', 'atomicMin', 'atomicMax',
+    // fornecidos por COMPOSIÇÃO (o shader-smith injeta a definição junto ao call site)
+    'utsSurface']);
+  const declaradas = (src) => {
+    const set = new Set();
+    for (const m of src.matchAll(/\b(?:void|bool|int|uint|float|vec[234]|ivec[234]|uvec[234]|bvec[234]|mat[234])\s+([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+    // macros (#define NOME( ... )) também são declarações válidas
+    for (const m of src.matchAll(/#define\s+([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+    return set;
+  };
+  const chamadas = (src) => {
+    const set = new Set();
+    for (const m of src.matchAll(/\b([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+    return set;
+  };
+  for (const [nome, srcBruto] of shaders) {
+    // SEM comentários (palavra em comentário seguida de parêntese não é chamada)
+    const src = srcBruto.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
+    const decl = declaradas(src);
+    const faltando = [...chamadas(src)].filter((f) => !decl.has(f) && !PALAVRAS.has(f) && !BUILTINS.has(f));
+    assert.deepEqual(faltando, [], `${nome}: funções CHAMADAS mas nunca declaradas (o driver estrito reprova): ${faltando.join(', ')}`);
+    // #version aparece UMA vez e é a primeira linha (prólogo compartilhado sem header)
+    const vers = src.match(/#version/g);
+    assert.ok(vers && vers.length === 1 && src.startsWith('#version 300 es'), `${nome}: #version único e primeiro`);
+  }
 });

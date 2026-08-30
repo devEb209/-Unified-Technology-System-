@@ -38,4 +38,38 @@ for (const [nome, src] of Object.entries(shaders)) {
     }
   });
 }
+// CLASSE 2: função chamada e nunca declarada no mesmo shader
+const PALAVRAS = new Set(['if', 'for', 'while', 'return', 'switch', 'case', 'discard', 'main',
+  'void', 'bool', 'int', 'uint', 'float', 'vec2', 'vec3', 'vec4', 'ivec2', 'ivec3', 'ivec4',
+  'uvec2', 'uvec3', 'uvec4', 'bvec2', 'bvec3', 'bvec4', 'mat2', 'mat3', 'mat4', 'struct',
+  'uniform', 'attribute', 'in', 'out', 'inout', 'const', 'precision', 'highp', 'mediump',
+  'lowp', 'layout', 'centroid', 'flat', 'smooth', 'noperspective', 'invariant', 'buffer',
+  'shared', 'coherent', 'volatile', 'restrict', 'readonly', 'writeonly', 'texture', 'true', 'false']);
+const BUILTINS = new Set(['radians', 'degrees', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh',
+  'tanh', 'asinh', 'acosh', 'atanh', 'pow', 'exp', 'log', 'exp2', 'log2', 'sqrt', 'inversesqrt',
+  'abs', 'sign', 'floor', 'ceil', 'fract', 'trunc', 'round', 'roundEven', 'mod', 'modf', 'min', 'max',
+  'clamp', 'mix', 'step', 'smoothstep', 'length', 'distance', 'dot', 'cross', 'normalize', 'faceforward',
+  'reflect', 'refract', 'matrixCompMult', 'outerProduct', 'transpose', 'determinant', 'inverse',
+  'lessThan', 'lessThanEqual', 'greaterThan', 'greaterThanEqual', 'equal', 'notEqual', 'any', 'all', 'not',
+  'uaddCarry', 'usubBorrow', 'umulExtended', 'imulExtended', 'bitfieldExtract', 'bitfieldInsert',
+  'bitfieldReverse', 'bitCount', 'findLSB', 'findMSB', 'textureSize', 'textureProj', 'textureLod',
+  'textureOffset', 'texelFetch', 'texelFetchOffset', 'textureProjLod', 'textureGather', 'dFdx', 'dFdy',
+  'fwidth', 'noise1', 'noise2', 'noise3', 'noise4', 'atomicAdd', 'atomicMin', 'atomicMax', 'utsSurface']);
+const declaradas = (src) => {
+  const set = new Set();
+  for (const m of src.matchAll(/\b(?:void|bool|int|uint|float|vec[234]|ivec[234]|uvec[234]|bvec[234]|mat[234])\s+([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+  for (const m of src.matchAll(/#define\s+([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+  return set;
+};
+const chamadas = (src) => {
+  const set = new Set();
+  for (const m of src.matchAll(/\b([A-Za-z_]\w*)\s*\(/g)) set.add(m[1]);
+  return set;
+};
+for (const [nome, srcBruto] of Object.entries(shaders)) {
+  const src = srcBruto.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
+  const decl = declaradas(src);
+  const faltando = [...chamadas(src)].filter((f) => !decl.has(f) && !PALAVRAS.has(f) && !BUILTINS.has(f));
+  if (faltando.length) { console.log(`${nome}: NUNCA DECLARADAS: ${faltando.join(', ')}`); violacoes++; }
+}
 console.log(`SHADERS_EXAMINADOS=${Object.keys(shaders).length} VIOLACOES=${violacoes}`);
