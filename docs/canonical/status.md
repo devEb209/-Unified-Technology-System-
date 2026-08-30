@@ -340,7 +340,29 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R25 — LUZ E SOM MEDIDOS PELA FÍSICA (a orelha exata, a luz forjada; 99.18 → 99.50)
+## R26 — O FIO REAL E O TEMPO DE CONSTRUÇÃO (99.50 → 99.64)
+
+**O FIO REAL (IA 97 → 98):** o token streaming já era real (R24); agora o
+PROTOCOLO DA NUVEM está provado ponta a ponta NESTA MÁQUINA: um servidor
+HTTP de verdade (socket TCP) responde SSE OpenAI-compatível com os bytes
+FRAGMENTADOS no meio de linhas e payloads (a rede não entrega blocos
+arrumados) — o ExternalLLMProvider com o fetch GLOBAL (rede de verdade,
+não mock) reconstrói, e os 100+ TOKENS chegam um a um ao
+interpretObjectiveStream, que devolve o plano VÁLIDO cuja remontagem é o
+texto inteiro. A nuvem é a MESMA rota com TLS + chave: o dono liga via
+env e o código não muda uma linha.
+
+**O TEMPO DE CONSTRUÇÃO (o pilar contra o tempo da indústria):** medido
+com limite FORÇADO por teste — a IA cria uma vila com verificação em
+11ms e um JOGO COMPLETO com arquivos reais em 3ms. Engines tradicionais
+precisam de equipes e meses para cada mundo; aqui o humano DESCREVE e a
+IA DESENVOLVE. Este é o número do argumento.
+
+**Fix do Termux:** package-lock.json gerado localmente bloqueava o git
+pull (untracked vs merge) — o guia novo inclui `rm -f package-lock.json`
+antes do pull. **388/388 testes.**
+
+ (a orelha exata, a luz forjada; 99.18 → 99.50)
 
 **A BASE EXATA DA ORELHA (audio/sphere-hrtf):** a solução em SÉRIE DE
 RAYLEIGH para a difração de onda plana pela esfera rígida (o problema

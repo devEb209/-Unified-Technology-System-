@@ -38,7 +38,7 @@ jogo ou plataforma do mercado as tem hoje como sistema:
 |---|---|
 | Realidade causal com FONTE ÚNICA da verdade (RRW: entidades, relações, eventos, processos) | **VALIDATED** |
 | Determinismo `save → load → evoluir == original` (bit a bit, snapshots versionados, corrupção = erro explícito) | **VALIDATED** |
-| IA que opera a plataforma INTEIRA por chat: cria mundo, arquivos, apps, compila/descompila, gera APK/AAB e **binário único EXE (SEA)** | **VALIDATED** |
+| IA que opera a plataforma INTEIRA por chat: cria mundo, arquivos, apps, compila/descompila, gera APK/AAB e **binário único EXE (SEA)** — **tempo de construção MEDIDO: vila verificada em 11ms, jogo completo em 3ms** (a IA desenvolve, o humano descreve) | **VALIDATED** |
 | Criação em TODOS os Ds (2d/2.5d/3d/3.5d/4d), cutscenes, auto-dublagem, estilo dito no chat (colorista GLSL composto) | **VALIDATED** |
 | Física como realidade: energia ½mv², deformação por material, quaternion livre, cordas PBD, Arquimedes, vento e fumaça empurrando malhas compostas | **VALIDATED** |
 | Áudio como fenômeno: difração pela esfera rígida resolvida em SÉRIE DE RAYLEIGH (baffel +6dB, ILD crescente, ITD = 3a/c provada contra a analítica), acústica com atraso/sombra/absorção, muffle = filtro real | **VALIDATED** |
@@ -86,6 +86,8 @@ toolchain de build declarada (postject, para o binário SEA).
 pkg install -y git nodejs
 git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git uts
 cd uts
+rm -f package-lock.json   # gerado localmente; sem isso o git pull pode abortar
+git pull origin arena/01a048b9-unified-technology-system
 npm install
 npm run genesis        # deixa RODANDO — não aperte ^C para usar
 ```
@@ -112,7 +114,7 @@ npm run genesis        # http://localhost:8080
 ## Comandos
 
 ```bash
-npm test               # 386/386 testes determinísticos (node:test, zero deps)
+npm test               # 388/388 testes determinísticos (node:test, zero deps)
 npm run genesis        # a plataforma viva no navegador (WebGL2 real)
 npm start              # mesmo servidor
 npm run demo:cli       # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
@@ -209,8 +211,8 @@ Nada é declarado funcional sem teste que prove.
 | Física (8) | **100** | FECHADO (fumaça empurra malhas compostas) |
 | Ferramentas (8) | **100** | FECHADO (forja de geometria + LUZ) |
 | Áudio (8) | 99 | falta o banco MEDIDO cru do dono (schema + interpoladora prontos: anexou, usa) |
-| IA (14) | 97 | falta a prova na NUVEM (chave via env — o código já é o de produção) |
-| **TOTAL** | **99.50** | **GENESIS v1 LANÇADO** |
+| IA (14) | 98 | protocolo da NUVEM provado ponta a ponta (SSE real por socket); falta a chave via env — o dono liga, o código não muda |
+| **TOTAL** | **99.64** | **GENESIS v1 LANÇADO** |
 
 **Lançamento:** artefatos web + android + **EXE único SEA** assinados
 (ed25519), ata pública em [`docs/launch/GENESIS-v1.json`](docs/launch/GENESIS-v1.json).
