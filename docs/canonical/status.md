@@ -366,6 +366,22 @@ TEXTAREA de anexo e a casca nova o tinha virado botão — o `.value` do
 módulo leria vazio. Restaurado como textarea estilizado. Auditado:
 391/391 (1 skip intencional — banco HRTF medido aguardando o dono).
 
+**R31b — o aparelho falou (banner→causa→guarda, 4ª rodada):** o usuário
+reportou FPS no chão, mundo invisível e "ERRO DE BOOT: Cannot set
+properties of null (setting 'textContent')". TRÊS raízes: (1) bug
+HERDADO do shell velho — `$('w-audio span')` usa `$` = getElementById e
+id não tem espaço: NUNCA existiu; ligar o áudio explodia logo depois
+(aúdio até tocava — o crash vinha após). Corrigido na fonte: o span
+ganhou id próprio (`w-audio-rot`); (2) o canvas do mundo era fundo
+`fixed` COBERTO pelos cards opacos no celular — o shell velho o tornava
+janela de 46vh no fluxo; agora ele é PALCO: janela em moldura neon com
+cantos e rótulo, no fluxo, VISÍVEL EM TODA ABA, e as abas re-medem o
+canvas via `resize`; (3) FPS: `backdrop-filter: blur(14px)` em todos os
+cards + `shadowBlur` por glifo do matrix = morte em GPU de celular —
+zero backdrop-filter (painéis sólidos 0.88), matrix sem shadow, tick
+66→90ms, barra de pressão estática. Diff exhaustivo: os 72 IDs do
+módulo presentes, ZERO chamadas-seletor restantes. Auditado: 391/391.
+
 ## R30 — O AÉREO CEGO (aerial() sem declaração; 99.92 → 99.96)
 
 **O terceiro erro do banner, a classe mais grave:** o driver denunciou

@@ -12,7 +12,7 @@
 <style>
   :root {
     --bg: #020604;
-    --painel: rgba(3, 13, 9, 0.72);
+    --painel: rgba(3, 13, 9, 0.88);
     --painel-borda: rgba(0, 255, 156, 0.20);
     --verde: #00ff9c;
     --verde-2: #7dffc8;
@@ -32,8 +32,21 @@
   ::-webkit-scrollbar-track { background: #030a07; }
 
   /* ---- CAMADAS: mundo 3D (0) · matrix (1) · scanlines (2) · UI (5+) ---- */
-  #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
-  #matrix { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.13; }
+  .palco { position: relative; z-index: 5; width: min(860px, calc(100% - 20px));
+    height: clamp(280px, 48vh, 620px); margin: 102px auto 14px; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(0, 255, 156, 0.30); background: #010503;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), 0 0 34px rgba(0, 255, 156, 0.10); }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .moldura { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+  .moldura i { position: absolute; width: 22px; height: 22px; border: 2px solid var(--verde); opacity: 0.9; }
+  .moldura i:nth-child(1) { top: 10px; left: 10px; border-right: none; border-bottom: none; border-top-left-radius: 6px; }
+  .moldura i:nth-child(2) { top: 10px; right: 10px; border-left: none; border-bottom: none; border-top-right-radius: 6px; }
+  .moldura i:nth-child(3) { bottom: 10px; left: 10px; border-right: none; border-top: none; border-bottom-left-radius: 6px; }
+  .moldura i:nth-child(4) { bottom: 10px; right: 10px; border-left: none; border-top: none; border-bottom-right-radius: 6px; }
+  .moldura b { position: absolute; left: 12px; bottom: 12px; font: 600 9px/1 var(--mono); letter-spacing: 0.14em;
+    color: rgba(220, 255, 240, 0.85); background: rgba(1, 8, 5, 0.72); border: 1px solid rgba(0, 255, 156, 0.35);
+    border-radius: 999px; padding: 6px 11px; text-transform: uppercase; }
+  #matrix { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.10; }
   .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5;
     background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px); }
   .vigneta { position: fixed; inset: 0; z-index: 2; pointer-events: none;
@@ -42,7 +55,7 @@
   /* ---- TOPBAR ---- */
   #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 20;
     display: flex; align-items: center; gap: 12px; padding: 9px 14px;
-    background: rgba(2, 8, 6, 0.82); backdrop-filter: blur(14px);
+    background: rgba(2, 10, 7, 0.95);
     border-bottom: 1px solid rgba(0, 255, 156, 0.14); }
   #topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
     background: linear-gradient(90deg, transparent, var(--verde) 20%, var(--azul) 80%, transparent); opacity: 0.7; }
@@ -79,12 +92,12 @@
 
   /* ---- PILHA DE PAINÉIS ---- */
   #pilha { position: relative; z-index: 5; max-width: 860px; margin: 0;
-    padding: 118px 14px 90px; display: block; }
+    padding: 10px 14px 90px; display: block; }
   .vista { display: none; flex-direction: column; gap: 14px; }
   .vista.on { display: flex; animation: sobe 0.38s cubic-bezier(0.2, 0.8, 0.2, 1); }
   @keyframes sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-  .card { position: relative; background: var(--painel); backdrop-filter: blur(14px);
+  .card { position: relative; background: var(--painel);
     border: 1px solid var(--painel-borda); border-radius: 14px; padding: 14px 16px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(0, 255, 156, 0.06); }
   .card::before, .card::after { content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none; }
@@ -141,9 +154,7 @@
     border-radius: 6px; overflow: hidden; margin-top: 7px; }
   .barra > div { height: 100%; width: 0%;
     background: linear-gradient(90deg, var(--verde), var(--azul));
-    box-shadow: 0 0 14px rgba(0, 255, 156, 0.55); transition: width 0.5s ease;
-    background-size: 200% 100%; animation: desliza 3s linear infinite; }
-  @keyframes desliza { from { background-position: 0 0; } to { background-position: 200% 0; } }
+    box-shadow: 0 0 14px rgba(0, 255, 156, 0.55); transition: width 0.5s ease; }
 
   /* ---- CRIAR: terminal + streaming + galeria ---- */
   .terminal { background: #010805; border: 1px solid rgba(0, 255, 156, 0.18); border-radius: 11px;
@@ -187,7 +198,7 @@
   /* ---- TOUR ---- */
   #tour { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 40;
     display: flex; align-items: center; gap: 10px; max-width: min(560px, 94vw);
-    background: rgba(2, 10, 7, 0.92); backdrop-filter: blur(12px);
+    background: rgba(2, 10, 7, 0.97);
     border: 1px solid rgba(0, 255, 156, 0.35); border-radius: 12px; padding: 11px 14px;
     box-shadow: 0 0 30px rgba(0, 255, 156, 0.18); font: 500 11.5px/1.5 var(--sans); color: var(--tinta); }
   #tour b { color: var(--verde); }
@@ -209,7 +220,8 @@
     .marca small { display: none; }
     .chip { padding: 4px 8px; font-size: 9px; }
     #tabs { top: 48px; padding: 7px 10px; }
-    #pilha { padding: 108px 8px 90px; }
+    #pilha { padding: 8px 8px 90px; }
+    .palco { margin-top: 92px; height: 42vh; }
     #gallery { grid-template-columns: 1fr 1fr; }
     .telemetria { grid-template-columns: repeat(3, 1fr); }
     .card { padding: 12px; }
@@ -223,8 +235,11 @@
 <body>
 <div id="boot-erro"></div>
 <div id="icon-sprite"></div>
-<canvas id="gl"></canvas>
-<canvas id="matrix"></canvas>
+<div class="palco">
+    <canvas id="gl"></canvas>
+    <div class="moldura" aria-hidden="true"><i></i><i></i><i></i><i></i><b>MUNDO VIVO · ARRASTE PARA ORBITAR · PINÇA PARA ZOOM</b></div>
+  </div>
+  <canvas id="matrix"></canvas>
 <div class="scanlines"></div>
 <div class="vigneta"></div>
 
@@ -242,6 +257,7 @@
       t.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
         document.querySelectorAll('.vista').forEach((v) => v.classList.toggle('on', v.id === 'vista-' + t.dataset.tab));
+        window.dispatchEvent(new Event('resize'));
       });
     });
   })();
@@ -264,17 +280,15 @@
       if (document.hidden) return;
       ctx.fillStyle = 'rgba(2, 6, 4, 0.10)';
       ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.font = '13px JetBrains Mono, monospace';
+      ctx.font = '12px JetBrains Mono, monospace';
       for (let i = 0; i < colunas.length; i++) {
         const y = colunas[i];
         const ch = G[(Math.random() * G.length) | 0];
         ctx.fillStyle = azul() ? '#00c2ff' : '#00ff9c';
-        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 7;
         ctx.fillText(ch, i * 15, y);
-        ctx.shadowBlur = 0;
         colunas[i] = y > cv.height + Math.random() * 400 ? 0 : y + 15;
       }
-    }, 66);
+    }, 90);
   })();
 
   // ---- GALERIA DE CRIAÇÕES: o que a IA cria vira CARD visível (e persiste)
@@ -385,7 +399,7 @@
     <div class="card" id="controls">
       <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>CLIMA E CAUSALIDADE <small>CHUVA → MOLHADO → EROSÃO</small></h2>
       <div class="linha">
-        <button id="w-audio" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg><span>áudio</span></button>
+        <button id="w-audio" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg><span id="w-audio-rot">áudio</span></button>
         <button id="w-clear" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cross"/></svg>limpar</button>
         <button id="w-rain" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-drop"/></svg>chuva</button>
         <button id="w-storm" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wave"/></svg>tempestade</button>
@@ -873,11 +887,11 @@
       audioDirector.openStream({ seed: 'uts-web' });
       ctx.resume?.();
       audioOn = true; lastAudioNow = performance.now();
-      $('w-audio span').textContent = 'mudo';
+      $('w-audio-rot').textContent = 'mudo';
     } else {
       audioDevice.close();
       audioOn = false;
-      $('w-audio span').textContent = 'áudio';
+      $('w-audio-rot').textContent = 'áudio';
     }
   });
   function pumpAudio(now, frame) {
