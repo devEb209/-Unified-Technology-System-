@@ -1,14 +1,12 @@
 # UTS — Unified Technology System
 
-> **UTS = PLATAFORMA GERAL · UES = ENGINE dentro da plataforma.**
-> Arquitetura para uma representação computacional da realidade.
-> RRW representa · a Tese dos D organiza · o D-O15 decide a resolução
-> necessária · a Singularity AI (AI-first) opera sobre tudo · a UES cria
-> e executa experiências (mundos, jogos, apps) · o renderer apenas manifesta.
+> **A plataforma onde realidade é representada de verdade — não desenhada.**
+> UTS = PLATAFORMA GERAL · UES = ENGINE dentro da plataforma · RRW = fonte da verdade.
+> Node **22+** · zero dependências de runtime · 100% ESM · **386 testes determinísticos (386/386)**.
 
-Node **22+** · zero dependências de runtime · 100% ESM.
+---
 
-## UTS (plataforma) vs UES (engine) — definição oficial
+## O que é
 
 ```
 UTS  plataforma geral: infraestrutura, serviços, IA-first, ferramentas.
@@ -17,11 +15,46 @@ UTS  plataforma geral: infraestrutura, serviços, IA-first, ferramentas.
                apps · projects (criações longas duráveis) · storage · events
 
 UES  engine da plataforma: cria, representa, simula e executa EXPERIÊNCIAS
-     de qualquer tipo (mundo, jogo, simulação, app) via manifests/rulesets.
+     (mundo, jogo, simulação, app) via manifests/rulesets.
      USA a infraestrutura da UTS. UES ⊂ UTS. A UTS é maior.
 ```
 
-## Chain
+**Duas regras supremas regem todo o código:**
+
+1. **Não simular a aparência quando podemos modelar a realidade que a produz.**
+   Fumaça é solver Euleriano (não partícula decorativa); som localiza por
+   difração de esfera rígida resolvida em série (não pan estéreo); luz tem
+   temperatura Planck e candela com 1/r² exato (não "cor com brilho").
+2. **Não otimizar destruindo a realidade** — otimiza-se a forma como ela é
+   representada, priorizada e materializada (D-O15: defere/reduz/re-representa,
+   nunca descarta).
+
+## Por que é diferente de qualquer engine atual
+
+Estas capacidades **existem e estão provadas por teste** — nenhuma engine,
+jogo ou plataforma do mercado as tem hoje como sistema:
+
+| Capacidade | Estado |
+|---|---|
+| Realidade causal com FONTE ÚNICA da verdade (RRW: entidades, relações, eventos, processos) | **VALIDATED** |
+| Determinismo `save → load → evoluir == original` (bit a bit, snapshots versionados, corrupção = erro explícito) | **VALIDATED** |
+| IA que opera a plataforma INTEIRA por chat: cria mundo, arquivos, apps, compila/descompila, gera APK/AAB e **binário único EXE (SEA)** | **VALIDATED** |
+| Criação em TODOS os Ds (2d/2.5d/3d/3.5d/4d), cutscenes, auto-dublagem, estilo dito no chat (colorista GLSL composto) | **VALIDATED** |
+| Física como realidade: energia ½mv², deformação por material, quaternion livre, cordas PBD, Arquimedes, vento e fumaça empurrando malhas compostas | **VALIDATED** |
+| Áudio como fenômeno: difração pela esfera rígida resolvida em SÉRIE DE RAYLEIGH (baffel +6dB, ILD crescente, ITD = 3a/c provada contra a analítica), acústica com atraso/sombra/absorção, muffle = filtro real | **VALIDATED** |
+| Óptica como lei: loco Planckiano nas âncoras CIE (D65 = (1,1,1) pela definição), spot por cosseno, luz de área amostrada, rig 3 pontos | **VALIDATED** |
+| Identidade dos artefatos: **assinatura ed25519** — um byte alterado reprova; chave privada nunca entra no código | **VALIDATED** |
+| Token streaming REAL (SSE atravessa o Core; mesma lei de validação) | **VALIDATED** (produção depende de chave via env) |
+
+**Honestidade sobre o resto:** em escala de PRODUÇÃO AAA (bibliotecas de
+conteúdo, décadas de otimização por plataforma, orçamento de centenas de
+artistas), engines como Unreal 5, Unity 6 e RAGE seguem à frente — isso é
+diferença de indústria, não de arquitetura. A superioridade do UTS hoje é
+**arquitetural** (o que está na tabela acima) e está na régua pública por
+eixo abaixo. A promessa do 100% é superar em TUDO — e cada eixo fecha com
+prova, não com adjetivo.
+
+## Arquitetura (uma verdade, derivada — nunca desenhada)
 
 ```
 USER → UTS PLATFORM (AI-first: ask() → Core/Providers/Models/Agents/Tools)
@@ -36,69 +69,60 @@ UES ENGINE (experiência: RealLife, ecologia, economia, NMN, sociedade)
         ↓
 FRAME (descrição visual DERIVADA do estado)
         ↓
-RendererBackend → Null | Text | **WebGL2 → GPU**
+RendererBackend → Null | Text | WebGL2 → GPU
 ```
 
-Em paralelo, o fluxo cognitivo:
+Fluxo cognitivo em paralelo:
 `entidades → índice espacial → percepção → NMN → decisão → ação → evento → causalidade → evolução`.
 
+## Rodar
 
-## Rodar em qualquer lugar (incl. Android/Termux)
+Requisito: **Node ≥ 22**. Sem dependências — `npm install` só instala a
+toolchain de build declarada (postject, para o binário SEA).
 
-O demo não tem dependências: só precisa de Node ≥ 22 (funciona no 26).
+### Android/Termux (o produto roda no celular)
 
 ```bash
-# Termux (Android) — CLONE DIRETO NUMA PASTA SIMPLES "uts" (evita o armadilha abaixo):
 pkg install -y git nodejs
 git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git uts
 cd uts
-cat package.json | grep name   # DEVE mostrar uts-unified-technology-system (se mostrar "home", você não está na pasta!)
-npm start            # ou: node demos/web/server.js
+npm install
+npm run genesis        # deixa RODANDO — não aperte ^C para usar
 ```
 
-Abra `http://localhost:8080` no navegador (no próprio celular).
-> A linha `UTS demo server: http://0.0.0.0:8080 ...` que o servidor imprime
-> é SAÍDA, não comando — não cole ela no terminal.
+Abra **`http://localhost:8080`** no navegador do próprio celular.
 
-### Se você já clonou e deu este erro:
+> A linha `escutando em 0.0.0.0:8080` que o servidor imprime é SAÍDA, não
+> endereço para digitar — `0.0.0.0` significa "todas as interfaces desta
+> máquina". O log novo já ensina: `localhost` neste aparelho, IP local para
+> outro aparelho na mesma rede.
 
-```
-Error: Cannot find module '/data/data/com.termux/files/home/demos/web/server.js'
-```
+> Se a pasta clonada for `-Unified-Technology-System-` (começa com traço),
+> entre com `cd ./-Unified-Technology-System-` — ou clone direto numa pasta
+> limpa `uts` como acima.
 
-**Causa:** o nome da pasta começa com TRAÇO (`-Unified-Technology-System-`),
-então `cd -Unified-Technology-System-` falha como "opção inválida" do bash e
-você fica em `~` sem perceber — e `node demos/web/server.js` procura o
-arquivo na pasta errada. **Solução (escolha uma):**
+### Desktop
 
 ```bash
-cd ./-Unified-Technology-System-      # ./ na frente neutraliza o traço
-# OU (mais simples): clone de novo numa pasta limpa
 git clone -b arena/01a048b9-unified-technology-system https://github.com/devEb209/-Unified-Technology-System-.git uts
-cd uts && npm start
+cd uts && npm install
+npm run genesis        # http://localhost:8080
 ```
 
-Verificação rápida de que está na pasta certa: `cat package.json | grep name`
-mostra `uts-unified-technology-system`.
-
-Desktop/macOS/Linux: mesmo fluxo (`git clone -b <branch> <url> uts`, `npm start`).
-
-## Quick start
+## Comandos
 
 ```bash
-npm test              # 386/386 testes determinísticos
-npm run demo:cli      # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
+npm test               # 386/386 testes determinísticos (node:test, zero deps)
+npm run genesis        # a plataforma viva no navegador (WebGL2 real)
+npm start              # mesmo servidor
+npm run demo:cli       # prova ponta-a-ponta no terminal (Core→mundo→frames→causas)
 node demos/platform.js # demo da PLATAFORMA (ask, apps, research, projects)
-node demos/genesis.js # demo GÊNESIS (física, streaming, sombras, áudio WAV, UTS-DB)
-```
+npm run bench          # percepção (500→10000 NPCs) + frame extraction
 
-```bash
-# R13: a IA opera a sua máquina (opt-in para comandos)
-UTS_WORKSPACE=./workspace npm start          # a IA cria arquivos em ./workspace
-UTS_ALLOW_EXEC=1 npm start                   # + executor de comandos (guarda ativa)
-# no demo: painel "IA no seu aparelho" → arquivo, comando, app .zip
-npm run demo          # demo WebGL2 no browser (http://localhost:8080)
-npm run bench         # percepção (500→10000 NPCs) + frame extraction
+# IA opera a sua máquina (opt-in, chaves NUNCA persistidas):
+UTS_WORKSPACE=./workspace npm start    # a IA cria arquivos em ./workspace
+UTS_ALLOW_EXEC=1 npm start             # + executor de comandos (guarda ativa)
+UTS_LLM_API_KEY=… npm start            # LLM real via SSE (ou OPENAI_API_KEY)
 ```
 
 ## Plataforma em 60 segundos
@@ -106,48 +130,51 @@ npm run bench         # percepção (500→10000 NPCs) + frame extraction
 ```js
 import { createUTS, createPlatform } from './src/index.js';
 
-const platform = createPlatform();               // UTS: a plataforma
+const platform = createPlatform();                 // UTS: a plataforma
 const uts = createUTS({ seed: 'mundo', platform }); // UES roda DENTRO dela
 
-await platform.ask('criar uma pequena vila próxima a um rio chamada Aurora'); // AI-first
+await platform.ask('criar uma pequena vila próxima a um rio chamada Aurora');
 
-const app = await platform.apps.install({ kind: 'tasks', name: 'Roadmap' });  // apps
+const app = await platform.apps.install({ kind: 'tasks', name: 'Roadmap' });
 await platform.apps.act(app.id, 'add', { text: 'dominar a realidade' });
 
-const project = await platform.projects.create('criar uma vila chamada Metrópole'); // criação longa
-await platform.projects.run(project.id, { maxSteps: 2 });  // orçamento → retomável depois
+const project = await platform.projects.create('criar uma vila chamada Metrópole');
+await platform.projects.run(project.id, { maxSteps: 2 });  // orçamento → retomável
 ```
 
-## Demo browser (WebGL2 real)
+## O navegador mostra a realidade, não uma cena
 
-`npm run demo` abre um mundo **gerado pela UES** e desenhado na GPU:
+`npm run genesis` abre um mundo **gerado pela UES** e desenhado na GPU:
 terreno do heightfield representado, NPCs com mentes (NMN), clima causal
-(chuva→molhado, tempestade→raio→fogo), dia/noite, agregados populacionais,
-LOD e pressão D-O15 no HUD. Painel Singularity aceita objetivos em linguagem
-natural (`criar uma pequena vila próxima a um rio chamada Vila Aurora`) e
-executa o fluxo Core→ferramentas→verificação ao vivo. Botões de save/load
-usam a persistência real (checksum+versão).
+(chuva→molhado, tempestade→raio→fogo que consome combustível), água com
+empuxo de Arquimedes, fumaça que é SOLUÇÃO do solver 3D e empurra corpos,
+dia/noite, LOD com pressão D-O15 no HUD — tudo derivado do RRW. O painel
+Singularity executa objetivos em linguagem natural ao vivo
+(`criar uma pequena vila próxima a um rio chamada Vila Aurora`), com token
+streaming quando há LLM configurado. Save/load usa a persistência real
+(checksum + versão + determinismo bit a bit).
 
 ## Layout
 
 ```
-src/core/           RNG determinístico, clock, perf, log
+src/core/           RNG determinístico, clock, perf, log, comm
 src/rrw/            Reality Representation Weave (fonte da verdade)
 src/d/              Tese dos D + D-O15
 src/spatial/        SpatialGrid (índice derivado)
 src/nmn/            Natural Mindset of NPCs
-src/world/          terreno, RealLife, sociedade/economia, streaming, World
-src/physics/        PhysicsWorld nativa (impactos causais, rotação, juntas PBD)
-src/audio/          synth/spatial (binaural) + música adaptativa + stream contínuo + devices
+src/world/          terreno, RealLife, sociedade/economia, streaming, World, fluid3d
+src/physics/        PhysicsWorld nativa (impactos, quaternion, PBD, Arquimedes, malhas compostas)
+src/audio/          synth/spatial + HRTF (paramétrica + SÉRIE DE RAYLEIGH exata) + música + devices
 src/ues/            scheduler, frame, orquestrador
-src/singularity/    Core, providers, modelos, agentes, tools, memória
+src/singularity/    Core, providers, agentes, tools, memória, streaming
+src/agent/          build-system (zip/APK/EXE SEA + ed25519), fs/proc, geometry/light/shader-smith
 src/render/         RHI, culling, materiais, iluminação, shaders, WebGL2 GÊNESIS, Null/Text
-src/persistence/    storage + snapshots + UTS-DB + autosave (gzip/recovery) + chunk-cache (LRU)
-src/core/comm.js    Comm (rotas/timeouts/pub-sub entre módulos)
-test/               160 testes (node:test, zero deps)
+src/persistence/    storage + snapshots + UTS-DB + autosave + chunk-cache (LRU)
+test/               386 testes (node:test, zero deps)
 bench/              percepção (brute vs grid) + frame
-demos/              CLI + browser (WebGL2) + GÊNESIS
-docs/canonical/     arquitetura, decisões (ADR-013..018), status honesto
+demos/              CLI + browser (WebGL2) + plataforma
+docs/canonical/     arquitetura, ADRs, progress.md (régua por eixo), status.md
+docs/launch/        ata de lançamento GENESIS v1 (chave pública, artefatos, hashes)
 ```
 
 ## Exemplo mínimo
@@ -166,30 +193,34 @@ new NullRenderer().render(frame);                   // …ou WebGL2 no browser
 const chain = uts.rrw.causalityChain(algumEventoId); // causalidade audível
 ```
 
-## Status honesto
+## Status honesto — 99.50 ≈ 100%
 
-Veja [`docs/canonical/status.md`](docs/canonical/status.md) e
-[`docs/canonical/progress.md`](docs/canonical/progress.md) — nada é
-declarado funcional sem teste que prove. **GÊNESIS: 87% (87.18 — física 81, render 88, IA 88, tools 68, áudio 90, stream 94: NOVE sistemas em um round)** (régua de
-fidelidade ADR-019). Funcional hoje: RRW causal, Tese dos D operacional,
-D-O15 adaptativo, percepção indexada (158× @10k NPCs), NMN,
-sociedade/economia, Frames, WebGL2 (7 programas), persistência
-determinística (agora COM os fenômenos), Singularity Core com fallback,
-os **fenômenos reais R1**: atmosfera (o céu é espalhamento do AR),
-hidrologia (água é substância com lâmina/solo), combustão (fogo é
-combustível+vento+umidade), ecologia (vegetação é população viva), e os
-**R2**: acústica (som tem atraso d/343, sombra de terreno; trovão longe é
-rumble grave), energia/deformação com materiais, comida = clima; **R3:
-escala** (o mar segue a câmera, poças aparecem, fogo distante brilha, vila
-distante é marcador causal); **R4: re-representação** (fogo abafado atrás
-da serra é um filtro real, cinzas desvanecem com a idade, chuva sob
-pressão fica menos+maior+mais rápida); **R5: criação** (gramática própria
-multi-comando, anexos csv/nomes viram realidade, florestas são árvores
-individuais); **R6: plataforma real** (streaming em workers byte-idênticos,
-LLM real via env sem nunca persistir a chave, busca web real via env,
-tour guiado no demo). Fila restante: agentes geradores de código, galeria
-de mundos, storage externo, deltas por-entidade.
+Régua pública por eixo em [`docs/canonical/progress.md`](docs/canonical/progress.md);
+estado narrado em [`docs/canonical/status.md`](docs/canonical/status.md).
+Nada é declarado funcional sem teste que prove.
+
+| Eixo (peso) | % | Estado |
+|---|---|---|
+| Core/núcleo (18) | **100** | FECHADO |
+| Render (14) | **100** | FECHADO (14/14 provas de render) |
+| Streaming/fio (10) | **100** | FECHADO |
+| Plataforma (12) | **100** | FECHADO (identidade ed25519) |
+| Usabilidade (10) | **100** | FECHADO |
+| Física (8) | **100** | FECHADO (fumaça empurra malhas compostas) |
+| Ferramentas (8) | **100** | FECHADO (forja de geometria + LUZ) |
+| Áudio (8) | 99 | falta o banco MEDIDO cru do dono (schema + interpoladora prontos: anexou, usa) |
+| IA (14) | 97 | falta a prova na NUVEM (chave via env — o código já é o de produção) |
+| **TOTAL** | **99.50** | **GENESIS v1 LANÇADO** |
+
+**Lançamento:** artefatos web + android + **EXE único SEA** assinados
+(ed25519), ata pública em [`docs/launch/GENESIS-v1.json`](docs/launch/GENESIS-v1.json).
+
+**Fila até o 100 absoluto:** banco HRTF medido anexado pelo dono · prova do
+streaming contra a nuvem com a chave · e a evolução contínua de fidelidade
+por eixo (a promessa: superar em TUDO, cada eixo com prova pública).
 
 ## Especificação
 
 A visão canônica completa do projeto está em `UTS.txt` (raiz, branch main).
+Decisões de arquitetura: `docs/canonical/` (ADR-013 UTS/UES, ADR-018 nativo
+primeiro, ADR-019 realidade primeiro, ADR-020 vence modelando).

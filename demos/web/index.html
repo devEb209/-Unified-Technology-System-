@@ -7,15 +7,20 @@
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: #05070d; color: #cfe3ff;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow: hidden; }
+  html, body { margin: 0; min-height: 100%; background: #05070d; color: #cfe3ff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-x: hidden; }
   #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  .panel { position: fixed; backdrop-filter: blur(6px); background: rgba(8, 14, 28, 0.72);
+  /* A PILHA: todos os painéis em FLUXO numa única coluna — sobreposição
+     é impossível por construção (desktop: coluna sobre o mundo; celular:
+     mundo em card no topo + coluna embaixo). */
+  #pilha { position: relative; z-index: 5; width: min(480px, calc(100vw - 16px));
+    margin: 0; padding: 10px 8px 72px; display: flex; flex-direction: column; gap: 10px; }
+  .panel { position: relative; backdrop-filter: blur(6px); background: rgba(8, 14, 28, 0.72);
     border: 1px solid rgba(90, 140, 255, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; }
-  #hud { top: 12px; left: 12px; min-width: 290px; line-height: 1.55; }
+  #hud { min-width: 290px; line-height: 1.55; }
   #hud b { color: #8fd0ff; font-weight: 600; }
-  #singularity { bottom: 12px; left: 12px; width: 430px; max-width: calc(100vw - 24px); }
-  #controls { top: 12px; right: 12px; text-align: right; }
+  #singularity { width: auto; }
+  #controls { text-align: left; }
   button, input[type=text] {
     font: inherit; background: #0d1730; color: #cfe3ff; border: 1px solid #2b4a8a;
     border-radius: 6px; padding: 5px 9px; cursor: pointer;
@@ -27,11 +32,9 @@
      vira PILHA rolável: o mundo em card no topo, painéis embaixo em
      fluxo. O desktop continua com o overlay de sempre. */
   @media (max-width: 700px) {
-    html, body { height: auto; overflow: visible; }
     #gl { position: relative; inset: auto; width: 100%; height: 46vh; touch-action: none; }
-    .panel, #tour { position: static; width: auto; max-width: none; margin: 8px; }
-    #tour { transform: none; }
-    #singularity { width: auto; margin-bottom: 28px; }
+    #pilha { width: auto; padding: 0 0 24px; }
+    .panel { margin: 0 8px; }
     #hud { min-width: 0; }
     #objective { width: auto; max-width: 100%; }
     #controls button, #controls select { max-width: 100%; }
@@ -55,6 +58,7 @@ button{display:inline-flex;align-items:center;gap:5px}
 <div id="icon-sprite"></div>
 <canvas id="gl"></canvas>
 
+<main id="pilha">
 <div class="panel" id="hud">
   <h1>UTS PLATFORM :: UES ENGINE :: RRW → D → D-O15 → FRAME → WEBGL2</h1>
   <div>tick <b id="s-tick">0</b> · fps <b id="s-fps">–</b> · draw calls <b id="s-draw">–</b></div>
@@ -160,6 +164,7 @@ button{display:inline-flex;align-items:center;gap:5px}
   </form>
   <div id="log">o núcleo interpreta objetivos, planeja, seleciona agentes/modelos, executa ferramentas validadas e verifica o resultado.</div>
 </div>
+</main>
 
 <script type="module">
   import { createUTS, WebGL2Renderer, TextRenderer, AudioDirector, WebAudioDevice } from '../../src/index.js';
