@@ -107,7 +107,9 @@ export function march(origin, dir, sunDir, cov, air = { intensity: 22 }, opts = 
 }
 
 // ---- GENERATED GLSL (same constants, same structure — do not hand-edit) ----
-const f = (x) => String(Number(x));
+// GLSL ES 3.0 é ESTRITO: inteiro não converte para float implicitamente
+// (driver de celular reprova `const float X = 190;`). Floats SEMPRE com ponto.
+const f = (x) => { const n = Number(x); return Number.isInteger(n) ? n + '.0' : String(n); };
 const C = CLOUD_CONST;
 export const CLOUD_GLSL = `// ---- clouds: GENERATED from CLOUD_CONST (src/render/clouds.js) — do not hand-edit
 const float C_LO = ${f(C.LO)};

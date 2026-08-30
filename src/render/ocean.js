@@ -73,7 +73,9 @@ export function waveNormal(grad) {
 }
 
 // ---- GENERATED GLSL (same constants, same structure — do not hand-edit) ----
-const f = (x) => String(Number(x));
+// GLSL ES 3.0 é ESTRITO: inteiro não converte para float implicitamente
+// (driver de celular reprova `const float X = 190;`). Floats SEMPRE com ponto.
+const f = (x) => { const n = Number(x); return Number.isInteger(n) ? n + '.0' : String(n); };
 const C = OCEAN_CONST;
 const waveTable = C.WAVES.map((w, i) =>
   `const float OK${i} = ${f(w.k)}; const float OS${i} = ${f((w.spread * Math.PI) / 180)}; const float OA${i} = ${f(w.a)};`).join('\n');

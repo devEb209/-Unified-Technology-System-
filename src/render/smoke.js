@@ -77,7 +77,9 @@ export function smokeMarch(origin, dir, fires, t, wind, windDir, skyLight = 0.8,
 }
 
 // ---- GENERATED GLSL (same constants — do not hand-edit) ----
-const f = (x) => String(Number(x));
+// GLSL ES 3.0 é ESTRITO: inteiro não converte para float implicitamente
+// (driver de celular reprova `const float X = 190;`). Floats SEMPRE com ponto.
+const f = (x) => { const n = Number(x); return Number.isInteger(n) ? n + '.0' : String(n); };
 const C2 = SMOKE_CONST;
 export const SMOKE_GLSL = `// ---- smoke: GENERATED from SMOKE_CONST (src/render/smoke.js) — do not hand-edit
 const float SM_R0 = ${f(C2.R0)};

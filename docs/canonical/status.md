@@ -340,7 +340,28 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R28 — A TDZ QUE MATAVA A PÁGINA (achada pelo banner; 99.78 → 99.86)
+## R29 — SHADERS ESTRICTOS (o driver do celular na GPU real; 99.86 → 99.92)
+
+**O segundo erro saiu do banner na primeira GPU REAL que a página
+enfrentou:** o compilador GLSL ES 3.0 do driver do aparelho é ESTRITO —
+`const float C_LO = 190;` (inteiro em float) reprova; os desktops
+toleram e a sandbox não tem GPU, por isso nunca tinha aparecido. Os 4
+erros denunciados (linhas 73/74/129/130 do SKY_FS) eram todos de BLOCOS
+GERADOS: nuvens (C_LO/C_HI) e fumaça (SM_R0/SM_TOP).
+
+**Conserto na FONTE:** os TRÊS geradores tinham a mesma lei quebrada
+`f = String(Number(x))` — clouds.js, smoke.js e ocean.js agora emitem
+float SEMPRE com ponto (`Number.isInteger(n) ? n + '.0' : String(n)`),
+e o quarto foco estático (OS0 = 0 nos shaders de água) virou 0.0.
+
+**A GUARDA PERMANENTE (r29):** linter estático sobre os 24 STRINGS de
+shader (funções incluídas, com e sem bloco de superficie) que reprova a
+classe inteira do erro — float declarado com literal inteiro e inteiro
+puro como argumento de builtin float — além de exigir que os consts
+gerados cheguem com ponto. O driver do celular nunca mais é o
+descobridor de bugs. Auditado: 391/391 testes.
+
+
 
 **O banner de boot cumpriu o papel dele na primeira batalha:** o usuário
 colou o erro NA TELA — `Cannot access '$' before initialization @ :462`
