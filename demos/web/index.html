@@ -22,6 +22,15 @@
   }
   button:hover { background: #16244d; }
   #objective { width: 300px; }
+  /* TELA PEQUENA (celular): painéis não vazam da tela */
+  @media (max-width: 700px) {
+    .panel { max-width: 94vw; font-size: 11px; padding: 8px; }
+    #hud { min-width: 0; max-width: 94vw; }
+    #controls { max-width: 94vw; }
+    #controls button, #controls select { max-width: 100%; }
+    #singularity { width: auto; max-width: calc(100vw - 24px); }
+    #objective { width: auto; max-width: 60vw; }
+  }
   #log { max-height: 180px; overflow: auto; margin-top: 8px; white-space: pre-wrap; color: #9fb8e8; }
   .ok { color: #7fe3a0; } .bad { color: #ff8f8f; }
   h1 { font-size: 13px; margin: 0 0 6px; color: #8fd0ff; letter-spacing: 0.08em; }
@@ -250,19 +259,35 @@ button{display:inline-flex;align-items:center;gap:5px}
     const el = $('apps-out');
     if (el) el.textContent = r.apps.length ? r.apps.map((a2) => a2.name + ' (' + (a2.bytes / 1024).toFixed(1) + 'KB)').join(' · ') : 'nenhum app ainda — crie e instale';
   };
-  // TRANSPORTE REAL: o pulse do GENESIS chega por WebSocket (RFC 6455)
-  try {
-    const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
-    ws.onopen = () => { const el = $('ws-live'); if (el) el.textContent = 'transporte: VIVO (WebSocket)'; };
+  // TRANSPORTE REAL: o pulse do GENESIS chega por WebSocket (RFC 6455).
+  // HONESTO: se o servidor não está alcançável, o rótulo DIZ onde tentou
+  // e o que fazer — nunca "conectando…" eterno.
+  const wsRótulo = (t) => { const el = $('ws-live'); if (el) el.textContent = t; };
+  let wsTentativas = 0;
+  const wsLiga = () => {
+    let ws;
+    try {
+      ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+    } catch {
+      wsRótulo(`transporte: SEM SERVIDOR em ${location.host} — rode "npm run genesis" e use a URL do preview`);
+      return;
+    }
+    ws.onopen = () => { wsTentativas = 0; wsRótulo('transporte: VIVO (WebSocket)'); };
     ws.onmessage = (ev) => {
       try {
         const j = JSON.parse(ev.data);
-        const el = $('ws-live');
-        if (el && j.type === 'genesis.pulse') el.textContent = `vivo via WS · clientes:${j.clients} · estilo:${j.style} · pulses:${j.sent}`;
+        if (j.type === 'genesis.pulse') wsRótulo(`vivo via WS · clientes:${j.clients} · estilo:${j.style} · pulses:${j.sent}`);
       } catch {}
     };
-    ws.onerror = () => { const el = $('ws-live'); if (el) el.textContent = 'transporte: direto (sem WS neste host)'; };
-  } catch {}
+    ws.onclose = () => {
+      wsTentativas++;
+      wsRótulaCorrige(wsTentativas);
+      if (wsTentativas <= 5) setTimeout(wsLiga, 2000 * wsTentativas);
+    };
+    ws.onerror = () => {};
+  };
+  const wsRótulaCorrige = (n) => wsRótulo(`transporte: SEM SERVIDOR em ${location.host} (tentativa ${n}) — o endereço 0.0.0.0 não abre no navegador; use a URL do preview ou localhost:8080`);
+  wsLiga();
   if ($('build-demo')) $('build-demo').onclick = async () => {
     say('… gerando app web');
     const r = await fetch('/api/build', { method: 'POST', body: JSON.stringify({ name: 'MeuJogo', target: 'web', title: 'Meu Jogo (Genesis)' }) });
