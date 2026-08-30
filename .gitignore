@@ -5,3 +5,4 @@ demos/out/
 
 # runtime da IA (criado ao vivo pelo agente)
 workspace/
+dist/

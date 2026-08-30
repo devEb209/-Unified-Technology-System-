@@ -86,7 +86,9 @@ export function loadMeasuredTable(table) {
     }
   }
   if (errs.length) throw new Error(`hrtf: tabela medida recusada — ${errs[0]} (schema: ${JSON.stringify(HRTF_SCHEMA).slice(0, 120)}…)`);
-  return Object.freeze({ ...table, label: 'MEDIDA (banco anexado pelo dono)' });
+  // a proveniência é HONESTA: a base anexada carrega o PRÓPRIO rótulo
+  // (medida crua, solução exata, banco do dono…); sem rótulo, é medida
+  return Object.freeze({ ...table, attached: true, label: table.label ?? 'MEDIDA (banco anexado pelo dono)' });
 }
 
 /** bracketing cells + weights (binlinear; the ear turns SMOOTH) */

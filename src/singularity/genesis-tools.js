@@ -15,6 +15,7 @@ import { veilOf } from '../render/vision.js';
 import { createGame, GENRES } from '../agent/creator.js';
 import { composeOptics, forgeLook, composeColorPipeline, COLOR_STAGES, COLOR_PRESETS, composeSurfacePipeline, SURFACE_STAGES, SURFACE_PRESETS, EFFECTS } from '../agent/shader-smith.js';
 import { composeGeometry, GEOMETRY_KINDS } from '../agent/geometry-smith.js';
+import { forgeLight, LIGHT_KINDS, selfTests as lightSelfTests } from '../agent/light-smith.js';
 import { DeltaStream } from '../net/sync.js';
 import { UserApps } from '../platform/user-apps.js';
 import { PARAMETRIC_TABLE, loadMeasuredTable, applyHRTF } from '../audio/hrtf.js';
@@ -170,6 +171,15 @@ export function registerGenesisTools({ core, ues, world, workspace = null, proc 
       for (const k of ['níveis', 'comprimento', 'galhos', 'faces', 'altura', 'raio', 'subdiv', 'rugosidade']) if (p[k] !== undefined) params[k] = p[k];
       const r = composeGeometry({ kind: p.kind ?? 'arvore', params, seed: p.seed ?? 'genesis' });
       return { kind: r.kind, stats: r.stats, selfTest: r.selfTest, honest: r.honest, ok: r.selfTest.ok };
+    },
+  });
+  tools.register('agent.light', {
+    desc: `a FORJA DE LUZ: temperatura Planck (Kelvin→cromatura nas âncoras CIE), candela→lux com INVERSO DO QUADRADO exato, spot pela lei do cosseno, luz de ÁREA amostrada (suave de perto), rig 3 pontos (key/fill/rim) — determinística, kinds: ${Object.keys(LIGHT_KINDS).join(', ')}`,
+    schema: { kind: { type: 'string' }, kelvin: { type: 'number' }, candela: { type: 'number' }, x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' }, spotDeg: { type: 'number' }, exponent: { type: 'number' }, areaW: { type: 'number' }, areaH: { type: 'number' }, samples: { type: 'number' }, seed: { type: 'number' }, keyCd: { type: 'number' }, fillCd: { type: 'number' }, rimCd: { type: 'number' }, rigDist: { type: 'number' } },
+    fn: async (p) => {
+      const l = forgeLight(p);
+      const provas = lightSelfTests();
+      return { kind: l.kind, kelvin: l.kelvin, rgb: l.rgb, chroma: l.chroma ?? null, cutMeters: l.cutMeters ?? null, panel: l.panel ?? null, lights: l.lights ? l.lights.map((L) => ({ nome: L.nome, cd: L.cd })) : undefined, sample: l.evaluate ? l.evaluate([l.pos?.[0] ?? 0, 0, l.pos?.[2] ?? 0]) : undefined, selfTest: { ok: provas.every((t) => t.ok), provas: provas.length }, ok: provas.every((t) => t.ok) };
     },
   });
   tools.register('genesis.critique', {

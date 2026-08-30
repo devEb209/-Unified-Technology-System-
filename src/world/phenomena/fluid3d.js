@@ -67,8 +67,18 @@ export class Fluid3D {
   }
 
   /** amostragem trilinear (a mesma lei no advec e na leitura) */
-  _sample(field, gi, gj, gk) {
-    const i0 = Math.max(0, Math.min(this.nx - 1, Math.floor(gi)));
+  /** AMOSTRA TUDO no ponto do mundo (trilinear, a mesma lei do advec):
+   *  é a interface do solver com a FÍSICA dos corpos (empuxo/arrasto) */
+  sampleAll(x, y, z) {
+    const [gi, gj, gk] = this.worldToGrid(x, y, z);
+    return {
+      dens: this._sample(this.dens, gi, gj, gk),
+      temp: this._sample(this.temp, gi, gj, gk),
+      vel: [this._sample(this.u, gi, gj, gk), this._sample(this.v, gi, gj, gk), this._sample(this.w, gi, gj, gk)],
+    };
+  }
+
+  _sample(field, gi, gj, gk) {    const i0 = Math.max(0, Math.min(this.nx - 1, Math.floor(gi)));
     const j0 = Math.max(0, Math.min(this.ny - 1, Math.floor(gj)));
     const k0 = Math.max(0, Math.min(this.nz - 1, Math.floor(gk)));
     const i1 = Math.min(this.nx - 1, i0 + 1), j1 = Math.min(this.ny - 1, j0 + 1), k1 = Math.min(this.nz - 1, k0 + 1);

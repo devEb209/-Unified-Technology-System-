@@ -1,0 +1,33 @@
+{
+  "lancamento": "GENESIS v1 — Unified Technology System",
+  "data": "2026-08-30",
+  "chave": {
+    "tipo": "ed25519",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEARt2uEO72F5qDkuVapQQIch7htTq5cpvCY7D+dTJXKBY=\n-----END PUBLIC KEY-----\n",
+    "fingerprint": "43f2ac94f9804d0716203e3a6a8d19fa"
+  },
+  "artefatos": [
+    {
+      "target": "web",
+      "bytes": 893,
+      "sha256": "00d4cedc89c796d01102e18e13d513de3e29e0a3c62c9a2fb7764924596c3381",
+      "assinado": true,
+      "artefato": "Genesis.zip"
+    },
+    {
+      "target": "android",
+      "bytes": 2405,
+      "sha256": "699a890ad9709bea9edf627eeca11a5ab463025da9bbfd936d486f296c29eb9a",
+      "assinado": true,
+      "artefato": "Genesis-android-kit.zip"
+    },
+    {
+      "target": "exe",
+      "bytes": 124914880,
+      "sha256": "540d2f5b9985da55bda4b2a835806fffd5258328e094e5b46f9f256e1ec25fd2",
+      "assinado": true,
+      "artefato": "Genesis"
+    }
+  ],
+  "lei": "o selo carrega hash+assinatura: um byte alterado reprova, chave trocada reprova; a chave PRIVADA nunca entra no repositório (mesma lei da API key)"
+}

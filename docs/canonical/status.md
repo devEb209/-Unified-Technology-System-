@@ -340,7 +340,52 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R24 — A ÚLTIMA MILHA HONESTA (o fio fala token; o artefato tem nome; 98.52 → 99.18)
+## R25 — LUZ E SOM MEDIDOS PELA FÍSICA (a orelha exata, a luz forjada; 99.18 → 99.50)
+
+**A BASE EXATA DA ORELHA (audio/sphere-hrtf):** a solução em SÉRIE DE
+RAYLEIGH para a difração de onda plana pela esfera rígida (o problema
+canônico do qual KEMAR/CIPIC são a medida) — H(Γ,f) fechada por soma
+harmônica esférica com Bessel por recorrência determinística e a
+identidade de Wronskian B_n = −i/(x²·h_n′). A tabela sai NO MESMO
+schema do banco medido (13 az × 6 el, 48 taps) e passa pela MESMA
+loadMeasuredTable e pela MESMA interpoladora binlinear. Provado contra
+a física: transparência em baixa frequência (0.05dB), ganho de baffel
++6dB (1.98×), ILD crescente (1.8→7.0dB) e a ITD = 3a/c de RAYLEIGH
+(774µs medidos vs 765µs analíticos — o resultado clássico, não a
+aproximação geométrica de Woodworth). Convenções erradas matam a
+sombra: e^{−iωt} sai com h^{(2)} — a que deu a física certa.
+
+**A FORJA DE LUZ (agent/light-smith, tool agent.light):** o mesmo molde
+da forja de geometria. Temperatura REAL (loco Planckiano, Hernandez-
+Andres 1999, âncoras CIE: corpo negro 6504K = (0.3135, 0.3236); o
+branco D65 da DEFINIÇÃO sRGB sai (1,1,1)); fotometria REAL (candela→
+lux, 1/r² EXATO a 1e-12; corte no piso de visibilidade); spot pela lei
+do cosseno; luz de ÁREA com amostras semeadas (suavidade real de
+perto); RIG 3 pontos consistente com o ponto a 1e-9; gamut honesto
+(dessatura, nunca clamp). 13 provas. Detalhe honesto: D65 é loco
+DAYLIGHT — o corpo negro vizinho é (0.3135, 0.3236); os dois testes
+convivem com as duas âncoras certas.
+
+**A FUMAÇA EMPURRA MALHAS COMPOSTAS (physics + fluid3d):** o solver 3D
+ganhou sampleAll (trilinear, a lei do advec) e a física ganhou PARTES:
+massa composta = soma das partes (ρV/4 cada), raio de colisão alcança
+a parte mais distante, silhueta soma as áreas. Força POR PARTE no
+plume: arrasto ½ρ·Cd·A·|v_rel|·v_rel com Cd de ESFERA (0.47) e ρ
+engordando com a fumaça, empuxo de Archimedes do fluido presente
+(fumaça ~0.12% da água — honesto), TORQUE Σ r×F no ar. PORTÃO DE
+CONTATO: corpo apoiado não tomba pela fumaça (a normal segura) — fogo
+tomba o dirigível de madeira (0.74 rad), pedra apoiada nem sente
+(0.0001 rad). Reconstrução bit a bit idêntica.
+
+**O LANÇAMENTO (o pacto):** artefatos GENESIS v1 construídos e
+ASSINADOS (ed25519): web (zip), android (kit) e EXE único SEA de
+119MB — selos hash+assinatura VERIFICADOS; ata pública em
+docs/launch/GENESIS-v1.json com a chave pública e fingerprints; a
+chave privada nunca entra no repositório. A nuvem por env já estava
+pronta (UTS_LLM_API_KEY/BASE_URL/MODEL no servidor; SSE ao vivo).
+**386/386 testes. FÍSICA 8/8 e FERRAMENTAS 8/8 FECHADOS.**
+
+ (o fio fala token; o artefato tem nome; 98.52 → 99.18)
 
 **TOKEN STREAMING REAL (core + external):** o interpretObjectiveStream
 usa o stream do provider quando ele existe: os TOKENS da nuvem

@@ -121,6 +121,32 @@ export class PhysicsWorld {
     return (this.world.terrain.height(x, z) ?? 0) + d;
   }
 
+  /** SILHUETA para o arrasto do ar: malha composta soma as áreas das
+   *  partes (a verdade geométrica), corpo simples usa o próprio raio */
+  _silhouette(ph) {
+    if (ph.parts) {
+      let a = 0;
+      for (const p of ph.parts) a += Math.PI * p.radius * p.radius;
+      return a;
+    }
+    return Math.PI * ph.radius * ph.radius;
+  }
+
+  /** offset local → mundo girado pelo quaternion do corpo (identidade se q identidade) */
+  static _rotOffset(v, q) {
+    const [qx, qy, qz, qw] = q;
+    if (qx === 0 && qy === 0 && qz === 0 && qw === 1) return [v[0], v[1], v[2]];
+    // t = 2·(q_xyz × v);  v' = v + qw·t + q_xyz × t
+    const tx = 2 * (qy * v[2] - qz * v[1]);
+    const ty = 2 * (qz * v[0] - qx * v[2]);
+    const tz = 2 * (qx * v[1] - qy * v[0]);
+    return [
+      v[0] + qw * tx + (qy * tz - qz * ty),
+      v[1] + qw * ty + (qz * tx - qx * tz),
+      v[2] + qw * tz + (qx * ty - qy * tx),
+    ];
+  }
+
   /** ENTRAR NA ÁGUA com velocidade é um SOM e um evento causal (a água abafa ~metade da energia) */
   _splash(body, speed, tick, frac) {
     this.stats.splashes = (this.stats.splashes ?? 0) + 1;
@@ -190,15 +216,34 @@ export class PhysicsWorld {
   addBody({
     pos, vel = [0, 0, 0], radius = 0.6, mass = null,
     restitution = 0.35, friction = 0.7, causeEvent = null, label = 'rock',
-    omega = 0, pinned = false, material = 'rock', spin = null,
+    omega = 0, pinned = false, material = 'rock', spin = null, parts = null,
   }) {
     // REALITY: mass comes from the MATERIAL's density and the body's volume
     // (rock is heavy, wood is light); deformation behavior follows the material.
     const mat = MATERIALS[material] ?? MATERIALS.rock;
-    const m = mass ?? Math.max(0.2, mat.density * (4 / 3) * Math.PI * radius ** 3 / 4);
-    // planar rotation (yaw) with disc inertia — matches OUR renderer's
-    // instance transform; full 3D ragdoll rotation stays PLANNED (honest)
-    const inertia = 0.4 * m * radius * radius;
+    // MALHA COMPOSTA: partes reais com material próprio — a massa total é a
+    // SOMA das partes (cada uma ρV/4), o raio de colisão alcança a parte
+    // mais distante e a inércia soma os discos das partes.
+    let m, inertia, pl = null, reach = radius;
+    if (Array.isArray(parts) && parts.length > 0) {
+      let mTot = 0; inertia = 0;
+      pl = parts.map((p) => {
+        const pm = MATERIALS[p.material ?? material] ?? MATERIALS.rock;
+        const pr = Math.max(0.05, p.radius ?? radius);
+        const off = p.offset ?? [0, 0, 0];
+        const mp = pm.density * (4 / 3) * Math.PI * pr ** 3 / 4;
+        mTot += mp;
+        inertia += 0.4 * mp * pr * pr;
+        reach = Math.max(reach, Math.hypot(off[0] ?? 0, off[1] ?? 0, off[2] ?? 0) + pr);
+        return { offset: [off[0] ?? 0, off[1] ?? 0, off[2] ?? 0], radius: pr, material: p.material ?? material, density: pm.density };
+      });
+      m = mass ?? Math.max(0.2, mTot);
+    } else {
+      m = mass ?? Math.max(0.2, mat.density * (4 / 3) * Math.PI * radius ** 3 / 4);
+      // planar rotation (yaw) with disc inertia — matches OUR renderer's
+      // instance transform; full 3D ragdoll rotation stays PLANNED (honest)
+      inertia = 0.4 * m * radius * radius;
+    }
     const ent = this.world.rrw.createEntity({
       kind: 'prop',
       materialization: 'full',
@@ -207,9 +252,9 @@ export class PhysicsWorld {
       pos: [pos[0], pos[1] ?? 0, pos[2]],
       yaw: 0,
       components: {
-        physics: { vel: [...vel], radius, mass: m, restitution, friction, asleep: false, causeEvent,
+        physics: { vel: [...vel], radius: reach, mass: m, restitution, friction, asleep: false, causeEvent,
                    omega, inertia, spinFriction: 0.9, pinned, material, deformation: 0,
-                   spin: spin ? [...spin] : [0, 0, 0], quat: [0, 0, 0, 1] },
+                   spin: spin ? [...spin] : [0, 0, 0], quat: [0, 0, 0, 1], parts: pl },
       },
     });
     this.world.grid.update(ent.id, pos[0], pos[2]);
@@ -300,13 +345,66 @@ export class PhysicsWorld {
       // a lâmina leve voa, a rocha nem sente). Determinístico.
       const env = this.world.environment;
       const ws = env?.wind ?? 0;
+      const areaSilhueta = this._silhouette(ph);
       if (ws > 0.05 && !ph.pinned) {
         const wd = env.windDir ?? [1, 0];
         const rhoMat = (MATERIALS[ph.material ?? 'rock'] ?? MATERIALS.rock).density;
-        const area = Math.PI * ph.radius * ph.radius;
-        const f = (1.2 * 0.9 * ws * ws * area * 1.1) / (ph.mass ?? 1) * (2.6 / rhoMat);
+        const f = (1.2 * 0.9 * ws * ws * areaSilhueta * 1.1) / (ph.mass ?? 1) * (2.6 / rhoMat);
         ph.vel[0] += wd[0] * f * dt;
         ph.vel[2] += wd[1] * f * dt;
+      }
+      // ACOPLAMENTO FUMAÇA-CORPO (o solver 3D é dono do ar local): força
+      // POR PARTE em malhas compostas — arrasto com a velocidade LOCAL do
+      // fluido (½ρ·Cd·A·|v_rel|·v_rel, o ar engorda com a fumaça presente)
+      // + empuxo de Archimedes do fluido DESLOCADO (fumaça ~0.12% da água
+      // por unidade de dens — honesto: empurra, não levanta rocha). O
+      // TORQUE Σ r×F gira a malha: a parte dentro do plume empurra o lado
+      // dela para cima. Determinístico (amostragem trilinear do solver).
+      const f3d = this.world.fluid3d;
+      if (f3d && !ph.pinned && !ph.asleep) {
+        const rhoMat = (MATERIALS[ph.material ?? 'rock'] ?? MATERIALS.rock).density;
+        const plist = ph.parts ?? null;
+        const mTot = ph.mass ?? 1;
+        const iner = Math.max(0.05, ph.inertia ?? 0.1);
+        const pts = plist ?? [{ offset: [0, 0, 0], radius: ph.radius, density: rhoMat }];
+        let fx = 0, fy = 0, fz = 0, tqx = 0, tqy = 0, tqz = 0;
+        // PORTÃO DE CONTATO: corpo APOIADO não tomba pelo arrasto da fumaça
+        // (a normal do chão segura a rotação — realidade); no AR, tomba
+        const grounded = sp.pos[1] - ph.radius <= terrain.height(sp.pos[0], sp.pos[2]) + 0.05;
+        for (const part of pts) {
+          const off = plist ? PhysicsWorld._rotOffset(part.offset, ph.quat ?? [0, 0, 0, 1]) : part.offset;
+          const s = f3d.sampleAll(sp.pos[0] + off[0], sp.pos[1] + off[1], sp.pos[2] + off[2]);
+          if (s.dens <= 0.02) continue;
+          const presence = Math.min(1, s.dens / 0.05);
+          const areaP = Math.PI * part.radius * part.radius;
+          const rhoEff = 1.2 * (1 + 0.15 * s.dens);
+          const rvx = ph.vel[0] - s.vel[0], rvy = ph.vel[1] - s.vel[1], rvz = ph.vel[2] - s.vel[2];
+          const speed = Math.hypot(rvx, rvy, rvz);
+          if (speed > 1e-4) {
+            // aceleração do arrasto (a massa total divide a força)
+            const k = (0.5 * rhoEff * 0.47 * areaP * speed * presence / mTot) * (2.6 / part.density); // Cd 0.47 = ESFERA (livro-texto)
+            const axp = -rvx * k, ayp = -rvy * k, azp = -rvz * k;
+            fx += axp; fy += ayp; fz += azp;
+            if (plist && !grounded) {
+              // τ = r × F com F = a·m_total → ω̇ = τ/I
+              const Fx = axp * mTot, Fy = ayp * mTot, Fz = azp * mTot;
+              tqx += off[1] * Fz - off[2] * Fy;
+              tqy += off[2] * Fx - off[0] * Fz;
+              tqz += off[0] * Fy - off[1] * Fx;
+            }
+          }
+          // empuxo de Archimedes do fluido presente (fumaça ~1.2e-3 da água)
+          fy += 22 * 1.2e-3 * s.dens * presence * (2.6 / part.density);
+        }
+        if (fx !== 0 || fy !== 0 || fz !== 0) {
+          ph.vel[0] += fx * dt; ph.vel[1] += fy * dt; ph.vel[2] += fz * dt;
+          if (plist) {
+            ph.spin[0] += (tqx / iner) * dt;
+            ph.spin[1] += (tqy / iner) * dt;
+            ph.spin[2] += (tqz / iner) * dt;
+            ph.asleep = false; // força viva: corpo no plume não dorme
+          }
+        }
       }
       for (let i = 0; i < 3; i++) sp.pos[i] += ph.vel[i] * dt;
       sp.yaw = (sp.yaw ?? 0) + ph.omega * dt;
