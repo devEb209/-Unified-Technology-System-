@@ -23,13 +23,18 @@
   button:hover { background: #16244d; }
   #objective { width: 300px; }
   /* TELA PEQUENA (celular): painéis não vazam da tela */
+  /* TELA PEQUENA (celular): NADA de painéis fixed colidindo — a página
+     vira PILHA rolável: o mundo em card no topo, painéis embaixo em
+     fluxo. O desktop continua com o overlay de sempre. */
   @media (max-width: 700px) {
-    .panel { max-width: 94vw; font-size: 11px; padding: 8px; }
-    #hud { min-width: 0; max-width: 94vw; }
-    #controls { max-width: 94vw; }
+    html, body { height: auto; overflow: visible; }
+    #gl { position: relative; inset: auto; width: 100%; height: 46vh; touch-action: none; }
+    .panel, #tour { position: static; width: auto; max-width: none; margin: 8px; }
+    #tour { transform: none; }
+    #singularity { width: auto; margin-bottom: 28px; }
+    #hud { min-width: 0; }
+    #objective { width: auto; max-width: 100%; }
     #controls button, #controls select { max-width: 100%; }
-    #singularity { width: auto; max-width: calc(100vw - 24px); }
-    #objective { width: auto; max-width: 60vw; }
   }
   #log { max-height: 180px; overflow: auto; margin-top: 8px; white-space: pre-wrap; color: #9fb8e8; }
   .ok { color: #7fe3a0; } .bad { color: #ff8f8f; }
@@ -321,6 +326,16 @@ button{display:inline-flex;align-items:center;gap:5px}
   }
   const renderer = new WebGL2Renderer(gl, { canvas });
   renderer.init();
+  // O OLHO: o BUFFER do canvas segue o ELEMENTO (devicePixelRatio até 2).
+  // Antes o buffer ficava no default 300×150 esticado — borrado. O draw()
+  // lê canvas.width/height a cada frame e reajusta viewport/FBO sozinho.
+  const fitGL = () => {
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.max(2, Math.round(canvas.clientWidth * d));
+    canvas.height = Math.max(2, Math.round(canvas.clientHeight * d));
+  };
+  fitGL();
+  addEventListener('resize', fitGL);
 
   // ---- camera orbit
   let drag = null;
