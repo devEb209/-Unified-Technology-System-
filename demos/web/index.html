@@ -500,6 +500,7 @@
         <h1>GENESIS</h1>
         <p id="hero-linha">O que você quer criar?</p>
       </div>
+      <div id="palco-home" style="margin:-4px 0 4px"></div>
       <div class="compositor">
         <input id="chat-input" type="text" placeholder='Descreva ao sistema — "crie um mundo medieval com um rio e três cidades"' />
         <button id="chat-enviar" class="btn forte"  style="width:auto;padding:13px 20px">
@@ -607,11 +608,11 @@
     <section class="area" id="area-ues">
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
         <h2>UES · ENGINE</h2><span class="mini">a engine dentro da plataforma — o mundo roda nas leis físicas</span></div>
-      <div class="palco" id="palco">
+      <div id="palco-ues"><div class="palco" id="palco">
         <canvas id="gl"></canvas>
-        <div class="moldura" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="moldura" aria-hidden="true"><i></i><i></i><i></i><i></i><b id="gpu-badge" style="left:auto;right:12px;top:12px;bottom:auto">GPU · detectando…</b></div>
         <div id="hud">MUNDO VIVO · ARRASTE PARA ORBITAR · PINÇA PARA ZOOM</div>
-      </div>
+      </div></div>
       <div class="grade" style="margin-top:14px">
         <div class="card" id="controls">
           <h3>CONTROLES DO MUNDO <span class="badge">FUNCTIONAL</span></h3>
@@ -1204,6 +1205,15 @@
     let appLigado = false;
     function ligarApp(usuario) {
       $('user-nome').textContent = usuario; $('settings-user').textContent = usuario;
+      // A REALIDADE NASCE AQUI: sem ?world= o engine cria um mundo VAZIO — então
+      // o primeiro login entra direto no Vale do Alvorecer (alvorada + neblina real)
+      if (!new URLSearchParams(location.search).get('world') && !sessionStorage.getItem('uts.mundo.v1')) {
+        sessionStorage.setItem('uts.mundo.v1', '1');
+        location.replace('?world=vale' + (location.hash || '#utsai'));
+        return; // a página recarrega; a sessão pula o login
+      }
+      const palco0 = $('palco'), casa0 = $('palco-home');
+      if (palco0 && casa0 && palco0.parentElement !== casa0) casa0.appendChild(palco0);
       $('app').classList.add('aberto');
       window.dispatchEvent(new Event('resize'));
       if (appLigado) return; appLigado = true;
@@ -1239,6 +1249,8 @@
       document.querySelectorAll('.nav-i').forEach((b) => b.classList.toggle('on', b.dataset.area === area));
       document.querySelectorAll('#nav-inferior button[data-area]').forEach((b) => b.classList.toggle('on', b.dataset.area === area));
       $('area-atual').textContent = NOMES[area];
+      const palco = $('palco');
+      if (palco) (area === 'ues' ? $('palco-ues') : $('palco-home'))?.appendChild(palco);
       location.hash = area; history.replaceState(null, '', '#' + area);
       $('sidebar').classList.remove('aberto');
       fecharMenus();
@@ -1356,6 +1368,8 @@
         toast('azul', 'BUILD: o mundo está nascendo — acompanhe no UES');
         registraExecucao(txt);
       } else {
+        const st = (id) => ($(id)?.textContent ?? '').trim();
+        bolha('ia', 'SISTEMA AO VIVO — fps ' + (st('s-fps') || '—') + ' · tick ' + (st('s-tick') || '0') + ' · npcs ' + (st('s-npc') || '0') + ' · clima ' + (st('s-weather') || '—') + ' · eventos ' + (st('s-ev') || '0') + '\nEncaminhado ao agente REAL (modelo da sua camada Puter) — a resposta dele chega na próxima bolha.');
         $('goal-input').value = (contextoIA !== 'GLOBAL' ? '[contexto: ' + contextoIA + '] ' : '') + txt;
         $('goal-go').click();
         registraExecucao(txt);
@@ -1511,6 +1525,14 @@
         $('logs-mirror').textContent = (q ? linhas.filter((l) => l.toLowerCase().includes(q)) : linhas).slice(-60).join('\n'); });
       const wsObs = new MutationObserver(() => { const w = $('ws-live'); if (w && w.textContent) w.style.display = ''; });
       if ($('ws-live')) wsObs.observe($('ws-live'), { childList: true, characterData: true, subtree: true });
+      // caminho de renderização REAL (o boot denuncia: WebGL2 real × modo texto)
+      const obsGpu = new MutationObserver(() => {
+        const t = ($('log').textContent || ''); const b = $('gpu-badge');
+        if (!b) return;
+        if (/WebGL2 real/.test(t)) b.textContent = 'GPU REAL · WEBGL2 GENESIS';
+        else if (/SEM WebGL2/.test(t)) b.textContent = 'SEM WEBGL2 · MODO TEXTO HONESTO';
+      });
+      if ($('log')) obsGpu.observe($('log'), { childList: true, characterData: true, subtree: true });
     }
     function exportarLogs() {
       const txt = ($('log').textContent || 'sem logs') + '\n\ncriações: ' + JSON.stringify(le(CHAVE_CRIACOES, []), null, 1);

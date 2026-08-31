@@ -340,6 +340,28 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R33 — A REALIDADE NASCE NO LOGIN (mundo no primeiro olhar; IA responde na hora)
+
+**O usuário confirmou o redesign ("MUITO melhor") e apontou as duas
+feridas restantes: nenhum mundo real pra ver, e a IA da aba inicial
+não respondia como devia. Raízes achadas no módulo: sem `?world=` o
+engine cria um mundo com `setup: () => {}` — VAZIO; e o palco morava
+só no UES (a home não mostrava realidade nenhuma).**
+
+**Três consertos de raiz:** (1) A REALIDADE NASCE NO LOGIN — o primeiro
+login entra direto no Vale do Alvorecer (`?world=vale`: alvorada +
+chuva + neblina de radiação real, sem clique nenhum); sessão guarda o
+flag, presets do usuário continuam valendo. (2) O PALCO ACOMPANHA — o
+mundo vive na HOME do UTS AI (embaixo do hero) e se move para o UES ao
+navegar (reparenting do canvas, context intacto, resize re-medido) —
+a primeira tela mostra a conversa com a IA E a realidade viva ao lado.
+(3) A IA RESPONDE NA HORA — no modo CHAT, a primeira bolha é a
+TELEMETRIA REAL do engine (fps · tick · npcs · clima · eventos, lida
+dos s-*) com o encaminhamento ao agente; a resposta do modelo (Puter)
+chega na bolha seguinte pelo espelho do terminal — a home nunca mais
+fica muda, nem offline. Diagnóstico honesto no palco: badge GPU lê o
+boot (WEBGL2 GENESIS real × MODO TEXTO HONESTO). Auditado: 391/391.
+
 ## R32 — A GENESIS COMPLETA (login → UTS AI → 32 áreas; a performance como lei)
 
 **O PROMPT SUPREMO, implementado:** o usuário entregou a especificação
