@@ -1,41 +1,282 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-tema="matrix" data-fx="high" data-fonte="m">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>UTS GENESIS — a plataforma onde realidade é representada</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%2300ff9c' stroke-width='1.8' d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z'/%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%2300ff9c'/%3E%3C/svg%3E" />
+<meta name="theme-color" content="#010704" />
+<title>GENESIS — Unified Technology System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet" />
-<script src="https://js.puter.com/v2/"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #020604;
-    --painel: rgba(3, 13, 9, 0.88);
-    --painel-borda: rgba(0, 255, 156, 0.20);
-    --verde: #00ff9c;
-    --verde-2: #7dffc8;
-    --azul: #00c2ff;
-    --azul-2: #4da3ff;
-    --tinta: #dcfff0;
-    --fraca: #6fa893;
+    --bg: #010704; --verde: #00ff9c; --azul: #00c2ff; --azul-2: #4da3ff;
+    --tinta: #dcfff0; --fraca: #6fa893; --painel: rgba(3, 13, 9, 0.88);
+    --borda: rgba(0, 255, 156, 0.20); --borda-forte: rgba(0, 255, 156, 0.38);
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --raio: 14px; --sombra: 0 14px 40px rgba(0, 0, 0, 0.45);
   }
+  html[data-tema="dark"] { --bg:#05070d; --verde:#4da3ff; --azul:#8fd0ff; --azul-2:#8fd0ff;
+    --tinta:#dfe7ff; --fraca:#7d8db3; --painel:rgba(8,14,28,0.9); --borda:rgba(77,163,255,0.22); --borda-forte:rgba(77,163,255,0.4); }
+  html[data-tema="light"] { --bg:#eef3ee; --verde:#00794d; --azul:#0069c2; --azul-2:#0069c2;
+    --tinta:#0c1f16; --fraca:#5a6f64; --painel:rgba(255,255,255,0.94); --borda:rgba(0,80,50,0.28); --borda-forte:rgba(0,80,50,0.5); --sombra:0 10px 30px rgba(0,40,25,0.12); }
+  html[data-tema="terminal"] { --bg:#000; --verde:#00ff41; --azul:#00ff41; --azul-2:#00ff41;
+    --tinta:#00ff41; --fraca:#0a8f36; --painel:rgba(0,10,3,0.94); --borda:rgba(0,255,65,0.3); --borda-forte:rgba(0,255,65,0.55); }
+  html[data-tema="mono"] { --bg:#0a0a0a; --verde:#e8e8e8; --azul:#9a9a9a; --azul-2:#bdbdbd;
+    --tinta:#f0f0f0; --fraca:#777; --painel:rgba(22,22,22,0.92); --borda:rgba(255,255,255,0.16); --borda-forte:rgba(255,255,255,0.34); }
+  html[data-fonte="p"] { font-size: 14px; } html[data-fonte="m"] { font-size: 16px; } html[data-fonte="g"] { font-size: 18px; }
+  html[data-tema="terminal"] body, html[data-tema="terminal"] button, html[data-tema="terminal"] input,
+  html[data-tema="terminal"] select, html[data-tema="terminal"] textarea { font-family: var(--mono); }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--tinta);
     font-family: var(--sans); overflow-x: hidden; }
-  ::selection { background: rgba(0, 255, 156, 0.30); }
+  ::selection { background: rgba(0, 255, 156, 0.3); }
   ::-webkit-scrollbar { width: 9px; height: 9px; }
-  ::-webkit-scrollbar-thumb { background: rgba(0, 255, 156, 0.25); border-radius: 9px; }
-  ::-webkit-scrollbar-track { background: #030a07; }
+  ::-webkit-scrollbar-thumb { background: var(--borda-forte); border-radius: 9px; }
+  ::-webkit-scrollbar-track { transparent; }
+  a { color: var(--azul-2); }
+  .ic { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;
+    stroke-linejoin: round; flex: none; }
+  button { font: inherit; color: inherit; }
+  h3 { margin: 0 0 4px; font: 700 15px/1.3 var(--sans); letter-spacing: 0.02em; }
+  .mini { font: 500 9.5px/1.5 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fraca); }
+  .badge { display: inline-block; font: 700 8.5px/1 var(--mono); letter-spacing: 0.12em; padding: 4px 7px;
+    border-radius: 999px; border: 1px solid var(--borda-forte); color: var(--verde); vertical-align: 1px; }
+  .badge.azul { color: var(--azul-2); border-color: rgba(0,194,255,0.4); }
+  .badge.cinza { color: var(--fraca); border-color: var(--borda); }
 
-  /* ---- CAMADAS: mundo 3D (0) · matrix (1) · scanlines (2) · UI (5+) ---- */
-  .palco { position: relative; z-index: 5; width: min(860px, calc(100% - 20px));
-    height: clamp(280px, 48vh, 620px); margin: 102px auto 14px; border-radius: 16px; overflow: hidden;
-    border: 1px solid rgba(0, 255, 156, 0.30); background: #010503;
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), 0 0 34px rgba(0, 255, 156, 0.10); }
+  /* ===== ERRO DE BOOT (sempre no topo de tudo) ===== */
+  #boot-erro { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: #4a0d1a; color: #ffd9df; font: 12px/1.5 var(--mono);
+    padding: 9px 13px; border-bottom: 1px solid #ff8f8f; white-space: pre-wrap; }
+
+  /* ===== FUNDO: grid 3D (login) + matrix (app) + scanlines ===== */
+  #bg3d { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; display: block; }
+  #matrix { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.10; display: none; }
+  html[data-fx="med"] #matrix, html[data-fx="high"] #matrix, html[data-fx="ultra"] #matrix { display: block; }
+  .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5; display: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px); }
+  html[data-fx="high"] .scanlines, html[data-fx="ultra"] .scanlines { display: block; }
+  html[data-tema="light"] .scanlines { display: none !important; }
+
+  /* ===== LOGIN ===== */
+  #login { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+    padding: 18px; transition: opacity 0.5s ease; }
+  #login.saindo { opacity: 0; pointer-events: none; }
+  .login-caixa { width: min(420px, 100%); background: var(--painel); border: 1px solid var(--borda-forte);
+    border-radius: 18px; padding: 26px 24px 20px; box-shadow: var(--sombra), 0 0 40px rgba(0,255,156,0.08); position: relative; }
+  .login-marca { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .login-marca .ic { width: 30px; height: 30px; color: var(--verde); filter: drop-shadow(0 0 8px var(--verde)); }
+  .login-marca b { font: 700 24px/1 var(--sans); letter-spacing: 0.22em; }
+  .login-caixa > .mini { display: block; margin-bottom: 18px; }
+  .campo { margin-bottom: 10px; }
+  .campo label { display: block; font: 600 10px/1 var(--mono); letter-spacing: 0.14em; color: var(--fraca); margin-bottom: 5px; text-transform: uppercase; }
+  input, select, textarea { width: 100%; font: 500 13px/1.5 var(--sans); color: var(--tinta);
+    background: rgba(0,0,0,0.25); border: 1px solid var(--borda-forte); border-radius: 10px; padding: 10px 12px; outline: none; }
+  html[data-tema="light"] input, html[data-tema="light"] select, html[data-tema="light"] textarea { background: #fff; }
+  input:focus, select:focus, textarea:focus { border-color: var(--verde); box-shadow: 0 0 0 2px rgba(0,255,156,0.15); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+    font: 600 12px/1 var(--sans); color: var(--tinta); background: rgba(0,255,156,0.05);
+    border: 1px solid var(--borda-forte); border-radius: 10px; padding: 11px 14px; transition: all 0.18s; }
+  .btn:hover { background: rgba(0,255,156,0.13); box-shadow: 0 0 18px rgba(0,255,156,0.22); transform: translateY(-1px); }
+  html[data-tema="dark"] .btn { background: rgba(77,163,255,0.07); } html[data-tema="dark"] .btn:hover { background: rgba(77,163,255,0.16); box-shadow: 0 0 18px rgba(77,163,255,0.25); }
+  html[data-tema="light"] .btn { background: rgba(0,120,80,0.06); } html[data-tema="light"] .btn:hover { background: rgba(0,120,80,0.14); }
+  html[data-tema="mono"] .btn { background: rgba(255,255,255,0.05); } html[data-tema="mono"] .btn:hover { background: rgba(255,255,255,0.12); }
+  html[data-tema="terminal"] .btn:hover { background: rgba(0,255,65,0.12); }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.forte { color: #03140c; font-weight: 700; border: none; width: 100%;
+    background: linear-gradient(90deg, var(--verde), var(--azul)); }
+  html[data-tema="light"] .btn.forte { color: #fff; }
+  html[data-tema="mono"] .btn.forte { color: #0a0a0a; }
+  .btn.forte:hover { box-shadow: 0 0 26px rgba(0,255,156,0.4); }
+  .btnfile { width: 100%; margin-bottom: 8px; }
+  .login-linha { display: flex; gap: 8px; margin: 6px 0 10px; }
+  .login-linha .btn { flex: 1; font-size: 11px; padding: 10px 8px; }
+  #login-erro { display: none; font: 500 11px/1.5 var(--mono); color: #ff7d8a; background: rgba(74,13,26,0.4);
+    border: 1px solid #ff8f8f; border-radius: 9px; padding: 8px 11px; margin-bottom: 10px; white-space: pre-wrap; }
+  #login-estado { font: 500 10px/1.6 var(--mono); color: var(--fraca); margin-top: 10px; min-height: 15px; }
+  #login-estado.ok { color: var(--verde); }
+  .esqueci { background: none; border: none; cursor: pointer; color: var(--fraca); font: 500 10.5px/1 var(--mono);
+    letter-spacing: 0.08em; text-decoration: underline; padding: 4px; }
+  .esqueci:hover { color: var(--verde); }
+
+  /* ===== APP: topbar + sidebar + workspace ===== */
+  #app { display: none; position: relative; z-index: 5; min-height: 100dvh; }
+  #app.aberto { display: block; }
+  #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; height: 52px; display: flex; align-items: center;
+    gap: 10px; padding: 0 14px; background: rgba(2, 10, 7, 0.95); border-bottom: 1px solid var(--borda); }
+  html[data-tema="light"] #topbar { background: rgba(255,255,255,0.96); }
+  html[data-tema="dark"] #topbar { background: rgba(5,8,16,0.95); }
+  html[data-tema="mono"] #topbar { background: rgba(10,10,10,0.95); }
+  html[data-tema="terminal"] #topbar { background: rgba(0,0,0,0.96); }
+  #topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--verde) 30%, var(--azul) 70%, transparent); opacity: 0.6; }
+  #burger { display: none; }
+  .marca { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+  .marca .ic { width: 21px; height: 21px; color: var(--verde); }
+  .marca b { font: 700 14px/1 var(--sans); letter-spacing: 0.2em; }
+  #area-atual { font: 600 10px/1 var(--mono); letter-spacing: 0.16em; color: var(--fraca); text-transform: uppercase;
+    border-left: 1px solid var(--borda); padding-left: 10px; }
+  #busca { flex: 1; max-width: 340px; margin-left: auto; padding: 8px 12px 8px 30px; border-radius: 999px;
+    background-image: none; font-size: 12px; }
+  .busca-wrap { position: relative; flex: 1; max-width: 340px; margin-left: auto; }
+  .busca-wrap .ic { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--fraca); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font: 600 9.5px/1 var(--mono); letter-spacing: 0.1em;
+    color: var(--verde); border: 1px solid var(--borda-forte); border-radius: 999px; padding: 5px 10px;
+    background: rgba(0,255,156,0.05); white-space: nowrap; }
+  .chip .led { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 8px var(--verde); }
+  html[data-fx="ultra"] .chip .led { animation: pulso 2.2s infinite; }
+  @keyframes pulso { 50% { opacity: 0.4; } }
+  .chip.azul { color: var(--azul-2); border-color: rgba(0,194,255,0.35); background: rgba(0,194,255,0.06); }
+  .chip.azul .led { background: var(--azul); box-shadow: 0 0 8px var(--azul); }
+  #sino { position: relative; }
+  #sino-badge { display: none; position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px;
+    background: var(--azul); color: #02131f; font: 700 9px/15px var(--mono); text-align: center; border-radius: 999px; padding: 0 3px; }
+  #user-chip { cursor: pointer; gap: 8px; }
+  .menu-flutuante { display: none; position: absolute; top: 46px; right: 10px; z-index: 60; min-width: 210px;
+    background: var(--painel); border: 1px solid var(--borda-forte); border-radius: 12px; padding: 6px; box-shadow: var(--sombra); }
+  .menu-flutuante.aberto { display: block; }
+  .menu-flutuante button { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: none; border-radius: 8px; padding: 9px 10px; font: 500 12px/1.2 var(--sans); color: var(--tinta); }
+  .menu-flutuante button:hover { background: rgba(0,255,156,0.09); }
+  .menu-flutuante .ic { width: 14px; height: 14px; color: var(--fraca); }
+
+  /* sidebar */
+  #sidebar { position: fixed; top: 52px; bottom: 0; left: 0; z-index: 25; width: 226px; overflow-y: auto;
+    padding: 12px 10px 90px; background: var(--bg); border-right: 1px solid var(--borda); transition: transform 0.25s ease; }
+  .nav-grupo { margin-bottom: 4px; }
+  .nav-grupo > .mini { display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    padding: 9px 8px 5px; letter-spacing: 0.18em; }
+  .nav-grupo > .mini::after { content: '+'; float: right; color: var(--fraca); }
+  .nav-grupo.aberto > .mini::after { content: '-'; }
+  .nav-itens { display: none; }
+  .nav-grupo.aberto .nav-itens { display: block; }
+  .nav-i { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: none; border-radius: 9px; padding: 8px 10px; margin: 1px 0;
+    font: 500 12.5px/1.2 var(--sans); color: var(--tinta); transition: background 0.15s; }
+  .nav-i .ic { width: 15px; height: 15px; color: var(--fraca); transition: color 0.15s; }
+  .nav-i:hover { background: rgba(0,255,156,0.07); } .nav-i:hover .ic { color: var(--verde); }
+  .nav-i.on { background: rgba(0,255,156,0.12); color: var(--verde); font-weight: 700; }
+  .nav-i.on .ic { color: var(--verde); }
+  .nav-sub { margin: 0 0 2px 22px; padding: 2px 0; border-left: 1px solid var(--borda); }
+  .nav-sub button { display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    font: 500 10.5px/1 var(--mono); letter-spacing: 0.06em; color: var(--fraca); padding: 6px 9px; border-radius: 7px; }
+  .nav-sub button:hover { color: var(--verde); background: rgba(0,255,156,0.06); }
+
+  /* workspace */
+  #workspace { margin: 52px 0 0 226px; padding: 18px 20px 110px; max-width: 1180px; }
+  .area { display: none; } .area.on { display: block; animation: sobe 0.3s cubic-bezier(0.2,0.8,0.2,1); }
+  @keyframes sobe { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .cab { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .cab h2 { margin: 0; font: 700 20px/1.2 var(--sans); letter-spacing: 0.06em; }
+  .cab .ic { width: 20px; height: 20px; color: var(--verde); }
+  .cab .mini { margin-top: 3px; width: 100%; }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { background: var(--painel); border: 1px solid var(--borda); border-radius: var(--raio);
+    padding: 15px 16px; box-shadow: var(--sombra); position: relative; }
+  .card.tola { grid-column: 1 / -1; }
+  .card p { margin: 6px 0 0; font: 400 12px/1.65 var(--sans); color: var(--tinta); opacity: 0.9; }
+  .card p.fraco { color: var(--fraca); }
+  .linha-botoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 11px; }
+  .linha-botoes .btn { font-size: 11px; padding: 9px 12px; }
+  .telemetria { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 7px; margin-top: 10px; }
+  .stat { background: rgba(0,255,156,0.04); border: 1px solid var(--borda); border-radius: 10px; padding: 8px 9px; }
+  html[data-tema="dark"] .stat { background: rgba(77,163,255,0.05); }
+  html[data-tema="light"] .stat { background: rgba(0,120,80,0.05); }
+  .stat b { display: block; font: 700 15px/1.2 var(--mono); color: var(--verde); }
+  .stat small { font: 500 8px/1.4 var(--mono); letter-spacing: 0.12em; color: var(--fraca); text-transform: uppercase; }
+  .barra { height: 9px; background: rgba(0,0,0,0.3); border: 1px solid var(--borda); border-radius: 6px; overflow: hidden; margin-top: 7px; }
+  .barra > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--verde), var(--azul));
+    box-shadow: 0 0 14px rgba(0,255,156,0.55); transition: width 0.5s ease; }
+  .terminal { background: rgba(0,0,0,0.4); border: 1px solid var(--borda); border-radius: 11px; padding: 12px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.6); }
+  html[data-tema="light"] .terminal { background: #0b1410; }
+  .terminal .cabecalho { display: flex; gap: 6px; margin-bottom: 9px; }
+  .terminal .cabecalho i { width: 9px; height: 9px; border-radius: 50%; }
+  .terminal .cabecalho i:nth-child(1) { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
+  .terminal .cabecalho i:nth-child(2) { background: var(--azul); box-shadow: 0 0 6px var(--azul); }
+  .terminal .cabecalho i:nth-child(3) { background: var(--fraca); opacity: 0.5; }
+  #log, #ai-out, #goal-log, #agent-out, #style-out, #apps-out, #logs-mirror {
+    font: 400 11px/1.75 var(--mono); color: #8dffcf; white-space: pre-wrap; word-break: break-word; }
+  html[data-tema="light"] #log, html[data-tema="light"] #ai-out, html[data-tema="light"] #goal-log,
+  html[data-tema="light"] #agent-out, html[data-tema="light"] #style-out, html[data-tema="light"] #apps-out, html[data-tema="light"] #logs-mirror { color: #7dffb8; }
+  html[data-tema="dark"] #log, html[data-tema="dark"] #goal-log, html[data-tema="dark"] #agent-out,
+  html[data-tema="dark"] #ai-out, html[data-tema="dark"] #style-out, html[data-tema="dark"] #apps-out, html[data-tema="dark"] #logs-mirror { color: #9fd4ff; }
+  #log { max-height: 300px; overflow: auto; }
+  #ai-out { max-height: 260px; overflow: auto; min-height: 20px; }
+  .cursor::after { content: '\258A'; color: var(--verde); animation: pisca 1s steps(1) infinite; }
+  @keyframes pisca { 50% { opacity: 0; } }
+  html[data-fx="low"] .cursor::after { animation: none; }
+  .presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; margin-top: 10px; }
+  #gallery button, #criacoes .cria-card { text-align: left; cursor: pointer; background: rgba(0,255,156,0.04);
+    border: 1px solid var(--borda); border-radius: 11px; padding: 11px; color: var(--tinta);
+    font: 600 12px/1.3 var(--sans); transition: all 0.18s; }
+  #gallery button:hover { border-color: var(--verde); background: rgba(0,255,156,0.1); box-shadow: 0 0 16px rgba(0,255,156,0.18); }
+  #gallery button small { display: block; margin-top: 4px; font: 500 8.5px/1.4 var(--mono); letter-spacing: 0.14em; color: var(--fraca); }
+  #gallery button .ic { width: 16px; height: 16px; color: var(--verde); display: block; margin-bottom: 6px; }
+  #criacoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; margin-top: 10px; }
+  #criacoes .cria-card { display: flex; align-items: center; gap: 10px; cursor: default; animation: sobe 0.4s ease; }
+  #criacoes .cria-card .ic { width: 18px; height: 18px; color: var(--verde); filter: drop-shadow(0 0 5px var(--verde)); }
+  #criacoes .cria-card b { display: block; font: 600 11px/1.25 var(--sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
+  #criacoes .cria-card small { font: 500 8.5px/1 var(--mono); letter-spacing: 0.14em; color: var(--fraca); text-transform: uppercase; }
+  #criacoes .cria-card.jogo .ic { color: var(--azul); filter: drop-shadow(0 0 5px var(--azul)); }
+  #criacoes .vazio { grid-column: 1 / -1; font: 400 10.5px/1.6 var(--mono); color: var(--fraca);
+    border: 1px dashed var(--borda-forte); border-radius: 11px; padding: 14px; text-align: center; }
+  .sugestoes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .sugestoes button { cursor: pointer; font: 500 10px/1 var(--mono); color: var(--fraca);
+    background: transparent; border: 1px dashed var(--borda-forte); border-radius: 999px; padding: 6px 11px; transition: all 0.18s; }
+  .sugestoes button:hover { color: var(--verde); border-style: solid; box-shadow: 0 0 12px rgba(0,255,156,0.2); }
+
+  /* ===== UTS AI: hero + compositor + thread + histórico ===== */
+  .hero { text-align: center; padding: 34px 10px 20px; }
+  .hero h1 { margin: 0; font: 700 30px/1.1 var(--sans); letter-spacing: 0.3em; color: var(--verde);
+    text-shadow: 0 0 24px rgba(0,255,156,0.35); }
+  html[data-fx="low"] .hero h1 { text-shadow: none; }
+  .hero p { margin: 10px 0 0; font: 500 14px/1.5 var(--sans); color: var(--fraca); }
+  .compositor { display: flex; gap: 9px; align-items: stretch; margin: 18px auto 0; max-width: 720px; }
+  .compositor input { flex: 1; padding: 13px 15px; border-radius: 12px; font-size: 13.5px; }
+  .modos { display: flex; gap: 7px; justify-content: center; margin-top: 11px; flex-wrap: wrap; align-items: center; }
+  .modos .rotulo { font: 600 9px/1 var(--mono); letter-spacing: 0.14em; color: var(--fraca); text-transform: uppercase; margin: 0 3px; }
+  .toggle { display: inline-flex; border: 1px solid var(--borda-forte); border-radius: 999px; overflow: hidden; }
+  .toggle button { background: none; border: none; cursor: pointer; font: 700 10px/1 var(--mono); letter-spacing: 0.1em;
+    color: var(--fraca); padding: 7px 13px; }
+  .toggle button.on { background: linear-gradient(90deg, var(--verde), var(--azul)); color: #03140c; }
+  .interruptor { display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    font: 600 9.5px/1 var(--mono); letter-spacing: 0.1em; color: var(--fraca); }
+  .interruptor b { width: 28px; height: 15px; border-radius: 999px; background: rgba(0,0,0,0.4); border: 1px solid var(--borda-forte); position: relative; transition: background 0.2s; }
+  .interruptor b::after { content: ''; position: absolute; top: 1px; left: 2px; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--fraca); transition: all 0.2s; }
+  .interruptor.on b { background: rgba(0,255,156,0.25); }
+  .interruptor.on b::after { left: 13px; background: var(--verde); box-shadow: 0 0 6px var(--verde); }
+  .anexos { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 11px; }
+  .anexos button, .anexos label { cursor: pointer; font: 500 9.5px/1 var(--mono); letter-spacing: 0.08em; color: var(--fraca);
+    background: none; border: 1px dashed var(--borda); border-radius: 999px; padding: 6px 10px; transition: all 0.15s; }
+  .anexos button:hover, .anexos label:hover { color: var(--verde); border-color: var(--verde); }
+  .anexos [disabled] { opacity: 0.4; cursor: not-allowed; }
+  .uts-grade { display: grid; grid-template-columns: 1fr 268px; gap: 14px; margin-top: 20px; align-items: start; }
+  #thread { display: flex; flex-direction: column; gap: 9px; max-height: 420px; overflow: auto; padding: 4px 2px; }
+  .msg { max-width: 86%; border-radius: 13px; padding: 9px 13px; font: 400 12px/1.6 var(--sans); white-space: pre-wrap; word-break: break-word; }
+  .msg.eu { align-self: flex-end; background: rgba(0,194,255,0.12); border: 1px solid rgba(0,194,255,0.35); }
+  .msg.ia { align-self: flex-start; background: rgba(0,255,156,0.06); border: 1px solid var(--borda);
+    font-family: var(--mono); font-size: 11px; }
+  .msg.sistema { align-self: center; background: none; border: none; color: var(--fraca); font: 500 9.5px/1 var(--mono); letter-spacing: 0.1em; }
+  .hist-card .lista { display: flex; flex-direction: column; gap: 6px; margin-top: 9px; max-height: 380px; overflow: auto; }
+  .hist-i { border: 1px solid var(--borda); border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: border-color 0.15s; }
+  .hist-i:hover, .hist-i.ativo { border-color: var(--verde); }
+  .hist-i b { display: block; font: 600 11px/1.3 var(--sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist-i small { font: 500 8.5px/1.6 var(--mono); color: var(--fraca); letter-spacing: 0.08em; }
+  .hist-i .acoes { display: flex; gap: 4px; margin-top: 5px; }
+  .hist-i .acoes button { background: none; border: 1px solid var(--borda); border-radius: 6px; color: var(--fraca);
+    cursor: pointer; font: 600 8px/1 var(--mono); letter-spacing: 0.08em; padding: 4px 6px; }
+  .hist-i .acoes button:hover { color: var(--verde); border-color: var(--verde); }
+  .subcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+
+  /* ===== PALCO UES (mundo 3D) ===== */
+  .palco { position: relative; width: 100%; height: clamp(300px, 52vh, 640px); border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--borda-forte); background: #010503;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 34px rgba(0,255,156,0.1); }
   #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .moldura { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
   .moldura i { position: absolute; width: 22px; height: 22px; border: 2px solid var(--verde); opacity: 0.9; }
@@ -43,507 +284,1262 @@
   .moldura i:nth-child(2) { top: 10px; right: 10px; border-left: none; border-bottom: none; border-top-right-radius: 6px; }
   .moldura i:nth-child(3) { bottom: 10px; left: 10px; border-right: none; border-top: none; border-bottom-left-radius: 6px; }
   .moldura i:nth-child(4) { bottom: 10px; right: 10px; border-left: none; border-top: none; border-bottom-right-radius: 6px; }
-  .moldura b { position: absolute; left: 12px; bottom: 12px; font: 600 9px/1 var(--mono); letter-spacing: 0.14em;
-    color: rgba(220, 255, 240, 0.85); background: rgba(1, 8, 5, 0.72); border: 1px solid rgba(0, 255, 156, 0.35);
+  #hud { position: absolute; left: 12px; bottom: 12px; font: 600 9px/1 var(--mono); letter-spacing: 0.14em;
+    color: rgba(220,255,240,0.9); background: rgba(1,8,5,0.75); border: 1px solid var(--borda-forte);
     border-radius: 999px; padding: 6px 11px; text-transform: uppercase; }
-  #matrix { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.10; }
-  .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5;
-    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px); }
-  .vigneta { position: fixed; inset: 0; z-index: 2; pointer-events: none;
-    background: radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(0, 0, 0, 0.55) 100%); }
 
-  /* ---- TOPBAR ---- */
-  #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 20;
-    display: flex; align-items: center; gap: 12px; padding: 9px 14px;
-    background: rgba(2, 10, 7, 0.95);
-    border-bottom: 1px solid rgba(0, 255, 156, 0.14); }
-  #topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--verde) 20%, var(--azul) 80%, transparent); opacity: 0.7; }
-  .marca { display: flex; align-items: center; gap: 9px; min-width: 0; }
-  .marca .logotipo { width: 26px; height: 26px; color: var(--verde);
-    filter: drop-shadow(0 0 6px rgba(0, 255, 156, 0.8)); }
-  .marca b { font: 700 15px/1 var(--sans); letter-spacing: 0.14em; white-space: nowrap;
-    background: linear-gradient(90deg, var(--verde), var(--azul));
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .marca small { display: block; font: 400 9px/1.2 var(--mono); color: var(--fraca); letter-spacing: 0.22em; }
-  .chips { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .chip { display: flex; align-items: center; gap: 6px; font: 600 10px/1 var(--mono);
-    color: var(--verde-2); border: 1px solid rgba(0, 255, 156, 0.25); border-radius: 999px;
-    padding: 5px 10px; background: rgba(0, 255, 156, 0.05); white-space: nowrap; }
-  .chip .led { width: 6px; height: 6px; border-radius: 50%; background: var(--verde);
-    box-shadow: 0 0 8px var(--verde); animation: pulso 2.2s infinite; }
-  .chip.azul { color: var(--azul-2); border-color: rgba(0, 194, 255, 0.3); background: rgba(0, 194, 255, 0.06); }
-  .chip.azul .led { background: var(--azul); box-shadow: 0 0 8px var(--azul); }
-  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-  /* ---- TABS ---- */
-  #tabs { position: fixed; top: 52px; left: 0; right: 0; z-index: 19; display: flex; gap: 6px;
-    padding: 8px 14px; overflow-x: auto; scrollbar-width: none;
-    background: linear-gradient(180deg, rgba(2, 8, 6, 0.85), rgba(2, 8, 6, 0)); }
-  #tabs::-webkit-scrollbar { display: none; }
-  .tab { flex: none; display: flex; align-items: center; gap: 7px; cursor: pointer;
-    font: 600 11px/1 var(--mono); letter-spacing: 0.12em; color: var(--fraca);
-    background: rgba(3, 13, 9, 0.6); border: 1px solid rgba(0, 255, 156, 0.14);
-    border-radius: 10px; padding: 9px 14px; transition: all 0.22s ease; }
-  .tab .ic { width: 14px; height: 14px; }
-  .tab:hover { color: var(--verde-2); border-color: rgba(0, 255, 156, 0.45); }
-  .tab.on { color: #03140c; background: linear-gradient(90deg, var(--verde), var(--azul));
-    border-color: transparent; box-shadow: 0 0 22px rgba(0, 255, 156, 0.35); font-weight: 800; }
-
-  /* ---- PILHA DE PAINÉIS ---- */
-  #pilha { position: relative; z-index: 5; max-width: 860px; margin: 0;
-    padding: 10px 14px 90px; display: block; }
-  .vista { display: none; flex-direction: column; gap: 14px; }
-  .vista.on { display: flex; animation: sobe 0.38s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  @keyframes sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-
-  .card { position: relative; background: var(--painel);
-    border: 1px solid var(--painel-borda); border-radius: 14px; padding: 14px 16px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(0, 255, 156, 0.06); }
-  .card::before, .card::after { content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none; }
-  .card::before { top: -1px; left: -1px; border-top: 2px solid var(--verde); border-left: 2px solid var(--verde);
-    border-top-left-radius: 14px; opacity: 0.85; }
-  .card::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--azul); border-right: 2px solid var(--azul);
-    border-bottom-right-radius: 14px; opacity: 0.85; }
-  .card h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
-    font: 700 12px/1 var(--mono); letter-spacing: 0.2em; color: var(--verde);
-    text-shadow: 0 0 12px rgba(0, 255, 156, 0.45); }
-  .card h2 .ic { width: 15px; height: 15px; }
-  .card h2 small { margin-left: auto; font: 500 9px/1 var(--mono); color: var(--fraca); letter-spacing: 0.18em; }
-
-  /* ---- BOTÕES ---- */
-  .btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
-    font: 600 11px/1 var(--mono); letter-spacing: 0.06em; color: #baffde;
-    background: rgba(0, 255, 156, 0.05); border: 1px solid rgba(0, 255, 156, 0.35);
-    border-radius: 9px; padding: 9px 13px; transition: all 0.18s ease; }
-  .btn .ic { width: 14px; height: 14px; color: var(--verde); }
-  .btn:hover { background: rgba(0, 255, 156, 0.13); box-shadow: 0 0 18px rgba(0, 255, 156, 0.25);
-    transform: translateY(-1px); }
-  .btn:active { transform: translateY(1px); }
-  .btn.azul { color: #c9ecff; border-color: rgba(0, 194, 255, 0.4); background: rgba(0, 194, 255, 0.06); }
-  .btn.azul .ic { color: var(--azul); }
-  .btn.azul:hover { background: rgba(0, 194, 255, 0.14); box-shadow: 0 0 18px rgba(0, 194, 255, 0.25); }
-  .btn.forte { color: #03140c; font-weight: 800; border: none;
-    background: linear-gradient(90deg, var(--verde), var(--azul)); }
-  .btn.forte .ic { color: #03140c; }
-  .btn.forte:hover { box-shadow: 0 0 26px rgba(0, 255, 156, 0.5); }
-  select, input[type="text"] { font: 500 12px/1 var(--mono); color: var(--tinta);
-    background: #04120c; border: 1px solid rgba(0, 255, 156, 0.3); border-radius: 9px; padding: 10px 12px; outline: none; }
-  select:focus, input[type="text"]:focus { border-color: var(--verde); box-shadow: 0 0 14px rgba(0, 255, 156, 0.25); }
-
-  /* ---- MUNDO: presets, clima, telemetria ---- */
-  #gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  #gallery button { display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
-    cursor: pointer; text-align: left; font: 600 12px/1.3 var(--sans); color: var(--tinta);
-    background: rgba(0, 255, 156, 0.04); border: 1px solid rgba(0, 255, 156, 0.22);
-    border-radius: 12px; padding: 12px; transition: all 0.2s ease; }
-  #gallery button .ic { width: 20px; height: 20px; color: var(--verde);
-    filter: drop-shadow(0 0 6px rgba(0, 255, 156, 0.6)); }
-  #gallery button small { font: 500 9px/1.3 var(--mono); color: var(--fraca); letter-spacing: 0.14em; }
-  #gallery button:hover { border-color: var(--verde); background: rgba(0, 255, 156, 0.1);
-    box-shadow: 0 0 20px rgba(0, 255, 156, 0.2); transform: translateY(-2px); }
-  .linha { display: flex; flex-wrap: wrap; gap: 8px; }
-  .telemetria { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
-  .stat { background: rgba(0, 255, 156, 0.04); border: 1px solid rgba(0, 255, 156, 0.14);
-    border-radius: 10px; padding: 8px 10px; }
-  .stat small { display: block; font: 500 8.5px/1 var(--mono); letter-spacing: 0.16em;
-    color: var(--fraca); margin-bottom: 5px; text-transform: uppercase; }
-  .stat b { font: 600 13px/1 var(--mono); color: var(--verde-2); }
-  .stat.azul b { color: var(--azul-2); }
-  .barra { height: 9px; background: #051510; border: 1px solid rgba(0, 255, 156, 0.2);
-    border-radius: 6px; overflow: hidden; margin-top: 7px; }
-  .barra > div { height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--verde), var(--azul));
-    box-shadow: 0 0 14px rgba(0, 255, 156, 0.55); transition: width 0.5s ease; }
-
-  /* ---- CRIAR: terminal + streaming + galeria ---- */
-  .terminal { background: #010805; border: 1px solid rgba(0, 255, 156, 0.18); border-radius: 11px;
-    padding: 12px; box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6); }
-  .terminal .cabecalho { display: flex; gap: 6px; margin-bottom: 9px; }
-  .terminal .cabecalho i { width: 9px; height: 9px; border-radius: 50%; }
-  .terminal .cabecalho i:nth-child(1) { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
-  .terminal .cabecalho i:nth-child(2) { background: var(--azul); box-shadow: 0 0 6px var(--azul); }
-  .terminal .cabecalho i:nth-child(3) { background: #234536; }
-  #log, #ai-out, #goal-log, #agent-out, #style-out, #apps-out {
-    font: 400 11px/1.75 var(--mono); color: #8dffcf; white-space: pre-wrap; word-break: break-word; }
-  #log { max-height: 240px; overflow: auto; }
-  #ai-out { color: var(--azul-2); max-height: 130px; overflow: auto; margin-top: 9px; min-height: 16px; }
-  .cursor::after { content: '\258A'; color: var(--verde); animation: pisca 1s steps(1) infinite; }
-  @keyframes pisca { 50% { opacity: 0; } }
-  .sugestoes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
-  .sugestoes button { cursor: pointer; font: 500 10px/1 var(--mono); color: var(--fraca);
-    background: transparent; border: 1px dashed rgba(0, 255, 156, 0.3); border-radius: 999px;
-    padding: 6px 11px; transition: all 0.18s; }
-  .sugestoes button:hover { color: var(--verde-2); border-style: solid; border-color: var(--verde);
-    box-shadow: 0 0 12px rgba(0, 255, 156, 0.2); }
-  #criacoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; }
-  .cria-card { display: flex; align-items: center; gap: 10px; background: rgba(0, 255, 156, 0.04);
-    border: 1px solid rgba(0, 255, 156, 0.2); border-radius: 11px; padding: 10px;
-    animation: sobe 0.4s ease; }
-  .cria-card .ic { width: 18px; height: 18px; color: var(--verde); flex: none;
-    filter: drop-shadow(0 0 5px rgba(0, 255, 156, 0.6)); }
-  .cria-card b { display: block; font: 600 11px/1.25 var(--sans); color: var(--tinta);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
-  .cria-card small { font: 500 8.5px/1 var(--mono); letter-spacing: 0.16em; color: var(--fraca);
-    text-transform: uppercase; }
-  .cria-card.jogo .ic { color: var(--azul); filter: drop-shadow(0 0 5px rgba(0, 194, 255, 0.6)); }
-  #criacoes .vazio { grid-column: 1 / -1; font: 400 10.5px/1.6 var(--mono); color: var(--fraca);
-    border: 1px dashed rgba(0, 255, 156, 0.2); border-radius: 11px; padding: 14px; text-align: center; }
-
-  /* ---- ESTILO / JOGOS / SISTEMA ---- */
-  .presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-  .grade-form { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
-  #apps-out:empty::before, #style-out:empty::before, #agent-out:empty::before { content: '— aguardando ação —'; color: #2e5a48; }
-
-  /* ---- TOUR ---- */
-  #tour { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 40;
-    display: flex; align-items: center; gap: 10px; max-width: min(560px, 94vw);
-    background: rgba(2, 10, 7, 0.97);
-    border: 1px solid rgba(0, 255, 156, 0.35); border-radius: 12px; padding: 11px 14px;
-    box-shadow: 0 0 30px rgba(0, 255, 156, 0.18); font: 500 11.5px/1.5 var(--sans); color: var(--tinta); }
+  /* ===== drawer IA global / palette / toasts / tour ===== */
+  #ia-flutuante { position: fixed; right: 16px; bottom: 18px; z-index: 45; width: 52px; height: 52px; border-radius: 50%;
+    border: 1px solid var(--borda-forte); cursor: pointer; background: var(--painel); color: var(--verde);
+    display: flex; align-items: center; justify-content: center; box-shadow: var(--sombra), 0 0 20px rgba(0,255,156,0.2); }
+  #ia-flutuante .ic { width: 22px; height: 22px; }
+  #ia-flutuante:hover { box-shadow: 0 0 30px rgba(0,255,156,0.4); }
+  #ia-drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(400px, 96vw);
+    background: var(--bg); border-left: 1px solid var(--borda-forte); box-shadow: -20px 0 60px rgba(0,0,0,0.6);
+    transform: translateX(105%); transition: transform 0.28s cubic-bezier(0.2,0.8,0.2,1);
+    display: flex; flex-direction: column; padding: 16px; overflow-y: auto; }
+  #ia-drawer.aberto { transform: none; }
+  #ia-drawer h3 { display: flex; align-items: center; gap: 8px; }
+  #ia-drawer h3 .ic { width: 16px; height: 16px; color: var(--verde); }
+  #ia-drawer .contexto { font: 500 9.5px/1.6 var(--mono); color: var(--fraca); border: 1px dashed var(--borda);
+    border-radius: 9px; padding: 7px 10px; margin: 9px 0; }
+  #ia-drawer .fechar { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 8px;
+    background: none; border: 1px solid var(--borda); color: var(--fraca); cursor: pointer; }
+  #ia-drawer .fechar:hover { color: var(--verde); }
+  #goal-log { flex: 1; min-height: 180px; max-height: none; overflow: auto; }
+  #palette { position: fixed; inset: 0; z-index: 80; display: none; align-items: flex-start; justify-content: center;
+    padding: 12vh 16px 0; background: rgba(0,0,0,0.6); }
+  #palette.aberto { display: flex; }
+  .palette-caixa { width: min(560px, 100%); background: var(--painel); border: 1px solid var(--borda-forte);
+    border-radius: 14px; box-shadow: var(--sombra); overflow: hidden; }
+  .palette-caixa input { border: none; border-bottom: 1px solid var(--borda); border-radius: 0; padding: 14px 16px; font-size: 14px; background: transparent; }
+  #palette-lista { max-height: 320px; overflow: auto; padding: 6px; }
+  #palette-lista button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: none;
+    border: none; cursor: pointer; border-radius: 9px; padding: 10px 12px; font: 500 12.5px/1.2 var(--sans); color: var(--tinta); }
+  #palette-lista button .ic { width: 15px; height: 15px; color: var(--fraca); }
+  #palette-lista button.sel, #palette-lista button:hover { background: rgba(0,255,156,0.1); color: var(--verde); }
+  #palette-lista button.sel .ic, #palette-lista button:hover .ic { color: var(--verde); }
+  #toasts { position: fixed; top: 60px; right: 14px; z-index: 90; display: flex; flex-direction: column; gap: 8px; max-width: 320px; }
+  .toast { background: var(--painel); border: 1px solid var(--borda-forte); border-left: 3px solid var(--verde);
+    border-radius: 10px; padding: 10px 13px; font: 500 11.5px/1.5 var(--sans); box-shadow: var(--sombra);
+    animation: sobe 0.25s ease; }
+  .toast.erro { border-left-color: #ff5d6e; } .toast.azul { border-left-color: var(--azul); }
+  .toast small { display: block; font: 500 8.5px/1.6 var(--mono); letter-spacing: 0.12em; color: var(--fraca); text-transform: uppercase; }
+  #tour { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 70;
+    display: none; align-items: center; gap: 10px; max-width: min(560px, 94vw);
+    background: var(--painel); border: 1px solid var(--borda-forte); border-radius: 12px; padding: 11px 14px;
+    box-shadow: var(--sombra), 0 0 30px rgba(0,255,156,0.15); font: 500 11.5px/1.5 var(--sans); }
   #tour b { color: var(--verde); }
-  #tour button { font: 700 10px/1 var(--mono); cursor: pointer; color: #03140c; border: none;
-    border-radius: 8px; padding: 8px 12px; background: linear-gradient(90deg, var(--verde), var(--azul)); }
-  #tour button#tour-skip { background: transparent; color: var(--fraca); border: 1px solid rgba(0, 255, 156, 0.25); }
+  #tour button { font: 700 10px/1 var(--mono); cursor: pointer; color: #03140c; border: none; border-radius: 8px;
+    padding: 8px 12px; background: linear-gradient(90deg, var(--verde), var(--azul)); }
+  html[data-tema="light"] #tour button { color: #fff; }
+  #tour button#tour-skip { background: transparent; color: var(--fraca); border: 1px solid var(--borda-forte); }
   #tour-step { font: 600 9px/1 var(--mono); color: var(--fraca); letter-spacing: 0.1em; }
 
-  /* ---- ERRO DE BOOT ---- */
-  #boot-erro { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99;
-    background: #4a0d1a; color: #ffd9df; font: 12px/1.5 var(--mono);
-    padding: 9px 13px; border-bottom: 1px solid #ff8f8f; white-space: pre-wrap; }
+  /* ===== nav inferior (mobile) ===== */
+  #nav-inferior { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; height: 60px;
+    background: rgba(2,10,7,0.97); border-top: 1px solid var(--borda); padding-bottom: env(safe-area-inset-bottom); }
+  html[data-tema="light"] #nav-inferior { background: rgba(255,255,255,0.97); }
+  #nav-inferior div { display: flex; height: 100%; }
+  #nav-inferior button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    background: none; border: none; cursor: pointer; color: var(--fraca); font: 600 8px/1 var(--mono); letter-spacing: 0.1em; }
+  #nav-inferior button .ic { width: 18px; height: 18px; }
+  #nav-inferior button.on { color: var(--verde); }
 
-  .ic { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;
-    stroke-linejoin: round; flex: none; }
-
-  @media (max-width: 700px) {
-    #topbar { padding: 8px 10px; gap: 8px; }
-    .marca small { display: none; }
-    .chip { padding: 4px 8px; font-size: 9px; }
-    #tabs { top: 48px; padding: 7px 10px; }
-    #pilha { padding: 8px 8px 90px; }
-    .palco { margin-top: 92px; height: 42vh; }
-    #gallery { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 980px) {
+    .uts-grade { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px) {
+    #burger { display: inline-flex; }
+    #area-atual, .busca-wrap { display: none; }
+    #sidebar { transform: translateX(-105%); width: 250px; top: 52px; z-index: 55; }
+    #sidebar.aberto { transform: none; box-shadow: 20px 0 60px rgba(0,0,0,0.6); }
+    #workspace { margin-left: 0; padding: 14px 10px 130px; }
+    #nav-inferior { display: block; }
+    #ia-flutuante { bottom: 74px; }
+    #tour { bottom: 76px; }
+    .palco { height: 44vh; }
+    .hero h1 { font-size: 22px; }
     .telemetria { grid-template-columns: repeat(3, 1fr); }
-    .card { padding: 12px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    #matrix { display: none; }
     * { animation: none !important; transition: none !important; }
+    #matrix { display: none !important; }
   }
 </style>
 </head>
 <body>
 <div id="boot-erro"></div>
 <div id="icon-sprite"></div>
-<div class="palco">
-    <canvas id="gl"></canvas>
-    <div class="moldura" aria-hidden="true"><i></i><i></i><i></i><i></i><b>MUNDO VIVO · ARRASTE PARA ORBITAR · PINÇA PARA ZOOM</b></div>
-  </div>
-  <canvas id="matrix"></canvas>
+<canvas id="bg3d"></canvas>
+<canvas id="matrix"></canvas>
 <div class="scanlines"></div>
-<div class="vigneta"></div>
 
-<script>
-  // A PÁGINA NUNCA FICA MUDA: qualquer erro de boot aparece NO BANNER.
-  (function () {
-    const mostra = (msg) => { const b = document.getElementById('boot-erro'); if (!b) return; b.style.display = 'block'; b.textContent = 'ERRO DE BOOT: ' + msg; };
-    window.addEventListener('error', (e) => mostra(e.message + ' @ ' + String(e.filename ?? '').split('/').pop() + ':' + e.lineno));
-    window.addEventListener('unhandledrejection', (e) => mostra(String(e.reason?.message ?? e.reason)));
-  })();
-
-  // ---- TABS: as vistas da plataforma
-  (function () {
-    document.querySelectorAll('.tab').forEach((t) => {
-      t.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
-        document.querySelectorAll('.vista').forEach((v) => v.classList.toggle('on', v.id === 'vista-' + t.dataset.tab));
-        window.dispatchEvent(new Event('resize'));
-      });
-    });
-  })();
-
-  // ---- EFEITO MATRIX: a chuva digital (verde com raios azuis)
-  (function () {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const cv = document.getElementById('matrix');
-    const ctx = cv.getContext('2d');
-    const G = '\u30A2\u30AB\u30B5\u30BF\u30CA\u30CF\u30DE\u30E4\u30E9\u30EF0123456789UTSGENESIS<>/\\|=+*';
-    let colunas = [], larg = 0;
-    const mede = () => {
-      cv.width = innerWidth; cv.height = innerHeight;
-      larg = Math.floor(cv.width / 15);
-      colunas = Array.from({ length: larg }, () => Math.random() * -cv.height);
-    };
-    mede(); addEventListener('resize', mede);
-    const azul = () => Math.random() < 0.12;
-    setInterval(() => {
-      if (document.hidden) return;
-      ctx.fillStyle = 'rgba(2, 6, 4, 0.10)';
-      ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.font = '12px JetBrains Mono, monospace';
-      for (let i = 0; i < colunas.length; i++) {
-        const y = colunas[i];
-        const ch = G[(Math.random() * G.length) | 0];
-        ctx.fillStyle = azul() ? '#00c2ff' : '#00ff9c';
-        ctx.fillText(ch, i * 15, y);
-        colunas[i] = y > cv.height + Math.random() * 400 ? 0 : y + 15;
-      }
-    }, 90);
-  })();
-
-  // ---- GALERIA DE CRIAÇÕES: o que a IA cria vira CARD visível (e persiste)
-  (function () {
-    const ICONE = { mundo: 'i-wand', jogo: 'i-gamepad', app: 'i-app' };
-    const RÓTULO = { mundo: 'MUNDO', jogo: 'JOGO', app: 'APP' };
-    const chave = 'uts.criacoes.v1';
-    const le = () => { try { return JSON.parse(localStorage.getItem(chave)) ?? []; } catch { return []; } };
-    const grava = (l) => { try { localStorage.setItem(chave, JSON.stringify(l.slice(0, 40))); } catch {} };
-    window.__addCriacao = function (tipo, nome, ok) {
-      if (!ok) return;
-      const lista = le();
-      lista.unshift({ tipo, nome: String(nome).slice(0, 60), t: Date.now() });
-      grava(lista);
-      render();
-    };
-    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
-    function render() {
-      const el = document.getElementById('criacoes');
-      if (!el) return;
-      const lista = le();
-      el.innerHTML = lista.length
-        ? lista.map((c) => `<div class="cria-card ${esc(c.tipo)}"><svg class="ic" viewBox="0 0 24 24"><use href="#${ICONE[c.tipo] ?? 'i-box'}"/></svg><div><b>${esc(c.nome)}</b><small>${RÓTULO[c.tipo] ?? c.tipo} · criado pela IA</small></div></div>`).join('')
-        : '<div class="vazio">NADA CRIADO AINDA — descreva um objetivo na aba CRIAR (ex.: "criar uma pequena vila próxima a um rio chamada Vila Aurora") e ele NASCE AQUI como card.</div>';
-    }
-    render();
-  })();
-
-  // ---- SUGESTÕES: um clique enche o objetivo
-  (function () {
-    document.querySelectorAll('.sugestoes button').forEach((b) => {
-      b.addEventListener('click', () => {
-        const alvo = document.getElementById('objective');
-        if (alvo) { alvo.value = b.dataset.p ?? b.textContent.trim(); alvo.focus(); }
-      });
-    });
-  })();
-</script>
-
-<header id="topbar">
-  <div class="marca">
-    <svg class="logotipo ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
-    <div><b>UTS · GENESIS</b><small>UNIFIED TECHNOLOGY SYSTEM</small></div>
+<!-- ==================== LOGIN ==================== -->
+<section id="login">
+  <div class="login-caixa">
+    <div class="login-marca">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
+      <b>GENESIS</b>
+    </div>
+    <span class="mini">Unified Technology System</span>
+    <div id="login-erro"></div>
+    <div class="campo"><label for="login-user">email / usuário</label>
+      <input id="login-user" type="text" autocomplete="username" placeholder="voce@exemplo.com" /></div>
+    <div class="campo"><label for="login-pass">password</label>
+      <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••" /></div>
+    <div class="login-linha">
+      <button id="bt-entrar" class="btn forte">LOGIN</button>
+      <button id="bt-criar" class="btn">CREATE ACCOUNT</button>
+    </div>
+    <button id="bt-google" class="btn btnfile"  title="OAuth do Google chega com CONNECTORS — a autenticação local do aparelho já funciona agora">CONTINUE WITH GOOGLE</button>
+    <button id="bt-github" class="btn btnfile"  title="OAuth do GitHub chega com CONNECTORS — a autenticação local do aparelho já funciona agora">CONTINUE WITH GITHUB</button>
+    <div class="login-linha" style="margin-top:8px">
+      <button id="bt-convidado" class="btn">CONTINUE AS GUEST</button>
+      <button id="bt-esqueci" class="esqueci">FORGOT PASSWORD</button>
+    </div>
+    <div id="login-estado"></div>
   </div>
-  <div class="chips">
-    <span class="chip" id="ws-live"><span class="led"></span>conectando</span>
-    <span class="chip azul"><span class="led"></span>IA: PUTER + LOCAL</span>
+</section>
+
+<!-- ==================== APP ==================== -->
+<div id="app">
+  <header id="topbar">
+    <button id="burger" class="btn"  style="padding:8px 10px" aria-label="menu">
+      <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><use href="#i-scales"/></svg></button>
+    <div class="marca" id="marca-home">
+      <svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg><b>GENESIS</b>
+    </div>
+    <span id="area-atual">UTS AI</span>
+    <div class="busca-wrap">
+      <svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>
+      <input id="busca" type="text" placeholder="buscar ou comandar (Ctrl+K)" autocomplete="off" />
+    </div>
+    <span class="chip" id="ws-live" style="display:none"></span>
+    <span class="chip azul" id="ia-chip"><i class="led"></i>IA</span>
+    <button id="sino" class="btn"  style="padding:8px 10px" aria-label="notificações">
+      <svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><use href="#i-warn"/></svg>
+      <span id="sino-badge">0</span>
+    </button>
+    <span class="chip" id="user-chip"><i class="led"></i><span id="user-nome">—</span></span>
+    <div class="menu-flutuante" id="menu-user">
+      <button id="mu-conta"><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>conta</button>
+      <button id="mu-tema"><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg>trocar tema</button>
+      <button id="mu-logs"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>exportar logs</button>
+      <button id="mu-sair"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cross"/></svg>sair</button>
+    </div>
+    <div class="menu-flutuante" id="menu-noti" style="max-height:320px;overflow:auto"></div>
+  </header>
+
+  <aside id="sidebar">
+    <button id="bt-palette" class="nav-i"  style="margin-bottom:8px;border:1px dashed var(--borda-forte)"><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>buscar · comandar (Ctrl+K)</button>
+    <nav class="nav-grupo aberto"><button class="mini">inteligência</button>
+      <div class="nav-itens">
+        <button class="nav-i on" data-area="utsai"><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>UTS AI</button>
+        <div class="nav-sub" id="sub-utsai">
+          <button data-vai="card-novochat">new chat</button>
+          <button data-vai="card-recent">recent</button>
+          <button data-vai="card-memories">memories</button>
+          <button data-vai="card-tasks">tasks</button>
+          <button data-vai="card-agents">agents</button>
+          <button data-vai="card-models">models</button>
+          <button data-vai="card-tools">tools</button>
+          <button data-vai="card-research">research</button>
+          <button data-vai="card-automations">automations</button>
+        </div>
+        <button class="nav-i" data-area="create"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>CREATE</button>
+        <button class="nav-i" data-area="projects"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>PROJECTS</button>
+        <button class="nav-i" data-area="research"><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>RESEARCH</button>
+      </div>
+    </nav>
+    <nav class="nav-grupo aberto"><button class="mini">plataforma</button>
+      <div class="nav-itens">
+        <button class="nav-i" data-area="apps"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>APPS</button>
+        <button class="nav-i" data-area="files"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>FILES</button>
+        <button class="nav-i" data-area="agents"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>AGENTS</button>
+        <button class="nav-i" data-area="models"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>MODELS</button>
+        <button class="nav-i" data-area="tools"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>TOOLS</button>
+        <button class="nav-i" data-area="code"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>CODE</button>
+        <button class="nav-i" data-area="services"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>SERVICES</button>
+        <button class="nav-i" data-area="connectors"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>CONNECTORS</button>
+        <button class="nav-i" data-area="github"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>GITHUB</button>
+        <button class="nav-i" data-area="storage"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>STORAGE</button>
+      </div>
+    </nav>
+    <nav class="nav-grupo aberto"><button class="mini">ues · engine</button>
+      <div class="nav-itens">
+        <button class="nav-i" data-area="ues"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>UES</button>
+        <button class="nav-i" data-area="worlds"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>WORLDS</button>
+        <button class="nav-i" data-area="scenes"><svg class="ic" viewBox="0 0 24 24"><use href="#i-island"/></svg>SCENES</button>
+        <button class="nav-i" data-area="render"><svg class="ic" viewBox="0 0 24 24"><use href="#i-brush"/></svg>RENDER</button>
+        <button class="nav-i" data-area="physics"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wave"/></svg>PHYSICS</button>
+        <button class="nav-i" data-area="audio"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg>AUDIO</button>
+        <button class="nav-i" data-area="environment"><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>ENVIRONMENT</button>
+        <button class="nav-i" data-area="nature"><svg class="ic" viewBox="0 0 24 24"><use href="#i-drop"/></svg>NATURE</button>
+        <button class="nav-i" data-area="society"><svg class="ic" viewBox="0 0 24 24"><use href="#i-temple"/></svg>SOCIETY</button>
+        <button class="nav-i" data-area="economy"><svg class="ic" viewBox="0 0 24 24"><use href="#i-scales"/></svg>ECONOMY</button>
+        <button class="nav-i" data-area="npc"><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>NPC / NMN</button>
+      </div>
+    </nav>
+    <nav class="nav-grupo aberto"><button class="mini">sistema</button>
+      <div class="nav-itens">
+        <button class="nav-i" data-area="data"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>DATA</button>
+        <button class="nav-i" data-area="performance"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>PERFORMANCE</button>
+        <button class="nav-i" data-area="debug"><svg class="ic" viewBox="0 0 24 24"><use href="#i-warn"/></svg>DEBUG</button>
+        <button class="nav-i" data-area="logs"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>LOGS</button>
+        <button class="nav-i" data-area="publish"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg>PUBLISH</button>
+        <button class="nav-i" data-area="settings"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>SETTINGS</button>
+      </div>
+    </nav>
+  </aside>
+
+  <main id="workspace">
+    <!-- ===== UTS AI (HOME) ===== -->
+    <section class="area on" id="area-utsai">
+      <div class="hero">
+        <h1>GENESIS</h1>
+        <p id="hero-linha">O que você quer criar?</p>
+      </div>
+      <div class="compositor">
+        <input id="chat-input" type="text" placeholder='Descreva ao sistema — "crie um mundo medieval com um rio e três cidades"' />
+        <button id="chat-enviar" class="btn forte"  style="width:auto;padding:13px 20px">
+          <svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><use href="#i-play"/></svg>ENVIAR</button>
+      </div>
+      <div class="modos">
+        <span class="rotulo">modo</span>
+        <div class="toggle" id="toggle-modo">
+          <button id="modo-chat" class="on">CHAT</button><button id="modo-build">BUILD</button>
+        </div>
+        <span class="interruptor" id="sw-auto"><b></b>AUTO · interpretar → planejar → executar → verificar</span>
+      </div>
+      <div class="anexos">
+        <label for="anexo-file">file</label><input id="anexo-file" type="file" hidden />
+        <label for="anexo-img">image</label><input id="anexo-img" type="file" accept="image/*" hidden />
+        <button id="anexo-url">url</button>
+        <button id="anexo-doc">document</button>
+        <button id="anexo-code">code</button>
+        <button id="anexo-video" disabled title="streaming de vídeo ao modelo: PLANNED — representado com honestidade">video</button>
+        <button id="anexo-audio" disabled title="streaming de áudio ao modelo: PLANNED — representado com honestidade">audio</button>
+      </div>
+      <div class="uts-grade">
+        <div class="card" id="card-chat">
+          <h3>CONVERSA COM O SISTEMA <span class="badge" id="badge-modo">CHAT</span></h3>
+          <div id="thread"><div class="msg sistema">sessão iniciada — descreva o que quer; a UTS entende, planeja, executa, verifica e entrega.</div></div>
+          <div class="mini" style="margin-top:8px">execução real: o CHAT pergunta ao agente · o BUILD cria realidade pela UES (o mundo nasce no UES)</div>
+        </div>
+        <div class="card hist-card" id="card-hist">
+          <h3>HISTÓRICO</h3>
+          <button id="card-novochat" class="btn forte"  style="margin-top:8px">+ NEW CHAT</button>
+          <input id="hist-busca" type="text" placeholder="filtrar conversas" style="margin-top:8px;font-size:11px" />
+          <div class="lista" id="hist-lista"></div>
+          <div class="mini" style="margin-top:8px">o histórico vive SOMENTE aqui (regra da plataforma)</div>
+        </div>
+      </div>
+      <div class="subcards">
+        <div class="card" id="card-recent"><h3>RECENT</h3><p class="fraco">Conversas e criações recentes aparecem no histórico ao lado e em WORLDS/APPS.</p></div>
+        <div class="card" id="card-memories"><h3>MEMORIES <span class="badge cinza">PARTIAL</span></h3><p class="fraco">Memória de trabalho por conversa: FUNCTIONAL. Memória de longo prazo do agente (NMN, testada no núcleo): exposição PLANNED.</p></div>
+        <div class="card" id="card-tasks"><h3>TASKS <span class="badge cinza">PARTIAL</span></h3><p class="fraco">Execuções nesta sessão: <b id="tasks-count">0</b>. Agendador de longa duração existe no núcleo (testado); fila visual: PLANNED.</p></div>
+        <div class="card" id="card-agents"><h3>AGENTS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">O agente de arquivos/comandos opera de verdade — painel AGENTS. Arquitetos do núcleo: creator, geometry-smith, shader-smith, light-smith, proc-agent.</p></div>
+        <div class="card" id="card-models"><h3>MODELS <span class="badge">FUNCTIONAL</span></h3><p class="fraco"><b id="models-n">—</b> modelos reais via Puter (User Pays, sem chave). Registro completo em MODELS.</p></div>
+        <div class="card" id="card-tools"><h3>TOOLS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">Ferramentas nativas: mundo, física, óptica, áudio, FS, zip, app builder, research, github. Índice em TOOLS.</p></div>
+        <div class="card" id="card-research"><h3>RESEARCH <span class="badge azul">PARTIAL</span></h3><p class="fraco">Triangulação (N modelos + busca + consenso) funciona no núcleo. Pergunte pelo agente; visual de consenso: PLANNED.</p></div>
+        <div class="card" id="card-automations"><h3>AUTOMATIONS <span class="badge cinza">PLANNED</span></h3><p class="fraco">Automações agendadas chegam com a fila de tarefas. Nada é fingido aqui.</p></div>
+      </div>
+    </section>
+
+    <!-- ===== CREATE ===== -->
+    <section class="area" id="area-create">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>
+        <h2>CREATE</h2><span class="mini">você descreve · a UTS planeja · a UES materializa</span></div>
+      <div class="card tola" id="ai-panel">
+        <h3>IA · CRIE SEU MUNDO <span class="badge">FUNCTIONAL</span></h3>
+        <form id="objform">
+          <textarea id="objective" rows="2" placeholder='ex.: criar uma pequena vila próxima a um rio chamada Vila Aurora' style="margin-top:9px"></textarea>
+          <div class="linha-botoes">
+            <button class="btn forte" type="submit" style="width:auto;padding:11px 22px">
+              <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-play"/></svg>EXECUTAR</button>
+          </div>
+        </form>
+        <div class="sugestoes">
+          <button data-p="criar uma pequena vila próxima a um rio chamada Vila Aurora">vila à beira do rio</button>
+          <button data-p="criar uma floresta densa ao norte do vale">floresta densa</button>
+          <button data-p="criar um acampamento de caçadores com 8 npcs">acampamento de caçadores</button>
+          <button data-p="criar uma cidade com 30 habitantes perto da montanha">cidade na montanha</button>
+        </div>
+        <div class="terminal" style="margin-top:11px"><div class="cabecalho"><i></i><i></i><i></i></div>
+          <div id="ai-out" class="cursor"></div></div>
+      </div>
+      <div class="grade" style="margin-top:14px">
+        <div class="card"><h3>CRIAR JOGO <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Gênero + um clique: o núcleo constrói o jogo completo e empacota o .zip.</p>
+          <div class="linha-botoes">
+            <button id="ir-apps" class="btn"  style="width:auto">abrir APPS</button>
+          </div></div>
+        <div class="card"><h3>CRIAR APP WEB <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">A plataforma empacota um app real em .zip — publicação em PUBLISH.</p>
+          <div class="linha-botoes"><button id="ir-publish" class="btn"  style="width:auto">ir a PUBLISH</button></div></div>
+        <div class="card"><h3>SCENE · SIMULATION · ASSET · CODE · SYSTEM · PROJECT</h3>
+          <p class="fraco">Tudo isso nasce por linguagem natural — descreva no UTS AI. Os geradores nativos (geometry-smith, shader-smith, light-smith, proc-agent) são reais e testados. Cards dedicados: PLANNED.</p></div>
+      </div>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section class="area" id="area-projects">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>
+        <h2>PROJECTS</h2><span class="badge cinza">UI PARTIAL · NÚCLEO FUNCTIONAL</span></div>
+      <div class="card tola"><h3>TRABALHOS DE LONGA DURAÇÃO</h3>
+        <p>Cada objetivo executado no UTS AI já é um trabalho com planejamento, execução e verificação ponta a ponta (streaming visível na conversa). O agendador de projetos longos existe no núcleo e é testado; run/pause/resume/verify visuais conectam ao stream na próxima rodada — nada aqui é fingido.</p>
+        <p class="fraco">Execuções nesta sessão: <b id="projects-count">0</b> · criações acumuladas: <b id="projects-criacoes">0</b></p></div>
+    </section>
+
+    <!-- ===== RESEARCH ===== -->
+    <section class="area" id="area-research">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>
+        <h2>RESEARCH</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>PESQUISA TRIANGULADA</h3>
+        <p>O serviço real consulta N modelos, cruza fontes e aponta consenso e conflitos com confiança — testado no núcleo com providers injetados. Faça sua pergunta pelo agente (botão IA flutuante): a resposta triângulada chega no terminal.</p>
+        <p class="fraco">Visualização de consenso (grafos de acordo/discórdia): PLANNED. Nunca fingimos certeza.</p>
+        <div class="linha-botoes"><button id="ir-agente-research" class="btn"  style="width:auto">
+          <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-wand"/></svg>perguntar à IA</button></div></div>
+    </section>
+
+    <!-- ===== UES ===== -->
+    <section class="area" id="area-ues">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
+        <h2>UES · ENGINE</h2><span class="mini">a engine dentro da plataforma — o mundo roda nas leis físicas</span></div>
+      <div class="palco" id="palco">
+        <canvas id="gl"></canvas>
+        <div class="moldura" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div id="hud">MUNDO VIVO · ARRASTE PARA ORBITAR · PINÇA PARA ZOOM</div>
+      </div>
+      <div class="grade" style="margin-top:14px">
+        <div class="card" id="controls">
+          <h3>CONTROLES DO MUNDO <span class="badge">FUNCTIONAL</span></h3>
+          <div class="linha-botoes">
+            <button id="w-audio" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-speaker"/></svg><span id="w-audio-rot">áudio</span></button>
+            <button id="w-clear" class="btn">limpar</button>
+            <button id="w-rain" class="btn azul">chuva</button>
+            <button id="w-storm" class="btn azul">tempestade</button>
+            <button id="w-dust" class="btn">poeira</button>
+            <button id="w-night" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-moon"/></svg>noite</button>
+            <button id="fire" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-fire"/></svg>raio/fogo</button>
+          </div>
+          <div class="linha-botoes">
+            <button id="save" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-box"/></svg>save</button>
+            <button id="load" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-folder"/></svg>load</button>
+            <button id="ir-worlds" class="btn"  style="width:auto">mundos</button>
+          </div>
+        </div>
+        <div class="card"><h3>D-O15 · A PRESSÃO MANDA <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">O diretor de recursos decide o que materializar, reduzir ou adiar — a(engine se adapta ao aparelho.</p>
+          <div class="mini" style="margin-top:10px">pressão agora · <b id="s-pressure" style="color:var(--verde)">0</b></div>
+          <div class="barra"><div id="s-pressurebar"></div></div>
+          <p class="fraco" style="margin-top:9px">NPCs materializados: <b data-mirror="s-mat">0</b> · parciais: <b data-mirror="s-par">0</b> · patches: <b data-mirror="s-pat">0</b></p></div>
+        <div class="card"><h3>ARQUITETURA</h3>
+          <p class="fraco">GENESIS → UTS (plataforma AI-first) → Singularity AI · Apps · Services → UES (engine) → experiências, mundos, jogos e apps. UTS não é UES: a engine é acessada pela inteligência.</p></div>
+      </div>
+    </section>
+
+    <!-- ===== WORLDS ===== -->
+    <section class="area" id="area-worlds">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>
+        <h2>WORLDS</h2><span class="mini">biblioteca de mundos — presets nativos + tudo que a IA criou</span></div>
+      <div class="card tola"><h3>BIOMAS NATIVOS <span class="badge">FUNCTIONAL</span></h3>
+        <div id="gallery">
+          <button data-world="vale"><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>Vale do Alvorecer<small>VALE · DIA · RIO</small></button>
+          <button data-world="arquipelago"><svg class="ic" viewBox="0 0 24 24"><use href="#i-island"/></svg>Arquipélago<small>MAR · ILHAS · ONDAS</small></button>
+          <button data-world="incendio"><svg class="ic" viewBox="0 0 24 24"><use href="#i-fire"/></svg>Vale em Chamas<small>FOGO REAL · COMBUSTÍVEL</small></button>
+          <button data-world="cidade"><svg class="ic" viewBox="0 0 24 24"><use href="#i-temple"/></svg>Cidade Viva<small>VILA · NPCS · SOCIEDADE</small></button>
+        </div></div>
+      <div class="card tola" style="margin-top:14px"><h3>CRIADOS PELA IA <span class="badge">FUNCTIONAL</span></h3>
+        <p class="fraco">Todo mundo nascido de um objetivo aparece aqui e em CREATE — nada que a IA cria é invisível.</p>
+        <div id="criacoes"></div></div>
+    </section>
+
+    <!-- ===== SCENES ===== -->
+    <section class="area" id="area-scenes">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-island"/></svg>
+        <h2>SCENES</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>HIERARQUIA DA REALIDADE (frame vivo)</h3>
+        <p class="fraco">A hierarquia reflete entidades e sistemas reais do frame — valores espelhados da telemetria agora:</p>
+        <div class="telemetria">
+          <div class="stat"><b data-mirror="s-pat">0</b><small>patches</small></div>
+          <div class="stat"><b data-mirror="s-lodm">0</b><small>malhas</small></div>
+          <div class="stat"><b data-mirror="s-lodi">0</b><small>impostors</small></div>
+          <div class="stat"><b data-mirror="s-agg">0</b><small>agregados</small></div>
+          <div class="stat"><b data-mirror="s-trees">0</b><small>vegetação</small></div>
+          <div class="stat"><b data-mirror="s-puddles">0</b><small>poças</small></div>
+          <div class="stat"><b data-mirror="s-hor">0</b><small>horizonte</small></div>
+          <div class="stat"><b data-mirror="s-film">0</b><small>filme d'água</small></div>
+        </div>
+        <p class="fraco" style="margin-top:10px">Inspector por entidade + grafo causal visual: PLANNED (os dados causais já existem — RRW registra toda cadeia, testado).</p></div>
+    </section>
+
+    <!-- ===== APPS ===== -->
+    <section class="area" id="area-apps">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>
+        <h2>APPS</h2><span class="mini">jogos completos criados e instalados na plataforma</span></div>
+      <div class="grade">
+        <div class="card"><h3>CRIAR JOGO <span class="badge">FUNCTIONAL</span></h3>
+          <div class="linha-botoes">
+            <select id="create-genre" style="flex:1;min-width:120px">
+              <option value="plataforma">plataforma</option>
+              <option value="torre">torre (defesa)</option>
+              <option value="nave">nave</option>
+            </select>
+            <button id="create-demo" class="btn forte"  style="width:auto">
+              <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-play"/></svg>CRIAR (ZIP)</button>
+          </div>
+          <div class="linha-botoes"><button id="install-demo" class="btn azul"  style="width:auto">
+            <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-install"/></svg>INSTALAR NA PLATAFORMA</button></div></div>
+        <div class="card"><h3>INSTALADOS <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Apps instalados com estado durável (AppHost testado).</p>
+          <div class="linha-botoes"><button id="apps-demo" class="btn"  style="width:auto">
+            <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-radar"/></svg>LISTAR APPS</button></div>
+          <div id="apps-out" style="margin-top:9px">— aguardando ação —</div></div>
+      </div>
+    </section>
+
+    <!-- ===== ASSETS / FILES / CODE ===== -->
+    <section class="area" id="area-assets">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
+        <h2>ASSETS</h2><span class="badge cinza">GERAÇÃO FUNCTIONAL · BIBLIOTECA PLANNED</span></div>
+      <div class="card tola"><h3>GERADOS SOB DEMANDA</h3>
+        <p class="fraco">Malhas (geometry-smith), shaders (shader-smith), luz (light-smith) e texturas procedurais são nativos e testados — peça pelo agente que o asset nasce no mundo. O browser visual com preview 3D: PLANNED.</p></div>
+    </section>
+    <section class="area" id="area-files">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>
+        <h2>FILES</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>SISTEMA DE ARQUIVOS DO AGENTE</h3>
+        <p class="fraco">O agente lê e escreve arquivos de verdade (FS real, testado) — painel AGENTS. Gestor visual com busca semântica e preview: PLANNED.</p>
+        <div class="linha-botoes"><button id="ir-agents-files" class="btn"  style="width:auto">abrir AGENTS</button></div></div>
+    </section>
+    <section class="area" id="area-code">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>
+        <h2>CODE</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>O CÓDIGO INTEIRO É REAL E AUDITÁVEL</h3>
+        <p>Zero dependências de runtime, 391 testes verdes, cada lei sob teste. Fonte completa no repositório:</p>
+        <p><a href="https://github.com/devEb209/-Unified-Technology-System-" target="_blank" rel="noopener">github.com/devEb209/-Unified-Technology-System-</a></p>
+        <p class="fraco">Editor com abas/diff/autocomplete dentro do app: PLANNED. Comandos reais hoje: painel AGENTS (exec-demo).</p></div>
+    </section>
+
+    <!-- ===== AGENTS ===== -->
+    <section class="area" id="area-agents">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>
+        <h2>AGENTS</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="grade">
+        <div class="card tola" id="agent-panel"><h3>AGENTE DE ARQUIVOS E COMANDOS <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Lê arquivos reais e executa comandos na plataforma — as duas mãos do agente.</p>
+          <div class="linha-botoes">
+            <button id="fs-demo" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-folder"/></svg>arquivo</button>
+            <button id="exec-demo" class="btn"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-terminal"/></svg>comando</button>
+          </div>
+          <div class="terminal" style="margin-top:11px"><div class="cabecalho"><i></i><i></i><i></i></div>
+            <div id="agent-out" class="cursor"></div></div></div>
+        <div class="card"><h3>ARQUITETOS DO NÚCLEO <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">creator · geometry-smith · shader-smith · light-smith · proc-agent — forjam mundos, malhas, óptica e proc gen de verdade (cada um com testes).</p></div>
+        <div class="card"><h3>STATUS</h3>
+          <p class="fraco">Memória, heurística e ferramentas da Singularity: testados. Painel de agentes com metas/modelos por agente: PLANNED.</p></div>
+      </div>
+    </section>
+
+    <!-- ===== MODELS / TOOLS ===== -->
+    <section class="area" id="area-models">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>
+        <h2>MODELS</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>REGISTRO DE MODELOS</h3>
+        <p><b id="models-n2">—</b> modelos reais disponíveis via Puter.js — User Pays, SEM chave, contagem honesta lida ao vivo no boot.</p>
+        <div class="linha-botoes">
+          <span class="badge">AUTO</span><span class="badge cinza">FAST</span><span class="badge cinza">QUALITY</span>
+          <span class="badge cinza">REASONING</span><span class="badge cinza">LOW COST</span><span class="badge cinza">CUSTOM</span></div>
+        <p class="fraco" style="margin-top:9px">AUTO = roteamento real da camada (FUNCTIONAL). Os demais modos: PLANNED — não fingimos seleção.</p></div>
+    </section>
+    <section class="area" id="area-tools">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>
+        <h2>TOOLS</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>FERRAMENTAS NATIVAS DA SINGULARITY</h3>
+        <p class="fraco">genesis-tools: criar mundo · física · óptica · áudio · FS · zip · app builder. platform-tools: ask · research · github · storage. Esquemas + permissões testados no núcleo. Auditoria visual de chamadas: PLANNED.</p></div>
+    </section>
+
+    <!-- ===== RENDER ===== -->
+    <section class="area" id="area-render">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-brush"/></svg>
+        <h2>RENDER</h2><span class="mini">o olho humano é a régua — não o fotorrealismo</span></div>
+      <div class="grade">
+        <div class="card tola"><h3>ÓTICA DO MUNDO <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Espalhamento Rayleigh + Mie reais, perspectiva aérea, céu por corpo negro (lócus de Planck), água com Fresnel, sombras, Purkinje/glare/CSF à noite — cada lei sob teste (r7, r8, r10, r14, r25). O estilo muda os PARÂMETROS da física, nunca um filtro:</p>
+          <div class="presets">
+            <button id="style-realista" class="btn">realista</button>
+            <button id="style-anime" class="btn">anime</button>
+            <button id="style-noir" class="btn">noir</button>
+            <button id="style-pastel" class="btn">pastel</button>
+            <button id="style-cyberpunk" class="btn">cyberpunk</button>
+            <button id="style-carvao" class="btn">carvão</button>
+          </div>
+          <div class="linha-botoes">
+            <input id="style-custom-name" type="text" placeholder="nome do seu estilo" style="flex:1;min-width:130px" />
+            <button id="style-apply" class="btn forte"  style="width:auto">
+              <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-brush"/></svg>APLICAR CUSTOM</button>
+          </div>
+          <textarea id="style-custom-json" rows="3" placeholder='{"exposure":1.2, "fogDensity":0.02, ...}' style="margin-top:9px"></textarea>
+          <div id="style-out" style="margin-top:9px">— aguardando estilo —</div></div>
+        <div class="card"><h3>CÉU AGORA</h3>
+          <p class="fraco">Cor espelhada da simulação:</p>
+          <div class="stat" style="margin-top:8px"><b data-mirror="s-sky">—</b><small>sky color</small></div></div>
+        <div class="card"><h3>PIPELINE</h3>
+          <p class="fraco">WebGL2 GÊNESIS nativo: sombras, instancing, D-O15, streaming, percepção (resolução espelhada: <b data-mirror="s-perc">0</b>).</p></div>
+      </div>
+    </section>
+
+    <!-- ===== PHYSICS / AUDIO ===== -->
+    <section class="area" id="area-physics">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wave"/></svg>
+        <h2>PHYSICS</h2><span class="badge">NÚCLEO FUNCTIONAL</span></div>
+      <div class="card tola"><h3>FÍSICA NATIVA</h3>
+        <p class="fraco">Corpos rígidos, forças, juntas, rotação e colisão — engine própria testada (genesis-physics + rotation-joints). Tick de simulação ao vivo: <b data-mirror="s-tick">0</b>. Debugger visual de corpos/contatos: PLANNED.</p></div>
+    </section>
+    <section class="area" id="area-audio">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg>
+        <h2>AUDIO</h2><span class="badge">NÚCLEO FUNCTIONAL</span></div>
+      <div class="card tola"><h3>SÍNTESE PRÓPRIA</h3>
+        <p class="fraco">Mixer, reverb, música generativa, espacialização e HRTF esférico analítico — tudo sintetizado, testado. O áudio do mundo liga no UES (botão áudio). Banco HRTF MEDIDO do dono: slot pronto, aguardando a gravação.</p>
+        <div class="linha-botoes"><button id="ir-ues-audio" class="btn"  style="width:auto">abrir UES para o áudio</button></div></div>
+    </section>
+
+    <!-- ===== ENVIRONMENT / NATURE / SOCIETY / ECONOMY / NPC ===== -->
+    <section class="area" id="area-environment">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>
+        <h2>ENVIRONMENT</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>CLIMA E TERRENO — VALORES VIVOS</h3>
+        <div class="telemetria">
+          <div class="stat"><b data-mirror="s-weather">—</b><small>weather</small></div>
+          <div class="stat"><b data-mirror="s-rain">0</b><small>rain</small></div>
+          <div class="stat"><b data-mirror="s-wet">0</b><small>wetness</small></div>
+          <div class="stat"><b data-mirror="s-wind">0</b><small>wind</small></div>
+          <div class="stat"><b data-mirror="s-dust">0</b><small>dust</small></div>
+          <div class="stat"><b data-mirror="s-hum">0</b><small>humidity</small></div>
+          <div class="stat"><b data-mirror="s-soil">0</b><small>solo</small></div>
+          <div class="stat"><b data-mirror="s-fire">0</b><small>fogo</small></div>
+        </div>
+        <p class="fraco" style="margin-top:10px">O clima é CAUSAL: chuva molha o solo, solo seca ao sol, fogo respeita combustível e umidade. Comandos reais no UES. Linha do tempo 1x–1000x: PLANNED (o relógio do mundo já é real).</p></div>
+    </section>
+    <section class="area" id="area-nature">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-drop"/></svg>
+        <h2>NATURE</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>ECOLOGIA VIVA</h3>
+        <p class="fraco">Solo, água, flora, fauna, migração, reprodução, predação e cadeias alimentares — web trófica real testada (r20–r22). Agora no mundo: vegetação <b data-mirror="s-trees">0</b> · células de fogo <b data-mirror="s-fire">0</b> · npcs <b data-mirror="s-npc">0</b>. Visualização de relações: PLANNED.</p></div>
+    </section>
+    <section class="area" id="area-society">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-temple"/></svg>
+        <h2>SOCIETY</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>SOCIEDADE VIVA</h3>
+        <p class="fraco">Assentamentos, população, profissões e relações — sociedade real testada. População viva agora: <b data-mirror="s-npc">0</b>. Painel cultural/político completo: PLANNED.</p></div>
+    </section>
+    <section class="area" id="area-economy">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-scales"/></svg>
+        <h2>ECONOMY</h2><span class="badge azul">NÚCLEO FUNCTIONAL</span></div>
+      <div class="card tola"><h3>ECONOMIA REAL</h3>
+        <p class="fraco">Produção, consumo, troca e preços emergem dos agentes econômicos no núcleo (testes de sociedade+economia). Séries temporais no painel: PLANNED — não desenhamos gráficos falsos.</p></div>
+    </section>
+    <section class="area" id="area-npc">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>
+        <h2>NPC / NMN</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>A MENTE DOS NPCs</h3>
+        <p class="fraco">NMN = a mente: necessidades, metas, memória, percepção e decisão — testados. D-O15 materializa mentes por pressão:</p>
+        <div class="telemetria">
+          <div class="stat"><b data-mirror="s-npc">0</b><small>npcs</small></div>
+          <div class="stat"><b data-mirror="s-mat">0</b><small>materializados</small></div>
+          <div class="stat"><b data-mirror="s-par">0</b><small>parciais</small></div>
+          <div class="stat"><b data-mirror="s-perc">0</b><small>percepção</small></div>
+        </div>
+        <div class="linha-botoes"><button id="ask-why" class="btn"  style="width:auto">
+          <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-wand"/></svg>ASK AI WHY</button></div>
+        <p class="fraco" style="margin-top:8px">O WHY abre o agente com o contexto desta área — a resposta é causal, não inventada.</p></div>
+    </section>
+
+    <!-- ===== DATA / STORAGE / SERVICES / CONNECTORS / GITHUB ===== -->
+    <section class="area" id="area-data">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>
+        <h2>DATA</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>CAUSALIDADE ACUMULADA</h3>
+        <p class="fraco">Eventos registrados pelo RRW (fonte única da verdade, testado): <b data-mirror="s-ev">0</b> eventos. Explorador de grafos causais: PLANNED — os dados já existem, a lente visual chega.</p></div>
+    </section>
+    <section class="area" id="area-storage">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
+        <h2>STORAGE</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>PERSISTÊNCIA TOTAL</h3>
+        <p class="fraco">save/load persistem TUDO — fenômenos, mentes, fogo, árvores — com RNG e causalidade preservados: save → load → evoluir é idêntico ao original (testado). UTS-DB, snapshots e autosave: FUNCTIONAL no núcleo. Botões reais no UES.</p></div>
+    </section>
+    <section class="area" id="area-services">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>
+        <h2>SERVICES</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>SERVIÇOS DA PLATAFORMA</h3>
+        <p class="fraco">ServiceRegistry com status/health: AI-first, research, github, cloud-storage, apps — registrados e testados. IA ao vivo: <b id="models-n3">—</b> modelos (Puter, User Pays).</p></div>
+    </section>
+    <section class="area" id="area-connectors">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>
+        <h2>CONNECTORS</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="grade">
+        <div class="card"><h3>PUTER AI <span class="badge">CONECTADO</span></h3><p class="fraco">Ativo SEM chave — User Pays. Segredos nunca são hardcoded.</p></div>
+        <div class="card"><h3>GITHUB <span class="badge cinza">SEM TOKEN</span></h3><p class="fraco">A plataforma lê GITHUB_TOKEN quando configurado. Sem token, dizemos a verdade: desconectado.</p></div>
+        <div class="card"><h3>OAUTH LOGIN <span class="badge cinza">PLANNED</span></h3><p class="fraco">Google/GitHub no login chegam por aqui. A autenticação local do aparelho já é real.</p></div>
+      </div>
+    </section>
+    <section class="area" id="area-github">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>
+        <h2>GITHUB</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>REPOSITÓRIO REAL</h3>
+        <p><a href="https://github.com/devEb209/-Unified-Technology-System-" target="_blank" rel="noopener">devEb209/-Unified-Technology-System-</a> — branch da sessão com commits reais de cada rodada.</p>
+        <p class="fraco">Leitura/commit/push funcionam no pipeline de build (com token). UI de repositórios/issues/PRs: PLANNED. Alterações destrutivas SEMPRE pedem confirmação — regra da plataforma.</p></div>
+    </section>
+
+    <!-- ===== PERFORMANCE / DEBUG / LOGS / PUBLISH / SETTINGS ===== -->
+    <section class="area" id="area-performance">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>
+        <h2>PERFORMANCE</h2><span class="mini">telemetria real do frame — escrita pelo engine, espelhada aqui</span></div>
+      <div class="card tola"><h3>TELEMETRIA COMPLETA</h3>
+        <div class="telemetria">
+          <div class="stat"><b id="s-fps">0</b><small>fps</small></div>
+          <div class="stat"><b id="s-draw">0</b><small>draw calls</small></div>
+          <div class="stat"><b id="s-tick">0</b><small>tick</small></div>
+          <div class="stat"><b id="s-npc">0</b><small>npcs</small></div>
+          <div class="stat"><b id="s-mat">0</b><small>mat.</small></div>
+          <div class="stat"><b id="s-par">0</b><small>parcial</small></div>
+          <div class="stat"><b id="s-pat">0</b><small>patches</small></div>
+          <div class="stat"><b id="s-lodm">0</b><small>lod mesh</small></div>
+          <div class="stat"><b id="s-lodi">0</b><small>lod imp.</small></div>
+          <div class="stat"><b id="s-agg">0</b><small>agreg.</small></div>
+          <div class="stat"><b id="s-perc">0</b><small>percepção</small></div>
+          <div class="stat"><b id="s-ev">0</b><small>eventos</small></div>
+          <div class="stat"><b id="s-trees">0</b><small>árvores</small></div>
+          <div class="stat"><b id="s-fire">0</b><small>fogo</small></div>
+          <div class="stat"><b id="s-weather">—</b><small>weather</small></div>
+          <div class="stat"><b id="s-rain">0</b><small>rain</small></div>
+          <div class="stat"><b id="s-wet">0</b><small>wetness</small></div>
+          <div class="stat"><b id="s-wind">0</b><small>wind</small></div>
+          <div class="stat"><b id="s-dust">0</b><small>dust</small></div>
+          <div class="stat"><b id="s-hum">0</b><small>humidity</small></div>
+          <div class="stat"><b id="s-soil">0</b><small>solo</small></div>
+          <div class="stat"><b id="s-sky">—</b><small>sky color</small></div>
+          <div class="stat"><b id="s-film">0</b><small>filme d'água</small></div>
+          <div class="stat"><b id="s-puddles">0</b><small>poças</small></div>
+          <div class="stat"><b id="s-hor">0</b><small>horizonte</small></div>
+        </div>
+        <canvas id="spark-fps" width="260" height="40" style="margin-top:12px;width:260px;height:40px;border:1px solid var(--borda);border-radius:8px"></canvas>
+        <div class="linha-botoes" style="align-items:center">
+          <span class="rotulo mini">efeitos</span>
+          <button class="btn" data-fx-nivel="low" style="width:auto">LOW</button>
+          <button class="btn" data-fx-nivel="med" style="width:auto">MEDIUM</button>
+          <button class="btn" data-fx-nivel="high" style="width:auto">HIGH</button>
+          <button class="btn" data-fx-nivel="ultra" style="width:auto">ULTRA</button>
+          <button class="btn" data-fx-nivel="auto" style="width:auto">AUTO</button>
+        </div>
+        <p class="fraco" style="margin-top:8px">O nível controla matrix, scanlines, brilho e animação — o mundo 3D se adapta sozinho pela pressão D-O15 (regra de ouro: otimizar sem destruir a realidade).</p></div>
+    </section>
+    <section class="area" id="area-debug">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-warn"/></svg>
+        <h2>DEBUG</h2><span class="badge">FUNCTIONAL</span></div>
+      <div class="card tola"><h3>LOG DE BOOT E SISTEMA</h3>
+        <div class="terminal"><div class="cabecalho"><i></i><i></i><i></i></div><div id="log"></div></div>
+        <p class="fraco" style="margin-top:9px">Toda a cadeia causal (chuva → solo → grama → cervo → lobo → caça → alimento → vila) é registrada pelo RRW e verificável por teste. Cadeia visual interativa: PLANNED.</p></div>
+    </section>
+    <section class="area" id="area-logs">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>
+        <h2>LOGS</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="card tola"><h3>ESPELHO DE LOGS (ao vivo)</h3>
+        <input id="logs-filtro" type="text" placeholder="filtrar linhas" style="font-size:11px" />
+        <div class="terminal" style="margin-top:9px"><div class="cabecalho"><i></i><i></i><i></i></div><div id="logs-mirror"></div></div>
+        <div class="linha-botoes"><button id="logs-export" class="btn"  style="width:auto">
+          <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-folder"/></svg>exportar .txt</button></div></div>
+    </section>
+    <section class="area" id="area-publish">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg>
+        <h2>PUBLISH</h2><span class="badge azul">PARTIAL</span></div>
+      <div class="grade">
+        <div class="card"><h3>WEB (.ZIP) <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Gera um app web real empacotado agora mesmo.</p>
+          <div class="linha-botoes"><button id="build-demo" class="btn forte"  style="width:auto">
+            <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-box"/></svg>GERAR APP WEB (.ZIP)</button></div></div>
+        <div class="card"><h3>ANDROID / DESKTOP <span class="badge azul">NÚCLEO FUNCTIONAL</span></h3>
+          <p class="fraco">O empacotador de binário único real (APK/EXE/AAB, SEA) existe e é testado no núcleo. Botões de build no app: PLANNED — não fingimos download.</p></div>
+        <div class="card"><h3>INTEGRIDADE <span class="badge">FUNCTIONAL</span></h3>
+          <p class="fraco">Zip próprio com CRC honesto e roundtrip byte-fiel (testado) — o que sai é o que entrou.</p></div>
+      </div>
+    </section>
+    <section class="area" id="area-settings">
+      <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>
+        <h2>SETTINGS</h2><span class="mini">preferências reais — cada opção age de verdade</span></div>
+      <div class="grade">
+        <div class="card"><h3>TEMA</h3>
+          <div class="linha-botoes">
+            <button class="btn" data-tema-bt="matrix" style="width:auto">MATRIX</button>
+            <button class="btn" data-tema-bt="dark" style="width:auto">DARK</button>
+            <button class="btn" data-tema-bt="light" style="width:auto">LIGHT</button>
+            <button class="btn" data-tema-bt="terminal" style="width:auto">TERMINAL</button>
+            <button class="btn" data-tema-bt="mono" style="width:auto">MONO</button>
+          </div></div>
+        <div class="card"><h3>FONTE</h3>
+          <div class="linha-botoes">
+            <button class="btn" data-fonte-bt="p" style="width:auto">P</button>
+            <button class="btn" data-fonte-bt="m" style="width:auto">M</button>
+            <button class="btn" data-fonte-bt="g" style="width:auto">G</button>
+          </div></div>
+        <div class="card"><h3>IDIOMA DO HERO</h3>
+          <div class="linha-botoes">
+            <button class="btn" data-idioma-bt="pt" style="width:auto">PORTUGUÊS</button>
+            <button class="btn" data-idioma-bt="en" style="width:auto">ENGLISH</button>
+          </div></div>
+        <div class="card"><h3>TOUR GUIADO</h3>
+          <p class="fraco">Rever o tour do sistema (o mesmo do engine).</p>
+          <div class="linha-botoes"><button id="tour-rever" class="btn"  style="width:auto">reiniciar tour</button></div></div>
+        <div class="card"><h3>CONTA</h3>
+          <p class="fraco">Sessão: <b id="settings-user">—</b> · autenticação LOCAL do aparelho (hash SHA-256; nada sai do aparelho).</p>
+          <div class="linha-botoes"><button id="settings-sair" class="btn"  style="width:auto">sair da sessão</button>
+            <button id="settings-apagar" class="btn"  style="width:auto">apagar minha conta deste aparelho</button></div></div>
+        <div class="card"><h3>ACESSIBILIDADE</h3>
+          <p class="fraco">Movimento reduzido: o sistema respeita `prefers-reduced-motion` e o nível de efeitos LOW desliga matrix, scanlines e cursor animado. Contraste e foco: nativos do design system.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <nav id="nav-inferior"><div>
+    <button data-area="utsai" class="on"><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>UTS AI</button>
+    <button data-area="create"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>CRIAR</button>
+    <button data-area="ues"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>UES</button>
+    <button data-area="worlds"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>MUNDOS</button>
+    <button id="bt-mais"><svg class="ic" viewBox="0 0 24 24"><use href="#i-scales"/></svg>MENU</button>
+  </div></nav>
+
+  <button id="ia-flutuante" aria-label="IA contextual">
+    <svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>
+  </button>
+  <aside id="ia-drawer">
+    <button id="ia-fechar" class="fechar"  aria-label="fechar"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-cross"/></svg></button>
+    <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-eye"/></svg>IA CONTEXTUAL <span class="badge" id="ia-contexto-badge">GLOBAL</span></h3>
+    <div class="contexto" id="ia-contexto">A IA recebe a área atual automaticamente — você não precisa repetir o contexto.</div>
+    <div class="linha-botoes" style="margin:0 0 9px">
+      <input id="goal-input" type="text" style="flex:1;min-width:150px" placeholder="pergunte ou ordene…" />
+      <button id="goal-go" class="btn forte"  style="width:auto">
+        <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-play"/></svg>IR</button>
+    </div>
+    <textarea id="goal-attach" rows="2" placeholder="anexo opcional — csv: 'x,z,name' por linha · texto 'nomes.txt': lista de nomes" style="width:100%"></textarea>
+    <div class="terminal" style="margin-top:10px;flex:1;display:flex;flex-direction:column">
+      <div class="cabecalho"><i></i><i></i><i></i></div>
+      <div id="goal-log" class="cursor"></div>
+    </div>
+  </aside>
+
+  <div id="palette">
+    <div class="palette-caixa">
+      <input id="palette-input" type="text" placeholder="comando ou área…" autocomplete="off" />
+      <div id="palette-lista"></div>
+    </div>
   </div>
-</header>
 
-<nav id="tabs" aria-label="vistas da plataforma">
-  <button class="tab on" data-tab="mundo"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>MUNDO</button>
-  <button class="tab" data-tab="criar"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>CRIAR</button>
-  <button class="tab" data-tab="estilo"><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg>ESTILO</button>
-  <button class="tab" data-tab="jogos"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>JOGOS</button>
-  <button class="tab" data-tab="sistema"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>SISTEMA</button>
-</nav>
-
-<main id="pilha">
-
-  <!-- ============ MUNDO ============ -->
-  <section class="vista on" id="vista-mundo">
-    <div class="card" id="hud">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>TELEMETRIA DO MUNDO <small>RRW → FRAME → GPU</small></h2>
-      <div class="telemetria">
-        <div class="stat"><small>tick</small><b id="s-tick">0</b></div>
-        <div class="stat"><small>fps</small><b id="s-fps">–</b></div>
-        <div class="stat"><small>draws</small><b id="s-draw">–</b></div>
-        <div class="stat"><small>população</small><b id="s-npc">–</b></div>
-        <div class="stat"><small>parcial</small><b id="s-par">–</b></div>
-        <div class="stat"><small>patches</small><b id="s-pat">–</b></div>
-        <div class="stat"><small>agregados</small><b id="s-agg">–</b></div>
-        <div class="stat"><small>percepção</small><b id="s-perc">–</b></div>
-        <div class="stat"><small>eventos</small><b id="s-ev">–</b></div>
-        <div class="stat"><small>materializa</small><b id="s-mat">–</b></div>
-        <div class="stat"><small>árvores</small><b id="s-trees">–</b></div>
-        <div class="stat"><small>fogo</small><b id="s-fire">–</b></div>
-      </div>
-      <div class="telemetria" style="margin-top:8px">
-        <div class="stat azul"><small>clima</small><b id="s-weather">–</b></div>
-        <div class="stat azul"><small>chuva</small><b id="s-rain">–</b></div>
-        <div class="stat azul"><small>molhado</small><b id="s-wet">–</b></div>
-        <div class="stat azul"><small>vento</small><b id="s-wind">–</b></div>
-        <div class="stat azul"><small>poeira</small><b id="s-dust">–</b></div>
-        <div class="stat azul"><small>umidade</small><b id="s-hum">–</b></div>
-        <div class="stat azul"><small>solo</small><b id="s-soil">–</b></div>
-        <div class="stat azul"><small>lâmina</small><b id="s-film">–</b></div>
-        <div class="stat azul"><small>poças</small><b id="s-puddles">–</b></div>
-        <div class="stat azul"><small>horizonte</small><b id="s-hor">–</b></div>
-        <div class="stat azul"><small>lod malha</small><b id="s-lodm">–</b></div>
-        <div class="stat azul"><small>lod imp.</small><b id="s-lodi">–</b></div>
-      </div>
-      <div style="margin-top:10px" class="linha">
-        <span class="chip azul" style="border-radius:8px">céu <b id="s-sky" style="margin-left:4px">–</b></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>GÊNESIS: ESCOLHA O MUNDO</h2>
-      <div id="gallery">
-        <button data-world="vale"><svg class="ic" viewBox="0 0 24 24"><use href="#i-dawn"/></svg>Vale do Alvorecer<small>VALE · DIA · RIO</small></button>
-        <button data-world="arquipelago"><svg class="ic" viewBox="0 0 24 24"><use href="#i-island"/></svg>Arquipélago<small>MAR · ILHAS · ONDAS</small></button>
-        <button data-world="incendio"><svg class="ic" viewBox="0 0 24 24"><use href="#i-fire"/></svg>Vale em Chamas<small>FOGO REAL · COMBUSTÍVEL</small></button>
-        <button data-world="cidade"><svg class="ic" viewBox="0 0 24 24"><use href="#i-temple"/></svg>Cidade Viva<small>VILA · NPCS · SOCIEDADE</small></button>
-      </div>
-    </div>
-
-    <div class="card" id="controls">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg>CLIMA E CAUSALIDADE <small>CHUVA → MOLHADO → EROSÃO</small></h2>
-      <div class="linha">
-        <button id="w-audio" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-speaker"/></svg><span id="w-audio-rot">áudio</span></button>
-        <button id="w-clear" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cross"/></svg>limpar</button>
-        <button id="w-rain" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-drop"/></svg>chuva</button>
-        <button id="w-storm" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wave"/></svg>tempestade</button>
-        <button id="w-dust" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-earth"/></svg>poeira</button>
-        <button id="w-night" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-moon"/></svg><span>noite</span></button>
-        <button id="fire" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-fire"/></svg>raio/fogo</button>
-        <button id="save" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>save</button>
-        <button id="load" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>load</button>
-      </div>
-      <div style="margin-top:12px">
-        <h2 style="margin:0 0 4px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-scales"/></svg>PRESSÃO D-O15 <small>DEFER, NUNCA DESCARTAR</small></h2>
-        <b id="s-pressure" style="font:600 12px/1 var(--mono); color:var(--verde-2)">0.00</b>
-        <div class="barra"><div id="s-pressurebar"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CRIAR ============ -->
-  <section class="vista" id="vista-criar">
-    <div class="card" id="singularity">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-wand"/></svg>SINGULARITY AI <small>DESCRIÇÃO → REALIDADE VERIFICADA</small></h2>
-      <form id="objform" class="grade-form">
-        <input id="objective" type="text" style="flex:1; min-width:200px" placeholder='descreva a criação: "criar uma pequena vila próxima a um rio chamada Vila Aurora"' />
-        <button class="btn forte" type="submit"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>EXECUTAR</button>
-      </form>
-      <div class="sugestoes">
-        <button data-p="criar uma pequena vila próxima a um rio chamada Vila Aurora">vila à beira do rio</button>
-        <button data-p="criar uma floresta densa ao norte do vale">floresta densa</button>
-        <button data-p="criar um acampamento de caçadores com 8 npcs">acampamento de caçadores</button>
-        <button data-p="criar uma cidade com 30 habitantes perto da montanha">cidade na montanha</button>
-      </div>
-      <div class="terminal" style="margin-top:12px">
-        <div class="cabecalho"><i></i><i></i><i></i></div>
-        <div id="ai-out"></div>
-        <div id="log" class="cursor">o núcleo interpreta objetivos, planeja, seleciona agentes/modelos, executa ferramentas validadas e verifica o resultado.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>SUAS CRIAÇÕES <small>TUDO QUE A IA JÁ FEZ</small></h2>
-      <div id="criacoes"></div>
-    </div>
-  </section>
-
-  <!-- ============ ESTILO ============ -->
-  <section class="vista" id="vista-estilo">
-    <div class="card">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg>O COLORISTA <small>O OLHAR DO MUNDO PELO CHAT</small></h2>
-      <div class="presets">
-        <button id="style-realista" class="btn">realista</button>
-        <button id="style-anime" class="btn">anime</button>
-        <button id="style-noir" class="btn">noir</button>
-        <button id="style-pastel" class="btn">pastel</button>
-        <button id="style-cyberpunk" class="btn">cyberpunk</button>
-        <button id="style-carvao" class="btn">carvão</button>
-      </div>
-      <div class="grade-form" style="margin-top:12px">
-        <input id="style-custom-name" type="text" placeholder="nome do estilo (ex.: sonho)" style="flex:1; min-width:150px" />
-        <input id="style-custom-json" type="text" placeholder='parâmetros JSON (ex.: {"bands":5,"sat":1.3})' style="flex:2; min-width:200px" />
-        <button id="style-apply" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-brush"/></svg>APLICAR</button>
-      </div>
-      <div class="terminal" style="margin-top:12px">
-        <div class="cabecalho"><i></i><i></i><i></i></div>
-        <div id="style-out"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ JOGOS ============ -->
-  <section class="vista" id="vista-jogos">
-    <div class="card" id="ai-panel">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-gamepad"/></svg>FÁBRICA DE JOGOS <small>GÊNERO → ZIP JOGÁVEL EM SEGUNDOS</small></h2>
-      <div class="grade-form">
-        <select id="create-genre">
-          <option value="corrida">corrida</option>
-          <option value="plataforma">plataforma</option>
-          <option value="rpg">rpg</option>
-          <option value="torre">torre (defesa)</option>
-        </select>
-        <button id="create-demo" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>CRIAR JOGO (ZIP)</button>
-        <button id="install-demo" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg>INSTALAR NA PLATAFORMA</button>
-        <button id="build-demo" class="btn azul"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>GERAR APP WEB (.ZIP)</button>
-      </div>
-      <div class="terminal" style="margin-top:12px">
-        <div class="cabecalho"><i></i><i></i><i></i></div>
-        <div id="agent-out"></div>
-      </div>
-      <div style="margin-top:12px">
-        <h2 style="margin:0 0 8px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-app"/></svg>APPS INSTALADOS</h2>
-        <div id="apps-out"></div>
-        <button id="apps-demo" class="btn"  style="margin-top:9px"><svg class="ic" viewBox="0 0 24 24"><use href="#i-radar"/></svg>LISTAR APPS</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SISTEMA ============ -->
-  <section class="vista" id="vista-sistema">
-    <div class="card" id="agent-panel">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>A IA OPERA A SUA MÁQUINA <small>ARQUIVOS · COMANDOS · OBJETIVOS</small></h2>
-      <div class="linha">
-        <button id="fs-demo" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>arquivo</button>
-        <button id="exec-demo" class="btn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-terminal"/></svg>comando</button>
-      </div>
-      <div class="terminal" style="margin-top:12px">
-        <div class="cabecalho"><i></i><i></i><i></i></div>
-        <div id="agent-out2"></div>
-      </div>
-      <div class="grade-form" style="margin-top:12px">
-        <input id="goal-input" type="text" style="flex:1; min-width:180px" placeholder='objetivo para a IA da sua máquina' />
-        <button id="goal-go" class="btn forte"><svg class="ic" viewBox="0 0 24 24"><use href="#i-play"/></svg>IR</button>
-      </div>
-      <textarea id="goal-attach" rows="2" placeholder="anexo opcional — csv: 'x,z,name' por linha · texto 'nomes.txt': lista de nomes" style="width:100%;margin-top:8px;box-sizing:border-box"></textarea>
-      <div class="terminal" style="margin-top:10px">
-        <div class="cabecalho"><i></i><i></i><i></i></div>
-        <div id="goal-log"></div>
-      </div>
-    </div>
-    <div class="card">
-      <h2><svg class="ic" viewBox="0 0 24 24"><use href="#i-chart"/></svg>A PLATAFORMA SE VÊ <small>HONESTIDADE ACIMA DE TUDO</small></h2>
-      <div style="font:400 11px/1.8 var(--mono); color:var(--fraca)">
-        transporte: <span style="color:var(--verde-2)" id="ws-live-2">conectando…</span><br />
-        núcleo: RRW (fonte da verdade) → Tese dos D → D-O15 → UES → Frame → WebGL2<br />
-        IA: Puter (User Pays, sem chave) + interpretador local + LLM via env<br />
-        lançamento: GENESIS v1 — artefatos assinados ed25519 (web · android · EXE SEA)
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<div id="tour" style="display:none">
-  <span id="tour-step">1/5</span>
-  <span id="tour-text"></span>
-  <button id="tour-next">próximo</button>
-  <button id="tour-skip">pular</button>
+  <div id="toasts"></div>
+  <div id="tour">
+    <span id="tour-step"></span>
+    <span id="tour-text"></span>
+    <button id="tour-next">próximo</button>
+    <button id="tour-skip">pular</button>
+  </div>
 </div>
 
 <script>
-  // ---- ESPELHO do rótulo de transporte na aba SISTEMA
+  // ============ GENESIS · SHELL (apresentação; a lógica real é do módulo) ============
   (function () {
-    const alvo = document.getElementById('ws-live-2');
-    if (!alvo) return;
-    new MutationObserver(() => { alvo.textContent = document.getElementById('ws-live').textContent.replace(/^transporte:\s*/, ''); })
-      .observe(document.getElementById('ws-live'), { childList: true, subtree: true, characterData: true });
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const CHAVE_CONTAS = 'uts.contas.v1', CHAVE_SESSAO = 'uts.sessao.v1',
+          CHAVE_CHATS = 'uts.chats.v1', CHAVE_CRIACOES = 'uts.criacoes.v1',
+          CHAVE_CONF = 'uts.conf.v1';
+    const le = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+    const grava = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+    const agoraHora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    // ---- banner de erro de boot (nunca a página muda)
+    const mostra = (msg) => { const b = $('boot-erro'); if (!b) return; b.style.display = 'block'; b.textContent = 'ERRO DE BOOT: ' + msg; };
+    window.addEventListener('error', (e) => { mostra(e.message + ' @ ' + String(e.filename ?? '').split('/').pop() + ':' + e.lineno); toast('erro', e.message); });
+    window.addEventListener('unhandledrejection', (e) => mostra(String(e.reason?.message ?? e.reason)));
+
+    // ---- toasts + notificações (eventos reais da sessão)
+    const noti = [];
+    function toast(tipo, texto) {
+      const t = document.createElement('div');
+      t.className = 'toast' + (tipo === 'erro' ? ' erro' : tipo === 'azul' ? ' azul' : '');
+      t.innerHTML = '<small>' + (tipo === 'erro' ? 'erro' : tipo === 'azul' ? 'sistema' : 'genesis') + ' · ' + agoraHora() + '</small>' + String(texto).replace(/</g, '&lt;');
+      $('toasts').appendChild(t);
+      noti.unshift({ tipo, texto, t: Date.now() }); noti.length = Math.min(noti.length, 20);
+      const badge = $('sino-badge'); badge.textContent = noti.length; badge.style.display = 'block';
+      setTimeout(() => t.remove(), 4200);
+    }
+    $('sino').addEventListener('click', () => {
+      const m = $('menu-noti'); const aberto = m.classList.toggle('aberto'); $('menu-user').classList.remove('aberto');
+      if (aberto) { m.innerHTML = noti.length ? noti.map((n) => '<button><svg class="ic" viewBox="0 0 24 24"><use href="#i-warn"/></svg>' + String(n.texto).replace(/</g, '&lt;') + '</button>').join('') : '<button><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg>sem notificações</button>';
+        const b = $('sino-badge'); b.style.display = 'none'; }
+    });
+
+    // ---- conf: tema / fx / fonte / idioma (persistidos, todos reais)
+    const conf = le(CHAVE_CONF, { tema: 'matrix', fx: 'auto', fonte: 'm', idioma: 'pt' });
+    const aplicaConf = () => {
+      const h = document.documentElement;
+      h.dataset.tema = conf.tema; h.dataset.fonte = conf.fonte;
+      const fraca = (navigator.hardwareConcurrency ?? 4) <= 4, mobil = matchMedia('(max-width: 820px)').matches || matchMedia('(pointer: coarse)').matches;
+      const fx = conf.fx === 'auto' ? (mobil || fraca ? 'low' : (navigator.hardwareConcurrency ?? 4) >= 8 ? 'high' : 'med') : conf.fx;
+      h.dataset.fx = fx;
+      $('hero-linha').textContent = conf.idioma === 'en' ? 'What do you want to create?' : 'O que você quer criar?';
+      $('chat-input').placeholder = conf.idioma === 'en' ? 'Describe it — "build a medieval world with a river and three towns"' : 'Descreva ao sistema — "crie um mundo medieval com um rio e três cidades"';
+      document.querySelectorAll('[data-fx-nivel]').forEach((b) => b.style.borderColor = b.dataset.fxNivel === conf.fx ? 'var(--verde)' : '');
+    };
+    document.querySelectorAll('[data-tema-bt]').forEach((b) => b.addEventListener('click', () => { conf.tema = b.dataset.temaBt; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'tema: ' + conf.tema); }));
+    document.querySelectorAll('[data-fonte-bt]').forEach((b) => b.addEventListener('click', () => { conf.fonte = b.dataset.fonteBt; grava(CHAVE_CONF, conf); aplicaConf(); }));
+    document.querySelectorAll('[data-idioma-bt]').forEach((b) => b.addEventListener('click', () => { conf.idioma = b.dataset.idiomaBt; grava(CHAVE_CONF, conf); aplicaConf(); }));
+    document.querySelectorAll('[data-fx-nivel]').forEach((b) => b.addEventListener('click', () => { conf.fx = b.dataset.fxNivel; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'efeitos: ' + conf.fx); }));
+    aplicaConf();
+
+    // ---- fundo 3D do LOGIN: grid em perspectiva + partículas + fluxos (canvas 2D projetado — barato)
+    (function () {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const cv = $('bg3d'), ctx = cv.getContext('2d');
+      let W = 0, H = 0, t = 0, vivo = true, estado = 'idle';
+      const mede = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
+      mede(); addEventListener('resize', mede);
+      const pts = Array.from({ length: 42 }, () => ({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, z: Math.random(), v: 0.0015 + Math.random() * 0.003 }));
+      function quadro() {
+        if (!vivo) return;
+        if (!document.hidden) {
+          t += 0.016;
+          const cor = estado === 'erro' ? [255, 80, 100] : estado === 'ok' ? [0, 255, 156] : [0, 255, 156];
+          ctx.fillStyle = 'rgba(1, 7, 4, 0.5)'; ctx.fillRect(0, 0, W, H);
+          const cy = H * 0.62, f = 340;
+          ctx.strokeStyle = 'rgba(' + cor.join(',') + ', 0.14)'; ctx.lineWidth = 1;
+          for (let gz = 0; gz < 14; gz++) {
+            const z = ((gz + (t * 0.35) % 1)) / 14, esc = f / (z * 9 + 0.25);
+            const y = cy + esc * 0.62; if (y < -50 || y > H + 50) continue;
+            ctx.globalAlpha = Math.max(0, 0.5 - z * 0.5);
+            ctx.beginPath();
+            for (let gx = -8; gx <= 8; gx++) { const sx = W / 2 + gx * esc * 0.14; gx === -8 ? ctx.moveTo(sx, y) : ctx.lineTo(sx, y); }
+            ctx.stroke();
+          }
+          for (let gx = -8; gx <= 8; gx++) {
+            const sx = W / 2 + gx * (f / 0.25) * 0.14 * 0.14;
+            ctx.beginPath(); ctx.moveTo(W / 2 + gx * (f * 0.56) * 0.14, cy + f * 0.62 * 0.62); ctx.lineTo(W / 2 + gx * 26, cy - H * 0.55); ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+          for (const p of pts) {
+            p.z -= p.v; if (p.z <= 0.02) { p.z = 1; p.x = Math.random() * 2 - 1; p.y = Math.random() * 2 - 1; }
+            const esc = f / (p.z * 9 + 0.25), sx = W / 2 + p.x * esc, sy = cy + p.y * esc * 0.6;
+            const r = Math.max(0.5, (1 - p.z) * 2.2);
+            ctx.fillStyle = 'rgba(' + cor.join(',') + ',' + (0.75 * (1 - p.z)).toFixed(2) + ')';
+            ctx.beginPath(); ctx.arc(sx, sy, r, 0, 7); ctx.fill();
+          }
+        }
+        requestAnimationFrame(quadro);
+      }
+      requestAnimationFrame(quadro);
+      window.__loginFundo = (e) => { estado = (e === 'ok' || e === 'erro') ? e : 'idle'; vivo = true; if (e === 'ok') setTimeout(() => { vivo = false; }, 700); };
+    })();
+
+    // ---- AUTENTICAÇÃO LOCAL (real: hash SHA-256, sessão 12h, nada sai do aparelho)
+    async function hash(txt) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    const estadoLogin = (txt, ok) => { const e = $('login-estado'); e.textContent = txt; e.className = ok ? 'ok' : ''; };
+    const erroLogin = (txt) => { const e = $('login-erro'); e.style.display = 'block'; e.textContent = txt; window.__loginFundo?.('erro'); };
+    async function entrar(criar) {
+      const u = $('login-user').value.trim().toLowerCase(), s = $('login-pass').value;
+      $('login-erro').style.display = 'none';
+      if (!navigator.onLine) estadoLogin('offline — a autenticação LOCAL continua funcionando; conectores exigem rede.');
+      if (!u || !s) return erroLogin('preencha usuário e senha.');
+      estadoLogin(criar ? 'criando conta…' : 'autenticando…');
+      const contas = le(CHAVE_CONTAS, {}), h = await hash(u + '|' + s);
+      if (criar) {
+        if (contas[u]) return erroLogin('conta já existe neste aparelho — faça LOGIN.');
+        contas[u] = { hash: h, criado: Date.now() }; grava(CHAVE_CONTAS, contas);
+        estadoLogin('conta criada — entrando…', true); abrirApp(u); return;
+      }
+      if (!contas[u]) return erroLogin('conta inexistente neste aparelho (CREATE ACCOUNT para criar).');
+      if (contas[u].hash !== h) return erroLogin('credenciais inválidas.');
+      estadoLogin('autenticado — abrindo a plataforma…', true); abrirApp(u);
+    }
+    $('bt-entrar').addEventListener('click', () => entrar(false));
+    $('bt-criar').addEventListener('click', () => entrar(true));
+    $('login-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(false); });
+    $('bt-convidado').addEventListener('click', () => abrirApp('convidado'));
+    $('bt-google').addEventListener('click', () => { erroLogin('OAuth do Google: PLANNED (chega com CONNECTORS). A autenticação LOCAL do aparelho é real — use LOGIN / CREATE ACCOUNT / GUEST.'); });
+    $('bt-github').addEventListener('click', () => { erroLogin('OAuth do GitHub: PLANNED (chega com CONNECTORS). A autenticação LOCAL do aparelho é real — use LOGIN / CREATE ACCOUNT / GUEST.'); });
+    let confirmou = false;
+    $('bt-esqueci').addEventListener('click', () => {
+      const u = $('login-user').value.trim().toLowerCase(); const contas = le(CHAVE_CONTAS, {});
+      if (!contas[u]) return erroLogin('digite o usuário da conta a apagar (reset local real).');
+      if (!confirmou) { confirmou = true; estadoLogin('resetar APAGA a conta "' + u + '" deste aparelho. Clique de novo para confirmar.'); return; }
+      delete contas[u]; grava(CHAVE_CONTAS, contas);
+      estadoLogin('conta apagada deste aparelho — crie outra.', true); confirmou = false;
+    });
+    let sessaoPendente = null;
+    function abrirApp(usuario) {
+      sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify({ usuario, exp: Date.now() + 12 * 3600e3 }));
+      sessaoPendente = usuario;
+      window.__loginFundo?.('ok');
+      estadoLogin('bem-vindo, ' + usuario + '.', true);
+      $('login').classList.add('saindo');
+      setTimeout(() => { $('login').style.display = 'none'; ligarApp(sessaoPendente); }, 480);
+    }
+    (function sessao() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem(CHAVE_SESSAO));
+        if (s && s.exp > Date.now()) { $('login').style.display = 'none'; ligarApp(s.usuario); }
+        else if (s) { estadoLogin('sessão expirada — entre de novo.'); sessionStorage.removeItem(CHAVE_SESSAO); }
+      } catch {}
+    })();
+    function deslogar(msg) {
+      sessionStorage.removeItem(CHAVE_SESSAO);
+      $('app').classList.remove('aberto'); const l = $('login'); l.style.display = 'flex'; l.classList.remove('saindo');
+      estadoLogin(msg ?? 'sessão encerrada.', true); window.__loginFundo?.('idle');
+      location.hash = '';
+    }
+
+    // ---- ligar o app após o login
+    let appLigado = false;
+    function ligarApp(usuario) {
+      $('user-nome').textContent = usuario; $('settings-user').textContent = usuario;
+      $('app').classList.add('aberto');
+      window.dispatchEvent(new Event('resize'));
+      if (appLigado) return; appLigado = true;
+      toast('azul', 'plataforma aberta — UTS AI é a home');
+      if (!location.hash) location.hash = '#utsai';
+      navegar(location.hash.slice(1) || 'utsai');
+      iniciarMatrix(); iniciarMirror(); iniciarHist();
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+    }
+    $('mu-sair').addEventListener('click', () => deslogar());
+    $('settings-sair').addEventListener('click', () => deslogar());
+    $('settings-apagar').addEventListener('click', () => {
+      const u = ($('user-nome').textContent || '').toLowerCase(); const contas = le(CHAVE_CONTAS, {});
+      if (u && contas[u]) { delete contas[u]; grava(CHAVE_CONTAS, contas); }
+      deslogar('conta apagada deste aparelho.');
+    });
+    $('mu-conta').addEventListener('click', () => { fecharMenus(); navegar('settings'); });
+    $('mu-tema').addEventListener('click', () => { fecharMenus(); navegar('settings'); });
+    $('mu-logs').addEventListener('click', () => { fecharMenus(); exportarLogs(); });
+    const fecharMenus = () => { $('menu-user').classList.remove('aberto'); $('menu-noti').classList.remove('aberto'); };
+    $('user-chip').addEventListener('click', () => { $('menu-noti').classList.remove('aberto'); $('menu-user').classList.toggle('aberto'); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('#user-chip') && !e.target.closest('#sino')) fecharMenus(); });
+
+    // ---- NAVEGAÇÃO (routing por hash — 32 áreas)
+    const NOMES = { utsai: 'UTS AI', create: 'CREATE', projects: 'PROJECTS', research: 'RESEARCH', ues: 'UES', worlds: 'WORLDS',
+      scenes: 'SCENES', apps: 'APPS', assets: 'ASSETS', files: 'FILES', agents: 'AGENTS', models: 'MODELS', tools: 'TOOLS',
+      code: 'CODE', render: 'RENDER', physics: 'PHYSICS', audio: 'AUDIO', environment: 'ENVIRONMENT', nature: 'NATURE',
+      society: 'SOCIETY', economy: 'ECONOMY', npc: 'NPC / NMN', data: 'DATA', storage: 'STORAGE', services: 'SERVICES',
+      connectors: 'CONNECTORS', github: 'GITHUB', performance: 'PERFORMANCE', debug: 'DEBUG', logs: 'LOGS', publish: 'PUBLISH', settings: 'SETTINGS' };
+    function navegar(area) {
+      if (!NOMES[area]) area = 'utsai';
+      document.querySelectorAll('.area').forEach((a) => a.classList.toggle('on', a.id === 'area-' + area));
+      document.querySelectorAll('.nav-i').forEach((b) => b.classList.toggle('on', b.dataset.area === area));
+      document.querySelectorAll('#nav-inferior button[data-area]').forEach((b) => b.classList.toggle('on', b.dataset.area === area));
+      $('area-atual').textContent = NOMES[area];
+      location.hash = area; history.replaceState(null, '', '#' + area);
+      $('sidebar').classList.remove('aberto');
+      fecharMenus();
+      window.dispatchEvent(new Event('resize'));
+      if (area === 'performance') iniciarSpark();
+    }
+    document.querySelectorAll('[data-area]').forEach((b) => b.addEventListener('click', () => navegar(b.dataset.area)));
+    document.querySelectorAll('.nav-grupo > .mini').forEach((b) => b.addEventListener('click', () => b.parentElement.classList.toggle('aberto')));
+    document.querySelectorAll('#sub-utsai button').forEach((b) => b.addEventListener('click', () => {
+      navegar('utsai');
+      const alvo = $(b.dataset.vai); if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }));
+    $('bt-palette').addEventListener('click', () => { $('sidebar').classList.remove('aberto'); paletteAbrir(); });
+    $('burger').addEventListener('click', () => $('sidebar').classList.toggle('aberto'));
+    $('bt-mais').addEventListener('click', () => $('sidebar').classList.toggle('aberto'));
+    $('marca-home').addEventListener('click', () => navegar('utsai'));
+    addEventListener('hashchange', () => { const a = location.hash.slice(1); if (NOMES[a] && appLigado) navegar(a); });
+    // atalhos internos
+    $('ir-apps').addEventListener('click', () => navegar('apps'));
+    $('ir-publish').addEventListener('click', () => navegar('publish'));
+    $('ir-worlds').addEventListener('click', () => navegar('worlds'));
+    $('ir-agents-files').addEventListener('click', () => navegar('agents'));
+    $('ir-ues-audio').addEventListener('click', () => navegar('ues'));
+
+    // ---- COMMAND PALETTE (Ctrl+K · busca do topo)
+    const comandos = [];
+    for (const [id, nome] of Object.entries(NOMES)) comandos.push({ nome: 'abrir ' + nome, icone: 'i-box', acao: () => navegar(id) });
+    comandos.push({ nome: 'novo chat', icone: 'i-wand', acao: () => { navegar('utsai'); novoChat(); } });
+    comandos.push({ nome: 'criar mundo (objetivo)', icone: 'i-earth', acao: () => { navegar('create'); setTimeout(() => $('objective').focus(), 250); } });
+    comandos.push({ nome: 'criar jogo .zip', icone: 'i-gamepad', acao: () => { navegar('apps'); setTimeout(() => $('create-demo')?.click(), 250); } });
+    comandos.push({ nome: 'exportar logs', icone: 'i-terminal', acao: exportarLogs });
+    comandos.push({ nome: 'ciclar tema', icone: 'i-palette', acao: () => { const ts = ['matrix', 'dark', 'light', 'terminal', 'mono']; conf.tema = ts[(ts.indexOf(conf.tema) + 1) % ts.length]; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'tema: ' + conf.tema); } });
+    comandos.push({ nome: 'ciclar efeitos', icone: 'i-gear', acao: () => { const fs = ['auto', 'low', 'med', 'high', 'ultra']; conf.fx = fs[(fs.indexOf(conf.fx) + 1) % fs.length]; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'efeitos: ' + conf.fx); } });
+    comandos.push({ nome: 'reiniciar tour', icone: 'i-play', acao: () => { try { localStorage.removeItem('uts-tour-done'); } catch {} toast('azul', 'tour reiniciado — recarregue (Ctrl+Shift+R)'); } });
+    comandos.push({ nome: 'sair da sessão', icone: 'i-cross', acao: () => deslogar() });
+    let palSel = 0, palVisiveis = [];
+    function paletteRender() {
+      const q = $('palette-input').value.toLowerCase();
+      palVisiveis = comandos.filter((c) => c.nome.toLowerCase().includes(q));
+      palSel = Math.min(palSel, Math.max(0, palVisiveis.length - 1));
+      $('palette-lista').innerHTML = palVisiveis.map((c, i) =>
+        '<button data-i="' + i + '" class="' + (i === palSel ? 'sel' : '') + '"><svg class="ic" viewBox="0 0 24 24"><use href="#' + c.icone + '"/></svg>' + c.nome + '</button>').join('') ||
+        '<button disabled><svg class="ic" viewBox="0 0 24 24"><use href="#i-forbid"/></svg>nada encontrado — honestidade acima de tudo</button>';
+      $('palette-lista').querySelectorAll('button[data-i]').forEach((b) => b.addEventListener('click', () => rodarComando(+b.dataset.i)));
+    }
+    function rodarComando(i) { const c = palVisiveis[i]; $('palette').classList.remove('aberto'); if (c) c.acao(); }
+    function paletteAbrir() { $('palette').classList.add('aberto'); $('palette-input').value = ''; palSel = 0; paletteRender(); setTimeout(() => $('palette-input').focus(), 30); }
+    $('busca').addEventListener('focus', paletteAbrir);
+    $('busca').addEventListener('click', paletteAbrir);
+    $('palette-input').addEventListener('input', () => { palSel = 0; paletteRender(); });
+    $('palette-input').addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { palSel = Math.min(palSel + 1, palVisiveis.length - 1); paletteRender(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { palSel = Math.max(palSel - 1, 0); paletteRender(); e.preventDefault(); }
+      else if (e.key === 'Enter') rodarComando(palSel);
+      else if (e.key === 'Escape') $('palette').classList.remove('aberto');
+    });
+    $('palette').addEventListener('click', (e) => { if (e.target.id === 'palette') $('palette').classList.remove('aberto'); });
+    addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); paletteAbrir(); }
+      else if (e.key === 'Escape') { $('ia-drawer').classList.remove('aberto'); $('palette').classList.remove('aberto'); fecharMenus(); } });
+
+    // ---- IA CONTEXTCUAL (drawer global; contexto = área atual)
+    let contextoIA = 'GLOBAL';
+    function drawerAbrir(ctx) {
+      contextoIA = ctx || (NOMES[location.hash.slice(1)] ?? 'GLOBAL');
+      $('ia-contexto-badge').textContent = contextoIA;
+      $('ia-contexto').textContent = 'A IA sabe que você está em ' + contextoIA + ' — o contexto vai no prefixo da mensagem. Não repita o que quer.';
+      $('ia-drawer').classList.add('aberto');
+      setTimeout(() => { window.dispatchEvent(new Event('resize')); $('goal-input').focus(); }, 250);
+    }
+    $('ia-flutuante').addEventListener('click', () => drawerAbrir());
+    $('ia-fechar').addEventListener('click', () => { $('ia-drawer').classList.remove('aberto'); window.dispatchEvent(new Event('resize')); });
+    document.querySelectorAll('.cab').forEach((cab) => {
+      const area = cab.parentElement.id.replace('area-', '');
+      if (area === 'utsai') return;
+      const bt = document.createElement('button');
+      bt.className = 'btn'; bt.style.width = 'auto'; bt.style.marginLeft = 'auto';
+      bt.innerHTML = '<svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-wand"/></svg>IA';
+      bt.addEventListener('click', () => drawerAbrir(NOMES[area]));
+      cab.appendChild(bt);
+    });
+    $('ask-why').addEventListener('click', () => {
+      drawerAbrir('NPC / NMN');
+      $('goal-input').value = 'por que os NPCs estão no estado atual? explique a cadeia causal (chuva, solo, comida, medo).';
+      $('goal-input').focus();
+    });
+    $('ir-agente-research').addEventListener('click', () => drawerAbrir('RESEARCH'));
+
+    // ---- modo CHAT/BUILD + AUTO + compositor do UTS AI
+    let modo = 'chat', auto = false, execucoes = 0;
+    $('modo-chat').addEventListener('click', () => { modo = 'chat'; $('modo-chat').classList.add('on'); $('modo-build').classList.remove('on'); $('badge-modo').textContent = 'CHAT'; });
+    $('modo-build').addEventListener('click', () => { modo = 'build'; $('modo-build').classList.add('on'); $('modo-chat').classList.remove('on'); $('badge-modo').textContent = 'BUILD'; });
+    $('sw-auto').addEventListener('click', () => { auto = !auto; $('sw-auto').classList.toggle('on', auto); toast('azul', auto ? 'AUTO: interpretar, planejar, executar, verificar, corrigir' : 'AUTO desligado'); });
+    function bolha(quem, texto) {
+      const d = document.createElement('div');
+      d.className = 'msg ' + quem; d.textContent = texto;
+      $('thread').appendChild(d); $('thread').scrollTop = 1e9;
+      return d;
+    }
+    function registraExecucao(txt) {
+      execucoes++; $('tasks-count').textContent = execucoes; $('projects-count').textContent = execucoes;
+      convoAtual && (convoAtual.msgs.push({ quem: 'ia', texto: txt, t: Date.now() }), histGrava());
+    }
+    function enviarChat() {
+      const txt = $('chat-input').value.trim(); if (!txt) return;
+      $('chat-input').value = '';
+      bolha('eu', txt);
+      if (!convoAtual) novoChat(txt);
+      convoAtual.msgs.push({ quem: 'eu', texto: txt, t: Date.now() }); histGrava();
+      const vivoIa = bolha('ia', '…');
+      observaTerminal(vivoIa);
+      if (modo === 'build') {
+        $('objective').value = txt;
+        if (auto) toast('azul', 'AUTO: interpretar → planejar → executar → verificar → corrigir');
+        $('objform').requestSubmit ? $('objform').requestSubmit() : $('objform').dispatchEvent(new Event('submit', { cancelable: true }));
+        toast('azul', 'BUILD: o mundo está nascendo — acompanhe no UES');
+        registraExecucao(txt);
+      } else {
+        $('goal-input').value = (contextoIA !== 'GLOBAL' ? '[contexto: ' + contextoIA + '] ' : '') + txt;
+        $('goal-go').click();
+        registraExecucao(txt);
+      }
+    }
+    $('chat-enviar').addEventListener('click', enviarChat);
+    $('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarChat(); });
+
+    // ---- espelha os terminais REAIS do módulo nas bolhas de conversa
+    const observados = new WeakMap();
+    function observaTerminal(bolhaEl) {
+      const alvo = modo === 'build' ? $('ai-out') : $('goal-log');
+      if (!alvo) return;
+      if (observados.has(alvo)) { try { observados.get(alvo).disconnect(); } catch {} }
+      const obs = new MutationObserver(() => { bolhaEl.textContent = alvo.textContent.slice(-600) || '…'; $('thread').scrollTop = 1e9; });
+      obs.observe(alvo, { childList: true, characterData: true, subtree: true });
+      observados.set(alvo, obs);
+      bolhaEl.textContent = alvo.textContent.slice(-600) || '…';
+    }
+
+    // ---- anexos (reais: arquivo/texto/imagem local; vídeo/áudio honestamente desabilitados)
+    let anexoTexto = '';
+    function anexou(nome) { toast('azul', 'anexo "' + nome + '" pronto — vai com a próxima mensagem'); }
+    $('anexo-file').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      if (/\.(txt|csv|json|md|js|mjs)$/i.test(f.name) || f.size < 200000) {
+        const txt = await f.text(); anexoTexto = f.name + ':\n' + txt.slice(0, 20000);
+        $('goal-attach').value = anexoTexto; anexou(f.name);
+      } else { $('goal-attach').value = f.name + ' (' + Math.round(f.size / 1024) + ' KB)'; anexou(f.name); }
+    });
+    $('anexo-img').addEventListener('change', (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const d = document.createElement('div'); d.className = 'msg eu';
+      d.textContent = '[imagem anexada: ' + f.name + ' — preview local real; envio ao modelo visual: PLANNED]';
+      $('thread').appendChild(d); $('thread').scrollTop = 1e9; anexou(f.name);
+    });
+    $('anexo-url').addEventListener('click', () => { $('goal-input').value = $('goal-input').value + ' ' + (prompt('URL:') || ''); $('goal-input').focus(); });
+    $('anexo-doc').addEventListener('click', () => $('anexo-file').click());
+    $('anexo-code').addEventListener('click', () => $('anexo-file').click());
+    $('anexo-video').addEventListener('click', () => toast('erro', 'vídeo ao modelo: PLANNED — honestidade acima de demonstração'));
+    $('anexo-audio').addEventListener('click', () => toast('erro', 'áudio ao modelo: PLANNED — honestidade acima de demonstração'));
+
+    // ---- HISTÓRICO DE CHAT (somente no UTS AI — CRUD real em localStorage)
+    let chats = le(CHAVE_CHATS, []), convoAtual = null;
+    function histGrava() { grava(CHAVE_CHATS, chats.slice(0, 40)); histRender(); }
+    function novoChat(primeiro) {
+      convoAtual = { id: Date.now(), titulo: primeiro ? primeiro.slice(0, 48) : 'nova conversa', t: Date.now(), fixado: false, arquivado: false, msgs: [] };
+      chats.unshift(convoAtual); histGrava();
+      $('thread').innerHTML = '<div class="msg sistema">nova conversa — ' + agoraHora() + '</div>';
+      histRender();
+    }
+    function histRender() {
+      const q = ($('hist-busca').value || '').toLowerCase();
+      $('hist-lista').innerHTML = chats
+        .filter((c) => !c.arquivado && (!q || c.titulo.toLowerCase().includes(q)))
+        .sort((a, b) => (b.fixado - a.fixado) || (b.t - a.t))
+        .map((c) => '<div class="hist-i' + (c === convoAtual ? ' ativo' : '') + '" data-id="' + c.id + '"><b>' + c.titulo.replace(/</g, '&lt;') + '</b>' +
+          '<small>' + new Date(c.t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ' · ' + c.msgs.length + ' msg' + (c.fixado ? ' · fixado' : '') + '</small>' +
+          '<div class="acoes"><button data-ac="abrir">abrir</button><button data-ac="fixar">' + (c.fixado ? 'desfixar' : 'fixar') + '</button><button data-ac="renomear">renomear</button><button data-ac="arquivar">arquivar</button><button data-ac="apagar">apagar</button></div></div>')
+        .join('');
+      $('hist-lista').querySelectorAll('.hist-i').forEach((el) => {
+        const c = chats.find((x) => x.id === +el.dataset.id);
+        el.addEventListener('click', (e) => {
+          const ac = e.target.dataset.ac;
+          if (!ac) { convoAtual = c; histRender(); $('thread').innerHTML = '<div class="msg sistema">conversa reaberta</div>' + c.msgs.map((m) => '<div class="msg ' + m.quem + '"></div>').join('');
+            const bolhas = $('thread').querySelectorAll('.msg.eu, .msg.ia'); c.msgs.filter((m) => m.quem !== 'sistema').forEach((m, i) => bolhas[i] && (bolhas[i].textContent = m.texto)); return; }
+          if (ac === 'fixar') c.fixado = !c.fixado;
+          if (ac === 'arquivar') c.arquivado = true;
+          if (ac === 'apagar') { chats = chats.filter((x) => x !== c); if (convoAtual === c) convoAtual = null; }
+          if (ac === 'renomear') { const n = prompt('novo título:', c.titulo); if (n) c.titulo = n.slice(0, 48); }
+          histGrava();
+        });
+      });
+    }
+    $('card-novochat').addEventListener('click', () => novoChat());
+    $('hist-busca').addEventListener('input', histRender);
+    function iniciarHist() { if (!chats.length) novoChat(); else { convoAtual = chats[0]; histRender(); } }
+
+    // ---- GALERIA DE CRIAÇÕES (hook chamado PELO módulo em 3 pontos reais)
+    const ICONE = { mundo: 'i-wand', jogo: 'i-gamepad', app: 'i-app' };
+    const ROTULO = { mundo: 'MUNDO', jogo: 'JOGO', app: 'APP' };
+    window.__addCriacao = function (tipo, nome, ok) {
+      if (!ok) return;
+      const lista = le(CHAVE_CRIACOES, []);
+      lista.unshift({ tipo, nome: String(nome).slice(0, 60), t: Date.now() });
+      grava(CHAVE_CRIACOES, lista.slice(0, 40));
+      renderCriacoes();
+      toast('azul', (ROTULO[tipo] ?? tipo) + ' criado: ' + nome);
+      $('projects-criacoes').textContent = lista.length;
+    };
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+    function renderCriacoes() {
+      const el = $('criacoes'); if (!el) return;
+      const lista = le(CHAVE_CRIACOES, []);
+      $('projects-criacoes').textContent = lista.length;
+      el.innerHTML = lista.length
+        ? lista.map((c) => '<div class="cria-card ' + esc(c.tipo) + '"><svg class="ic" viewBox="0 0 24 24"><use href="#' + (ICONE[c.tipo] ?? 'i-box') + '"/></svg><div><b>' + esc(c.nome) + '</b><small>' + (ROTULO[c.tipo] ?? c.tipo) + ' · criado pela IA</small></div></div>').join('')
+        : '<div class="vazio">NADA CRIADO AINDA — descreva um objetivo no UTS AI ou em CREATE e ele NASCE AQUI como card.</div>';
+    }
+    renderCriacoes();
+
+    // ---- sugestões (enchem o objetivo do CREATE)
+    document.querySelectorAll('.sugestoes button').forEach((b) => b.addEventListener('click', () => {
+      const alvo = $('objective'); if (alvo) { alvo.value = b.dataset.p ?? b.textContent.trim(); alvo.focus(); }
+    }));
+
+    // ---- MATRIX (app): chuva digital barata — sem shadowBlur, pausa escondida, desligável
+    function iniciarMatrix() {
+      if (conf.fx === 'low' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const cv = $('matrix'); const ctx = cv.getContext('2d');
+      const G = '\u30A2\u30AB\u30B5\u30BF\u30CA\u30CF\u30DE\u30E4\u30E9\u30EF0123456789GENESIS<>/|=+*';
+      let colunas = [];
+      const mede = () => { cv.width = innerWidth; cv.height = innerHeight; colunas = Array.from({ length: Math.floor(cv.width / 15) }, () => Math.random() * -cv.height); };
+      mede(); addEventListener('resize', mede);
+      setInterval(() => {
+        if (document.hidden) return;
+        ctx.fillStyle = 'rgba(2, 6, 4, 0.10)'; ctx.fillRect(0, 0, cv.width, cv.height);
+        ctx.font = '12px JetBrains Mono, monospace';
+        for (let i = 0; i < colunas.length; i++) {
+          const y = colunas[i];
+          ctx.fillStyle = Math.random() < 0.12 ? '#00c2ff' : '#00ff9c';
+          ctx.fillText(G[(Math.random() * G.length) | 0], i * 15, y);
+          colunas[i] = y > cv.height + Math.random() * 400 ? 0 : y + 15;
+        }
+      }, 90);
+    }
+
+    // ---- ESPELHO: telemetria real (módulo → painéis) + IA chip + logs mirror
+    function iniciarMirror() {
+      setInterval(() => {
+        if (document.hidden) return;
+        document.querySelectorAll('[data-mirror]').forEach((el) => {
+          const src = $(el.dataset.mirror);
+          if (src && src.textContent && src.textContent !== el.textContent) el.textContent = src.textContent;
+        });
+      }, 700);
+      // IA chip: lê o número REAL de modelos do log de boot
+      const obsLog = new MutationObserver(() => {
+        const m = ($('log').textContent || '').match(/(\d+) modelos/);
+        if (m) { $('ia-chip').innerHTML = '<i class="led"></i>IA · ' + m[1]; $('models-n').textContent = m[1];
+          $('models-n2').textContent = m[1]; $('models-n3').textContent = m[1]; obsLog.disconnect(); }
+      });
+      if ($('log')) obsLog.observe($('log'), { childList: true, characterData: true, subtree: true });
+      // logs mirror com filtro
+      const obsM = new MutationObserver(() => {
+        const q = ($('logs-filtro').value || '').toLowerCase();
+        const linhas = ($('log').textContent || '').split('\n');
+        $('logs-mirror').textContent = (q ? linhas.filter((l) => l.toLowerCase().includes(q)) : linhas).slice(-60).join('\n');
+      });
+      if ($('log')) obsM.observe($('log'), { childList: true, characterData: true, subtree: true });
+      $('logs-filtro').addEventListener('input', () => { const q = ($('logs-filtro').value || '').toLowerCase();
+        const linhas = ($('log').textContent || '').split('\n');
+        $('logs-mirror').textContent = (q ? linhas.filter((l) => l.toLowerCase().includes(q)) : linhas).slice(-60).join('\n'); });
+      const wsObs = new MutationObserver(() => { const w = $('ws-live'); if (w && w.textContent) w.style.display = ''; });
+      if ($('ws-live')) wsObs.observe($('ws-live'), { childList: true, characterData: true, subtree: true });
+    }
+    function exportarLogs() {
+      const txt = ($('log').textContent || 'sem logs') + '\n\ncriações: ' + JSON.stringify(le(CHAVE_CRIACOES, []), null, 1);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }));
+      a.download = 'genesis-logs.txt'; a.click(); URL.revokeObjectURL(a.href);
+      toast('azul', 'logs exportados');
+    }
+    $('logs-export').addEventListener('click', exportarLogs);
+
+    // ---- sparkline de FPS (dados reais do s-fps; só quando o painel está visível)
+    let sparkLigado = false;
+    function iniciarSpark() {
+      if (sparkLigado) return; sparkLigado = true;
+      const cv = $('spark-fps'), ctx = cv.getContext('2d'), vals = [];
+      setInterval(() => {
+        if (document.hidden || !$('area-performance').classList.contains('on')) return;
+        const fps = parseFloat($('s-fps').textContent) || 0;
+        vals.push(fps); if (vals.length > 64) vals.shift();
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--verde').trim() || '#00ff9c';
+        ctx.lineWidth = 1.6; ctx.beginPath();
+        vals.forEach((v, i) => { const x = (i / 63) * cv.width, y = cv.height - Math.min(1, v / 60) * (cv.height - 6) - 3; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+        ctx.stroke();
+        ctx.fillStyle = ctx.strokeStyle; ctx.font = '9px JetBrains Mono, monospace';
+        ctx.fillText('fps ' + (vals[vals.length - 1] ?? 0), 6, 11);
+      }, 500);
+    }
+    $('tour-rever').addEventListener('click', () => { try { localStorage.removeItem('uts-tour-done'); } catch {}; toast('azul', 'tour reiniciado — recarregue a página (Ctrl+Shift+R)'); });
   })();
 </script>
 
@@ -986,6 +1982,7 @@
   $('tour-next').addEventListener('click', () => showTour(tourStep + 1));
   $('tour-skip').addEventListener('click', endTour);
   if (!tourDone) setTimeout(() => showTour(0), 800);
+
 
 </script>
 </body>

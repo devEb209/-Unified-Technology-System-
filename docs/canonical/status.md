@@ -340,6 +340,41 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R32 — A GENESIS COMPLETA (login → UTS AI → 32 áreas; a performance como lei)
+
+**O PROMPT SUPREMO, implementado:** o usuário entregou a especificação
+completa (68 seções) e mandou refazer TUDO de novo com performance boa.
+O frontend virou a GENESIS de verdade: **LOGIN** (autenticação LOCAL
+real — SHA-256 no aparelho, sessão 12h com expiração, guest, reset de
+conta, estados loading/erro/offline/sessão expirada; Google/GitHub
+representados com honestidade PLANNED), e após o login a **HOME é a
+UTS AI** (nunca a UES): hero GENESIS + compositor com toggle CHAT/BUILD
++ AUTO + anexos (file/imagem/url reais; vídeo/áudio honestamente
+desabilitados) + thread de conversa que ESPELHA os terminais reais do
+módulo (MutationObserver) + histórico só no UTS AI com
+fixar/renomear/arquivar/apagar em localStorage. **SIDEBAR com 32 áreas**
+em 4 grupos (inteligência · plataforma · UES · sistema), routing por
+hash, command palette Ctrl+K, notificações com badge, IA contextual
+global (drawer flutuante que recebe a área atual), bottom nav no mobile,
+5 temas, escala de fonte, níveis de efeito AUTO/LOW/MED/HIGH/ULTRA.
+
+**Performance como lei (a lição do R31b virou arquitetura):** ZERO
+backdrop-filter; matrix sem sombra por glifo (tick 90ms, pausa escondida,
+desligada em LOW/mobile); fundo 3D do login é grid projetado em canvas 2D
+(barato) e PARA de animar após o login; sparkline de FPS só com o painel
+visível; espelhos de telemetria a 0.7Hz checando document.hidden;
+`prefers-reduced-motion` respeitado em tudo.
+
+**A realidade inteira exposta, nada inventado:** as 27 estatísticas
+s-* do engine têm ids REAIS no painel PERFORMANCE e são espelhadas para
+UES/SCENES/ENVIRONMENT/NATURE/NPC/DATA; áreas sem UI pronta mostram
+PLANNED/PARTIAL com o motivo (zero placeholder, zero dado falso —
+ADR-018: a UI é camada de apresentação da realidade existente). O palco
+3D mora no UES (a engine acessada pela inteligência), os controles de
+clima no card #controls, o form de criação no #ai-panel do CREATE — o
+tour do engine destaca os três de novo. **Contrato do módulo: os 72 IDs
+presentes, zero chamadas-seletor, 391/391.** Auditado.
+
 ## R31 — O REDESIGN TOTAL (a casca nova; o módulo vivo intacto)
 
 **O que mudou:** o usuário validou a pilha de shaders no aparelho
