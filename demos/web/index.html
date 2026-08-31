@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-tema="matrix" data-fx="high" data-fonte="m">
+<html lang="pt-BR" data-tema="genesis" data-fx="high" data-fonte="m">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -498,6 +498,7 @@
     <section class="area on" id="area-utsai">
       <div class="hero">
         <h1>GENESIS</h1>
+        <span class="mini">o sistema que cria sistemas · no princípio, um objetivo</span>
         <p id="hero-linha">O que você quer criar?</p>
       </div>
       <div id="palco-home" style="margin:-4px 0 4px"></div>
@@ -537,13 +538,23 @@
         </div>
       </div>
       <div class="subcards">
-        <div class="card" id="card-recent"><h3>RECENT</h3><p class="fraco">Conversas e criações recentes aparecem no histórico ao lado e em WORLDS/APPS.</p></div>
-        <div class="card" id="card-memories"><h3>MEMORIES <span class="badge cinza">PARTIAL</span></h3><p class="fraco">Memória de trabalho por conversa: FUNCTIONAL. Memória de longo prazo do agente (NMN, testada no núcleo): exposição PLANNED.</p></div>
-        <div class="card" id="card-tasks"><h3>TASKS <span class="badge cinza">PARTIAL</span></h3><p class="fraco">Execuções nesta sessão: <b id="tasks-count">0</b>. Agendador de longa duração existe no núcleo (testado); fila visual: PLANNED.</p></div>
-        <div class="card" id="card-agents"><h3>AGENTS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">O agente de arquivos/comandos opera de verdade — painel AGENTS. Arquitetos do núcleo: creator, geometry-smith, shader-smith, light-smith, proc-agent.</p></div>
-        <div class="card" id="card-models"><h3>MODELS <span class="badge">FUNCTIONAL</span></h3><p class="fraco"><b id="models-n">—</b> modelos reais via Puter (User Pays, sem chave). Registro completo em MODELS.</p></div>
-        <div class="card" id="card-tools"><h3>TOOLS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">Ferramentas nativas: mundo, física, óptica, áudio, FS, zip, app builder, research, github. Índice em TOOLS.</p></div>
-        <div class="card" id="card-research"><h3>RESEARCH <span class="badge azul">PARTIAL</span></h3><p class="fraco">Triangulação (N modelos + busca + consenso) funciona no núcleo. Pergunte pelo agente; visual de consenso: PLANNED.</p></div>
+        <div class="card" id="card-recent"><h3>RECENT</h3>
+          <div class="lista" id="recent-lista" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div></div>
+        <div class="card" id="card-memories"><h3>MEMORIES <span class="badge cinza">SESSÃO REAL · LONGO PRAZO PLANNED</span></h3>
+          <p class="fraco">Desta sessão: <b id="mem-conversas">0</b> conversas · <b id="mem-msgs">0</b> mensagens · <b id="mem-criacoes">0</b> criações · <b data-mirror="s-ev">0</b> eventos causais no RRW.</p>
+          <p class="fraco">A memória de trabalho por conversa é FUNCTIONAL; a de longo prazo (NMN, testada no núcleo) ainda não tem exposição aqui — e não vamos fingir que tem.</p></div>
+        <div class="card" id="card-tasks"><h3>TASKS <span class="badge">SESSÃO REAL</span></h3>
+          <p class="fraco">Execuções nesta sessão: <b id="tasks-count">0</b> — as últimas, ao vivo:</p>
+          <div id="tasks-lista" style="display:flex;flex-direction:column;gap:5px;margin-top:8px"></div></div>
+        <div class="card" id="card-agents"><h3>AGENTS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">O agente de arquivos/comandos opera de verdade — painel AGENTS. Arquitetos do núcleo: creator, geometry-smith, shader-smith, light-smith, proc-agent.</p>
+          <div class="linha-botoes"><button id="bt-agents-utsai" class="btn"  style="width:auto">abrir AGENTS</button>
+          <button id="bt-pedir-agente" class="btn"  style="width:auto">pedir algo ao agente</button></div></div>
+        <div class="card" id="card-models"><h3>MODELS <span class="badge">FUNCTIONAL</span></h3><p class="fraco"><b id="models-n">—</b> modelos reais via Puter (User Pays, sem chave). Registro completo em MODELS.</p>
+          <div class="linha-botoes"><button id="bt-models-utsai" class="btn"  style="width:auto">ver MODELS</button></div></div>
+        <div class="card" id="card-tools"><h3>TOOLS <span class="badge">FUNCTIONAL</span></h3><p class="fraco">Ferramentas nativas: mundo, física, óptica, áudio, FS, zip, app builder, research, github. Índice em TOOLS.</p>
+          <div class="linha-botoes"><button id="bt-tools-utsai" class="btn"  style="width:auto">ver TOOLS</button></div></div>
+        <div class="card" id="card-research"><h3>RESEARCH <span class="badge azul">PARTIAL</span></h3><p class="fraco">Triangulação (N modelos + busca + consenso) funciona no núcleo. Pergunte pelo agente; visual de consenso: PLANNED.</p>
+          <div class="linha-botoes"><button id="bt-research-utsai" class="btn"  style="width:auto">perguntar à IA</button></div></div>
         <div class="card" id="card-automations"><h3>AUTOMATIONS <span class="badge cinza">PLANNED</span></h3><p class="fraco">Automações agendadas chegam com a fila de tarefas. Nada é fingido aqui.</p></div>
       </div>
     </section>
@@ -580,17 +591,19 @@
           <p class="fraco">A plataforma empacota um app real em .zip — publicação em PUBLISH.</p>
           <div class="linha-botoes"><button id="ir-publish" class="btn"  style="width:auto">ir a PUBLISH</button></div></div>
         <div class="card"><h3>SCENE · SIMULATION · ASSET · CODE · SYSTEM · PROJECT</h3>
-          <p class="fraco">Tudo isso nasce por linguagem natural — descreva no UTS AI. Os geradores nativos (geometry-smith, shader-smith, light-smith, proc-agent) são reais e testados. Cards dedicados: PLANNED.</p></div>
+          <p class="fraco">Tudo isso nasce por linguagem natural — descreva no UTS AI. Os geradores nativos (geometry-smith, shader-smith, light-smith, proc-agent) são reais e testados. Cards dedicados: PLANNED.</p>
+          <div class="linha-botoes"><button id="bt-escrever" class="btn forte"  style="width:auto">escrever objetivo agora</button></div></div>
       </div>
     </section>
 
     <!-- ===== PROJECTS ===== -->
     <section class="area" id="area-projects">
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>
-        <h2>PROJECTS</h2><span class="badge cinza">UI PARTIAL · NÚCLEO FUNCTIONAL</span></div>
-      <div class="card tola"><h3>TRABALHOS DE LONGA DURAÇÃO</h3>
-        <p>Cada objetivo executado no UTS AI já é um trabalho com planejamento, execução e verificação ponta a ponta (streaming visível na conversa). O agendador de projetos longos existe no núcleo e é testado; run/pause/resume/verify visuais conectam ao stream na próxima rodada — nada aqui é fingido.</p>
-        <p class="fraco">Execuções nesta sessão: <b id="projects-count">0</b> · criações acumuladas: <b id="projects-criacoes">0</b></p></div>
+        <h2>PROJECTS</h2><span class="badge">FUNCTIONAL · DADOS REAIS DA SESSÃO</span></div>
+      <div class="card tola"><h3>CADA EXECUÇÃO, UM RELATÓRIO</h3>
+        <p class="fraco">Todo objetivo executado (BUILD ou criação pelo agente) vira um projeto com objetivo, estado, criação resultante, REEXECUTAR e EXPORTAR — os mesmos dados que o engine reporta. Agendador de longa duração do núcleo (run/pause/resume): PLANNED — nada aqui é fingido.</p>
+        <p class="fraco">Execuções nesta sessão: <b id="projects-count">0</b> · criações acumuladas: <b id="projects-criacoes">0</b></p>
+        <div id="projects-lista" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div></div>
     </section>
 
     <!-- ===== RESEARCH ===== -->
@@ -601,7 +614,9 @@
         <p>O serviço real consulta N modelos, cruza fontes e aponta consenso e conflitos com confiança — testado no núcleo com providers injetados. Faça sua pergunta pelo agente (botão IA flutuante): a resposta triângulada chega no terminal.</p>
         <p class="fraco">Visualização de consenso (grafos de acordo/discórdia): PLANNED. Nunca fingimos certeza.</p>
         <div class="linha-botoes"><button id="ir-agente-research" class="btn"  style="width:auto">
-          <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-wand"/></svg>perguntar à IA</button></div></div>
+          <svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-wand"/></svg>perguntar à IA</button>
+          <button id="bt-rq1" class="btn"  style="width:auto">ex.: "quais elementos formam a água?"</button>
+          <button id="bt-rq2" class="btn"  style="width:auto">ex.: "como o fogo se espalha aqui?"</button></div></div>
     </section>
 
     <!-- ===== UES ===== -->
@@ -706,7 +721,8 @@
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
         <h2>ASSETS</h2><span class="badge cinza">GERAÇÃO FUNCTIONAL · BIBLIOTECA PLANNED</span></div>
       <div class="card tola"><h3>GERADOS SOB DEMANDA</h3>
-        <p class="fraco">Malhas (geometry-smith), shaders (shader-smith), luz (light-smith) e texturas procedurais são nativos e testados — peça pelo agente que o asset nasce no mundo. O browser visual com preview 3D: PLANNED.</p></div>
+        <p class="fraco">Malhas (geometry-smith), shaders (shader-smith), luz (light-smith) e texturas procedurais são nativos e testados — peça pelo agente que o asset nasce no mundo. O browser visual com preview 3D: PLANNED.</p>
+        <div class="linha-botoes"><button id="bt-pedir-asset" class="btn"  style="width:auto">pedir um asset à IA</button></div></div>
     </section>
     <section class="area" id="area-files">
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-folder"/></svg>
@@ -875,7 +891,7 @@
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>
         <h2>SERVICES</h2><span class="badge">FUNCTIONAL</span></div>
       <div class="card tola"><h3>SERVIÇOS DA PLATAFORMA</h3>
-        <p class="fraco">ServiceRegistry com status/health: AI-first, research, github, cloud-storage, apps — registrados e testados. IA ao vivo: <b id="models-n3">—</b> modelos (Puter, User Pays).</p></div>
+        <p class="fraco">ServiceRegistry com status/health: AI-first, research, github, cloud-storage, apps — registrados e testados. PROVIDERS ao vivo do boot: <b id="providers-n" style="color:var(--verde)">—</b> · IA: <b id="models-n3">—</b> modelos (Puter, User Pays).</p></div>
     </section>
     <section class="area" id="area-connectors">
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-link"/></svg>
@@ -935,7 +951,7 @@
           <button class="btn" data-fx-nivel="ultra" style="width:auto">ULTRA</button>
           <button class="btn" data-fx-nivel="auto" style="width:auto">AUTO</button>
         </div>
-        <p class="fraco" style="margin-top:8px">O nível controla matrix, scanlines, brilho e animação — o mundo 3D se adapta sozinho pela pressão D-O15 (regra de ouro: otimizar sem destruir a realidade).</p></div>
+        <p class="fraco" style="margin-top:8px">O nível controla os fluxos de criação, scanlines, brilho e animação — o mundo 3D se adapta sozinho pela pressão D-O15 (regra de ouro: otimizar sem destruir a realidade).</p></div>
     </section>
     <section class="area" id="area-debug">
       <div class="cab"><svg class="ic" viewBox="0 0 24 24"><use href="#i-warn"/></svg>
@@ -973,7 +989,7 @@
       <div class="grade">
         <div class="card"><h3>TEMA</h3>
           <div class="linha-botoes">
-            <button class="btn" data-tema-bt="matrix" style="width:auto">MATRIX</button>
+            <button class="btn" data-tema-bt="genesis" style="width:auto">GENESIS</button>
             <button class="btn" data-tema-bt="dark" style="width:auto">DARK</button>
             <button class="btn" data-tema-bt="light" style="width:auto">LIGHT</button>
             <button class="btn" data-tema-bt="terminal" style="width:auto">TERMINAL</button>
@@ -1053,7 +1069,7 @@
     const $ = (id) => document.getElementById(id);
     const CHAVE_CONTAS = 'uts.contas.v1', CHAVE_SESSAO = 'uts.sessao.v1',
           CHAVE_CHATS = 'uts.chats.v1', CHAVE_CRIACOES = 'uts.criacoes.v1',
-          CHAVE_CONF = 'uts.conf.v1';
+          CHAVE_CONF = 'uts.conf.v1', CHAVE_PROJETOS = 'uts.projetos.v1';
     const le = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
     const grava = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
     const agoraHora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1081,7 +1097,8 @@
     });
 
     // ---- conf: tema / fx / fonte / idioma (persistidos, todos reais)
-    const conf = le(CHAVE_CONF, { tema: 'matrix', fx: 'auto', fonte: 'm', idioma: 'pt' });
+    const conf = le(CHAVE_CONF, { tema: 'genesis', fx: 'auto', fonte: 'm', idioma: 'pt' });
+    if (conf.tema === 'matrix') conf.tema = 'genesis'; // migração da identidade antiga
     const aplicaConf = () => {
       const h = document.documentElement;
       h.dataset.tema = conf.tema; h.dataset.fonte = conf.fonte;
@@ -1220,7 +1237,7 @@
       toast('azul', 'plataforma aberta — UTS AI é a home');
       if (!location.hash) location.hash = '#utsai';
       navegar(location.hash.slice(1) || 'utsai');
-      iniciarMatrix(); iniciarMirror(); iniciarHist();
+      iniciarGenesis(); iniciarMirror(); iniciarHist();
       setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
     }
     $('mu-sair').addEventListener('click', () => deslogar());
@@ -1269,6 +1286,15 @@
     $('marca-home').addEventListener('click', () => navegar('utsai'));
     addEventListener('hashchange', () => { const a = location.hash.slice(1); if (NOMES[a] && appLigado) navegar(a); });
     // atalhos internos
+    $('bt-agents-utsai').addEventListener('click', () => navegar('agents'));
+    $('bt-models-utsai').addEventListener('click', () => navegar('models'));
+    $('bt-tools-utsai').addEventListener('click', () => navegar('tools'));
+    $('bt-research-utsai').addEventListener('click', () => drawerAbrir('RESEARCH'));
+    $('bt-pedir-agente').addEventListener('click', () => { drawerAbrir('AGENTS'); $('goal-input').value = ''; $('goal-input').focus(); });
+    $('bt-pedir-asset').addEventListener('click', () => { drawerAbrir('ASSETS'); $('goal-input').value = 'crie o asset: '; $('goal-input').focus(); });
+    $('bt-escrever').addEventListener('click', () => { navegar('utsai'); setTimeout(() => $('chat-input').focus(), 250); });
+    $('bt-rq1').addEventListener('click', () => { drawerAbrir('RESEARCH'); $('goal-input').value = 'quais elementos formam a água? triangule a resposta.'; });
+    $('bt-rq2').addEventListener('click', () => { drawerAbrir('RESEARCH'); $('goal-input').value = 'como o fogo se espalha neste mundo? explique a causalidade.'; });
     $('ir-apps').addEventListener('click', () => navegar('apps'));
     $('ir-publish').addEventListener('click', () => navegar('publish'));
     $('ir-worlds').addEventListener('click', () => navegar('worlds'));
@@ -1282,7 +1308,7 @@
     comandos.push({ nome: 'criar mundo (objetivo)', icone: 'i-earth', acao: () => { navegar('create'); setTimeout(() => $('objective').focus(), 250); } });
     comandos.push({ nome: 'criar jogo .zip', icone: 'i-gamepad', acao: () => { navegar('apps'); setTimeout(() => $('create-demo')?.click(), 250); } });
     comandos.push({ nome: 'exportar logs', icone: 'i-terminal', acao: exportarLogs });
-    comandos.push({ nome: 'ciclar tema', icone: 'i-palette', acao: () => { const ts = ['matrix', 'dark', 'light', 'terminal', 'mono']; conf.tema = ts[(ts.indexOf(conf.tema) + 1) % ts.length]; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'tema: ' + conf.tema); } });
+    comandos.push({ nome: 'ciclar tema', icone: 'i-palette', acao: () => { const ts = ['genesis', 'dark', 'light', 'terminal', 'mono']; conf.tema = ts[(ts.indexOf(conf.tema) + 1) % ts.length]; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'tema: ' + conf.tema); } });
     comandos.push({ nome: 'ciclar efeitos', icone: 'i-gear', acao: () => { const fs = ['auto', 'low', 'med', 'high', 'ultra']; conf.fx = fs[(fs.indexOf(conf.fx) + 1) % fs.length]; grava(CHAVE_CONF, conf); aplicaConf(); toast('azul', 'efeitos: ' + conf.fx); } });
     comandos.push({ nome: 'reiniciar tour', icone: 'i-play', acao: () => { try { localStorage.removeItem('uts-tour-done'); } catch {} toast('azul', 'tour reiniciado — recarregue (Ctrl+Shift+R)'); } });
     comandos.push({ nome: 'sair da sessão', icone: 'i-cross', acao: () => deslogar() });
@@ -1349,8 +1375,54 @@
       $('thread').appendChild(d); $('thread').scrollTop = 1e9;
       return d;
     }
-    function registraExecucao(txt) {
+    let projetos = le(CHAVE_PROJETOS, []), tarefasSessao = [];
+    function renderProjetos() {
+      const el = $('projects-lista'); if (!el) return;
+      el.innerHTML = projetos.length ? projetos.slice(0, 30).map((pj, i) => {
+        const est = pj.estado === 'CRIADO' ? '<span class="badge">CRIADO</span>' : pj.estado === 'EXECUTANDO' ? '<span class="badge azul">EXECUTANDO</span>' : '<span class="badge cinza">EXECUTADO</span>';
+        return '<div style="border:1px solid var(--borda);border-radius:10px;padding:9px 11px"><b style="font:600 11.5px/1.4 var(--sans)">' + esc(pj.objetivo) + '</b> ' + est +
+          '<small style="display:block;font:500 8.5px/1.7 var(--mono);letter-spacing:0.1em;color:var(--fraca)">' + new Date(pj.quando).toLocaleString('pt-BR') + (pj.resultado ? ' · resultado: ' + esc(pj.resultado) : '') + '</small>' +
+          '<div class="acoes" style="display:flex;gap:5px;margin-top:6px">' +
+          '<button data-pj="' + i + '" data-ac="reabrir" style="font:700 8px/1 var(--mono);letter-spacing:0.08em;cursor:pointer;background:none;border:1px solid var(--borda-forte);border-radius:6px;color:var(--verde);padding:5px 8px">REABRIR</button>' +
+          '<button data-pj="' + i + '" data-ac="reexecutar" style="font:700 8px/1 var(--mono);letter-spacing:0.08em;cursor:pointer;background:none;border:1px solid var(--borda-forte);border-radius:6px;color:var(--azul-2);padding:5px 8px">REEXECUTAR</button>' +
+          '<button data-pj="' + i + '" data-ac="exportar" style="font:700 8px/1 var(--mono);letter-spacing:0.08em;cursor:pointer;background:none;border:1px solid var(--borda);border-radius:6px;color:var(--fraca);padding:5px 8px">EXPORTAR</button></div></div>';
+      }).join('') : '<div class="vazio" style="border:1px dashed var(--borda-forte);border-radius:10px;padding:12px;text-align:center;font:400 10.5px/1.6 var(--mono);color:var(--fraca)">NENHUMA EXECUÇÃO AINDA — mande a IA criar no UTS AI (BUILD) ou no CREATE.</div>';
+      el.querySelectorAll('button[data-pj]').forEach((b) => b.addEventListener('click', () => {
+        const pj = projetos[+b.dataset.pj]; if (!pj) return;
+        const ac = b.dataset.ac;
+        if (ac === 'reabrir') { navegar('utsai'); $('chat-input').value = pj.objetivo; $('chat-input').focus(); }
+        if (ac === 'reexecutar') { if (confirm('Reexecutar o objetivo inteiro? Uma NOVA realidade será criada.')) { navegar('create'); $('objective').value = pj.objetivo; $('objform').requestSubmit ? $('objform').requestSubmit() : $('objform').dispatchEvent(new Event('submit', { cancelable: true })); } }
+        if (ac === 'exportar') { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(pj, null, 1)], { type: 'application/json' })); a.download = 'projeto-genesis.json'; a.click(); URL.revokeObjectURL(a.href); }
+      }));
+    }
+    function renderTasks() {
+      const el = $('tasks-lista'); if (!el) return;
+      el.innerHTML = tarefasSessao.length ? tarefasSessao.slice(0, 5).map((t) =>
+        '<div style="font:500 10px/1.5 var(--mono);color:var(--fraca);border-left:2px solid var(--borda-forte);padding-left:8px">' + esc(t.txt.slice(0, 70)) + '<br><span style="opacity:0.7">' + t.origem + ' · ' + new Date(t.t).toLocaleTimeString('pt-BR') + '</span></div>').join('')
+        : '<div style="font:500 10px/1.5 var(--mono);color:var(--fraca)">— nenhuma ainda —</div>';
+    }
+    function renderRecent() {
+      const el = $('recent-lista'); if (!el) return;
+      const cs = chats.filter((c) => !c.arquivado).slice(0, 4)
+        .map((c) => '<div class="hist-i" data-rc="chat" data-id="' + c.id + '"><b>' + esc(c.titulo) + '</b><small>conversa · ' + c.msgs.length + ' msg</small></div>').join('');
+      const cr = le(CHAVE_CRIACOES, []).slice(0, 4)
+        .map((c) => '<div class="hist-i" data-rc="cria"><b>' + esc(c.nome) + '</b><small>' + (ROTULO[c.tipo] ?? c.tipo) + ' · criado pela IA</small></div>').join('');
+      el.innerHTML = (cs + cr) || '<div style="font:500 10px/1.5 var(--mono);color:var(--fraca)">— nada ainda; converse e crie —</div>';
+      el.querySelectorAll('[data-rc="chat"]').forEach((n) => n.addEventListener('click', () => {
+        const c = chats.find((x) => x.id === +n.dataset.id); if (!c) return;
+        convoAtual = c; histRender(); navegar('utsai');
+        $('thread').innerHTML = '<div class="msg sistema">conversa reaberta</div>' + c.msgs.map((m) => '<div class="msg ' + m.quem + '"></div>').join('');
+        const bolhas = $('thread').querySelectorAll('.msg.eu, .msg.ia'); c.msgs.filter((m) => m.quem !== 'sistema').forEach((m, i) => bolhas[i] && (bolhas[i].textContent = m.texto));
+      }));
+      el.querySelectorAll('[data-rc="cria"]').forEach((n) => n.addEventListener('click', () => navegar('worlds')));
+    }
+    function registraExecucao(txt, origem) {
       execucoes++; $('tasks-count').textContent = execucoes; $('projects-count').textContent = execucoes;
+      tarefasSessao.unshift({ txt, origem: origem ?? 'CHAT', t: Date.now() }); renderTasks();
+      if (origem === 'BUILD') {
+        projetos.unshift({ objetivo: txt, quando: Date.now(), estado: 'EXECUTANDO', resultado: null });
+        projetos = projetos.slice(0, 40); grava(CHAVE_PROJETOS, projetos); renderProjetos();
+      }
       convoAtual && (convoAtual.msgs.push({ quem: 'ia', texto: txt, t: Date.now() }), histGrava());
     }
     function enviarChat() {
@@ -1366,13 +1438,13 @@
         if (auto) toast('azul', 'AUTO: interpretar → planejar → executar → verificar → corrigir');
         $('objform').requestSubmit ? $('objform').requestSubmit() : $('objform').dispatchEvent(new Event('submit', { cancelable: true }));
         toast('azul', 'BUILD: o mundo está nascendo — acompanhe no UES');
-        registraExecucao(txt);
+        registraExecucao(txt, 'BUILD');
       } else {
         const st = (id) => ($(id)?.textContent ?? '').trim();
         bolha('ia', 'SISTEMA AO VIVO — fps ' + (st('s-fps') || '—') + ' · tick ' + (st('s-tick') || '0') + ' · npcs ' + (st('s-npc') || '0') + ' · clima ' + (st('s-weather') || '—') + ' · eventos ' + (st('s-ev') || '0') + '\nEncaminhado ao agente REAL (modelo da sua camada Puter) — a resposta dele chega na próxima bolha.');
         $('goal-input').value = (contextoIA !== 'GLOBAL' ? '[contexto: ' + contextoIA + '] ' : '') + txt;
         $('goal-go').click();
-        registraExecucao(txt);
+        registraExecucao(txt, 'CHAT');
       }
     }
     $('chat-enviar').addEventListener('click', enviarChat);
@@ -1456,7 +1528,11 @@
       const lista = le(CHAVE_CRIACOES, []);
       lista.unshift({ tipo, nome: String(nome).slice(0, 60), t: Date.now() });
       grava(CHAVE_CRIACOES, lista.slice(0, 40));
-      renderCriacoes();
+      const pend = projetos.find((pj) => pj.estado === 'EXECUTANDO');
+      if (pend) { pend.estado = 'CRIADO'; pend.resultado = String(nome).slice(0, 60); }
+      else projetos.unshift({ objetivo: '(criação direta pela IA)', quando: Date.now(), estado: 'CRIADO', resultado: String(nome).slice(0, 60) });
+      grava(CHAVE_PROJETOS, projetos.slice(0, 40));
+      renderProjetos(); renderCriacoes(); renderRecent();
       toast('azul', (ROTULO[tipo] ?? tipo) + ' criado: ' + nome);
       $('projects-criacoes').textContent = lista.length;
     };
@@ -1468,21 +1544,25 @@
       el.innerHTML = lista.length
         ? lista.map((c) => '<div class="cria-card ' + esc(c.tipo) + '"><svg class="ic" viewBox="0 0 24 24"><use href="#' + (ICONE[c.tipo] ?? 'i-box') + '"/></svg><div><b>' + esc(c.nome) + '</b><small>' + (ROTULO[c.tipo] ?? c.tipo) + ' · criado pela IA</small></div></div>').join('')
         : '<div class="vazio">NADA CRIADO AINDA — descreva um objetivo no UTS AI ou em CREATE e ele NASCE AQUI como card.</div>';
+      const mc = $('mem-criacoes'); if (mc) mc.textContent = lista.length;
+      renderRecent();
     }
-    renderCriacoes();
+    renderProjetos(); renderTasks(); renderCriacoes();
 
     // ---- sugestões (enchem o objetivo do CREATE)
     document.querySelectorAll('.sugestoes button').forEach((b) => b.addEventListener('click', () => {
       const alvo = $('objective'); if (alvo) { alvo.value = b.dataset.p ?? b.textContent.trim(); alvo.focus(); }
     }));
 
-    // ---- MATRIX (app): chuva digital barata — sem shadowBlur, pausa escondida, desligável
-    function iniciarMatrix() {
+    // ---- GÊNESIS (app): FLUXOS DE CRIAÇÃO — nada cai (isso era a identidade
+    // antiga); na gênese a realidade ASCENDE do solo. Barato: sem sombra por
+    // glifo, pausa escondida, LOW/mobile desliga.
+    function iniciarGenesis() {
       if (conf.fx === 'low' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const cv = $('matrix'); const ctx = cv.getContext('2d');
-      const G = '\u30A2\u30AB\u30B5\u30BF\u30CA\u30CF\u30DE\u30E4\u30E9\u30EF0123456789GENESIS<>/|=+*';
+      const G = '\u2261\u00B7\u003A\u003B\u003D\u002A\u002B\u007C0123456789GENESIS';
       let colunas = [];
-      const mede = () => { cv.width = innerWidth; cv.height = innerHeight; colunas = Array.from({ length: Math.floor(cv.width / 15) }, () => Math.random() * -cv.height); };
+      const mede = () => { cv.width = innerWidth; cv.height = innerHeight; colunas = Array.from({ length: Math.floor(cv.width / 15) }, () => Math.random() * cv.height); };
       mede(); addEventListener('resize', mede);
       setInterval(() => {
         if (document.hidden) return;
@@ -1492,7 +1572,7 @@
           const y = colunas[i];
           ctx.fillStyle = Math.random() < 0.12 ? '#00c2ff' : '#00ff9c';
           ctx.fillText(G[(Math.random() * G.length) | 0], i * 15, y);
-          colunas[i] = y > cv.height + Math.random() * 400 ? 0 : y + 15;
+          colunas[i] = y < -400 ? cv.height + Math.random() * 400 : y - 15;
         }
       }, 90);
     }
@@ -1507,32 +1587,43 @@
         });
       }, 700);
       // IA chip: lê o número REAL de modelos do log de boot
-      const obsLog = new MutationObserver(() => {
-        const m = ($('log').textContent || '').match(/(\d+) modelos/);
+      const checaModelos = () => {
+        const t = ($('log').textContent || '');
+        const m = t.match(/(\d+) modelos/);
         if (m) { $('ia-chip').innerHTML = '<i class="led"></i>IA · ' + m[1]; $('models-n').textContent = m[1];
-          $('models-n2').textContent = m[1]; $('models-n3').textContent = m[1]; obsLog.disconnect(); }
-      });
-      if ($('log')) obsLog.observe($('log'), { childList: true, characterData: true, subtree: true });
+          $('models-n2').textContent = m[1]; $('models-n3').textContent = m[1]; }
+        const pv = t.match(/providers: (.+)/);
+        if (pv && $('providers-n')) $('providers-n').textContent = pv[1].trim();
+        return !!m;
+      };
+      checaModelos();
+      if ($('log')) new MutationObserver(checaModelos).observe($('log'), { childList: true, characterData: true, subtree: true });
       // logs mirror com filtro
-      const obsM = new MutationObserver(() => {
+      const atualizaMirror = () => {
         const q = ($('logs-filtro').value || '').toLowerCase();
         const linhas = ($('log').textContent || '').split('\n');
         $('logs-mirror').textContent = (q ? linhas.filter((l) => l.toLowerCase().includes(q)) : linhas).slice(-60).join('\n');
-      });
-      if ($('log')) obsM.observe($('log'), { childList: true, characterData: true, subtree: true });
+        const mc = $('mem-conversas'); if (mc) mc.textContent = chats.length;
+        const mm = $('mem-msgs'); if (mm) mm.textContent = chats.reduce((a, c) => a + c.msgs.length, 0);
+      };
+      atualizaMirror();
+      if ($('log')) new MutationObserver(atualizaMirror).observe($('log'), { childList: true, characterData: true, subtree: true });
       $('logs-filtro').addEventListener('input', () => { const q = ($('logs-filtro').value || '').toLowerCase();
         const linhas = ($('log').textContent || '').split('\n');
         $('logs-mirror').textContent = (q ? linhas.filter((l) => l.toLowerCase().includes(q)) : linhas).slice(-60).join('\n'); });
-      const wsObs = new MutationObserver(() => { const w = $('ws-live'); if (w && w.textContent) w.style.display = ''; });
-      if ($('ws-live')) wsObs.observe($('ws-live'), { childList: true, characterData: true, subtree: true });
-      // caminho de renderização REAL (o boot denuncia: WebGL2 real × modo texto)
-      const obsGpu = new MutationObserver(() => {
+      const checaWs = () => { const w = $('ws-live'); if (w && w.textContent) w.style.display = ''; };
+      checaWs();
+      if ($('ws-live')) new MutationObserver(checaWs).observe($('ws-live'), { childList: true, characterData: true, subtree: true });
+      // caminho de renderização REAL. O boot do módulo fala ANTES do login —
+      // o observer também lê o PASSADO do log, senão o badge fica em "detectando"
+      const checaGpu = () => {
         const t = ($('log').textContent || ''); const b = $('gpu-badge');
-        if (!b) return;
+        if (!b || !t) return;
         if (/WebGL2 real/.test(t)) b.textContent = 'GPU REAL · WEBGL2 GENESIS';
         else if (/SEM WebGL2/.test(t)) b.textContent = 'SEM WEBGL2 · MODO TEXTO HONESTO';
-      });
-      if ($('log')) obsGpu.observe($('log'), { childList: true, characterData: true, subtree: true });
+      };
+      checaGpu();
+      if ($('log')) new MutationObserver(checaGpu).observe($('log'), { childList: true, characterData: true, subtree: true });
     }
     function exportarLogs() {
       const txt = ($('log').textContent || 'sem logs') + '\n\ncriações: ' + JSON.stringify(le(CHAVE_CRIACOES, []), null, 1);

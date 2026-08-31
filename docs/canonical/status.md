@@ -340,6 +340,34 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
+## R34 — IDENTIDADE GÊNESIS + TUDO FUNCIONAL (o passado do log lido)
+
+**O bug do "detectando GPU":** os observers do shell (badge GPU, chip
+IA · N modelos, espelho de logs) só liam MUTAÇÕES futuras — mas o boot
+do módulo escreve ANTES do login. Agora todos fazem leitura imediata do
+PASSADO do log e depois observam: o badge mostra GPU REAL · WEBGL2
+GENESIS (ou MODO TEXTO HONESTO) no instante do login, o chip mostra a
+contagem real de modelos e SERVICES mostra os PROVIDERS reais do boot.
+
+**Identidade GÊNESIS (matrix deixa de existir):** o tema padrão é
+GENESIS — e o efeito muda de conceito: nada CAI (isso era a identidade
+antiga); na gênese a realidade ASCENDE do solo (fluxos de criação
+subindo, verde com raios azuis, barato como antes). Migração automática
+da preferência antiga; hero com a assinatura "o sistema que cria
+sistemas · no princípio, um objetivo".
+
+**Varredura "TUDO FUNCIONAL":** PROJECTS virou registro real — toda
+execução BUILD vira projeto com objetivo/estado/resultado, marcado
+CRIADO pelo ganho do engine, com REABRIR (leva ao compositor),
+REEXECUTAR (recria, com confirmação) e EXPORTAR (.json). RECENT lista
+conversas e criações reais (clicáveis); MEMORIES mostra conversas,
+mensagens, criações e eventos do RRW; TASKS lista as execuções com
+origem e hora; subcards AGENTS/MODELS/TOOLS/RESEARCH ganharam botões
+reais; CREATE tem "escrever objetivo agora"; ASSETS e RESEARCH pedem à
+IA com contexto. 70 botões com handler verificado, 72 IDs intactos.
+Obs. honesta: o teste de autosave flakeou 1× sob a carga da suíte
+(timing) e passou isolado e na re-execução — nada foi afrouxado.
+
 ## R33 — A REALIDADE NASCE NO LOGIN (mundo no primeiro olhar; IA responde na hora)
 
 **O usuário confirmou o redesign ("MUITO melhor") e apontou as duas
