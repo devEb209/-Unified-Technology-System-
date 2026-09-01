@@ -340,7 +340,35 @@ REALIDADE INTEIRA CONECTADA. R9 fechou as conexões que faltavam:
   N dinâmico (8 amostras perto do horizonte).
 - **281/281 testes.**
 
-## R34 — IDENTIDADE GÊNESIS + TUDO FUNCIONAL (o passado do log lido)
+## R35 — A DOENÇA DO MEIO (TDZ do shell; a guarda que executa a casca)
+
+**"Ainda detectando GPU" + "pouca coisa funciona": a raiz era UMA só.**
+A restauração de sessão (`sessao()`) rodava NO MEIO do script do shell
+— com sessão ativa (ou seja, em TODO reload após o redirect do mundo),
+`ligarApp → iniciarMirror → atualizaMirror` lia `chats`, que só era
+declarado 280 linhas adiante → **ReferenceError por TDZ** → a execução
+do script inteiro morria ali: `window.__addCriacao` nunca era
+registrado, galeria/PROJECTS/RECENT/histórico nunca renderizavam, o
+badge GPU ficava eternamente em "detectando" (o `checaGpu` vinha
+depois), botões ficavam sem handler. No primeiro login funcionava
+(clique acontece após o parse) — por isso o bug se escondia.
+
+**O conserto na raiz:** `sessaoIniciar()` virou declaração chamada NO
+FIM do shell (depois de tudo declarado — ordem provada por script);
+cada init do `ligarApp` ganhou try/catch próprio (um erro jamais mata
+os outros — o banner denuncia em vez de meia-morte); badge GPU ganhou
+fallback honesto (12s sem sinal do boot → "BOOT INCOMPLETO — cole o
+banner").
+
+**A guarda (r35 — O SHELL VIVO):** o teste EXECUTA o script do shell
+com DOM simulado no exato caminho do usuário (sessão restaurada +
+?world=vale + log pré-escrito) e exige: usuário no topo, __addCriacao
+registrado, thread/PROJECTS/RECENT/galeria renderizados, badge GPU =
+GPU REAL · WEBGL2 GENESIS lido do passado, chip IA com os modelos,
+providers reais em SERVICES. A classe "metade do shell morta" morreu
+sob teste. Auditado: **393/393, zero skips**.
+
+
 
 **O bug do "detectando GPU":** os observers do shell (badge GPU, chip
 IA · N modelos, espelho de logs) só liam MUTAÇÕES futuras — mas o boot

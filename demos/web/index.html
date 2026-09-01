@@ -1205,13 +1205,16 @@
       $('login').classList.add('saindo');
       setTimeout(() => { $('login').style.display = 'none'; ligarApp(sessaoPendente); }, 480);
     }
-    (function sessao() {
+    // A RESTAURAÇÃO DE SESSÃO SÓ PODE RODAR NO FIM do script — no meio dela,
+    // `chats`/`modo`/`projetos` estavam em TDZ e o ReferenceError matava metade
+    // do shell em TODO reload com sessão (badge GPU eterno, __addCriacao morto).
+    function sessaoIniciar() {
       try {
         const s = JSON.parse(sessionStorage.getItem(CHAVE_SESSAO));
         if (s && s.exp > Date.now()) { $('login').style.display = 'none'; ligarApp(s.usuario); }
         else if (s) { estadoLogin('sessão expirada — entre de novo.'); sessionStorage.removeItem(CHAVE_SESSAO); }
       } catch {}
-    })();
+    }
     function deslogar(msg) {
       sessionStorage.removeItem(CHAVE_SESSAO);
       $('app').classList.remove('aberto'); const l = $('login'); l.style.display = 'flex'; l.classList.remove('saindo');
@@ -1238,7 +1241,9 @@
       toast('azul', 'plataforma aberta — UTS AI é a home');
       if (!location.hash) location.hash = '#utsai';
       navegar(location.hash.slice(1) || 'utsai');
-      iniciarGenesis(); iniciarMirror(); iniciarHist();
+      for (const [nome, fn] of [['genesis', iniciarGenesis], ['espelho', iniciarMirror], ['histórico', iniciarHist]]) {
+        try { fn(); } catch (e) { mostra('falha ao iniciar ' + nome + ': ' + (e.message ?? e)); }
+      }
       setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
     }
     $('mu-sair').addEventListener('click', () => deslogar());
@@ -1625,6 +1630,7 @@
       };
       checaGpu();
       if ($('log')) new MutationObserver(checaGpu).observe($('log'), { childList: true, characterData: true, subtree: true });
+      setTimeout(() => { const b = $('gpu-badge'); if (b && /detectando/.test(b.textContent)) b.textContent = 'GPU · BOOT INCOMPLETO — cole o banner vermelho aqui'; }, 12000);
     }
     function exportarLogs() {
       const txt = ($('log').textContent || 'sem logs') + '\n\ncriações: ' + JSON.stringify(le(CHAVE_CRIACOES, []), null, 1);
@@ -1654,6 +1660,8 @@
       }, 500);
     }
     $('tour-rever').addEventListener('click', () => { try { localStorage.removeItem('uts-tour-done'); } catch {}; toast('azul', 'tour reiniciado — recarregue a página (Ctrl+Shift+R)'); });
+
+    sessaoIniciar(); // AGORA sim: tudo já existe
   })();
 </script>
 
