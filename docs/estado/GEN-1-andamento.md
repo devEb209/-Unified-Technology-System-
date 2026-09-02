@@ -157,3 +157,40 @@ estado de matéria é MODULAÇÃO de croma, nunca termo a mais na soma de lumin�
 (é assim que Qp fica monotônico por construção em vez de por decreto), e um D sem a
 capacidade correspondente **não pode reagir** ao tick — se reagir, alguém ligou o
 pixel a um canal que a decisão não autorizou.
+
+## 2026-09-03 — primeiro número medido no ALVO (itel A70), e uma recusa minha retirada
+
+`node bin/uts.mjs measure --out device.json` no aparelho do autor:
+**716.098 unidades de custo/s** (D1→D5: 2,408 ms em 32×32, Δ 649,25 unidades).
+A escala de sandbox que eu usava (870k) estava **21% otimista**; os vereditos de
+`uts present` foram recomputados com o número real (constante do teste `A70` agora
+carrega o valor medido, não um chute — se a escada for reescalada, os testes mentem
+sozinhos e é isso que queremos que aconteça):
+
+| célula (720×1612) | sim/quadro | pixels/quadro | reprojeção | líquido | veredito |
+|---|---|---|---|---|---|
+| em foco, D4 visual / D3 físico | 0,07 ms | 9,71 ms | 4,86 ms | **−4,83 ms** | não vale |
+| 2.400 corpos, físico D4 | 5,6 ms | 9,71 ms | 4,86 ms | **−0,41 ms** | não vale |
+| 12.000 corpos, físico+temporal D5 | 49,9 ms | 0,42 ms | 4,86 ms | **+49,52 ms** | **vale** |
+
+Persiste, agora com número do alvo: a **utilização do orçamento é 0,014%** — os
+coeficientes `cost` da escada e o tempo medido ainda não estão na mesma escala,
+então `argmin C` continua decidido por piso de qualidade e **nenhum número de fps
+deste repo descreve o A70**. Fechar isso é a regressão `cost`↔tempo, não um recurso.
+
+## Foveação/densidade: o "impossível" que era preguiça de catálogo
+
+Eu recusei foveação por "não ter eye-tracker no A70". Errado: a forma viável é
+**densidade de amostragem por célula do próprio Spatial Grid**, com a hipótese de
+atenção declarada (mira / salience / IMU / câmera frontal / predição / prior
+estático) — `packages/rrw-mat/src/fovea.ts`, 7 testes (F0–F6). Medido no sandbox:
+
+- cena **coerente** (1 oitava), g32: piso Qp ≥ 0,9 aceita **36% de corte** de trabalho;
+- mesma densidade, cena com **6 oitavas** de alta-frequência: aceita **0%**;
+- no materializador atual (sem asset de altura): **18–30%**.
+
+Conclusão que substitui a minha: **o limite é da cena e do granularidade da grade, não
+do hardware** — e a promessa honesta é "18–36% de recuperação de trabalho de amostragem,
+medido", não "metade da tela". A técnica entra no plano por região quando o campo de
+elevação/asset existir, e o registro do método (protocolo de 5 campos, ≥4 alternativas
+antes de qualquer "não") está em `docs/canonical/Solucoes-Por-Sistema.md`.

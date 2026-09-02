@@ -82,11 +82,11 @@ test('PR7 cenário A70 realista: sim pesada + visual rico → a conta não fecha
   assert.ok(b.addedLatencyMs > 60, 'se gerássemos, a latência entraria no tiroteio');
 });
 
-// Cena calibrada numa escala autoconsistente: tela cheia do A70 (720×1612), o
-// visual D0 numa célula custa ~8 ms/quadro a 30 Hz com unitsPerSecond = 870_000
-// (a ordem de grandeza que `uts measure` produz, não um número inventado).
-// Os vereditos abaixo são o que sai DA CONTA, não o que gostaríamos de ler.
-const A70 = { unitsPerSecond: 870_000, dispHz: 30, full: 720 * 1612 };
+// unitsPerSecond abaixo É o número medido no itel A70 pelo autor em 2026-09-03
+// (`uts measure` → 716.098 un/s, D1→D5: 2,408 ms em 32×32, Δ 649,25 unidades).
+// Não é ordem de grandeza chutada: se alguém reescalar a escada, estes vereditos
+// mudam — e é isso que eles estão aqui para pegar.
+const A70 = { unitsPerSecond: 716_098, dispHz: 30, full: 720 * 1612 };
 
 test('PR7b regime dominado por SIMULAÇÃO (multidão enorme a visual barato): gerar quadro vale', () => {
   // 12.000 corpos em física densa numa célula de fundo (50k px, visual no piso):

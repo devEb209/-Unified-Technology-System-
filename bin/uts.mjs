@@ -4,7 +4,7 @@
 // porque o --experimental-strip-types só é necessário em Node 22.x: em 23.6+ o
 // type-stripping é nativo e silencioso. Detectar aqui poupa o usuário de lembrar
 // flag — e o impede de rodar benchmark com flag errada e comparar nada com nada.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -66,7 +66,19 @@ if (!existsSync(join(root, t.file ?? 'bin/uts.mjs'))) {
 const child = t.eval
   ? spawn(process.execPath, [...flags, '-e', t.eval], { stdio: 'inherit', cwd: root })
   : t.testDir
-    ? spawn(process.execPath, [...flags, '--test', join(root, 'packages', '*', 'test', '*.test.ts')], { stdio: 'inherit', cwd: root, shell: true })
+    ? (() => {
+        // O pai expande o glob e o filho recebe ARGUMENTOS, não string de shell: o
+        // padrão antigo (shell: true + args) gerava DeprecationWarning DEP0190 no
+        // Node 26 do aparelho e ainda por cima engolia um spawn — 15 s de suíte
+        // começando com um processo a mais. Sem shell, sem aviso, sem susto.
+        const found = spawnSync('sh', ['-c', `ls ${join(root, 'packages', '*', 'test', '*.test.ts').replace(/'/g, "")}`], { encoding: 'utf8' });
+        const files = (found.stdout || '').trim().split('\n').filter((f) => f.endsWith('.ts'));
+        if (files.length === 0) {
+          process.stderr.write('uts: nenhum teste encontrado em packages/*/test — checkout certo?\n');
+          process.exit(66);
+        }
+        return spawn(process.execPath, [...flags, '--test', ...files], { stdio: 'inherit', cwd: root });
+      })()
     : (() => {
         const file = join(root, t.file);
         if (!existsSync(file)) {
