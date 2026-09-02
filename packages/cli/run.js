@@ -70,6 +70,15 @@ if (cmd === 'plan') {
   process.exit(plan.totals.infeasibleCells > 0 ? 3 : 0);
 }
 
+if (cmd === 'demo') {
+  // servidor fino: nenhuma lógica aqui, tudo em src/demo.ts
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, [...process.execArgv, new URL('./src/demo.ts', import.meta.url).pathname, 'demo', ...rest], { stdio: 'inherit', cwd: process.cwd() });
+  // o filho É o processo de longa duração; o pai só repassa o código de saída.
+  child.on('exit', (code, signal) => process.exit(signal ? 128 : (code ?? 1)));
+  await new Promise(() => {}); // nunca cai no uso: fica vivo enquanto o filho serve
+}
+
 if (cmd === 'present') {
   const planPath = flag('plan', 'plan.json');
   const scenePath = flag('scene', 'scene.json');

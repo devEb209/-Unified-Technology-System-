@@ -129,3 +129,25 @@ físico e auditável — e o custo de latência é idêntico, não é driblável
 `examples/scene-a70.json` + `examples/scene-a70.device.json` rodam o fluxo
 `plan → present` sem aparelho; o device ali é placeholder declarado e o
 `present` recusa rodar sem `device.json` medido.
+
+## O elo EXPERIÊNCIA agora tem superfície: `uts demo`
+
+`packages/rrw-mat/src/render.ts` materializa o campo (luminância + croma por célula)
+em PNG escrito à mão (IHDR/IDAT/IEND + CRC conferidos em teste R1 — um arquivo que
+"o navegador abriu" não é evidência de estar conforme a spec) e
+`packages/cli/src/demo.ts` serve: os seis degraus da MESMA cena lado a lado, com Qp
+medido contra D5 e a coluna "aceita no piso?" ao lado, mais o veredito de frame
+generation da conta acima, atualizando a cada tick.
+
+O que a imagem deixa evidente e não deve ser maquiado: a 24×24 o campo parece
+ruído. Isto é correto — não existe campo de elevação importado ainda, então a
+altura vem de `heightAt(x,y,biome,ref)` (hash do código). O materializador não tem
+de onde tirar terreno; ele tem de onde tirar **decisão**. Asset ingestão
+(`.glb`/altura) é o elo faltante, e ele entra como dado do mundo, nunca como mesh
+no frame (a allowlist recusa `mesh`/`vertices`/`position` em nível de teste — R2).
+
+Dois invariantes que os testes R4/R5 prenderam e que são a defesa contra deriva:
+estado de matéria é MODULAÇÃO de croma, nunca termo a mais na soma de luminância
+(é assim que Qp fica monotônico por construção em vez de por decreto), e um D sem a
+capacidade correspondente **não pode reagir** ao tick — se reagir, alguém ligou o
+pixel a um canal que a decisão não autorizou.

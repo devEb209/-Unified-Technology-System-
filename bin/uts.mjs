@@ -29,6 +29,7 @@ const targets = {
   measure: { file: 'packages/cli/run.js', rest: ['measure'] },
   plan: { file: 'packages/cli/run.js', rest: ['plan'] },
   present: { file: 'packages/cli/run.js', rest: ['present'] },
+  demo: { file: 'packages/cli/run.js', rest: ['demo'] },
   validate: { eval: "import('./packages/d-system/src/ladders.ts').then(m=>{const e=m.validateAll();console.log(e.length?JSON.stringify(e,null,2):'escadas válidas');process.exit(e.length?1:0)})" },
   test: { testDir: 'packages' },
 };
@@ -39,6 +40,7 @@ if (!cmd || cmd === 'help' || cmd === '--help' || !targets[cmd]) {
     `  measure --out device.json     calibra unidades de custo NESTE aparelho (CPU)\n` +
     `  plan --scene c.json [--device device.json] [--out plan.json]\n` +
     `  present --sim-hz 15 --disp-hz 60   o que a interpolação de apresentação compra e custa\n` +
+    `  demo [--port 8080] [--grid 24]  materialização visível: os 6 Ds + Qp medido + veredito de FG\n` +
     `  validate                       escadas válidas?\n` +
     `  test                           suíte completa\n` +
     (cmd && !targets[cmd] ? `\ncomando desconhecido: ${cmd}\n` : ''),
