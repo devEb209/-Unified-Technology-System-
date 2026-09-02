@@ -1,0 +1,19 @@
+{
+  "name": "KÄIRŌS TASK MANAGER",
+  "short_name": "KÄIRŌS",
+  "description": "Multi-gerenciador de dispositivos tecnológicos — controle TV, computador e jogos pelo celular.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050505",
+  "theme_color": "#c8892a",
+  "icons": [
+    {
+      "src": "/assets/kairos-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
