@@ -49,6 +49,20 @@ if (!cmd || cmd === 'help' || cmd === '--help' || !targets[cmd]) {
 }
 
 const t = targets[cmd];
+if (!existsSync(join(root, t.file ?? 'bin/uts.mjs'))) {
+  process.stderr.write(
+    [
+      `uts: este diretório não é o branch do kernel (falta ${t.file}).`,
+      '     provável causa: clone antigo do main, que nunca teve packages/. Rode:',
+      '       git fetch origin',
+      '       git checkout -B gen arena/01a05f95-unified-technology-system',
+      '       git reset --hard origin/arena/01a05f95-unified-technology-system',
+      '     se der "not our ref", o remoto não é este repo: git remote set-url origin https://github.com/devEb209/-Unified-Technology-System-.git',
+    ].join('\n') + '\n',
+  );
+  process.exit(66);
+}
+
 const child = t.eval
   ? spawn(process.execPath, [...flags, '-e', t.eval], { stdio: 'inherit', cwd: root })
   : t.testDir

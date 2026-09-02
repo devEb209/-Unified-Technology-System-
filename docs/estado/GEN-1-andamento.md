@@ -1,5 +1,11 @@
 # GEN-1 — estado real do kernel (2026-09-02)
 
+> Nomeclatura deste arquivo: "GEN-1" é a **era V1-GENESIS** (a primeira de seis,
+> ver `docs/canonical/Geracoes-da-UES.md`) implementada neste repo. Não é "a versão
+> 1 da engine inteira", e não é V1.1 de nada: as eras são mudanças de visão, não
+> incrementos. Eu achatei isso numa resposta anterior; o documento existe para que a
+> correção não dependa da minha memória.
+
 Nada aqui é promessa. É o que roda, o que é medido e o que está aberto.
 
 ## Rodando hoje

@@ -1,0 +1,18 @@
+{
+  "kind": "uts.genesis.device",
+  "schemaVersion": 1,
+  "unitsPerSecond": 4711759,
+  "iterations": 200,
+  "gridSize": 32,
+  "msPerIteration": 0.276,
+  "workloadUnits": 649.25,
+  "calibrationBand": {
+    "low": "D1",
+    "high": "D5",
+    "msLow": 0.138,
+    "msHigh": 0.276
+  },
+  "note": "LIMITAÇÃO CONHECIDA: os termos perLight/perVolume da escada ainda não têm trabalho correspondente neste materializador, logo unitsPerSecond só é válido no regime dominado por pixels. Um plano que dependa de custo por volume está fora da validade da calibração. unitsPerSecond vem da diferença D5−D1 (649.3 unidades por 0.138 ms) materializando 32×32 em CPU. NÃO é raster, fill-rate nem GPU.",
+  "limitation": "LIMITAÇÃO CONHECIDA: os termos perLight/perVolume da escada ainda não têm trabalho correspondente neste materializador, logo unitsPerSecond só é válido no regime dominado por pixels. Um plano que dependa de custo por volume está fora da validade da calibração.",
+  "measuredAt": "2026-09-02T15:38:42.446Z"
+}
