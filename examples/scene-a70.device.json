@@ -1,0 +1,11 @@
+{
+  "_comment": "NÃO use este arquivo: é um placeholder com a ordem de grandeza medida no sandbox (x86-64, CPU), útil só para testar o fluxo. No aparelho: node bin/uts.mjs measure --out device.json\n",
+  "kind": "uts.genesis.device",
+  "schemaVersion": 1,
+  "unitsPerSecond": 870000,
+  "iterations": 200,
+  "gridSize": 32,
+  "msPerIteration": 0.2,
+  "workloadUnits": 649.25,
+  "limitation": "escala de sandbox; não é o A70"
+}

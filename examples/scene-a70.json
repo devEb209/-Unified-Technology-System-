@@ -1,0 +1,80 @@
+{
+  "_comment": "Exemplo GEN-1. 'requires' usa CAPACIDADES, não números: minD é derivado da escada (Tese dos D §43/§44), então um 'minD: 5' escrito à mão seria um segundo dono para a mesma regra. 'pixels' é o que a célula COBRE do ecrã quando vista, não a divisão da tela pelo grid — é o erro de autoria mais fácil nesta cena.",
+  "name": "nul-impacto/exemplo-a70",
+  "screen": {
+    "w": 720,
+    "h": 1612
+  },
+  "grid": {
+    "w": 6,
+    "h": 13,
+    "cellSize": 120
+  },
+  "fps": 30,
+  "overhead": 0.15,
+  "cells": [
+    {
+      "x": 3,
+      "y": 6,
+      "pixels": 1160640,
+      "entities": 40,
+      "lights": 2,
+      "importance": 1.0,
+      "motion": 0.6,
+      "requires": {
+        "visual": {
+          "domain": "visual",
+          "requires": [
+            "global_illumination",
+            "reflection"
+          ]
+        },
+        "physical": {
+          "domain": "physical",
+          "requires": [
+            "rigid_body",
+            "impulse"
+          ]
+        }
+      }
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "pixels": 1160640,
+      "entities": 2400,
+      "importance": 0.7,
+      "motion": 0.5,
+      "requires": {
+        "physical": {
+          "domain": "physical",
+          "requires": [
+            "soft_deform"
+          ]
+        }
+      }
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "pixels": 1160640,
+      "entities": 12000,
+      "importance": 0.4,
+      "motion": 0.3,
+      "requires": {
+        "physical": {
+          "domain": "physical",
+          "requires": [
+            "fracture_states"
+          ]
+        },
+        "temporal": {
+          "domain": "temporal",
+          "requires": [
+            "frame_tick"
+          ]
+        }
+      }
+    }
+  ]
+}

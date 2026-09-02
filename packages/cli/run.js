@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { planScene } from './src/plan.ts';
 import { measureDevice } from './src/measure.ts';
+import { presentOverPlan } from './src/present.ts';
 
 const [cmd, ...rest] = process.argv.slice(2);
 const flag = (name, dflt) => {
@@ -69,4 +70,50 @@ if (cmd === 'plan') {
   process.exit(plan.totals.infeasibleCells > 0 ? 3 : 0);
 }
 
-die(`uso:\n  node packages/cli/run.js measure [--iterations N] [--grid G] [--out device.json]\n  node packages/cli/run.js plan --scene cena.json [--device device.json] [--out plan.json]\n\nmedir antes de planejar: sem device.json o plano usa um chute de engenharia declarado (unitsPerSecond=3000).`);
+if (cmd === 'present') {
+  const planPath = flag('plan', 'plan.json');
+  const scenePath = flag('scene', 'scene.json');
+  const devPath = flag('device', 'device.json');
+  let plan, scene, ups, deviceFile = null;
+  try {
+    plan = JSON.parse(readFileSync(planPath, 'utf8'));
+    scene = JSON.parse(readFileSync(scenePath, 'utf8'));
+  } catch (e) {
+    die(`present: não li ${planPath} / ${scenePath}: ${e.message}`);
+  }
+  try {
+    const d = JSON.parse(readFileSync(devPath, 'utf8'));
+    if (d.kind !== 'uts.genesis.device') die(`present: ${devPath} não é device.json do uts — rode: node bin/uts.mjs measure --out ${devPath}`);
+    ups = d.unitsPerSecond;
+    deviceFile = devPath;
+  } catch (e) {
+    die(`present: sem device.json medido não há conta a fazer (${e.message}).\n         rode no aparelho: node bin/uts.mjs measure --out ${devPath}`);
+  }
+  let report;
+  try {
+    report = presentOverPlan(plan, scene, {
+      // simHz NÃO é o fps do plano: é a taxa a que o MUNDO avança. O plano fala do
+      // quadro-alvo; aqui a pergunta é outra, e exigir o flag explícito evita a
+      // leitura equivocada que faria "sim a 30, tela a 30" parecer suavização.
+      simHz: Number(flag('sim-hz', 15)),
+      dispHz: Number(flag('disp-hz', 30)),
+      unitsPerSecond: ups,
+      deviceFile,
+      policy: flag('policy', 'repeat'),
+    });
+  } catch (e) {
+    die(`present: ${e.message}`);
+  }
+  if (!(report.summary.cells > 0)) die('present: a cena não tem células viáveis no plano — rode plan primeiro com cells[] preenchidos');
+  const out = flag('out', 'present.json');
+  writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
+  const lines = [`cena "${report.scene}" — ${report.summary.cells} células: ${report.summary.worth} valem frame generation, ${report.summary.notWorth} não`];
+  lines.push(`calibração: ${report.calibration.unitsPerSecond} un/s (${report.calibration.deviceFile})`);
+  for (const c of report.cells) lines.push(`  [${c.verdict === 'vale' ? 'VALE    ' : 'NÃO VALE'}] célula ${c.cell.join(',')} — ${c.savingMs >= 0 ? '+' : ''}${c.savingMs} ms, latência +${c.addedLatencyMs} ms, reprojeção ${c.presentCostPerFrameMs} ms, view-model ${c.viewModelCostPerFrameMs} ms`);
+  lines.push(`  → ${report.headline}`);
+  process.stdout.write(lines.join('\n') + '\n');
+  process.stdout.write(`gravado em ${out}\n`);
+  process.exit(report.summary.worth > 0 ? 0 : 5);
+}
+
+die(`uso:\n  node packages/cli/run.js measure [--iterations N] [--grid G] [--out device.json]\n  node packages/cli/run.js plan --scene cena.json [--device device.json] [--out plan.json]\n  node packages/cli/run.js present --plan plan.json --scene cena.json --device device.json [--sim-hz 15] [--disp-hz 30] [--out present.json]\n\nmedir antes de planejar: sem device.json o plano usa um chute de engenharia declarado (unitsPerSecond=3000).`);

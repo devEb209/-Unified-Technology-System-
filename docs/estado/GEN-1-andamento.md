@@ -80,3 +80,52 @@ D0: Qp=0.031 aceita=false
 Isto é o que "não existe dial de reduzir gráficos" significa em código: abaixo de
 D3 o corte é percebido, então o motor recusa e devolve o erro para o humano — não
 um preset mais baixo.
+
+## Frame generation (15 Hz de sim com cara de 30): a conta, não a promessa
+
+`packages/do15/src/present.ts` (+ `packages/cli/src/present.ts`, subcomando
+`uts present`) resolve a pergunta como aritmética por célula:
+
+```
+custo_tudo_a_dispHz   = pixels(D_visual) + sim(D_físico..econômico) × dispHz
+custo_com_apresentação = pixels(D_visual) + sim × simHz/dispHz + reprojeção(0.0001/px × dispHz)
+VALE  ⟺  estoura o deadline  E  o custo líquido cai ≥ 5%
+```
+
+O que sai da conta na escala do A70 (720×1612, tela cheia, 870k un/s — ordem de
+grandeza medida no sandbox, **não** no aparelho):
+
+| célula | sim | pixels | reprojeção | líquido | veredito |
+|---|---|---|---|---|---|
+| em foco, visual D4, 40 corpos | 0.06 ms | 8 ms | 4 ms | −3.98 ms | **não vale** |
+| 2.400 corpos, física D4 | 4.6 ms | 8 ms | 4 ms | −0.34 ms | **não vale** |
+| 12.000 corpos, física+temporal D5, visual no piso | 41 ms | 0.35 ms | 4 ms | +40.8 ms | **vale** |
+
+Conclusão dura, e ela é o resultado — não um obstáculo: num telemóvel 720p o
+custo de apresentar a tela inteira (~4 ms a 30 Hz, ~8 ms a 60 Hz) é da mesma
+ordem do frame inteiro, então suavizar por reprojeção **só paga onde a simulação
+domina** (multidões, agregados, física de destruição em massa). Na célula onde o
+jogador está, o que falta é raster, e frame generation não cria banda — cria
+latência (+1/simHz ≈ 66.7 ms nos corpos dos outros) e desoclusão.
+
+Duas correções de modelo que saíram dos testes e não podem regredir:
+
+1. o mapa de movimento é **lido do snapshot**, portanto é precificado **por
+   pixel**; cobrar "uma amostra por entidade" fazia FG nunca caber em lugar
+   nenhum — resultado que parece teórico demais costuma ser erro de modelo;
+2. interpolação **não inventa**: entidade recém-nascida não é eased do nada
+   (`delta = 0`, política `repeat`), e `t > 1` é devolvido marcado
+   `predicted: true` — previsão tem de aparecer na conta, não sumir.
+
+O caminho que **não** cobra latência é o livre de simulação (câmera, arma, UI a
+dispHz): 0,48 ms na tela cheia, porque só a camada toda é que é barata de subir
+de taxa. Isso é orçado dentro do mesmo veredito, não vendido como feature.
+
+Isto é o que há de genuinamente novo aqui: DLSS-FG/FSR3-FG estimam fluxo a partir
+**da imagem**; aqui o motor tem o estado (snapshot com `pos`/`vel` por entidade
+viva, no mesmo frame que o otimizador decidiu), então o movimento interpelado é
+físico e auditável — e o custo de latência é idêntico, não é driblável.
+
+`examples/scene-a70.json` + `examples/scene-a70.device.json` rodam o fluxo
+`plan → present` sem aparelho; o device ali é placeholder declarado e o
+`present` recusa rodar sem `device.json` medido.
