@@ -1,0 +1,231 @@
+Claro. Eu faria um prompt de registro canônico, curto o suficiente para o agente não travar, mas deixando a arquitetura da ideia preservada:
+
+SNB — ECOSSISTEMA VIVO, MULTIVERSO E TOOLBOX COMUNITÁRIA
+
+Este documento é um REGISTRO ARQUITETURAL/CONCEITUAL para preservar esta visão da SNB. Não substitui a Tese dos D, a arquitetura da UES ou especificações anteriores. Deve ser tratado como complemento permanente.
+
+1. SNB NÃO É APENAS UMA ENGINE
+
+A UES é o motor de criação.
+
+A SNB é o ECOSSISTEMA completo ao redor dela:
+
+UES + SNB + Tese dos D + IA + Toolbox + comunidade + mundos + lore + compartilhamento.
+
+O objetivo é criar uma plataforma viva na qual tecnologia e comunidade evoluam juntas.
+
+2. MULTIVERSO DA SNB
+
+A lore da SNB não precisa ser uma linha temporal rígida.
+
+Devem existir:
+
+- continuidade principal;
+- universos anteriores;
+- universos alternativos;
+- universos comunitários;
+- linhas temporais diferentes;
+- histórias independentes.
+
+Quando a comunidade escolher um caminho futuro, isso NÃO precisa invalidar os caminhos anteriores.
+
+Um universo antigo pode voltar a ser relevante no futuro caso uma nova parte da lore consiga conectá-lo coerentemente.
+
+Portanto:
+
+UNIVERSO NÃO ESCOLHIDO ≠ UNIVERSO APAGADO.
+
+Ele pode permanecer como continuidade alternativa ou retornar posteriormente.
+
+3. LORE COMUNITÁRIA
+
+Especialmente a partir das gerações em que isso for liberado, a comunidade poderá:
+
+- criar teorias;
+- criar personagens;
+- criar universos;
+- criar linhas temporais;
+- criar mapas;
+- criar histórias;
+- criar assets;
+- criar experiências jogáveis;
+- conectar acontecimentos;
+- propor futuros caminhos da lore.
+
+A SNB pode utilizar participação democrática da comunidade para escolher temas ou caminhos futuros, sem destruir as outras continuidades.
+
+A SNB fornece o universo e as ferramentas; a comunidade ajuda a expandi-lo.
+
+4. UNIVERSOS ALTERNATIVOS
+
+Comunidades diferentes poderão desenvolver seus próprios universos dentro do ecossistema SNB.
+
+Exemplo:
+
+SNB Original
+→ Universo A
+→ Universo B
+→ Universo C
+
+Cada um pode possuir:
+
+- mapas;
+- personagens;
+- eventos;
+- assets;
+- histórias;
+- regras;
+- experiências jogáveis.
+
+Esses universos podem permanecer independentes ou eventualmente estabelecer conexões coerentes.
+
+5. TOOLBOX OFICIAL
+
+A UES deve possuir uma Toolbox integrada ao ecossistema.
+
+Ela deve possuir, conceitualmente:
+
+Official Assets
+
+Assets oficiais produzidos pela SNB.
+
+SNB Original Lore
+
+Assets pertencentes às diferentes continuidades/universos da lore oficial.
+
+Community Toolbox
+
+Assets produzidos pela comunidade para uso compartilhado.
+
+Community Universes
+
+Recursos vinculados a universos e projetos comunitários específicos.
+
+A organização, busca, filtros, permissões e moderação devem impedir conteúdo inadequado e facilitar descoberta e reutilização.
+
+6. MODDING NATIVO
+
+A Toolbox deve funcionar também como uma base oficial para criação/modding.
+
+O usuário pode:
+
+baixar asset → colocar no projeto → modificar → criar mapa → criar experiência → publicar.
+
+Comunidades podem criar seus próprios projetos e construir uma continuidade inteira utilizando a UES.
+
+A UES deve ser capaz de transformar essas ideias em experiências jogáveis, não apenas armazenar arquivos.
+
+7. PROCEDÊNCIA DOS ASSETS
+
+Sempre que possível, os assets devem possuir informações de origem/contexto.
+
+Exemplo:
+
+- SNB Official;
+- SNB Original Lore — Universe A;
+- SNB Original Lore — Universe B;
+- Community — Universe X;
+- Creator/Community;
+- versão;
+- dependências;
+- permissões.
+
+Isso permite que o usuário saiba de onde veio cada recurso.
+
+8. CICLO DO ECOSSISTEMA
+
+A arquitetura deve permitir um ciclo:
+
+SNB cria ferramentas
+↓
+usuários criam projetos
+↓
+comunidades criam universos
+↓
+assets e experiências são compartilhados
+↓
+mais pessoas utilizam a plataforma
+↓
+mais conteúdo é criado
+↓
+o ecossistema cresce
+↓
+novas ideias influenciam futuras gerações da SNB
+
+A plataforma deve ser projetada para permanecer viva mesmo quando o desenvolvimento oficial estiver focado em outras áreas.
+
+9. PRINCÍPIO DE LONGEVIDADE
+
+Não projetar a SNB como um produto descartável que termina após uma geração.
+
+Projetar como um ECOSSISTEMA EVOLUTIVO.
+
+Cada geração pode introduzir novas capacidades sem necessariamente apagar as anteriores.
+
+A comunidade deve conseguir continuar criando sobre o que já existe.
+
+10. LIBERDADE COM RESPONSABILIDADE
+
+A filosofia comunitária deve ser:
+
+LIBERDADE CRIATIVA MÁXIMA + RESPEITO MÚTUO.
+
+Permitir:
+
+- criatividade;
+- teorias;
+- universos alternativos;
+- histórias;
+- modificações;
+- projetos derivados;
+- interpretações diferentes.
+
+Impedir através de regras/moderação:
+
+- assédio;
+- ataques entre grupos;
+- perseguição;
+- conteúdo destinado a hostilizar membros;
+- abuso da plataforma.
+
+A comunidade não deve ser excessivamente controlada, mas também não deve se tornar um ambiente hostil.
+
+11. OBJETIVO FINAL
+
+A SNB deve buscar ser mais do que uma engine ou IA.
+
+O objetivo é construir um espaço onde:
+
+TECNOLOGIA
++
+CRIAÇÃO
++
+JOGOS
++
+MUNDOS
++
+IA
++
+LORE
++
+COMUNIDADE
+
+formem um único ecossistema.
+
+A UES fornece a capacidade de construir.
+
+A SNB fornece o ecossistema.
+
+A comunidade fornece expansão contínua.
+
+A lore fornece continuidade e identidade.
+
+A Toolbox fornece os recursos para transformar tudo isso em conteúdo real e jogável.
+
+PRINCÍPIO FINAL
+
+A SNB deve ser um universo que permite à própria comunidade criar novos universos dentro dele.
+
+Não criar apenas uma plataforma que oferece ferramentas.
+
+Criar uma plataforma que, ao longo das gerações, possa desenvolver uma comunidade e um ecossistema cada vez maiores, onde criações antigas continuem relevantes e novas criações possam nascer continuamente.

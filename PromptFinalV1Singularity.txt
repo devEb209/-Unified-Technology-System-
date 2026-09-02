@@ -1,0 +1,921 @@
+SNB — FINAL V1 COMPLETION DIRECTIVE
+
+Esta é a diretiva de finalização real da V1 da Singularity Neural Bunker (SNB).
+
+Não interprete "V1" como uma versão simples, limitada ou apenas demonstrativa.
+
+A V1 deve representar a primeira versão completa e realmente utilizável da arquitetura fundamental da SNB, preparada para evoluir continuamente nas futuras V2, V3, V4, V5 e além.
+
+O objetivo é que, ao terminar esta etapa, a SNB já seja uma das plataformas de IA mais completas e capazes possíveis, com capacidade de responder, pesquisar, raciocinar, criar, executar, verificar, aprender e coordenar ferramentas em uma escala muito superior a uma IA convencional.
+
+---
+
+1. OBJETIVO CENTRAL DA V1
+
+A SNB deve chegar à V1 com dois grandes pilares funcionando:
+
+INTELIGÊNCIA
+
+A SNB deve ser capaz de lidar com praticamente qualquer pergunta ou tarefa legítima apresentada pelo usuário, escolhendo automaticamente a melhor estratégia, modelos, ferramentas e fontes necessárias.
+
+CRIAÇÃO
+
+A SNB deve ser capaz de transformar instruções do usuário em resultados reais, não apenas responder como fazer.
+
+Isso inclui, conforme a tarefa:
+
+- código;
+- aplicações;
+- sites;
+- jogos;
+- engines;
+- sistemas;
+- ferramentas;
+- documentos;
+- imagens;
+- modelos 3D;
+- animações;
+- áudio;
+- vídeo;
+- simulações;
+- projetos científicos;
+- automações;
+- sistemas operacionais;
+- assets;
+- pipelines;
+- arquivos compilados;
+- builds;
+- APKs quando o toolchain estiver disponível;
+- artefatos distribuíveis;
+- e praticamente qualquer outro resultado tecnicamente possível.
+
+A palavra "criar" significa executar a cadeia de criação, utilizando modelos, ferramentas, código, providers, engines e infraestrutura disponíveis.
+
+Não transformar a SNB em uma simples interface de chatbot.
+
+---
+
+2. SNB É O MAESTRO
+
+A SNB continua sendo o sistema principal.
+
+Ela deve coordenar:
+
+Usuário
+↓
+Intenção
+↓
+Planejamento
+↓
+Seleção de modelos
+↓
+Pesquisa
+↓
+Especialistas
+↓
+Ferramentas
+↓
+Execução
+↓
+Verificação
+↓
+Correção
+↓
+Otimização
+↓
+Artifact
+↓
+Explicação
+↓
+Entrega
+
+A SNB não precisa executar tudo diretamente.
+
+Ela deve saber qual componente é melhor para executar cada parte.
+
+A plataforma deve funcionar como uma enorme equipe especializada coordenada por uma única arquitetura.
+
+---
+
+3. MULTI-MODELO — REGRA FUNDAMENTAL
+
+O sistema MULTI-MODELO não deve existir apenas na pesquisa.
+
+Ele deve ser utilizado como parte fundamental do cérebro operacional da SNB.
+
+Para cada tarefa, a SNB deverá selecionar dinamicamente entre aproximadamente 2–6 modelos ou agentes, dependendo de:
+
+- complexidade;
+- domínio;
+- risco de erro;
+- necessidade de raciocínio;
+- necessidade de código;
+- necessidade de visão;
+- necessidade de pesquisa;
+- necessidade de criação;
+- tamanho da tarefa;
+- custo;
+- latência;
+- disponibilidade;
+- especialização de cada modelo;
+- confiança esperada.
+
+Não utilizar sempre seis modelos.
+
+Não utilizar sempre dois.
+
+A SNB deve decidir.
+
+Especialização possível
+
+Um modelo pode ser:
+
+- planejador;
+- pesquisador;
+- programador;
+- crítico;
+- verificador;
+- especialista visual;
+- especialista matemático;
+- especialista científico;
+- especialista em sistemas;
+- especialista em arquitetura;
+- especialista em engines;
+- especialista em segurança;
+- etc.
+
+O sistema deve permitir que modelos diferentes trabalhem sobre partes diferentes da mesma tarefa.
+
+---
+
+4. PESQUISA WEB
+
+Para perguntas que dependam de conhecimento externo, atual, verificável ou que possam se beneficiar de pesquisa:
+
+utilizar obrigatoriamente pelo menos dois mecanismos/modelos independentes de pesquisa web quando disponíveis.
+
+A pesquisa deve ocorrer em paralelo sempre que possível.
+
+Objetivo:
+
+Pesquisa A
+      +
+Pesquisa B
+      ↓
+Comparação
+      ↓
+Convergência de evidências
+      ↓
+Detecção de conflito
+      ↓
+Resposta fundamentada
+
+Não afirmar que foram consultadas "toda a internet" se isso não for tecnicamente possível.
+
+A arquitetura deve buscar a maior cobertura disponível dentro das ferramentas e provedores realmente conectados.
+
+Quando fontes discordarem:
+
+- detectar o conflito;
+- procurar evidência adicional;
+- identificar a fonte mais confiável;
+- informar incerteza quando necessário.
+
+A SNB deve preferir certeza verificável a respostas confiantes porém falsas.
+
+---
+
+5. VERDADE E CONFIABILIDADE
+
+A SNB não deve confundir:
+
+modelo acredita
+
+com:
+
+fato verificado
+
+Criar uma hierarquia de confiança baseada em:
+
+- evidência;
+- fontes;
+- consenso;
+- testes;
+- execução;
+- resultados observáveis;
+- documentação;
+- autoridade da fonte;
+- data;
+- independência entre fontes.
+
+Quando não houver certeza:
+
+não inventar;
+não preencher lacunas com imaginação;
+não declarar capability inexistente;
+não declarar execução que não ocorreu.
+
+---
+
+6. UES — UNIVERSAL ENGINE OF THE SINGULARITY
+
+A UES não é uma engine comum de jogos.
+
+Ela é o grande ambiente universal de criação integrado à SNB.
+
+Seu objetivo é permitir que o usuário diga:
+
+«"Crie X."»
+
+e a SNB/UES transforme essa intenção em uma construção real.
+
+O usuário deve poder observar a criação acontecendo no Live Stage.
+
+Não deve ser necessário:
+
+pedir → esperar → atualizar → abrir → testar manualmente
+
+A experiência desejada é:
+
+CHAT
++
+LIVE STAGE
++
+AGENTS
++
+TOOLS
++
+BUILD PIPELINE
+
+O usuário acompanha a construção em tempo real.
+
+---
+
+7. CRIAÇÃO END-TO-END
+
+A UES deve conseguir coordenar todo o pipeline necessário.
+
+Exemplo de um jogo:
+
+ideia
+↓
+game design
+↓
+arquitetura
+↓
+código
+↓
+mecânicas
+↓
+mundo
+↓
+modelos 3D
+↓
+retopologia
+↓
+UV
+↓
+materiais
+↓
+texturas
+↓
+rig
+↓
+skin
+↓
+animação
+↓
+física
+↓
+NPCs
+↓
+IA
+↓
+áudio
+↓
+VFX
+↓
+UI
+↓
+networking
+↓
+otimização
+↓
+build
+↓
+testes
+↓
+correções
+↓
+benchmark
+↓
+release
+
+Isso deve ser uma capacidade real de orquestração, e não uma coleção de botões.
+
+---
+
+8. FERRAMENTAS EXTERNAS
+
+A SNB/UES deve utilizar ferramentas existentes quando forem superiores ou mais eficientes.
+
+Exemplos:
+
+- Blender;
+- Godot;
+- Unity;
+- Unreal;
+- Roblox;
+- FFmpeg;
+- Python;
+- Node;
+- WebGPU;
+- WebAssembly;
+- Vulkan;
+- ONNX;
+- PyTorch;
+- ComfyUI;
+- ferramentas de áudio;
+- ferramentas de modelagem;
+- ferramentas de animação;
+- compiladores;
+- SDKs;
+- toolchains;
+- providers de IA;
+- GPU remota;
+- containers;
+- serviços externos.
+
+A integração deve ser feita por adapters, APIs, CLI, scripts, SDKs ou outros métodos apropriados.
+
+---
+
+9. FALLBACK UNIVERSAL
+
+Esta é uma das capacidades mais importantes da SNB.
+
+Se uma ferramenta externa não conseguir realizar determinada tarefa, a SNB não deve simplesmente parar.
+
+Deve avaliar:
+
+Ferramenta disponível?
+↓
+SIM → utilizar
+NÃO
+↓
+Existe alternativa?
+↓
+SIM → utilizar alternativa
+NÃO
+↓
+É possível construir a capacidade?
+↓
+SIM → Tool Factory
+NÃO
+↓
+Registrar capability bloqueada
+
+A SNB poderá utilizar:
+
+- Python;
+- TypeScript;
+- JavaScript;
+- C++;
+- Rust;
+- Go;
+- shaders;
+- scripts;
+- WebAssembly;
+- APIs;
+- bibliotecas;
+- CLI;
+- pipelines próprios;
+
+para construir ferramentas intermediárias quando isso for tecnicamente possível.
+
+---
+
+10. TOOL FACTORY
+
+A plataforma deve possuir uma Tool Factory capaz de criar ferramentas auxiliares para completar tarefas.
+
+Exemplo:
+
+Uma ferramenta externa não consegue uma operação específica.
+
+A SNB:
+
+analisa a necessidade
+↓
+define contrato
+↓
+seleciona linguagem
+↓
+gera ferramenta
+↓
+executa testes
+↓
+verifica resultado
+↓
+registra ferramenta
+↓
+utiliza no projeto
+
+Ferramentas criadas pela SNB devem possuir:
+
+- manifest;
+- versão;
+- dependências;
+- permissões;
+- testes;
+- checksum;
+- origem;
+- licença;
+- capability;
+- logs;
+- rollback.
+
+---
+
+11. NÃO DEPENDER DO HARDWARE DO USUÁRIO
+
+A arquitetura deve separar:
+
+CLIENTE
+
+de:
+
+COMPUTAÇÃO PESADA
+
+O dispositivo do usuário deve funcionar principalmente como interface, controle e visualização quando necessário.
+
+Operações pesadas devem poder ser executadas remotamente:
+
+- treinamento;
+- geração;
+- compilação;
+- renderização;
+- builds;
+- simulações;
+- processamento 3D;
+- análise;
+- testes;
+- GPU workloads.
+
+O cliente deve permanecer leve.
+
+Não prometer que hardware fraco consegue executar localmente uma tarefa que fisicamente exige hardware poderoso.
+
+Quando a infraestrutura remota estiver disponível:
+
+User Device
+↓
+SNB
+↓
+Remote Worker
+↓
+GPU/CPU
+↓
+Artifact
+↓
+SNB
+↓
+Live Stage
+
+---
+
+12. LIVE CREATION
+
+A criação deve ser incremental.
+
+Sempre que possível:
+
+Planejamento
+↓
+Primeiro resultado
+↓
+Visualização
+↓
+Alteração
+↓
+Novo resultado
+
+O usuário deve observar a evolução sem precisar esperar o projeto inteiro terminar.
+
+A UES deve suportar:
+
+- hot reload;
+- runtime patching;
+- live code;
+- live assets;
+- live settings;
+- incremental builds;
+- checkpoints;
+- snapshots;
+- rollback.
+
+---
+
+13. LEARNING BY CREATION
+
+Toda criação importante deve poder explicar ao usuário:
+
+O QUE foi criado
+POR QUE foi criado
+COMO foi criado
+QUAIS ferramentas foram utilizadas
+QUAIS modelos participaram
+QUAIS arquivos foram alterados
+QUAIS decisões foram tomadas
+COMO reproduzir manualmente
+COMO modificar
+O QUE pode dar errado
+COMO continuar o desenvolvimento
+
+A SNB não deve criar dependência absoluta da IA.
+
+O usuário deve poder aprender com aquilo que a IA construiu.
+
+---
+
+14. DIVINE MODULES
+
+Todos os grandes sistemas Divine devem seguir a mesma filosofia.
+
+Exemplos:
+
+- Divine Singularity OS (DsOS)
+- Universal Engine of the Singularity (UES)
+- Divine Research
+- Divine Code
+- Divine Vision
+- Divine 3D
+- Divine Simulation
+- Divine Audio
+- Divine Media
+- Divine Security
+- Divine Hardware
+- Divine Automation
+- Divine Knowledge
+- Divine Science
+- Divine Developer
+- Divine Artifact
+- Divine Runtime
+- Divine Build
+- Divine Compatibility
+- Divine Tool Factory
+
+Os nomes finais podem ser refinados posteriormente, mantendo a identidade "Singularity/Divine".
+
+---
+
+15. DSOS
+
+O Divine Singularity OS deve continuar evoluindo separadamente da UES.
+
+A V1 deve deixar pronta a arquitetura necessária para:
+
+- Divine Core;
+- capabilities;
+- modules;
+- permissions;
+- runtime;
+- hardware abstraction;
+- resource management;
+- package management;
+- recovery;
+- snapshots;
+- compatibility;
+- performance;
+- security;
+- Developer Mode;
+- Gamer Mode;
+- Performance Mode;
+- Battery Mode.
+
+Não declarar boot real enquanto kernel, toolchain, root filesystem, drivers e infraestrutura necessários não estiverem realmente disponíveis.
+
+Porém, toda a arquitetura e os adapters necessários devem ficar preparados.
+
+---
+
+16. RELEASE E DISTRIBUIÇÃO
+
+A V1 deve possuir uma cadeia real para:
+
+Project
+↓
+Build
+↓
+Validation
+↓
+Tests
+↓
+Security Scan
+↓
+Artifact
+↓
+Checksum
+↓
+Metadata
+↓
+README
+↓
+Release Package
+↓
+Publication
+
+Quando o ambiente permitir:
+
+- APK;
+- Web;
+- desktop build;
+- archives;
+- executables;
+- packages;
+- documentation;
+- README;
+- release notes.
+
+Quando uma etapa depender de infraestrutura externa, deixar o pipeline pronto e indicar exatamente o requisito restante.
+
+---
+
+17. INFRAESTRUTURA CRÍTICA
+
+Finalizar tudo que estiver sob controle direto do repositório relacionado a:
+
+- HTTP/HTTPS;
+- API;
+- autenticação;
+- sessões;
+- OAuth/OIDC;
+- SMTP/e-mail;
+- webhooks;
+- Git;
+- GitHub;
+- armazenamento;
+- artifacts;
+- database;
+- queues;
+- workers;
+- sandbox;
+- containers;
+- microVM;
+- remote execution;
+- GPU workers;
+- secrets;
+- observability;
+- logs;
+- monitoring;
+- rate limits;
+- retries;
+- timeout;
+- health checks;
+- checksums;
+- licensing;
+- SBOM;
+- security scanning;
+- E2E;
+- CI/CD;
+- release automation.
+
+Não fingir que um serviço externo está conectado.
+
+Criar adapters reais e deixar apenas a configuração externa para o momento em que as credenciais/infraestrutura forem fornecidas.
+
+---
+
+18. VERIFICAÇÃO FINAL
+
+Antes de declarar a V1 pronta:
+
+Pesquisar o repositório inteiro procurando:
+
+TODO
+FIXME
+MOCK
+PLACEHOLDER
+FAKE
+SIMULATED
+DEMO
+setTimeout
+fake success
+hardcoded success
+false connected
+
+Analisar cada ocorrência.
+
+Remover implementações falsas.
+
+Substituir demonstrações por:
+
+- implementação real;
+- estado explícito;
+- adapter;
+- capability pending;
+- ou erro honesto.
+
+---
+
+19. TESTE DE REALIDADE
+
+Não basta testar se a interface abre.
+
+Criar testes que verifiquem:
+
+INPUT
+→ PLANNING
+→ MODEL ROUTING
+→ TOOL SELECTION
+→ EXECUTION
+→ ARTIFACT
+→ VERIFICATION
+→ DELIVERY
+
+Executar testes reais sempre que a infraestrutura permitir.
+
+Registrar claramente o que não pôde ser executado.
+
+---
+
+20. CRITÉRIO DE FINALIZAÇÃO
+
+Não perseguir artificialmente um número como "99,99%".
+
+A V1 estará pronta quando:
+
+1. funcionalidades implementadas estiverem funcionando;
+2. integrações existentes forem reais;
+3. dependências externas estiverem claramente isoladas;
+4. nenhuma capability falsa existir;
+5. os principais fluxos end-to-end funcionarem;
+6. criação real puder ser executada;
+7. pesquisa e verificação funcionarem;
+8. multi-model routing funcionar;
+9. ferramentas puderem ser utilizadas;
+10. Tool Factory puder criar ferramentas quando necessário;
+11. UES puder realizar criação incremental;
+12. artifacts puderem ser produzidos;
+13. builds puderem ser gerados quando os toolchains estiverem disponíveis;
+14. segurança e isolamento estiverem implementados;
+15. rollback existir;
+16. documentação existir;
+17. testes passarem;
+18. limitações restantes estiverem explicitamente registradas.
+
+---
+
+21. NÃO ADICIONAR COMPLEXIDADE DESNECESSÁRIA
+
+Não criar sistemas apenas para aumentar a porcentagem.
+
+Não criar 500 telas.
+
+Não criar interfaces falsas.
+
+Não criar features apenas para dizer que existem.
+
+Priorizar:
+
+CAPABILITY REAL
+>
+INTEGRAÇÃO REAL
+>
+VERIFICAÇÃO
+>
+ESTABILIDADE
+>
+PERFORMANCE
+>
+UX
+>
+POLIMENTO
+
+---
+
+22. V1 COMO FUNDAÇÃO PARA O FUTURO
+
+A V1 deve ser extremamente poderosa, mas não precisa conter literalmente toda tecnologia que possa existir no futuro.
+
+Ela deve possuir uma arquitetura que permita adicionar continuamente:
+
+- novos modelos;
+- novos agentes;
+- novos providers;
+- novas ferramentas;
+- novas engines;
+- novos formatos;
+- novos runtimes;
+- novas linguagens;
+- novas modalidades;
+- novas capacidades.
+
+A diferença entre V1 e futuras versões será principalmente a expansão da capacidade, não a reconstrução da arquitetura.
+
+---
+
+23. DEFINIÇÃO FINAL DA SNB
+
+A SNB deve evoluir para ser:
+
+Perguntar
+→ Pesquisar
+→ Raciocinar
+→ Planejar
+→ Especializar
+→ Criar
+→ Executar
+→ Verificar
+→ Corrigir
+→ Otimizar
+→ Explicar
+→ Entregar
+
+Não apenas:
+
+Perguntar → Responder
+
+E não apenas:
+
+Prompt → Código
+
+Mas:
+
+IDEIA DO USUÁRIO
+↓
+SNB ENTENDE
+↓
+SNB PLANEJA
+↓
+SNB REÚNE ESPECIALISTAS
+↓
+SNB PESQUISA
+↓
+SNB ESCOLHE MODELOS
+↓
+SNB ESCOLHE FERRAMENTAS
+↓
+SNB CRIA O QUE FOR NECESSÁRIO
+↓
+SNB EXECUTA
+↓
+SNB OBSERVA O RESULTADO
+↓
+SNB TESTA
+↓
+SNB CORRIGE
+↓
+SNB OTIMIZA
+↓
+SNB ENTREGA
+
+Esse é o coração da V1.
+
+---
+
+24. TAREFA IMEDIATA
+
+Agora:
+
+1. analise absolutamente tudo que já existe;
+2. tire tudo do que já foi feito da lista de implementação;
+3. mantenha somente gaps reais;
+4. implemente o máximo possível desses gaps;
+5. conecte os sistemas existentes;
+6. finalize os fluxos end-to-end;
+7. finalize UES;
+8. finalize os componentes controláveis do DsOS;
+9. finalize multi-model routing;
+10. finalize pesquisa multi-fonte;
+11. finalize Tool Factory;
+12. finalize criação end-to-end;
+13. finalize artifacts;
+14. finalize build/release pipeline;
+15. finalize infraestrutura crítica;
+16. finalize segurança;
+17. finalize testes;
+18. faça auditoria completa;
+19. corrija bugs;
+20. execute os testes novamente;
+21. documente tudo que continuar dependendo de infraestrutura externa.
+
+Não invente progresso.
+
+Não altere porcentagens apenas para satisfazer uma meta.
+
+O resultado deve ser uma V1 realmente funcional, não uma V1 que apenas parece completa.
+
+A meta é que a SNB já consiga, na V1, demonstrar a arquitetura fundamental necessária para se tornar uma plataforma universal de inteligência, pesquisa, engenharia e criação.
+
+O que não puder ser concluído por depender de infraestrutura externa deve ser deixado tecnicamente preparado, conectado por adapter e claramente documentado, nunca falsificado.
+
+Finalize primeiro a capacidade real.
+
+Depois polimento.
+
+Depois testes.
+
+Depois auditoria final.
+
+Somente então considere a V1 pronta.

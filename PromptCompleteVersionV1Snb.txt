@@ -1,0 +1,3086 @@
+SNB — FINALIZAÇÃO REAL DA V1 — PARTE 1/3
+
+CÉREBRO, INTELIGÊNCIA, ORQUESTRAÇÃO E RESOLUÇÃO UNIVERSAL
+
+Esta é a primeira de três etapas para elevar a SNB — Singularity Neural Bunker do estado atual real para uma V1 extremamente completa.
+
+O objetivo desta etapa é eliminar os gaps relacionados ao cérebro da plataforma.
+
+REGRA PRINCIPAL
+
+Primeiro audite o repositório inteiro.
+
+Não recrie sistemas que já estejam realmente implementados.
+
+Não marque nada como concluído apenas porque existe uma interface.
+
+Não aceite mocks, placeholders, respostas falsas, timers simulando execução ou capabilities apenas declaradas.
+
+Para cada capacidade:
+
+IMPLEMENTAR → INTEGRAR → TESTAR → VALIDAR → CORRIGIR → DOCUMENTAR.
+
+A porcentagem deve refletir funcionamento real.
+
+---
+
+1. SNB MASTER INTELLIGENCE
+
+Transforme a SNB em uma plataforma verdadeiramente orientada por uma inteligência central.
+
+Crie ou finalize a arquitetura da:
+
+SNB Master Intelligence
+
+Ela deve ser responsável por coordenar a resolução de problemas complexos.
+
+Fluxo:
+
+USER
+↓
+INTENT ANALYSIS
+↓
+COMPLEXITY ANALYSIS
+↓
+TASK DECOMPOSITION
+↓
+MODEL SELECTION
+↓
+SPECIALIST ROUTING
+↓
+PARALLEL EXECUTION
+↓
+EVIDENCE COLLECTION
+↓
+CRITIQUE
+↓
+SYNTHESIS
+↓
+VERIFICATION
+↓
+FINAL RESPONSE
+
+A SNB não deve simplesmente mandar uma pergunta para um modelo.
+
+Ela deve decidir como resolver a pergunta.
+
+---
+
+2. MULTI-MODEL ALWAYS-ON
+
+Implemente definitivamente a política de múltiplos modelos.
+
+Para perguntas que necessitem de conhecimento factual atualizado:
+
+- utilizar obrigatoriamente pelo menos dois modelos/caminhos independentes de pesquisa web;
+- comparar resultados;
+- identificar divergências;
+- coletar evidências;
+- produzir uma resposta sintetizada.
+
+Para tarefas complexas, utilizar de 2 a 6 modelos conforme:
+
+- dificuldade;
+- modalidade;
+- domínio;
+- confiabilidade;
+- necessidade de raciocínio;
+- necessidade de pesquisa;
+- necessidade de criação;
+- disponibilidade.
+
+Não utilizar seis modelos apenas para parecer mais poderoso.
+
+O Router deve justificar a seleção.
+
+---
+
+3. SPECIALIST FABRIC
+
+Crie uma arquitetura de especialistas.
+
+Categorias iniciais:
+
+- programação;
+- matemática;
+- ciência;
+- engenharia;
+- eletrônica;
+- física;
+- química;
+- biologia;
+- medicina informacional;
+- direito informacional;
+- economia;
+- negócios;
+- administração;
+- história;
+- geografia;
+- linguagem;
+- tradução;
+- escrita;
+- pesquisa;
+- segurança;
+- sistemas operacionais;
+- hardware;
+- jogos;
+- 2D;
+- 3D;
+- áudio;
+- vídeo;
+- UI/UX;
+- arquitetura;
+- design;
+- otimização;
+- documentação.
+
+A arquitetura deve permitir adicionar novos especialistas sem modificar o núcleo.
+
+---
+
+4. UNIVERSAL PROBLEM SOLVER
+
+Finalize o Universal Problem Solver.
+
+Ele deve converter problemas vagos em planos executáveis.
+
+Exemplo:
+
+"Quero criar uma empresa de tecnologia."
+
+Deve transformar isso em:
+
+problema
+→ objetivos
+→ restrições
+→ subtarefas
+→ dependências
+→ pesquisa
+→ alternativas
+→ execução
+→ validação
+→ resultado.
+
+Para problemas de produção:
+
+pedido
+→ projeto
+→ implementação
+→ testes
+→ artifacts
+→ entrega.
+
+---
+
+5. DYNAMIC WORKFLOW ENGINE
+
+Crie/finalize um motor de workflows capaz de:
+
+- criar DAGs;
+- executar tarefas paralelamente;
+- detectar dependências;
+- pausar;
+- retomar;
+- cancelar;
+- repetir;
+- fazer rollback;
+- recuperar após falha;
+- registrar cada etapa;
+- criar checkpoints.
+
+O workflow deve poder mudar dinamicamente quando uma etapa produzir informação nova.
+
+---
+
+6. MODEL ROUTER
+
+Finalize o Model Router.
+
+Ele deve considerar:
+
+- capacidade;
+- benchmark;
+- latência;
+- contexto;
+- modalidade;
+- confiabilidade;
+- histórico;
+- custo computacional;
+- disponibilidade;
+- especialidade.
+
+O sistema deve permitir que a Master Intelligence diga:
+
+"Este modelo é melhor para esta parte."
+
+E não:
+
+"Este é o modelo padrão para tudo."
+
+---
+
+7. EVIDENCE + TRUTH SYSTEM
+
+Fortaleça o Evidence Graph.
+
+Cada afirmação importante deve poder possuir:
+
+- origem;
+- fonte;
+- timestamp;
+- confiança;
+- evidências;
+- divergências;
+- modelos que concordaram;
+- modelos que discordaram.
+
+Criar mecanismos para distinguir:
+
+FACT
+INFERENCE
+HYPOTHESIS
+UNCERTAIN
+UNVERIFIED.
+
+Nunca apresentar hipótese como fato.
+
+---
+
+8. RESEARCH SWARM
+
+Finalize o Research Swarm.
+
+Ele deve:
+
+1. decompor a pergunta;
+2. criar pesquisas independentes;
+3. distribuir pesquisas;
+4. coletar fontes;
+5. remover duplicatas;
+6. comparar informações;
+7. detectar conflitos;
+8. identificar fontes primárias;
+9. construir Evidence Graph;
+10. entregar síntese à Master Intelligence.
+
+---
+
+9. SELF-CRITIC SYSTEM
+
+Criar críticos internos:
+
+- factual critic;
+- reasoning critic;
+- coding critic;
+- security critic;
+- source critic;
+- consistency critic;
+- completeness critic.
+
+Fluxo:
+
+resposta
+→ crítica
+→ correção
+→ nova validação.
+
+---
+
+10. MEMORY
+
+Finalize memória em camadas:
+
+- sessão;
+- projeto;
+- usuário;
+- tarefa;
+- conhecimento;
+- artifacts;
+- decisões;
+- preferências;
+- histórico de execução.
+
+Implementar:
+
+- versionamento;
+- recuperação;
+- expiração;
+- isolamento;
+- busca semântica quando possível;
+- controle de privacidade.
+
+---
+
+11. CONTEXT ENGINE
+
+Criar sistema para controlar contexto gigantesco.
+
+Deve:
+
+- resumir;
+- recuperar;
+- priorizar;
+- comprimir;
+- indexar;
+- eliminar redundância;
+- preservar informações críticas.
+
+A SNB nunca deve simplesmente despejar todo o histórico em todos os modelos.
+
+---
+
+12. AGENT SYSTEM
+
+Finalize agentes especializados.
+
+Cada agente deve possuir:
+
+- identidade;
+- capability;
+- ferramentas;
+- permissões;
+- memória;
+- objetivo;
+- estado;
+- orçamento;
+- limite;
+- resultado;
+- receipt.
+
+A Master Intelligence deve coordená-los.
+
+---
+
+13. AGENT COLLABORATION
+
+Permitir:
+
+Agent A
+→ produz artifact
+→ Agent B revisa
+→ Agent C testa
+→ Agent D otimiza
+→ Master AI integra.
+
+Criar protocolos estruturados de comunicação entre agentes.
+
+---
+
+14. UNIVERSAL TASK EXECUTION
+
+Qualquer pedido de produção deve poder virar:
+
+MISSION
+→ PLAN
+→ TASKS
+→ WORKERS
+→ TOOLS
+→ ARTIFACTS
+→ VALIDATION
+→ DELIVERY.
+
+---
+
+15. FAILURE RECOVERY
+
+Se um modelo falhar:
+
+- retry;
+- fallback;
+- outro especialista;
+- decomposição alternativa;
+- ferramenta alternativa;
+- recuperação do checkpoint.
+
+Uma falha de um modelo não deve derrubar a missão inteira.
+
+---
+
+16. FINALIZAÇÃO
+
+Depois de implementar:
+
+- rode todos os testes;
+- crie novos testes;
+- procure bugs;
+- procure estados falsamente operacionais;
+- procure TODO/FIXME/MOCK/PLACEHOLDER;
+- verifique frontend/backend;
+- verifique persistência;
+- verifique concorrência;
+- verifique isolamento.
+
+Atualize o V1 Gap Registry.
+
+O objetivo desta parte é eliminar os gaps do cérebro da SNB, não apenas documentá-los.
+
+Não aumente porcentagens artificialmente.
+
+Entregue um relatório real no final.
+
+SNB — FINALIZAÇÃO REAL DA V1 — PARTE 2/3
+
+FERRAMENTAS, EXECUÇÃO, AUTOMAÇÃO E AUTONOMIA
+
+Continue a partir do estado real deixado pela Parte 1.
+
+Primeiro leia o código e o Gap Registry atual.
+
+Não recrie o que já funciona.
+
+O objetivo agora é eliminar os gaps da camada operacional da SNB.
+
+---
+
+1. UNIVERSAL TOOL FABRIC
+
+Finalize um sistema universal de ferramentas.
+
+Cada ferramenta deve possuir:
+
+- ID;
+- versão;
+- capability;
+- schema;
+- inputs;
+- outputs;
+- permissões;
+- sandbox policy;
+- testes;
+- checksum;
+- provenance;
+- licença;
+- status;
+- dependências.
+
+A SNB deve conseguir descobrir automaticamente quais ferramentas podem resolver determinada tarefa.
+
+---
+
+2. TOOL COMPOSITION
+
+Permitir:
+
+Tool A
+→ Tool B
+→ Tool C
+→ resultado.
+
+Exemplo:
+
+pesquisa
+→ download
+→ processamento
+→ análise
+→ geração
+→ validação
+→ artifact.
+
+---
+
+3. TOOL FACTORY
+
+Finalize a capacidade de criar ferramentas próprias.
+
+Fluxo:
+
+necessidade
+→ especificação
+→ implementação
+→ testes
+→ análise de segurança
+→ benchmark
+→ sandbox
+→ aprovação
+→ registro.
+
+Ferramentas geradas não podem virar "active" simplesmente porque compilam.
+
+---
+
+4. CODE FACTORY
+
+Criar/finalizar sistema capaz de produzir:
+
+- código;
+- projetos;
+- bibliotecas;
+- scripts;
+- APIs;
+- CLIs;
+- automações;
+- testes;
+- documentação.
+
+Com:
+
+- análise estática;
+- typecheck;
+- testes;
+- lint;
+- dependency analysis;
+- security scanning.
+
+---
+
+5. SANDBOX
+
+Fortalecer o sistema de execução.
+
+Criar arquitetura preparada para:
+
+- filesystem isolado;
+- workspace temporário;
+- limites de CPU;
+- memória;
+- tempo;
+- processos;
+- rede;
+- cleanup;
+- logs;
+- artifacts.
+
+Quando o ambiente não possuir isolamento real, não declarar isolamento inexistente como ativo.
+
+---
+
+6. ARTIFACT FABRIC
+
+Qualquer produção deve gerar artifacts verificáveis.
+
+Suportar:
+
+- código;
+- imagens;
+- modelos;
+- áudio;
+- vídeo;
+- documentos;
+- datasets;
+- builds;
+- pacotes;
+- arquivos de projeto.
+
+Cada artifact deve possuir:
+
+- hash;
+- versão;
+- origem;
+- produtor;
+- timestamp;
+- licença;
+- dependências;
+- verification status.
+
+---
+
+7. ARTIFACT GRAPH
+
+Finalize relações:
+
+Project
+→ Mission
+→ Task
+→ Tool
+→ Model
+→ Artifact
+→ Verification
+→ Release.
+
+Isso permitirá reconstruir como qualquer resultado foi produzido.
+
+---
+
+8. RELEASE SYSTEM
+
+Criar sistema universal de distribuição.
+
+Suportar:
+
+- ZIP;
+- TAR;
+- GZIP;
+- pacotes de projeto;
+- documentação;
+- README;
+- CHANGELOG;
+- checksums;
+- provenance;
+- SBOM quando aplicável.
+
+---
+
+9. AUTOMATION ENGINE
+
+Permitir automações persistentes:
+
+- triggers;
+- schedules;
+- file events;
+- project events;
+- API events;
+- mission completion;
+- failure recovery.
+
+---
+
+10. PROJECT ENGINE
+
+Finalize o sistema de projetos.
+
+Cada projeto deve possuir:
+
+- identidade;
+- configuração;
+- arquivos;
+- artifacts;
+- memória;
+- agentes;
+- workflows;
+- ferramentas;
+- histórico;
+- versões;
+- permissões;
+- backups.
+
+---
+
+11. VERSION CONTROL ABSTRACTION
+
+Criar uma camada para versionamento independente da interface.
+
+Suportar conceitualmente:
+
+- snapshots;
+- branches;
+- checkpoints;
+- diff;
+- rollback;
+- merge;
+- provenance.
+
+Integrar Git/GitHub quando disponível, mas a SNB não deve depender exclusivamente deles para versionar seus próprios estados.
+
+---
+
+12. GITHUB INTEGRATION
+
+Finalize a integração GitHub já existente/preparada.
+
+Permitir:
+
+- repositories;
+- branches;
+- commits;
+- pull requests;
+- issues;
+- releases;
+- artifacts;
+- workflows quando permissões existirem.
+
+Nunca fingir que uma permissão não concedida existe.
+
+---
+
+13. UNIVERSAL FILE ENGINE
+
+Criar sistema para:
+
+- upload;
+- download;
+- preview;
+- metadata;
+- indexing;
+- checksum;
+- deduplication;
+- compression;
+- versioning;
+- conversion.
+
+---
+
+14. DATA ENGINE
+
+Finalize suporte para:
+
+- JSON;
+- SQLite;
+- CSV;
+- texto;
+- documentos;
+- structured data.
+
+Criar import/export universal.
+
+---
+
+15. SECURITY FABRIC
+
+Implementar/revisar:
+
+- authentication;
+- authorization;
+- RBAC;
+- project isolation;
+- secrets;
+- credential isolation;
+- rate limits;
+- audit logs;
+- CSRF;
+- CORS;
+- security headers;
+- session revocation;
+- token rotation.
+
+---
+
+16. APPROVAL SYSTEM
+
+Missões perigosas ou sensíveis devem poder exigir aprovação humana.
+
+Estados:
+
+PENDING
+→ APPROVED
+→ EXECUTING
+→ VERIFIED
+→ COMPLETED.
+
+---
+
+17. OBSERVABILITY
+
+Criar observabilidade completa:
+
+- missions;
+- workers;
+- models;
+- tools;
+- failures;
+- latency;
+- artifacts;
+- storage;
+- memory;
+- queues;
+- retries.
+
+---
+
+18. SELF-DIAGNOSTICS
+
+A SNB deve conseguir analisar a própria infraestrutura.
+
+Detectar:
+
+- ferramenta quebrada;
+- modelo indisponível;
+- worker morto;
+- fila congestionada;
+- storage insuficiente;
+- capability degradada.
+
+E reagir.
+
+---
+
+19. CAPABILITY FABRIC
+
+Finalize um registro universal:
+
+Capability
+→ providers/models/tools
+→ requirements
+→ health
+→ benchmark
+→ permissions
+→ fallback
+
+A Master Intelligence deve consultar esse registro antes de executar tarefas.
+
+---
+
+20. PLUGIN ARCHITECTURE
+
+Criar arquitetura extensível para módulos.
+
+Um plugin deve possuir:
+
+- manifest;
+- capabilities;
+- APIs;
+- permissions;
+- version;
+- dependencies;
+- tests;
+- provenance.
+
+---
+
+21. COMMUNITY EXTENSIBILITY
+
+Preparar arquitetura para a comunidade criar:
+
+- ferramentas;
+- agentes;
+- workflows;
+- datasets;
+- especialistas;
+- plugins;
+- templates.
+
+---
+
+22. FINAL TEST
+
+Após implementar:
+
+- testes unitários;
+- integração;
+- segurança;
+- persistência;
+- concorrência;
+- recuperação;
+- artifacts;
+- workflows;
+- ferramentas;
+- agentes.
+
+Procure novamente:
+
+TODO
+FIXME
+MOCK
+FAKE
+PLACEHOLDER
+SIMULATED
+FALSE SUCCESS.
+
+Elimine o que for implementação falsa.
+
+Atualize os gaps.
+
+O objetivo é elevar drasticamente a porcentagem REAL da SNB.
+
+
+SNB — FINALIZAÇÃO REAL DA V1 — PARTE 3/3
+
+PRODUTO COMPLETO, PESQUISA, CRIAÇÃO, EXPERIÊNCIA E POLIMENTO
+
+Esta é a terceira etapa da finalização da SNB.
+
+Leia tudo que as duas etapas anteriores implementaram.
+
+Audite novamente o repositório antes de criar qualquer coisa.
+
+O objetivo é fechar os gaps restantes e transformar a SNB em uma plataforma completa de criação e resolução.
+
+---
+
+1. UNIVERSAL CREATION SYSTEM
+
+A SNB deve poder produzir muito mais do que respostas.
+
+O usuário pode pedir:
+
+- software;
+- jogos;
+- websites;
+- aplicativos;
+- documentos;
+- imagens;
+- vídeos;
+- áudio;
+- modelos;
+- sistemas;
+- pesquisas;
+- projetos;
+- automações;
+- ferramentas;
+- datasets;
+- protótipos;
+- análises.
+
+A SNB deve transformar a intenção em missão de produção.
+
+---
+
+2. CHAT → EXECUTION
+
+O chat não deve ser apenas conversacional.
+
+Quando apropriado:
+
+pedido
+→ entendimento
+→ plano
+→ execução
+→ progresso
+→ artifacts
+→ validação
+→ resultado
+
+O usuário deve acompanhar a missão.
+
+---
+
+3. LIVE MISSION VIEW
+
+Criar/finalizar uma visualização que mostre:
+
+- plano;
+- tarefas;
+- especialistas;
+- modelos;
+- ferramentas;
+- progresso;
+- artifacts;
+- erros;
+- validações.
+
+Sem exigir que o usuário abra dezenas de telas.
+
+---
+
+4. UNIVERSAL RESEARCH
+
+Finalizar pesquisa profunda:
+
+- web;
+- arquivos;
+- projetos;
+- datasets;
+- fontes;
+- referências.
+
+Criar mecanismos de:
+
+- comparação;
+- síntese;
+- evidência;
+- citações;
+- confiança;
+- atualização.
+
+---
+
+5. DEEP ANSWER ENGINE
+
+Para perguntas complexas:
+
+2+ pesquisas independentes
++
+especialistas
++
+Evidence Graph
++
+Critics
++
+synthesis
+
+A resposta final deve ser proporcional à complexidade.
+
+---
+
+6. UNIVERSAL DOCUMENT ENGINE
+
+Produção de:
+
+- PDF;
+- DOCX;
+- XLSX;
+- PPTX;
+- Markdown;
+- TXT;
+- CSV;
+- outros formatos possíveis.
+
+Com validação real do arquivo produzido.
+
+---
+
+7. UNIVERSAL MEDIA PIPELINE
+
+Integrar a arquitetura de criação para:
+
+- imagem;
+- áudio;
+- vídeo;
+- modelos;
+- animações.
+
+A SNB deve poder enviar tarefas ao módulo UES quando a tarefa for visual/3D.
+
+---
+
+8. UES INTEGRATION
+
+A SNB deve tratar a UES como um módulo de produção especializado.
+
+Fluxo:
+
+SNB Master Intelligence
+→ UES Mission
+→ UES Master AI
+→ specialists
+→ artifacts
+→ SNB Artifact Graph.
+
+A SNB não deve duplicar desnecessariamente os sistemas da UES.
+
+---
+
+9. CROSS-MODULE ORCHESTRATION
+
+Permitir:
+
+SNB
+↔ UES
+↔ DsOS
+↔ outros Divine Modules.
+
+Cada módulo deve possuir contratos claros.
+
+---
+
+10. KNOWLEDGE FABRIC
+
+Criar uma arquitetura para conhecimento reutilizável:
+
+- conceitos;
+- relações;
+- evidências;
+- artifacts;
+- experiências;
+- workflows;
+- soluções anteriores.
+
+A SNB deve aprender estruturalmente com projetos anteriores sem misturar dados entre usuários.
+
+---
+
+11. BENCHMARK ENGINE
+
+Criar benchmarks internos.
+
+Avaliar:
+
+- qualidade;
+- factualidade;
+- código;
+- velocidade;
+- uso de ferramentas;
+- resolução de problemas;
+- criação;
+- consistência.
+
+Guardar resultados por versão.
+
+---
+
+12. MODEL EVALUATION
+
+A SNB deve testar modelos antes de decidir qual utilizar.
+
+Criar:
+
+- capability tests;
+- task benchmarks;
+- reliability scores;
+- hallucination indicators;
+- latency metrics.
+
+---
+
+13. AUTO OPTIMIZATION
+
+O próprio sistema deve encontrar:
+
+- workflows melhores;
+- modelos melhores;
+- especialistas melhores;
+- ferramentas melhores;
+- pipelines mais rápidos.
+
+Sem mudar silenciosamente políticas críticas.
+
+---
+
+14. USER EXPERIENCE
+
+Polir profundamente:
+
+- onboarding;
+- chat;
+- projetos;
+- arquivos;
+- missões;
+- artifacts;
+- settings;
+- erros;
+- loading;
+- recuperação;
+- acessibilidade.
+
+A plataforma deve parecer uma única máquina, não dezenas de sistemas desconectados.
+
+---
+
+15. DEVICE ADAPTATION
+
+A SNB deve adaptar:
+
+- quantidade de modelos;
+- tamanho de contexto;
+- paralelismo;
+- cache;
+- compressão;
+- qualidade visual;
+- workers.
+
+Dispositivos fracos devem receber uma experiência funcional sem tentar executar tudo localmente.
+
+---
+
+16. OFFLINE/DEGRADED MODE
+
+Quando serviços externos ou internet não estiverem disponíveis:
+
+- continuar capacidades locais;
+- informar quais estão indisponíveis;
+- preservar projetos;
+- permitir trabalho offline quando possível;
+- sincronizar posteriormente.
+
+---
+
+17. BACKUP + RECOVERY
+
+Implementar:
+
+- snapshots;
+- backup;
+- restore;
+- corruption detection;
+- artifact verification;
+- recovery.
+
+---
+
+18. FINAL SECURITY AUDIT
+
+Auditar:
+
+- autenticação;
+- sessões;
+- autorização;
+- uploads;
+- downloads;
+- ferramentas;
+- execução;
+- secrets;
+- projetos;
+- artifacts;
+- APIs.
+
+---
+
+19. FINAL GAP ELIMINATION
+
+Agora percorra novamente TODOS os gaps da SNB.
+
+Para cada um:
+
+1. identificar;
+2. implementar;
+3. integrar;
+4. testar;
+5. corrigir;
+6. validar;
+7. remover do registry.
+
+Não transforme gap em "adapter-required" quando a capacidade puder ser construída pela própria SNB.
+
+---
+
+20. CRITÉRIO DE CONCLUSÃO
+
+A SNB V1 deve representar uma plataforma que:
+
+- conversa;
+- pesquisa;
+- raciocina;
+- verifica;
+- cria;
+- programa;
+- executa ferramentas;
+- cria ferramentas;
+- coordena agentes;
+- coordena modelos;
+- produz artifacts;
+- integra módulos;
+- aprende estruturalmente;
+- valida resultados;
+- recupera falhas;
+- otimiza workflows.
+
+Faça o máximo possível agora.
+
+Não entregue apenas arquitetura.
+
+Não entregue apenas documentação.
+
+Implemente.
+
+Teste.
+
+Corrija.
+
+Refine.
+
+Depois atualize o relatório com números honestos.
+
+DIVINE SINGULARITY OS — FINALIZAÇÃO REAL DA V1 — PARTE 1/3
+
+NÚCLEO, ARQUITETURA, GERENCIAMENTO E FUNDAMENTOS
+
+Trabalhe sobre o estado REAL atual do DsOS — Divine Singularity OS.
+
+Não conte arquitetura como implementação.
+
+Não declare bootável sem boot real.
+
+Não dependa de QEMU como solução final.
+
+A meta é construir o máximo possível do próprio DsOS.
+
+---
+
+1. FILOSOFIA
+
+O DsOS não deve ser apenas uma distribuição Linux modificada.
+
+Ele deve possuir:
+
+- identidade própria;
+- arquitetura própria;
+- módulos próprios;
+- gerenciamento próprio;
+- formato de arquivos próprio;
+- aplicativos padrão próprios;
+- experiência própria;
+- segurança própria;
+- sistema de extensões próprio.
+
+Quando utilizar uma base existente, trate-a como fundação tecnológica e construa o restante do sistema por cima dela.
+
+---
+
+2. DIVINE CORE
+
+Finalize o Divine Core.
+
+Ele deve controlar:
+
+- processos;
+- recursos;
+- módulos;
+- permissões;
+- serviços;
+- comunicação;
+- eventos;
+- armazenamento;
+- configuração.
+
+Criar interfaces estáveis entre os componentes.
+
+---
+
+3. MODULE SYSTEM
+
+Criar sistema modular.
+
+Cada módulo deve possuir:
+
+- manifest;
+- versão;
+- dependências;
+- permissões;
+- capabilities;
+- checksum;
+- origem;
+- estado.
+
+Permitir ativar/desativar módulos.
+
+---
+
+4. DIVINE PACKAGE SYSTEM
+
+Criar arquitetura própria de pacotes.
+
+Suportar:
+
+- instalação;
+- remoção;
+- atualização;
+- dependências;
+- rollback;
+- assinatura;
+- checksum;
+- provenance;
+- permissões.
+
+---
+
+5. .DSB
+
+Implementar a especificação inicial do formato:
+
+".dsb"
+
+Definir:
+
+- estrutura;
+- metadata;
+- manifest;
+- compressão;
+- integridade;
+- assinatura;
+- permissões;
+- versão;
+- compatibilidade.
+
+O formato deve ser tratado como formato próprio do ecossistema DsOS.
+
+---
+
+6. FILESYSTEM ABSTRACTION
+
+Criar uma camada própria para abstração do filesystem.
+
+Permitir:
+
+- arquivos;
+- diretórios;
+- metadata;
+- permissões;
+- indexing;
+- search;
+- snapshots;
+- integrity checks.
+
+---
+
+7. DIVINE MANAGER
+
+Finalize o gerenciador central do DsOS.
+
+Deve controlar:
+
+- aplicativos;
+- módulos;
+- pacotes;
+- recursos;
+- serviços;
+- armazenamento;
+- atualizações;
+- segurança.
+
+---
+
+8. RESOURCE MANAGER
+
+Criar gerenciamento inteligente de:
+
+- CPU;
+- RAM;
+- armazenamento;
+- bateria;
+- GPU quando disponível;
+- temperatura;
+- processos.
+
+Adaptar o comportamento ao hardware.
+
+---
+
+9. DEVICE PROFILES
+
+Criar perfis:
+
+- ultra-low;
+- low;
+- balanced;
+- performance;
+- workstation.
+
+O sistema deve selecionar automaticamente o perfil apropriado.
+
+---
+
+10. PERMISSION SYSTEM
+
+Criar permissões granulares para:
+
+- arquivos;
+- câmera;
+- microfone;
+- rede;
+- localização;
+- sensores;
+- processos;
+- módulos;
+- extensões.
+
+---
+
+11. SECURITY CORE
+
+Implementar:
+
+- sandbox;
+- privilege separation;
+- secure storage;
+- secrets;
+- process isolation;
+- audit;
+- permission enforcement.
+
+---
+
+12. UPDATE SYSTEM
+
+Criar arquitetura de atualização:
+
+update
+→ verify
+→ stage
+→ snapshot
+→ install
+→ validate
+→ commit
+
+Se falhar:
+
+rollback
+
+---
+
+13. RECOVERY SYSTEM
+
+Criar recovery próprio para:
+
+- sistema corrompido;
+- pacote quebrado;
+- atualização falha;
+- configuração inválida.
+
+---
+
+14. SERVICE MANAGER
+
+Criar gerenciamento de serviços com:
+
+- startup;
+- shutdown;
+- restart;
+- dependencies;
+- health;
+- logs;
+- failure recovery.
+
+---
+
+15. EVENT BUS
+
+Criar um event bus do sistema.
+
+Permitir:
+
+módulo A
+→ evento
+→ módulo B/C/D.
+
+---
+
+16. FINALIZAÇÃO
+
+Implementar tudo que puder ser implementado sem depender de infraestrutura externa.
+
+Depois:
+
+- testes;
+- integração;
+- segurança;
+- recuperação;
+- documentação;
+- atualização do Gap Registry.
+
+Não declare boot real ainda se não foi realmente testado.
+
+
+DIVINE SINGULARITY OS — FINALIZAÇÃO REAL DA V1 — PARTE 2/3
+
+DESKTOP, APLICATIVOS, NAVEGADOR E ECOSSISTEMA
+
+Continue do estado real da Parte 1.
+
+O objetivo é transformar a fundação do DsOS em uma experiência de sistema operacional coerente.
+
+---
+
+1. DIVINE DESKTOP
+
+Criar/finalizar o ambiente desktop próprio.
+
+Deve possuir:
+
+- desktop;
+- taskbar/dock;
+- launcher;
+- janelas;
+- notificações;
+- quick settings;
+- busca;
+- workspace;
+- gerenciamento de múltiplas janelas.
+
+---
+
+2. DIVINE SHELL
+
+Criar shell/interface própria.
+
+Permitir:
+
+- comandos;
+- automação;
+- scripts;
+- gerenciamento do sistema;
+- diagnóstico;
+- integração com SNB.
+
+---
+
+3. DIVINE FILE MANAGER
+
+Criar gerenciador de arquivos próprio.
+
+Suportar:
+
+- preview;
+- busca;
+- favoritos;
+- tags;
+- arquivos .dsb;
+- compactação;
+- permissões;
+- compartilhamento;
+- versionamento.
+
+---
+
+4. DIVINE BROWSER
+
+Criar arquitetura para o navegador próprio do DsOS.
+
+Não simplesmente renomear um navegador.
+
+Criar identidade própria e integrar:
+
+- segurança;
+- downloads;
+- extensões;
+- profiles;
+- privacy;
+- bookmarks;
+- history;
+- sync;
+- developer tools.
+
+Utilizar um engine de navegador existente apenas como backend tecnológico quando necessário, mantendo a camada de produto e integração sob controle do DsOS.
+
+---
+
+5. DIVINE EXTENSIONS
+
+Criar sistema de extensões próprio.
+
+Definir:
+
+- manifest;
+- permissions;
+- APIs;
+- sandbox;
+- lifecycle;
+- versioning;
+- installation;
+- removal;
+- update.
+
+---
+
+6. DIVINE APP SYSTEM
+
+Criar arquitetura de aplicativos.
+
+Um aplicativo deve possuir:
+
+- manifest;
+- capabilities;
+- permissions;
+- dependencies;
+- version;
+- icon;
+- entrypoint;
+- sandbox policy.
+
+---
+
+7. APPS PADRÃO
+
+Criar arquitetura e protótipos funcionais para:
+
+- Settings;
+- Files;
+- Browser;
+- Terminal;
+- Calculator;
+- Text Editor;
+- Media Player;
+- Image Viewer;
+- Task Manager;
+- System Monitor;
+- App Manager.
+
+---
+
+8. APP STORE / MARKETPLACE
+
+Criar arquitetura do:
+
+Divine Marketplace
+
+Suportar:
+
+- apps;
+- extensions;
+- themes;
+- tools;
+- modules;
+- packages.
+
+Incluir:
+
+- assinatura;
+- checksum;
+- permissões;
+- provenance;
+- versioning.
+
+---
+
+9. THEME ENGINE
+
+Criar sistema de temas:
+
+- light;
+- dark;
+- custom;
+- accessibility;
+- dynamic.
+
+---
+
+10. ACCESSIBILITY
+
+Adicionar:
+
+- scaling;
+- keyboard navigation;
+- screen-reader hooks;
+- high contrast;
+- reduced motion;
+- font controls.
+
+---
+
+11. DEVELOPER PLATFORM
+
+Criar APIs para desenvolvedores.
+
+Permitir que aplicativos utilizem APIs do DsOS de forma controlada.
+
+---
+
+12. DSOS + SNB
+
+Integrar profundamente:
+
+DsOS
+↔ SNB
+
+A SNB deve poder:
+
+- analisar;
+- configurar;
+- diagnosticar;
+- criar ferramentas;
+- automatizar tarefas.
+
+Mas sempre respeitando permissões.
+
+---
+
+13. DSOS + UES
+
+Integrar a UES como módulo de produção.
+
+A UES deve poder criar artifacts compatíveis com DsOS.
+
+---
+
+14. PERFORMANCE
+
+Manter o sistema extremamente leve.
+
+Não transformar o desktop em uma coleção pesada de frameworks desnecessários.
+
+---
+
+15. FINALIZAÇÃO
+
+Testar:
+
+- aplicativos;
+- permissões;
+- filesystem;
+- packages;
+- extensions;
+- browser;
+- desktop;
+- recovery;
+- updates.
+
+Atualizar os gaps somente após evidência real.
+
+DIVINE SINGULARITY OS — FINALIZAÇÃO REAL DA V1 — PARTE 3/3
+
+BUILD, BOOT, COMPATIBILIDADE, RELEASE E POLIMENTO
+
+Esta é a etapa final da grande expansão do DsOS.
+
+O objetivo é atacar os gaps restantes de build, boot, compatibilidade e distribuição.
+
+---
+
+1. BUILD SYSTEM
+
+Criar um sistema reprodutível de construção do DsOS.
+
+Fluxo:
+
+source
+↓
+dependencies
+↓
+modules
+↓
+kernel/base
+↓
+filesystem
+↓
+packages
+↓
+boot artifacts
+↓
+verification
+↓
+release
+
+Tudo deve ser versionado e verificável.
+
+---
+
+2. HARDWARE TARGETS
+
+Criar arquitetura para múltiplos targets:
+
+- x86_64;
+- ARM64;
+- dispositivos de baixo consumo;
+- desktop;
+- notebook;
+- mobile quando aplicável.
+
+Não declarar suporte sem teste.
+
+---
+
+3. BOOT SYSTEM
+
+Construir a infraestrutura necessária para gerar uma imagem realmente inicializável.
+
+O objetivo não é apenas:
+
+.iso existe
+
+O objetivo é:
+
+imagem
+→ boot
+→ kernel
+→ userspace
+→ Divine Core
+→ services
+→ desktop/shell
+
+Se o ambiente atual não permitir validar hardware físico, crie os artefatos e pipelines necessários e documente exatamente o que ainda precisa de hardware real.
+
+---
+
+4. BASE SYSTEM
+
+Escolher e fixar uma base tecnológica legalmente reutilizável quando necessário.
+
+Não copiar componentes sem licença.
+
+Registrar:
+
+- versão;
+- origem;
+- licença;
+- checksum;
+- patches;
+- modificações.
+
+---
+
+5. KERNEL STRATEGY
+
+Não reimplementar um kernel inteiro sem necessidade.
+
+Criar a arquitetura DsOS sobre uma base de kernel adequada, mantendo a identidade do sistema nas camadas superiores e nos componentes próprios.
+
+---
+
+6. INIT + SERVICE ARCHITECTURE
+
+Criar/finalizar:
+
+- boot initialization;
+- service manager;
+- dependency resolution;
+- logging;
+- health checks;
+- recovery.
+
+---
+
+7. DRIVER ARCHITECTURE
+
+Criar uma camada de abstração para drivers.
+
+Suportar quando disponíveis:
+
+- display;
+- input;
+- áudio;
+- rede;
+- armazenamento;
+- GPU.
+
+Não declarar drivers próprios onde apenas existe driver externo do hardware.
+
+---
+
+8. GRAPHICS STACK
+
+Criar arquitetura para:
+
+- compositor;
+- window manager;
+- rendering;
+- acceleration;
+- fallback.
+
+Priorizar eficiência.
+
+---
+
+9. COMPATIBILITY LAYER
+
+Criar uma camada própria de compatibilidade para software externo quando legal e tecnicamente possível.
+
+Separar claramente:
+
+native DsOS
+compatibility
+emulation
+
+Não fingir compatibilidade universal.
+
+---
+
+10. ANDROID/DROID
+
+Finalizar a arquitetura do Divine Singularity Droid como variante/ecossistema móvel.
+
+Preparar:
+
+- runtime;
+- packages;
+- APIs;
+- apps;
+- permissions;
+- UI;
+- hardware abstraction.
+
+---
+
+11. CROSS-BUILD
+
+Permitir que a infraestrutura gere artifacts para targets diferentes.
+
+Exemplo:
+
+DsOS Desktop
+DsOS ARM
+DsOS Droid
+
+---
+
+12. SIGNING + TRUST
+
+Criar sistema de confiança:
+
+- package signatures;
+- artifact signatures;
+- release signatures;
+- checksums;
+- provenance;
+- trust roots.
+
+---
+
+13. SBOM
+
+Gerar SBOM para releases.
+
+Registrar dependências e licenças.
+
+---
+
+14. RELEASE ENGINE
+
+Criar pipeline:
+
+build
+→ test
+→ scan
+→ sign
+→ package
+→ generate README
+→ generate CHANGELOG
+→ checksums
+→ release artifact
+
+---
+
+15. INSTALLATION
+
+Criar arquitetura para instalação segura.
+
+Suportar futuramente:
+
+- ISO;
+- image;
+- package;
+- recovery.
+
+---
+
+16. RECOVERY / ROLLBACK
+
+Testar:
+
+update
+→ failure
+→ recovery
+→ rollback
+→ boot
+
+---
+
+17. PERFORMANCE
+
+Criar benchmarks de:
+
+- boot;
+- RAM;
+- CPU;
+- storage;
+- application startup;
+- rendering.
+
+---
+
+18. SECURITY FINAL AUDIT
+
+Auditar:
+
+- boot;
+- packages;
+- permissions;
+- apps;
+- browser;
+- extensions;
+- network;
+- storage;
+- updates;
+- secrets.
+
+---
+
+19. GAP ELIMINATION
+
+Percorra novamente o DsOS Gap Registry inteiro.
+
+Para cada gap:
+
+identificar
+→ projetar
+→ implementar
+→ integrar
+→ testar
+→ corrigir
+→ verificar
+→ remover gap
+
+Não transformar um gap próprio do DsOS em:
+
+"infrastructure-required"
+
+se ele puder ser implementado no código.
+
+Somente limitações que realmente exigem:
+
+- hardware físico;
+- assinatura externa;
+- toolchain que não existe no ambiente;
+- infraestrutura impossível de reproduzir localmente;
+
+podem permanecer explicitamente documentadas.
+
+---
+
+20. CRITÉRIO FINAL
+
+O DsOS V1 deve possuir uma identidade tecnológica própria:
+
+Divine Core
++
+Divine Manager
++
+Divine Desktop
++
+Divine Shell
++
+Divine Browser
++
+Divine Package System
++
+.dsb
++
+Divine Marketplace
++
+Security Fabric
++
+Recovery
++
+Update System
++
+Build System
++
+SNB Integration
++
+UES Integration
++
+Droid Architecture
+
+Não basta criar manifests.
+
+Não basta criar documentação.
+
+Não basta criar uma ISO vazia.
+
+Implemente o máximo possível.
+
+Teste tudo que puder ser testado.
+
+Corrija todos os bugs encontrados.
+
+Atualize os percentuais de forma honesta.
+
+No relatório final, diferencie claramente:
+
+- implementado e testado;
+- implementado mas não testável neste ambiente;
+- dependente de hardware;
+- dependente de assinatura/infraestrutura externa;
+- realmente ainda não implementado.
+
+A meta desta etapa é preencher a maior parte possível da porcentagem que caiu no relatório real e deixar o DsOS preparado para a etapa final de validação física e release.
+
+UES — FINALIZAÇÃO ARQUITETURAL E ELIMINAÇÃO TOTAL DOS GAPS
+
+OBJETIVO PRINCIPAL
+
+Trabalhe agora na UES — Universal Engine of the Singularity com objetivo de eliminar todos os gaps restantes e levar sua implementação ao máximo funcional possível dentro do repositório e ambiente disponível.
+
+Esta instrução corrige definitivamente uma interpretação importante das instruções anteriores:
+
+«A UES NÃO DEVE DEPENDER DE SERVIÇOS EXTERNOS PARA POSSUIR SUAS CAPACIDADES.»
+
+Não transforme os gaps existentes em adapters para serviços externos.
+
+Não substitua sistemas que deveriam existir dentro da UES por APIs comerciais.
+
+Não deixe:
+
+"3D avançado"
+→ provider externo
+
+"rigging"
+→ provider externo
+
+"animação"
+→ provider externo
+
+"VFX"
+→ provider externo
+
+"física"
+→ provider externo
+
+"world generation"
+→ provider externo
+
+A solução desejada é:
+
+gap
+↓
+arquitetar capacidade
+↓
+construir sistema próprio
+↓
+integrar
+↓
+testar
+↓
+validar
+↓
+otimizar
+↓
+remover gap
+
+EXCEÇÃO
+
+A única camada externa de inteligência/modelos autorizada é o Puter.
+
+O Puter pode fornecer acesso aos modelos de IA utilizados pelos especialistas.
+
+Todo o restante da UES deve ser propriedade arquitetural da própria plataforma.
+
+Bibliotecas open source podem ser utilizadas quando necessário e quando suas licenças permitirem, mas devem ser tratadas como componentes tecnológicos incorporados à arquitetura, e não como serviços externos obrigatórios.
+
+---
+
+1. ARQUITETURA CENTRAL DA UES
+
+A UES deve possuir uma IA Mestre própria, chamada conceitualmente de:
+
+UES Master AI
+
+Ela é o cérebro de coordenação da engine.
+
+Ela NÃO precisa executar diretamente todas as tarefas de geração.
+
+Sua função é:
+
+- compreender o pedido;
+- interpretar intenção;
+- criar especificação;
+- decompor o problema;
+- identificar subtarefas;
+- escolher especialistas;
+- escolher modelos;
+- escolher ferramentas;
+- construir workflow;
+- ordenar dependências;
+- distribuir tarefas;
+- monitorar execução;
+- comparar resultados;
+- detectar erros;
+- solicitar correções;
+- selecionar resultados;
+- integrar artifacts;
+- executar verificações;
+- otimizar;
+- conversar com o usuário;
+- manter contexto do projeto.
+
+Arquitetura:
+
+USER
+ ↓
+UES MASTER AI
+ ↓
+PLANNER
+ ↓
+TASK DECOMPOSER
+ ↓
+SPECIALIST ROUTER
+ ↓
+SPECIALIST MODELS
+ ↓
+UES CORE SYSTEMS
+ ↓
+CRITICS
+ ↓
+VERIFICATION
+ ↓
+OPTIMIZATION
+ ↓
+INTEGRATION
+ ↓
+FINAL ARTIFACT
+
+---
+
+2. MODELOS ESPECIALISTAS
+
+Os modelos de IA devem ser utilizados como especialistas, e não como a própria engine.
+
+A UES Master AI decide quais modelos utilizar.
+
+Exemplo:
+
+pedido complexo
+↓
+Master AI
+├── especialista 3D
+├── especialista anatomia
+├── especialista materiais
+├── especialista animação
+├── especialista iluminação
+├── especialista VFX
+└── especialista otimização
+
+Os resultados são reunidos posteriormente pela UES.
+
+Não enviar obrigatoriamente todo o problema para um único modelo.
+
+A divisão deve ocorrer conforme:
+
+- complexidade;
+- modalidade;
+- especialidade;
+- qualidade necessária;
+- custo computacional;
+- contexto;
+- dependências;
+- qualidade dos resultados anteriores.
+
+---
+
+3. GENERATION FABRIC
+
+Criar uma camada unificada de geração da UES.
+
+Ela deve controlar todos os sistemas que dependem de modelos de IA:
+
+2D
+
+- imagens;
+- ilustrações;
+- sprites;
+- concept art;
+- UI;
+- ícones;
+- composição;
+- animação 2D.
+
+2.5D
+
+- profundidade;
+- parallax;
+- câmera;
+- composição 2D/3D;
+- iluminação;
+- objetos híbridos.
+
+3D
+
+- objetos;
+- personagens;
+- ambientes;
+- veículos;
+- arquitetura;
+- criaturas;
+- máquinas;
+- materiais;
+- estruturas.
+
+3.5D — EXPERIMENTAL
+
+Criar um modo experimental próprio para explorar estruturas híbridas entre:
+
+2D + 2.5D + 3D + profundidade + projeção + temporalidade
+
+A arquitetura deve permitir evolução futura sem comprometer o núcleo.
+
+4D — EXPERIMENTAL
+
+Preservar e expandir o sistema experimental 4D já existente.
+
+Trabalhar com:
+
+- estruturas 4D;
+- projeções;
+- transformações;
+- visualização;
+- animação;
+- slicing;
+- artifacts;
+- ferramentas matemáticas.
+
+Não apresentar simulações experimentais como física comprovada.
+
+---
+
+4. QUALIDADE DE GERAÇÃO
+
+A meta da UES não é simplesmente gerar algo "bom o suficiente".
+
+A arquitetura deve buscar qualidade extremamente alta.
+
+Considere como meta conceitual um nível tecnológico equivalente ao que imaginaríamos para uma engine extremamente avançada no futuro — inclusive a referência conceitual de "2100" utilizada pelo projeto.
+
+Isso significa que o sistema deve buscar:
+
+- precisão;
+- coerência;
+- fidelidade;
+- detalhes;
+- consistência;
+- anatomia;
+- física;
+- materiais;
+- iluminação;
+- movimento;
+- continuidade;
+- semântica;
+- contexto.
+
+Exemplo
+
+Para gerar um urso:
+
+Não tratar como:
+
+"gere um modelo de urso"
+
+A Master AI deve decompor:
+
+espécie
+→ anatomia
+→ proporções
+→ esqueleto
+→ músculos
+→ distribuição de gordura
+→ pele
+→ pelagem
+→ olhos
+→ garras
+→ materiais
+→ deformação
+→ locomoção
+→ iluminação
+→ ambiente
+
+Cada especialista pode trabalhar na parte correspondente.
+
+Depois a UES integra tudo.
+
+Essa filosofia deve valer para qualquer tipo de criação, não somente personagens.
+
+---
+
+5. 3D SEMÂNTICO
+
+Construir um sistema próprio de representação semântica 3D.
+
+Um objeto não deve ser apenas uma malha.
+
+Deve poder possuir:
+
+Objeto
+├── identidade
+├── partes
+├── hierarquia
+├── geometria
+├── materiais
+├── anatomia
+├── articulações
+├── comportamento
+├── propriedades físicas
+├── função
+└── relações espaciais
+
+Isso permitirá que a Master AI diga:
+
+"altere apenas a mandíbula"
+
+sem precisar reconstruir o objeto inteiro.
+
+---
+
+6. PIPELINE 3D COMPLETO
+
+Eliminar os gaps de:
+
+- geração 3D;
+- retopologia;
+- UV;
+- normals;
+- materiais;
+- texturas;
+- rigging;
+- skinning;
+- animação;
+- retargeting;
+- deformação;
+- iluminação;
+- LOD;
+- otimização;
+- validação.
+
+Construir pipelines próprios para todos eles.
+
+---
+
+7. ANIMAÇÃO
+
+Criar sistema completo próprio:
+
+- FK;
+- IK;
+- rigging;
+- skinning;
+- retargeting;
+- procedural animation;
+- motion synthesis;
+- pose generation;
+- motion blending;
+- foot contact;
+- balance;
+- limites articulares;
+- facial animation;
+- secondary motion;
+- validação.
+
+A IA gera/decide.
+
+O runtime e o pipeline pertencem à UES.
+
+---
+
+8. MATERIALS + TEXTURES
+
+Construir:
+
+- material graph;
+- procedural materials;
+- PBR;
+- texture generation;
+- texture synthesis;
+- UV;
+- texture packing;
+- mipmaps;
+- compression;
+- material validation;
+- shader generation;
+- material optimization.
+
+---
+
+9. WORLD ENGINE
+
+Criar sistema próprio de geração e gerenciamento de mundos.
+
+Incluir:
+
+- terreno;
+- biomas;
+- vegetação;
+- arquitetura;
+- estradas;
+- água;
+- clima;
+- iluminação;
+- objetos;
+- população;
+- cidades;
+- ambientes naturais;
+- regras espaciais;
+- geração procedural;
+- streaming de mundo.
+
+A geração deve ser semanticamente coerente.
+
+---
+
+10. PHYSICS ENGINE
+
+Construir sistema próprio e leve para:
+
+- colisão;
+- rigid bodies;
+- constraints;
+- joints;
+- gravidade;
+- forças;
+- impulsos;
+- raycasting;
+- veículos;
+- ragdolls;
+- partículas;
+- destruição;
+- integração com animação.
+
+Não transformar uma engine externa pesada em requisito.
+
+---
+
+11. NPC / SOCIETY ENGINE
+
+Criar sistema próprio para:
+
+- percepção;
+- memória;
+- objetivos;
+- planejamento;
+- decisão;
+- comportamento;
+- relações;
+- reputação;
+- economia;
+- profissões;
+- grupos;
+- rotina;
+- necessidades;
+- conflitos;
+- eventos;
+- memória coletiva.
+
+A inteligência pode ser assistida pelos modelos.
+
+A estrutura de execução pertence à UES.
+
+---
+
+12. AUDIO ENGINE
+
+Criar:
+
+- áudio espacial;
+- mixagem;
+- música;
+- efeitos;
+- ambiente;
+- voz;
+- sincronização;
+- eventos;
+- compressão;
+- gerenciamento de assets.
+
+---
+
+13. VFX ENGINE
+
+Criar:
+
+- partículas;
+- fumaça;
+- fogo;
+- água;
+- energia;
+- explosões;
+- clima;
+- shaders;
+- pós-processamento;
+- efeitos procedurais.
+
+---
+
+14. UI/UX ENGINE
+
+A UES deve possuir sistema completo próprio de:
+
+- UI;
+- UX;
+- layouts;
+- componentes;
+- animações;
+- acessibilidade;
+- temas;
+- responsividade;
+- interação;
+- navegação;
+- design systems.
+
+A Master AI pode gerar interfaces através dos especialistas, mas a UES fornece o runtime.
+
+---
+
+15. RENDERER
+
+Criar renderer próprio e extremamente leve.
+
+Deve utilizar a melhor API disponível no dispositivo quando possível.
+
+Suportar progressivamente:
+
+- WebGL;
+- WebGPU;
+- Vulkan;
+- OpenGL;
+- APIs compatíveis;
+- fallback CPU quando necessário.
+
+Não assumir hardware poderoso.
+
+---
+
+16. OTIMIZAÇÃO AUTOMÁTICA
+
+Criar um loop:
+
+artifact
+↓
+profile
+↓
+identify bottleneck
+↓
+optimize
+↓
+build
+↓
+test
+↓
+compare
+↓
+regression?
+├── YES → rollback
+└── NO → keep
+↓
+repeat
+
+O objetivo é preservar o máximo possível da qualidade enquanto reduz:
+
+- memória;
+- tamanho;
+- processamento;
+- draw calls;
+- geometria redundante;
+- texturas duplicadas;
+- shaders desnecessários;
+- consumo energético.
+
+---
+
+17. UES MASTER CRITIC SYSTEM
+
+Criar críticos especializados para avaliar resultados.
+
+Exemplos:
+
+- Geometry Critic
+- Anatomy Critic
+- Animation Critic
+- Material Critic
+- Lighting Critic
+- Physics Critic
+- UX Critic
+- Code Critic
+- Performance Critic
+- Consistency Critic
+- Visual Quality Critic
+
+Eles devem produzir feedback estruturado para a Master AI.
+
+---
+
+18. TOOL FACTORY
+
+A UES deve poder criar suas próprias ferramentas quando identificar uma necessidade.
+
+Fluxo:
+
+capability ausente
+↓
+análise
+↓
+projeto
+↓
+implementação
+↓
+testes
+↓
+benchmark
+↓
+verificação
+↓
+registro
+↓
+uso
+
+Linguagens possíveis:
+
+- TypeScript;
+- JavaScript;
+- Python;
+- Rust;
+- C/C++;
+- WebAssembly;
+- outras quando justificadas.
+
+---
+
+19. CORE SYSTEMS DA UES
+
+Completar e integrar:
+
+- Project System;
+- Asset System;
+- Artifact System;
+- Scene System;
+- Entity System;
+- Component System;
+- Material System;
+- Animation System;
+- Physics System;
+- Audio System;
+- VFX System;
+- UI System;
+- Input System;
+- Camera System;
+- World System;
+- Runtime;
+- Build System;
+- Packaging;
+- Versioning;
+- Dependency Graph;
+- Capability Registry;
+- Tool Registry;
+- Model Registry;
+- Workflow Engine;
+- Verification;
+- Optimization;
+- Memory;
+- History;
+- Undo/Redo;
+- Checkpoints;
+- Recovery;
+- Permissions.
+
+---
+
+20. MARKETPLACE
+
+Criar a arquitetura do:
+
+UES Marketplace
+
+Suportar futuramente:
+
+- assets;
+- modelos;
+- materiais;
+- shaders;
+- ferramentas;
+- plugins;
+- workflows;
+- templates;
+- datasets;
+- presets;
+- ambientes;
+- animações;
+- sistemas;
+- extensões;
+- especialistas.
+
+A arquitetura deve permitir contribuição da comunidade.
+
+---
+
+21. STAGE
+
+A interface principal já possui o conceito:
+
+┌───────────────────────────────┐
+│                               │
+│             STAGE             │
+│                               │
+│      construção em tempo      │
+│           real                │
+│                               │
+├───────────────────────────────┤
+│ CHAT / COMMAND CENTER         │
+└───────────────────────────────┘
+
+Preservar essa filosofia.
+
+O usuário deve poder conversar naturalmente com a UES.
+
+Exemplo:
+
+«"Crie uma cidade cyberpunk."»
+
+A Master AI deve começar a orquestrar a construção.
+
+---
+
+22. VISUALIZAÇÃO EM TEMPO REAL / HSDS
+
+O HSDS não deve ser interpretado como substituto da criação.
+
+Ele é uma camada de visualização/transporte.
+
+A UES constrói o estado.
+
+O HSDS transforma esse estado em uma representação visual transmitível quando necessário.
+
+Arquitetura conceitual:
+
+UES
+↓
+estado visual
+↓
+renderização/captura
+↓
+compressão
+↓
+HSDS
+↓
+stream
+↓
+Stage do usuário
+
+A arquitetura deve evoluir o baseline SVG/SSE atual para uma implementação audiovisual eficiente quando o ambiente permitir, sem fingir que SVG é equivalente a vídeo GPU.
+
+---
+
+23. NÃO DEPENDER DE SERVIÇOS EXTERNOS
+
+Esta é uma regra fundamental da V1.
+
+Não transformar a UES em:
+
+API A
++
+API B
++
+API C
++
+API D
+=
+"UES"
+
+A UES deve ser:
+
+UES
+├── Master AI
+├── Generation Fabric
+├── Renderer
+├── Physics
+├── Animation
+├── Materials
+├── VFX
+├── Audio
+├── World
+├── NPC
+├── UI/UX
+├── Runtime
+├── Optimizer
+├── Tool Factory
+├── Artifact System
+├── Build System
+└── Marketplace
+
+Puter fornece os modelos de IA quando necessário.
+
+A UES fornece a tecnologia de produção.
+
+---
+
+24. ELIMINAÇÃO DOS GAPS
+
+Agora execute uma auditoria completa no:
+
+V1 Gap Registry
+
+Para cada gap da UES:
+
+1. identificar exatamente o que está faltando;
+2. determinar qual sistema próprio deve existir;
+3. implementar;
+4. integrar ao Core;
+5. conectar à UES Master AI;
+6. criar testes;
+7. criar benchmark;
+8. criar validação;
+9. executar;
+10. corrigir;
+11. otimizar;
+12. documentar;
+13. somente então remover o gap.
+
+Não apenas altere o status do gap.
+
+O gap só está eliminado quando existe implementação verificável.
+
+Não deixar:
+
+adapter-required
+provider-required
+planned
+
+para capacidades que deveriam pertencer ao núcleo da UES.
+
+Se existir uma limitação física real do ambiente atual, implemente toda a arquitetura e código possível e deixe somente a limitação física explicitamente documentada.
+
+---
+
+25. NÃO FAZER
+
+Não:
+
+- adicionar providers comerciais para preencher gaps;
+- criar mocks apresentados como sistemas reais;
+- marcar capabilities como ativas sem execução;
+- substituir a UES por Unreal/Unity;
+- tornar uma engine externa requisito;
+- colocar centenas de dependências pesadas no frontend;
+- fazer a UES depender de uma única IA;
+- fazer um modelo gerar tudo sozinho;
+- criar somente interfaces bonitas sem backend funcional.
+
+---
+
+26. CRITÉRIO FINAL
+
+Ao terminar, a UES deve ser capaz de receber uma intenção de alto nível e transformar isso em um workflow completo.
+
+Exemplo:
+
+«"Crie um jogo de exploração em uma floresta realista com personagens, animais, clima dinâmico, iluminação cinematográfica, física, áudio, UI, história e otimização para meu dispositivo."»
+
+A Master AI deve:
+
+interpretar
+↓
+planejar
+↓
+dividir
+↓
+selecionar especialistas
+↓
+usar modelos através do Puter
+↓
+gerar artifacts
+↓
+integrar
+↓
+validar
+↓
+criticar
+↓
+corrigir
+↓
+otimizar
+↓
+construir
+↓
+apresentar no Stage
+
+O usuário deve conseguir continuar dando comandos durante o processo.
+
+---
+
+27. FILOSOFIA DA UES
+
+Construa a UES como uma tecnologia conceitualmente extremamente avançada — usando "2100" apenas como meta conceitual de maturidade tecnológica, não como promessa literal.
+
+Ela deve buscar ser:
+
+- original;
+- modular;
+- extremamente leve;
+- extensível;
+- open-source friendly;
+- automatizada;
+- autocorrigível;
+- verificável;
+- orientada por intenção;
+- multimodal;
+- especializada;
+- capaz de criar suas próprias ferramentas;
+- independente de providers externos para suas capacidades fundamentais.
+
+---
+
+INSTRUÇÃO FINAL
+
+Não pare na arquitetura.
+
+Não apenas documente o que poderia existir.
+
+Não apenas crie interfaces.
+
+Implemente o máximo possível agora.
+
+Audite o repositório inteiro, encontre todos os gaps da UES, construa os sistemas necessários para eliminá-los, integre tudo à UES Master AI, teste tudo, corrija bugs, faça build e atualize o Gap Registry.
+
+Quando terminar, apresente:
+
+1. o que foi realmente implementado;
+2. quais gaps foram eliminados;
+3. quais ainda existem;
+4. por que ainda existem;
+5. quais são limitações físicas do ambiente;
+6. quais testes foram executados;
+7. quais testes falharam;
+8. quais bugs foram corrigidos;
+9. estado real da UES;
+10. estado real da V1.
+
+Não aumente percentuais artificialmente.
+
+A prioridade é transformar a UES em uma tecnologia realmente funcional, e não produzir um relatório bonito.
+
+A regra fundamental permanece:
+
+«Puter fornece inteligência/modelos. A UES fornece a engine.»
+
+A Master AI coordena.
+
+Os modelos especialistas executam tarefas de inteligência.
+
+Os sistemas próprios da UES transformam essas decisões em produção real.
+
+E todos os gaps que representam capacidades próprias da UES devem ser CONSTRUÍDOS E ELIMINADOS, não terceirizados para serviços externos.
+
+
+esse é o final ok? agora não tem como tu falar mais barreiras que "impedem" de criarmos a **VERSÃO COMPLETA DA SINGULARITY NEURAL BUNKER!!!**

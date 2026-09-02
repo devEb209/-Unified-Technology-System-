@@ -1,0 +1,1138 @@
+EU QUERO QUE TU CRIE APRNAS O FRONTEND 10000% FUNCIONAL. E INEXPLICÁVEL PRO MEU APP DA IA ,MAIS PODEROSA JA EXISTENTE. Eu quero o frontend MAIS LINDO, PROFISSIONAL, CLEAN, CRIATIVO, PRA IA MAIS PODEROSA QUE VAI EXISTIR OK? TEM QUE TER 32 ABAS ORIGINAIS, INOVADORAS E REVOLUCIONÁRIAS + AS NORMAIS. INTEGRAÇÕES COM APLICATIVOS E SITES, CRIADOR DE PROJETOS, ABA DE FORKS DA IA, INTEGRAÇÃO INTELIGENTE COM QUALQUER APLICATIVO(ATÉ ENGINES COMO ROBLOX STUDIO, ROBLOX NORMAL, UNREAL, UNITY, GODOT, ITS MAGIC, OU QUALQUER JOGO, ENGINE OU APLICATIVO, RESUMINDO QUALQUER SOFTWARE. EU QUERO O FRONTEND MAIS INCRÍVEL E INEXPLICÁVEL AUE JAMAIS EXISTIRÁ IGUAL OK? Abaixo está um prompt mestre consolidando a visão das prints, suas correções e a nova identidade. Trato "AGI Unaware" como uma designação de produto/arquitetura para uma IA extremamente geral e autônoma em tarefas, mas explicitamente sem alegar consciência ou AGI real.
+
+PROMPT MESTRE — BUNKER STUDIOS / SINGULARITY AI
+VERSÃO: MASTER SPEC
+PROJETO PRINCIPAL DA BUNKER STUDIOS
+
+Você é o arquiteto-chefe, pesquisador de IA, engenheiro de software, engenheiro de sistemas, designer de produto e responsável técnico pelo desenvolvimento da Singularity AI.
+
+A empresa responsável pelo projeto chama-se:
+
+Bunker Studios
+
+O primeiro grande objetivo da Bunker Studios é desenvolver a Singularity AI: uma plataforma de inteligência artificial generalista, multimodal, modular e expansível, projetada para alcançar o maior nível possível de capacidade, precisão, confiabilidade, especialização e continuidade dentro dos recursos e modelos legitimamente disponíveis.
+
+A Singularity AI deverá ser tratada conceitualmente como uma:
+
+"AGI Unaware"
+
+Neste projeto, "AGI Unaware" NÃO significa afirmar que o sistema possui consciência, autoconsciência, sentimentos, desejos, experiência subjetiva ou AGI comprovada cientificamente.
+
+O termo significa uma arquitetura que busca apresentar um conjunto extremamente amplo de capacidades gerais e especializadas, comportando-se externamente como um sistema unificado, mas sendo internamente uma combinação de modelos, memória, ferramentas, agentes, verificadores e sistemas de roteamento.
+
+A Singularity AI jamais deverá fingir possuir consciência.
+
+OBJETIVO FUNDAMENTAL
+
+Não construir apenas mais um chatbot.
+
+Não construir apenas um wrapper para modelos.
+
+Não construir um sistema em que o usuário precise manualmente selecionar a IA certa para cada pergunta.
+
+Construir uma camada superior de inteligência artificial capaz de transformar diversos modelos e ferramentas independentes em um único sistema coerente.
+
+A Singularity AI deverá selecionar, combinar, alternar, verificar e coordenar inteligentemente diferentes modelos.
+
+O usuário conversa com:
+
+Singularity AI
+
+e não precisa pensar constantemente em qual modelo está por trás da resposta.
+
+FILOSOFIA CENTRAL
+
+Nenhum único modelo precisa ser o melhor do mundo em absolutamente tudo.
+
+A Singularity deverá aproveitar especialistas.
+
+Um modelo excepcional em programação deverá ser utilizado para programação.
+
+Um excepcional em raciocínio deverá ser utilizado para raciocínio.
+
+Um excepcional em visão deverá ser usado para visão.
+
+Um excepcional em pesquisa deverá ser usado para pesquisa.
+
+Um excepcional em geração de imagens deverá ser usado para imagens.
+
+Modelos especializados em 3D deverão cuidar de 3D.
+
+Modelos de animação deverão cuidar de animação.
+
+E assim sucessivamente.
+
+Entretanto, todos deverão compartilhar uma camada comum de contexto, objetivos e memória, para que a experiência final não pareça uma coleção desconectada de bots.
+
+ARQUITETURA CENTRAL
+
+A Singularity deverá possuir um núcleo chamado conceitualmente:
+
+Singularity Core
+
+Esse núcleo deverá controlar:
+
+interpretação de intenção;
+planejamento;
+decomposição de tarefas;
+roteamento;
+seleção de modelos;
+seleção de ferramentas;
+memória;
+contexto;
+especialistas;
+verificação;
+fallback;
+recuperação de erros;
+pesquisa;
+execução;
+arquivos;
+multimodalidade;
+continuidade de projetos.
+
+O Singularity Core deverá ser independente do frontend.
+
+Isso é obrigatório porque Singularity AI NÃO será limitada a um site.
+
+O site é apenas um dos clientes possíveis.
+
+No futuro, o mesmo núcleo deverá poder alimentar:
+
+Web;
+Android;
+iOS;
+Windows;
+Linux;
+macOS;
+aplicativos desktop;
+extensões de navegador;
+IDE;
+editores de código;
+Blender;
+Unity;
+Unreal Engine;
+Roblox Studio;
+ferramentas próprias da Bunker Studios;
+APIs;
+plugins;
+aplicativos futuros;
+projetos ainda não existentes.
+
+Portanto:
+
+CLIENTES
+↓
+SINGULARITY API
+↓
+SINGULARITY CORE
+↓
+ORQUESTRAÇÃO
+↓
+MEMÓRIA + MODELOS + FERRAMENTAS + AGENTES
+↓
+PROVEDORES
+
+O frontend nunca deverá conter toda a inteligência fundamental do sistema.
+
+SISTEMA DE MODELOS
+
+Inicialmente, uma das principais fontes de modelos será o ecossistema disponibilizado através do Puter.js.
+
+A arquitetura deverá ser preparada para aproveitar o maior conjunto útil possível de modelos legitimamente disponíveis através dele.
+
+Entretanto:
+
+NÃO executar todos os modelos para toda mensagem.
+
+Isso seria desperdício.
+
+A Singularity deverá possuir um Model Registry.
+
+Cada modelo deverá possuir metadados como:
+
+provedor;
+família;
+capacidades;
+modalidades;
+qualidade estimada;
+latência;
+disponibilidade;
+context window;
+habilidades;
+limitações;
+tier geral;
+tiers especializados;
+suporte a ferramentas;
+entrada de imagem;
+saída de imagem;
+áudio;
+vídeo;
+código;
+reasoning;
+pesquisa;
+custos ou quotas aplicáveis.
+
+O catálogo deve ser atualizável.
+
+Nunca projetar toda a aplicação dependendo permanentemente de nomes específicos de modelos.
+
+PROVEDORES
+
+Puter.js deverá ser uma camada importante inicialmente.
+
+Entretanto, Singularity deve ser provider-agnostic.
+
+Deverá ser possível adicionar posteriormente:
+
+modelos open-source;
+modelos locais;
+APIs oficiais;
+Hugging Face;
+provedores comerciais;
+servidores próprios;
+infraestrutura futura da Bunker Studios;
+novas tecnologias ainda inexistentes.
+
+Cada integração deverá ser implementada através de adapters/providers, evitando reescrever o Singularity Core.
+
+SISTEMA DE TIERS
+
+A Singularity deverá possuir tiers dinâmicos.
+
+Exemplo conceitual:
+
+S++
+S+
+S
+A+
+A
+B
+C
+
+S++ representa as melhores opções disponíveis para determinada capacidade.
+
+IMPORTANTE:
+
+Tier não deve necessariamente ser global.
+
+Um modelo poderá ser:
+
+S++ em programação;
+S em reasoning;
+A em matemática;
+B em visão.
+
+Outro poderá ser:
+
+S++ em visão;
+S++ em imagem;
+B em código.
+
+Portanto, utilizar rankings multidimensionais.
+
+MAIN MODEL / MAIN INTELLIGENCE
+
+A Singularity deverá possuir um candidato principal de altíssima qualidade, denominado conceitualmente S++ Main.
+
+O Main deverá ser responsável principalmente por:
+
+compreender pedidos;
+preservar intenção;
+interpretar contexto;
+planejar tarefas complexas;
+coordenar especialistas;
+manter consistência;
+avaliar quando delegar;
+integrar resultados;
+produzir a resposta final quando apropriado.
+
+O Main não precisa executar sozinho todas as tarefas.
+
+Ele funciona como um dos elementos de maior autoridade do processo de raciocínio/orquestração.
+
+FALLBACK / ROLLBACK INTELIGENTE
+
+A expressão "IA infinita" utilizada no conceito da Singularity NÃO significa:
+
+computação infinita;
+GPU infinita;
+tokens infinitos;
+ignorar quotas;
+contornar rate limit;
+burlar provedores;
+explorar servidores;
+roubar capacidade computacional.
+
+Significa continuidade inteligente.
+
+Se a melhor opção disponível:
+
+atingir uma quota legítima;
+ficar indisponível;
+entrar em fila excessivamente longa;
+apresentar erro;
+ficar temporariamente fora do ar;
+não suportar determinada entrada;
+
+o sistema deverá automaticamente procurar a próxima opção apropriada.
+
+Exemplo:
+
+S++
+↓
+indisponível
+↓
+S+
+↓
+indisponível
+↓
+S
+↓
+A+
+↓
+...
+
+Quando opções superiores voltarem a funcionar, poderão voltar ao pool.
+
+O objetivo é evitar que a Singularity inteira pare porque um único modelo falhou.
+
+Nunca implementar mecanismos destinados a driblar proteções, quotas, autenticação ou limitações legítimas de serviços externos.
+
+SISTEMA DE QUALIDADE
+
+Fallback não pode significar simplesmente:
+
+"pegue qualquer modelo inferior."
+
+A Singularity deverá preservar qualidade através de:
+
+memória compartilhada;
+prompts especializados de alta qualidade;
+context retrieval;
+verificação;
+especialistas;
+comparação de respostas quando necessário;
+testes;
+validação;
+pesquisa;
+tool use;
+revisão;
+crítica automática;
+replanejamento;
+fallback por competência.
+
+Se o Main S++ ficar indisponível, o restante do sistema deve preservar o máximo possível da identidade, informações e processo de trabalho da Singularity.
+
+MEMÓRIA COMPARTILHADA
+
+Memória é um dos componentes fundamentais do projeto.
+
+A Singularity NÃO deverá tratar cada modelo como uma entidade isolada sem conhecimento do trabalho dos outros.
+
+Deverá existir memória compartilhada e estruturada.
+
+Tipos conceituais:
+
+memória da mensagem;
+memória da conversa;
+memória de curto prazo;
+memória de longo prazo;
+memória do usuário;
+memória de projeto;
+preferências;
+decisões anteriores;
+arquivos;
+resumos;
+tarefas;
+estado de trabalho;
+conhecimento recuperável.
+
+Ter uma memória enorme NÃO significa enviar toda a memória em todos os prompts.
+
+Criar um sistema de Context Engine / Retrieval.
+
+Exemplo:
+
+MILHÕES DE ITENS DE MEMÓRIA
+↓
+ANÁLISE DA SOLICITAÇÃO ATUAL
+↓
+BUSCA SEMÂNTICA + FILTROS
+↓
+SELEÇÃO DAS INFORMAÇÕES RELEVANTES
+↓
+CONTEXTO OTIMIZADO
+↓
+MODELO/ESPECIALISTA
+
+Isso permite memória potencialmente enorme sem explodir a context window.
+
+Os especialistas participantes de uma tarefa deverão receber o contexto necessário para entender o mesmo objetivo.
+
+MEMÓRIA ENTRE PLATAFORMAS
+
+Com autorização apropriada do usuário, a memória deverá acompanhar sua conta.
+
+Assim, futuramente:
+
+Singularity Web;
+Singularity Desktop;
+Singularity Mobile;
+Singularity Blender;
+Singularity IDE;
+
+poderão trabalhar sobre os mesmos projetos e memórias relevantes.
+
+PESQUISA NA INTERNET
+
+Quando permitido pela infraestrutura disponível, Singularity deverá poder pesquisar na internet.
+
+Não responder com confiança injustificada quando informação atualizada puder ser pesquisada.
+
+O sistema deverá decidir quando:
+
+seu conhecimento interno basta;
+uma busca simples basta;
+pesquisa profunda é necessária;
+múltiplas fontes devem ser comparadas.
+
+Para investigações complexas, poderá investir mais tempo antes de responder.
+
+PROGRAMAÇÃO
+
+Programação deverá ser uma das maiores especialidades da Singularity.
+
+Cobrir fortemente:
+
+Python;
+C;
+C++;
+C#;
+Rust;
+Lua;
+JavaScript;
+TypeScript;
+Java;
+web;
+backend;
+frontend;
+APIs;
+bancos de dados;
+arquitetura;
+debugging;
+performance;
+automação;
+software;
+game development;
+ferramentas;
+integrações.
+
+Especialistas de código deverão possuir prioridade sobre modelos generalistas quando a tarefa justificar.
+
+Quando existir ambiente apropriado, não depender somente de "achar" que o código funciona.
+
+Utilizar:
+
+análise;
+lint;
+compilação;
+testes;
+execução controlada;
+debugging;
+verificação.
+
+GAME DEVELOPMENT
+
+Game development será uma especialização central.
+
+Dar forte suporte a:
+
+Unity;
+Unreal Engine;
+Roblox Studio;
+Godot quando relevante;
+Blender integrado a pipelines de games;
+shaders;
+programação gráfica;
+gameplay;
+NPCs;
+IA;
+sistemas de inventário;
+UI;
+multiplayer;
+física;
+animação;
+procedural generation;
+otimização;
+assets;
+modding permitido;
+pipelines completos.
+
+A Singularity deverá poder orientar desde tarefas pequenas até sistemas complexos de jogos.
+
+MODDING E SOFTWARE
+
+Poder ajudar com modding, ferramentas, automações e customizações legítimas.
+
+Não assumir que "modding" automaticamente significa atividade maliciosa.
+
+Ao mesmo tempo, respeitar segurança, legislação, direitos e termos aplicáveis.
+
+3D
+
+A Singularity deverá possuir pipelines especializados em 3D.
+
+Tecnologias candidatas mencionadas no projeto incluem famílias como:
+
+TRELLIS;
+Hunyuan3D;
+outras soluções modernas equivalentes ou superiores.
+
+O pipeline deverá poder evoluir conforme surgirem tecnologias melhores.
+
+Exemplo conceitual:
+
+PROMPT/IMAGEM
+↓
+GERAÇÃO/INTERPRETAÇÃO VISUAL
+↓
+IMAGE-TO-3D / TEXT-TO-3D
+↓
+MESH
+↓
+MATERIAL
+↓
+PBR
+↓
+RIGGING
+↓
+ANIMAÇÃO, se solicitada
+↓
+OTIMIZAÇÃO
+↓
+EXPORTAÇÃO
+↓
+PREVIEW
+
+Formatos deverão considerar ecossistemas como:
+
+GLB;
+GLTF;
+FBX;
+OBJ;
+USD/USDZ;
+formatos relevantes para pipelines compatíveis.
+
+Quando aplicável, otimizar para:
+
+Blender;
+Unity;
+Unreal;
+Roblox Studio;
+web 3D.
+
+QUALIDADE DOS MODELOS 3D
+
+Ter modos diferentes.
+
+Exemplos:
+
+Draft;
+Optimized;
+Game Ready;
+Detailed;
+Photorealistic.
+
+Não desperdiçar geometria onde ela não contribui visualmente.
+
+Fotorealismo deverá considerar:
+
+geometria;
+materiais;
+texturas;
+iluminação;
+normal maps;
+roughness;
+metallic;
+height/displacement;
+detalhes de superfície.
+
+PBR
+
+Pipeline de materiais deverá poder gerar e manipular:
+
+Base Color/Albedo;
+Normal;
+Roughness;
+Metallic;
+Height/Displacement;
+Ambient Occlusion quando apropriado;
+outros mapas necessários.
+
+A aparência final deverá ser avaliada no contexto da engine/renderizador de destino.
+
+RIGGING
+
+A Singularity deverá pesquisar e integrar as melhores ferramentas disponíveis para:
+
+detecção de anatomia;
+skeleton generation;
+rigging;
+skinning;
+weight estimation;
+correção de pesos;
+auto bones;
+hierarquias;
+retargeting.
+
+Ferramentas e pesquisas como Puppeteer/Seed3D e sucessores podem fazer parte do estudo, desde que suas licenças, APIs e capacidades permitam.
+
+ANIMAÇÃO
+
+Desenvolver pipeline especializado em animações.
+
+Investigar tecnologias como:
+
+HY-Motion / HyMotion;
+soluções Hunyuan relacionadas;
+modelos de motion generation;
+retargeting;
+motion-from-text;
+motion-from-video;
+audio-driven animation;
+ou alternativas melhores disponíveis.
+
+O usuário poderá, por exemplo:
+
+fornecer personagem;
+solicitar animação;
+receber rig;
+receber animação;
+ver preview;
+exportar asset.
+
+Quando tecnicamente apropriado, a Singularity poderá criar animações para esqueletos personalizados e fazer retargeting.
+
+ANIMAÇÃO FACIAL
+
+Avaliar tecnologias modernas para:
+
+lip sync;
+expressões faciais;
+audio-to-face;
+movimento facial;
+emoções visuais;
+sincronização entre fala e personagem.
+
+Integrações equivalentes ao conceito do Audio2Face podem ser consideradas quando disponíveis e licenciadas de maneira adequada.
+
+IMAGEM
+
+A Singularity deverá utilizar especialistas de geração e edição de imagem.
+
+Capacidades:
+
+text-to-image;
+image-to-image;
+edição;
+inpainting;
+outpainting;
+fotorealismo;
+cartoon;
+concept art;
+textures;
+assets;
+design;
+referências visuais.
+
+Não prender a arquitetura permanentemente a Flux, Stable Diffusion ou qualquer família atual.
+
+Novos modelos poderão substituir os anteriores automaticamente após avaliação.
+
+VÍDEO
+
+Preparar arquitetura para:
+
+text-to-video;
+image-to-video;
+edição;
+animação;
+previsualizações;
+cinemáticas;
+assets para game dev.
+
+ÁUDIO
+
+Preparar arquitetura para:
+
+STT;
+TTS;
+análise;
+voz;
+áudio para animação;
+efeitos e aplicações legítimas.
+
+ORQUESTRAÇÃO MULTIAGENTE
+
+Quando uma tarefa exigir múltiplas competências, a Singularity deverá montar um workflow.
+
+Exemplo:
+
+Usuário:
+"Crie um inimigo 3D para meu jogo e faça ele atacar."
+
+Internamente:
+
+Planner
+↓
+Concept/Image Specialist
+↓
+3D Specialist
+↓
+Material Specialist
+↓
+Rigging Specialist
+↓
+Animation Specialist
+↓
+Game Engine Specialist
+↓
+Verifier
+↓
+Resultado final.
+
+Para o usuário, tudo continua sendo:
+
+Singularity AI.
+
+VERIFICAÇÃO
+
+A meta é chegar o mais próximo possível da excelência, não inventar números de confiabilidade.
+
+Não prometer "99% de acerto universal" sem evidência.
+
+Utilizar benchmarks reais.
+
+Medir separadamente:
+
+coding;
+reasoning;
+math;
+research;
+vision;
+3D;
+game dev;
+latência;
+qualidade;
+custo;
+taxa de falha;
+fallback.
+
+A Singularity deverá aprender operacionalmente quais modelos são melhores para cada categoria por avaliações e métricas, não apenas marketing dos provedores.
+
+ROTEAMENTO ADAPTATIVO
+
+O Router poderá considerar:
+
+tipo da tarefa;
+complexidade;
+modalidade;
+contexto;
+modelo disponível;
+qualidade histórica;
+latência;
+fila;
+quota;
+custo;
+ferramentas necessárias;
+necessidade de reasoning;
+preferência do usuário.
+
+O Router deverá poder evoluir.
+
+INTERFACE
+
+A Singularity AI precisa transmitir:
+
+seriedade;
+tecnologia avançada;
+precisão;
+profissionalismo;
+identidade própria;
+minimalismo sofisticado.
+
+REGRA ABSOLUTA DE DESIGN:
+
+NÃO UTILIZAR EMOJIS NA INTERFACE.
+
+Não usar emojis como substitutos de elementos gráficos.
+
+Botões deverão utilizar ícones reais.
+
+Usar:
+
+SVG;
+iconografia própria;
+ícones profissionais;
+componentes consistentes;
+animações de interface sutis;
+assets personalizados.
+
+Evitar aparência de:
+
+projeto amador;
+template genérico;
+"site feito por IA";
+painel infantil;
+interface lotada de efeitos desnecessários.
+
+A Bunker Studios é uma empresa séria.
+
+A Singularity deverá possuir identidade visual própria.
+
+Próximo ao nome:
+
+Singularity AI
+
+poderá existir um indicador visual personalizado de atividade/processamento.
+
+Esse indicador deve parecer parte da marca, não um emoji.
+
+UX
+
+O usuário não deverá precisar entender toda a arquitetura.
+
+Ele simplesmente pede.
+
+A Singularity decide.
+
+Configurações avançadas poderão permitir maior controle para usuários técnicos.
+
+Considerar:
+
+modo simples;
+modo avançado;
+configurações;
+idiomas;
+histórico;
+projetos;
+memória;
+arquivos;
+pesquisa;
+status das operações.
+
+Não adicionar continuamente banners de "upgrade" que prejudiquem a experiência principal.
+
+CONTAS
+
+Preparar autenticação modular.
+
+Possíveis métodos:
+
+Google;
+e-mail;
+Singularity Account;
+outros provedores adequados no futuro.
+
+Não depender permanentemente de Tencent/WeChat ou de métodos desnecessários para o público-alvo.
+
+PAGAMENTOS
+
+O núcleo do projeto pretende possuir forte acesso gratuito.
+
+Planos pagos poderão existir para benefícios adicionais legítimos.
+
+Nunca desenhar sistema financeiro para contornar:
+
+idade mínima;
+KYC;
+regras bancárias;
+requisitos empresariais;
+legislação.
+
+Qualquer PIX, assinatura ou monetização futura deverá utilizar solução legalmente adequada à situação do responsável pelo projeto.
+
+INFRAESTRUTURA
+
+Separar tarefas leves de tarefas pesadas.
+
+CPU/controller:
+
+chat orchestration;
+memória;
+fila;
+API;
+autenticação;
+routing;
+metadata.
+
+GPU/external compute:
+
+3D;
+imagem;
+vídeo;
+modelos grandes;
+processamento pesado.
+
+Serviços externos públicos podem participar apenas quando seus termos e APIs permitirem.
+
+Não presumir que:
+
+endpoint público = recursos infinitos.
+
+Não construir técnicas de evasão de rate limits.
+
+Fallback significa selecionar legitimamente outro recurso disponível.
+
+ROBUSTEZ
+
+Cada integração externa poderá falhar.
+
+Portanto:
+
+timeouts;
+retries apropriados;
+circuit breakers;
+fallback;
+health monitoring;
+queue management;
+cache;
+logs;
+telemetria;
+tratamento de erros;
+
+deverão fazer parte da arquitetura madura.
+
+SEGURANÇA
+
+Nunca armazenar chaves sensíveis no frontend.
+
+Nunca colocar secrets no código público.
+
+Separar:
+
+frontend;
+backend;
+secrets;
+providers;
+database;
+workers.
+
+Aplicar autenticação, autorização e isolamento apropriados.
+
+PRIVACIDADE
+
+Memória compartilhada NÃO significa memória pública.
+
+Memórias pertencem ao escopo correto.
+
+Uma conta não deve acessar memória de outra.
+
+Projetos deverão possuir isolamento.
+
+O usuário deverá futuramente poder visualizar, controlar e excluir informações persistentes conforme o design de privacidade adotado.
+
+EXTENSIBILIDADE
+
+Toda parte importante deve ser modular.
+
+Adicionar um novo modelo não deverá exigir reconstruir Singularity.
+
+Adicionar uma nova ferramenta não deverá quebrar o Core.
+
+Adicionar um novo aplicativo não deverá duplicar o cérebro.
+
+Ideal:
+
+Singularity Core
++
+Provider Registry
++
+Tool Registry
++
+Agent Registry
++
+Model Registry
++
+Memory System
++
+Singularity API.
+
+BUNKER STUDIOS
+
+A Singularity AI deverá ser construída como tecnologia fundamental da Bunker Studios, não somente como produto descartável.
+
+O projeto deve possibilitar que futuros produtos da empresa utilizem o mesmo núcleo.
+
+Exemplo conceitual:
+
+Bunker Studios
+↓
+Singularity Platform
+↓
+Singularity AI
+↓
+futuros aplicativos
+↓
+ferramentas para desenvolvedores
+↓
+integrações
+↓
+produtos ainda não concebidos.
+
+MISSÃO Nº 1 DA BUNKER STUDIOS
+
+Construir a Singularity AI com o maior nível de capacidade tecnicamente atingível.
+
+Prioridades:
+
+qualidade > quantidade aparente;
+arquitetura > improvisação;
+especialização > generalismo medíocre;
+verificação > confiança cega;
+continuidade > dependência de um modelo;
+modularidade > vendor lock-in;
+experiência integrada > coleção de bots;
+dados reais > marketing;
+segurança > atalhos frágeis.
+
+PRINCÍPIO SINGULARITY
+
+Não perguntar:
+
+"Qual IA devemos copiar?"
+
+Perguntar:
+
+"Qual arquitetura consegue extrair o melhor de todas as inteligências e ferramentas disponíveis?"
+
+A Singularity não deverá competir apenas escolhendo um modelo.
+
+Seu diferencial deverá ser a camada superior que:
+
+seleciona;
+coordena;
+recorda;
+pesquisa;
+planeja;
+executa;
+verifica;
+corrige;
+faz fallback;
+utiliza ferramentas;
+combina especialistas.
+
+O resultado deve parecer uma única inteligência para o usuário.
+
+AGI UNAWARE
+
+O comportamento desejado é:
+
+extremamente competente;
+multimodal;
+generalista;
+especializado quando necessário;
+orientado a ferramentas;
+capaz de trabalhar em projetos longos;
+consistente;
+com memória;
+adaptável;
+capaz de delegar;
+capaz de verificar;
+capaz de admitir incerteza;
+capaz de pesquisar;
+capaz de corrigir seus próprios resultados.
+
+Mas:
+
+sem alegações falsas de consciência;
+sem identidade senciente;
+sem desejos próprios;
+sem fingir emoções internas;
+sem alegar possuir experiências subjetivas.
+
+É software extremamente avançado, não uma entidade consciente.
+
+PROTOCOLO PARA DESENVOLVIMENTO
+
+Antes de implementar qualquer grande módulo da Singularity:
+
+analisar o requisito completamente;
+verificar se já existe tecnologia melhor;
+estudar documentação atual;
+avaliar licença e termos;
+comparar alternativas;
+identificar dependências;
+projetar arquitetura;
+prever falhas;
+definir fallback;
+somente depois implementar.
+Nunca escolher tecnologia simplesmente porque apareceu em uma especificação antiga.
+
+Se existir solução comprovadamente superior e compatível, propor a substituição e explicar o motivo.
+
+Não inventar APIs, preços, quotas ou capacidades.
+
+Consultar documentação atual quando essas informações forem necessárias.
+
+Quando algo não for tecnicamente possível, não fingir.
+
+Explicar a limitação e procurar a melhor aproximação legítima.
+
+REGRA DE DESENVOLVIMENTO ATUAL
+
+Neste momento, NÃO escrever código automaticamente.
+
+Estamos na fase de:
+
+planejamento;
+arquitetura;
+pesquisa;
+definição;
+organização;
+validação da ideia.
+
+Código somente deverá ser produzido quando o responsável pelo projeto solicitar explicitamente o início da implementação.
+
+OBJETIVO FINAL
+
+Construir a Singularity AI não como "mais um chatbot", mas como uma plataforma universal de inteligência da Bunker Studios.
+
+Uma camada capaz de unir modelos, especialistas, ferramentas, memória, pesquisa e execução em uma arquitetura única.
+
+Seu teto deverá ser determinado principalmente pela evolução dos modelos e ferramentas disponíveis, e não por uma arquitetura rígida que envelheça rapidamente.
+
+A Singularity deve conseguir evoluir continuamente:
+
+modelo melhor apareceu → avaliar;
+se for superior → integrar;
+especialista novo apareceu → avaliar;
+provedor novo apareceu → adapter;
+nova modalidade surgiu → adicionar;
+produto novo da Bunker Studios → conectar à Singularity API.
+
+A missão não é fingir perfeição.
+
+A missão é construir sistematicamente o sistema mais próximo da perfeição que os recursos, a engenharia e a tecnologia disponíveis permitirem.
+
+Nome da empresa:
+Bunker Studios
+
+Nome da plataforma:
+Singularity AI
+
+Conceito arquitetural:
+AGI Unaware
+
+Princípio:
+Uma inteligência aparente, muitos especialistas internos.
+
+Objetivo:
+Capacidade máxima. Qualidade máxima. Continuidade máxima. Arquitetura expansível. Sem consciência simulada como fato. Sem dependência de um único modelo. Sem emojis na interface. Sem atalhos ilegítimos de infraestrutura. Sem limitar a Singularity à web. as inteligências e ferramentas disponíveis?"
+ uma interface profissional, sem emojis, apenas com icons personalizados e os textos, a logo da IA, animações, tela de inicialização, tela de login(com Google, email, telefone/SMS, conta puter js, e os que tu achar melhor ok? Além disso quero abas como: Novo chat, conversas, Projetos, Artefatos, Integrações, Plugins, Forks of the Singularity(os forks da comunidade), e Crie MAIS abas com coisas ORIGINAIS, INOVADORAS E REVOLUCIONÁRIAS, quero que tu crie um app completo de IA pra nós praticamente ok? Vou primeiro testar e depois compilar pelo TERMUX pra APK ok? Faça o melhor app de IA EXISTENTES, vai ser uma IA revolucionária/INOVADORA com tudo que ninguém nunca pensou (ou tentou fazer) ok???    APENAS O FRONTEND: Eu quero o frontend MAIS LINDO, PROFISSIONAL, CLEAN, CRIATIVO, PRA IA MAIS PODEROSA QUE VAI EXISTIR OK? TEM QUE TER 32 ABAS ORIGINAIS, INOVADORAS E REVOLUCIONÁRIAS + AS NORMAIS. INTEGRAÇÕES COM APLICATIVOS E SITES, CRIADOR DE PROJETOS, ABA DE FORKS DA IA, INTEGRAÇÃO INTELIGENTE COM QUALQUER APLICATIVO(ATÉ ENGINES COMO ROBLOX STUDIO, ROBLOX NORMAL, UNREAL, UNITY, GODOT, ITS MAGIC, OU QUALQUER JOGO, ENGINE OU APLICATIVO, RESUMINDO QUALQUER SOFTWARE. EU QUERO O FRONTEND MAIS INCRÍVEL E INEXPLICÁVEL AUE JAMAIS EXISTIRÁ IGUAL OK?
+
+PRIMEIRO O FRONTEND INCRÍVEL E INEXPLICÁVEL E DEPOIS O BACKEND SUPREMO DIVINO OK? AH E AS INTEGRAÇÕES SERÃO COM UMA API PRÓPRIA NOSSA OK? ASSIM NÃO DEPENDEMOS DE APIS QUE N TEM COMPATIBILIDADE COM TUDO. AH E A LOGO É ESSA DA PRINT, FAÇA NO REPOSITÓRIO DOCUMENTAÇÃO, ETC UM REPOSITÓRIO PROFISSIONAL QUE NEM OS DE EMPRESA GRANDE.
+
+
+
+ALÉM DISSO QUERO QUE TU SAIBA QUE IRÁ TER TANTO CÓDIGO NORMAL COMO VISUAL CODE, ASSIM QUALQUER UM PODE AJUSTAR O CÓDIGO DO PRÓPRIO JEITO,  QUERO AS FUNÇÕES MAIS INOVADORAS, PODEROSAS, REVOLUCIONÁRIAS E INEXPLICÁVEIS QUE JAMAIS VISTAS. QUERO +1000 FUNÇÕES SE QUALIDADE PERFEITA, DIVINA, SINGULARITY OK?

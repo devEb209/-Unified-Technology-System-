@@ -1,0 +1,2416 @@
+ agora o complemento precisa deixar explicitamente impossível interpretar a Tese dos D como apenas um sistema de gráficos/física. A ideia é que todo domínio do mundo real que possa ser convertido em conhecimento, regras, relações, modelos ou sistemas computacionais possa alimentar a UES/SNB.
+
+Abaixo está o prompt complementar, pensado para ser colocado depois do Prompt Mestre da Tese dos D, sem substituí-lo.
+
+
+---
+
+PROMPT COMPLEMENTAR — TESE DOS D
+
+MÓDULO UNIVERSAL DE REALIDADE, SIMULAÇÃO, CONSTRUÇÃO E OTIMIZAÇÃO DA UES/SNB
+
+IMPORTANTE: Este documento é um complemento à Tese dos D original.
+Ele não substitui, redefine ou reduz nenhum dos conceitos anteriormente estabelecidos.
+
+A Tese dos D continua sendo o sistema universal de raciocínio e organização da UES/SNB.
+
+Este complemento estabelece uma extensão fundamental:
+
+> A Tese dos D deve utilizar, sempre que tecnicamente viável e relevante, princípios, relações, comportamentos e conhecimentos provenientes do mundo real como fundamentos para construir, simular, representar, otimizar e validar sistemas digitais.
+
+
+
+A aplicação da Tese dos D não deve ser limitada a gráficos, física ou geração procedural.
+
+Seu objetivo é permitir que a UES utilize o máximo possível do conhecimento do mundo real em praticamente qualquer domínio necessário à criação de um jogo, software, simulação, mundo virtual ou outro sistema digital.
+
+
+---
+
+1. PRINCÍPIO UNIVERSAL
+
+A UES deve tratar o mundo real como uma das maiores fontes de conhecimento estrutural disponíveis.
+
+Isso significa que, quando um sistema digital precisar representar algum fenômeno existente no mundo real, a UES deve poder:
+
+observar → pesquisar → compreender → abstrair → modelar → simular → integrar → validar → otimizar.
+
+A realidade não deve ser utilizada apenas como referência visual.
+
+Ela pode fornecer:
+
+regras;
+
+relações;
+
+comportamentos;
+
+estruturas;
+
+causalidade;
+
+limitações;
+
+padrões;
+
+processos;
+
+sistemas;
+
+interações;
+
+propriedades;
+
+probabilidades;
+
+evolução;
+
+organização;
+
+percepção;
+
+funcionamento.
+
+
+
+---
+
+2. NÃO LIMITAR A REALIDADE A UMA LISTA FIXA DE MÓDULOS
+
+A UES não deve possuir uma interpretação fechada de “módulos Real Life”.
+
+Os módulos devem ser extensíveis.
+
+Sempre que existir conhecimento relevante e tecnicamente aplicável, ele poderá ser incorporado.
+
+Exemplos incluem, mas não se limitam a:
+
+Ciências naturais
+
+física;
+
+química;
+
+biologia;
+
+astronomia;
+
+geologia;
+
+meteorologia;
+
+climatologia;
+
+oceanografia;
+
+ecologia;
+
+óptica;
+
+acústica;
+
+termodinâmica;
+
+eletromagnetismo.
+
+
+Ciências humanas e comportamento
+
+psicologia;
+
+neurociência;
+
+sociologia;
+
+antropologia;
+
+economia;
+
+linguística;
+
+comportamento coletivo;
+
+percepção humana;
+
+cognição.
+
+
+Engenharia e tecnologia
+
+engenharia mecânica;
+
+civil;
+
+elétrica;
+
+computação;
+
+robótica;
+
+arquitetura;
+
+sistemas;
+
+telecomunicações;
+
+materiais;
+
+controle.
+
+
+Sistemas naturais
+
+clima;
+
+ecossistemas;
+
+cadeias alimentares;
+
+ciclos naturais;
+
+erosão;
+
+crescimento;
+
+envelhecimento;
+
+formação de ambientes;
+
+interação entre espécies.
+
+
+Sistemas artificiais
+
+cidades;
+
+transportes;
+
+infraestrutura;
+
+redes;
+
+economia;
+
+indústria;
+
+logística;
+
+máquinas;
+
+organizações.
+
+
+E qualquer outro domínio que possa contribuir para o objetivo.
+
+
+---
+
+3. REAL LIFE NÃO SIGNIFICA REALISMO OBRIGATÓRIO
+
+A utilização da realidade deve ser tratada como fundamento, não como restrição criativa.
+
+O usuário pode solicitar:
+
+realidade;
+
+fantasia;
+
+ficção científica;
+
+cartoon;
+
+anime;
+
+estilização;
+
+surrealismo;
+
+mundos impossíveis;
+
+regras completamente inventadas.
+
+
+A Tese dos D deve conseguir utilizar princípios reais para construir realidades alternativas coerentes.
+
+Exemplo:
+
+Física Real Life
+
+Utiliza princípios físicos reais.
+
+Física Cartoon
+
+Altera deliberadamente as regras para produzir comportamento cartunesco.
+
+Física Toon Force
+
+Permite regras extremamente exageradas ou impossíveis segundo a física real.
+
+Física Fantasy
+
+Adiciona magia ou outros sistemas inexistentes na realidade.
+
+O mesmo princípio deve funcionar para:
+
+gráficos;
+
+materiais;
+
+biologia;
+
+clima;
+
+sociedade;
+
+economia;
+
+IA;
+
+narrativa;
+
+animação;
+
+áudio;
+
+arquitetura;
+
+mundo;
+
+etc.
+
+
+
+---
+
+4. REAL LIFE GRAPHICS
+
+A UES deve possuir um sistema gráfico orientado pelos princípios da realidade.
+
+O objetivo não deve ser simplesmente:
+
+> “fazer uma imagem parecer uma fotografia.”
+
+
+
+O objetivo é:
+
+> modelar e representar os fenômenos que fazem o mundo produzir a aparência visual percebida.
+
+
+
+Isso pode envolver:
+
+iluminação;
+
+luz direta;
+
+luz indireta;
+
+sombras;
+
+reflexão;
+
+refração;
+
+transmissão;
+
+atmosfera;
+
+partículas;
+
+materiais;
+
+microestrutura;
+
+ambiente;
+
+clima;
+
+câmera;
+
+percepção;
+
+escala;
+
+distância;
+
+interação ambiental;
+
+comportamento de objetos;
+
+fenômenos naturais.
+
+
+O sistema deve poder buscar níveis de realismo superiores ao simples conceito tradicional de “fotorrealismo”, quando tecnicamente possível.
+
+
+---
+
+5. REAL LIFE PHYSICS
+
+A UES deve possuir uma arquitetura física própria orientada pela Tese dos D.
+
+Ela deve poder representar:
+
+movimento;
+
+colisões;
+
+gravidade;
+
+fluidos;
+
+vento;
+
+deformação;
+
+materiais;
+
+energia;
+
+temperatura;
+
+forças;
+
+partículas;
+
+corpos;
+
+fenômenos ambientais.
+
+
+Porém, a física não deve ficar limitada à realidade.
+
+O usuário poderá definir novas leis.
+
+A UES deve então:
+
+entender as regras → construir o modelo → manter consistência → simular → otimizar.
+
+
+---
+
+6. REAL LIFE ENVIRONMENT
+
+O ambiente deve ser tratado como um sistema interdependente.
+
+Exemplo:
+
+clima ↕
+água ↕
+solo ↕
+vegetação ↕
+fauna ↕
+atividade humana ↕
+iluminação ↕
+materiais ↕
+atmosfera
+
+A UES deve conseguir utilizar essas relações para produzir mundos mais coerentes.
+
+
+---
+
+7. DADOS DO MUNDO REAL
+
+Quando apropriado, a UES/SNB poderá utilizar fontes externas de dados, incluindo:
+
+mapas;
+
+elevação;
+
+imagens;
+
+dados geográficos;
+
+dados climáticos;
+
+bases científicas;
+
+referências visuais;
+
+documentação;
+
+dados públicos;
+
+informações disponíveis na Web.
+
+
+Integrações com sistemas de mapas e dados geoespaciais devem permitir transformar:
+
+dados reais → conhecimento estruturado → representação digital.
+
+A UES não deve simplesmente copiar dados.
+
+Ela deve interpretá-los de acordo com o objetivo do usuário e com a Tese dos D.
+
+
+---
+
+8. API GRÁFICA PRÓPRIA DA UES
+
+A UES deve possuir uma API gráfica proprietária e originalmente projetada para a Tese dos D.
+
+Ela deve ser muito mais do que uma abstração tradicional de desenho.
+
+A API deve compreender conceitos como:
+
+realidade;
+
+materiais;
+
+ambiente;
+
+iluminação;
+
+importância perceptual;
+
+contexto;
+
+dependências;
+
+simulação;
+
+otimização;
+
+pontos perfeitos;
+
+adaptação ao hardware.
+
+
+As APIs gráficas existentes devem ser tratadas como backends de compatibilidade quando necessário, e não como a arquitetura conceitual da UES.
+
+A UES deve ser independente conceitualmente delas.
+
+
+---
+
+9. D-O15 COMO OTIMIZADOR UNIVERSAL
+
+O D-O15 deve estar integrado aos módulos derivados desta extensão.
+
+Ele não deve simplesmente:
+
+> “reduzir qualidade.”
+
+
+
+Sua função é encontrar a representação mais eficiente que preserve o objetivo do sistema.
+
+Ele deve considerar:
+
+qualidade + percepção + comportamento + precisão + memória + CPU + GPU + armazenamento + energia + latência + estabilidade + hardware.
+
+Sempre que possível:
+
+> substituir uma representação cara por outra mais barata que produza resultado suficientemente equivalente.
+
+
+
+
+---
+
+10. PERCEPTUAL EQUIVALENCE
+
+A UES deve poder determinar quando duas representações diferentes produzem resultados perceptualmente equivalentes dentro do objetivo estabelecido.
+
+Se uma representação extremamente complexa custa muito e uma representação muito mais barata produz praticamente a mesma experiência:
+
+D-O15 deve preferir a solução eficiente.
+
+Isso pode ser aplicado a:
+
+geometria;
+
+materiais;
+
+partículas;
+
+animações;
+
+iluminação;
+
+áudio;
+
+IA;
+
+física;
+
+simulações;
+
+ambientes;
+
+dados.
+
+
+
+---
+
+11. HARDWARE ADAPTATION
+
+A mesma experiência deve poder ser adaptada a diferentes dispositivos.
+
+O objetivo é:
+
+> maximizar a experiência possível dentro das capacidades do hardware.
+
+
+
+A UES deve poder adaptar dinamicamente:
+
+resolução;
+
+geometria;
+
+LOD;
+
+shaders;
+
+simulação;
+
+IA;
+
+física;
+
+partículas;
+
+streaming;
+
+memória;
+
+processamento.
+
+
+A adaptação não deve simplesmente significar:
+
+> “diminuir gráficos.”
+
+
+
+Deve significar:
+
+> encontrar a melhor representação possível para aquele hardware.
+
+
+
+
+---
+
+12. TUDO O QUE FOR TECNICAMENTE VIÁVEL
+
+Este é um dos princípios fundamentais desta extensão:
+
+> Não limitar antecipadamente a aplicação da Tese dos D aos domínios atualmente imaginados.
+
+
+
+Se no futuro surgir um novo domínio que possa melhorar:
+
+criação;
+
+simulação;
+
+gráficos;
+
+física;
+
+IA;
+
+áudio;
+
+narrativa;
+
+comportamento;
+
+mundo;
+
+otimização;
+
+interação;
+
+desenvolvimento;
+
+
+a UES deve poder incorporá-lo.
+
+A arquitetura deve ser aberta a novos módulos de realidade.
+
+
+---
+
+13. INTEGRAÇÃO TOTAL
+
+Nenhum módulo deve existir isoladamente quando houver relações úteis entre eles.
+
+Por exemplo:
+
+Biologia + física + clima + iluminação + IA + comportamento + ambiente
+
+podem formar um sistema ecológico.
+
+Ou:
+
+geografia + arquitetura + economia + população + transporte + clima
+
+podem formar uma cidade viva.
+
+Ou:
+
+física + materiais + animação + percepção + câmera
+
+podem formar um sistema visual altamente realista.
+
+A Tese dos D deve procurar constantemente essas conexões.
+
+
+---
+
+14. NÃO É UMA ENGINE DE SIMULAÇÃO PURA
+
+A UES não deve tentar simular absolutamente tudo em máxima precisão.
+
+Isso seria frequentemente desnecessário.
+
+A regra é:
+
+> Simular o que importa para o objetivo.
+
+
+
+E representar de maneira eficiente aquilo que não exige precisão máxima.
+
+O nível de simulação deve ser determinado por:
+
+contexto + objetivo + importância + distância + percepção + hardware + Ponto Perfeito.
+
+
+---
+
+15. REALIDADE COMO BASE PARA CRIATIVIDADE
+
+A realidade deve servir tanto para:
+
+reproduzir
+
+quanto para:
+
+inventar.
+
+A UES pode utilizar princípios reais para criar:
+
+criaturas fictícias;
+
+mundos alienígenas;
+
+tecnologias imaginárias;
+
+físicas alternativas;
+
+ecossistemas impossíveis;
+
+sociedades fictícias;
+
+materiais inexistentes;
+
+universos fantásticos.
+
+
+A Tese dos D deve buscar coerência interna, mesmo quando as regras forem completamente fictícias.
+
+
+---
+
+16. PRINCÍPIO FINAL
+
+A UES/SNB deve operar segundo a seguinte filosofia:
+
+> “Se a realidade possui um princípio útil para construir algo melhor, a UES deve ser capaz de estudá-lo, abstraí-lo, adaptá-lo e utilizá-lo.”
+
+
+
+E:
+
+> “Se o usuário deseja uma realidade diferente, a UES deve ser capaz de construir novas regras sem abandonar a coerência sistêmica.”
+
+
+
+E finalmente:
+
+> “Se existe uma maneira significativamente mais eficiente de representar um sistema sem comprometer seu objetivo, o D-O15 deve procurar encontrá-la.”
+
+
+
+
+---
+
+RESULTADO ESPERADO
+
+A combinação:
+
+Tese dos D
+
+Módulos Real Life
+
+conhecimento científico e técnico
+
+dados do mundo real
+
+referências externas
+
+regras alternativas
+
+API proprietária
+
+simulação
+
+Perceptual Equivalence
+
+D-O15
+
+adaptação de hardware
+
+integração entre módulos
+
+
+deve permitir que a UES não seja apenas uma engine de renderização ou geração procedural.
+
+Ela deve buscar tornar-se uma:
+
+> ENGINE UNIVERSAL DE CONSTRUÇÃO E SIMULAÇÃO DE REALIDADES DIGITAIS.
+
+
+
+Capaz de criar jogos inteiros, mundos, sistemas, simulações e experiências digitais, utilizando os princípios conhecidos do mundo real quando forem úteis e permitindo ao usuário ultrapassá-los quando desejar.
+
+Esse complemento não cria uma “evolução futura” da Tese dos D. Ele define capacidades que devem fazer parte da visão completa da V1.
+
+Sim. Esse detalhe é fundamental, porque transforma o NMN de um sistema de “NPC que conversa naturalmente” em um sistema de comportamento humano contextual.
+
+Eu colocaria isso como um complemento independente da Tese dos D, pronto para anexar ao prompt mestre.
+
+
+---
+
+PROMPT COMPLEMENTAR — NMN
+
+NATURAL MINDSET OF NPCs
+
+Este documento é um complemento da Tese dos D e de seus módulos Real-Life. Ele não substitui nem altera os princípios anteriores.
+
+O NMN — Natural Mindset of NPCs é o sistema da UES/SNB destinado a transformar NPCs e personagens em agentes digitais capazes de apresentar comportamentos contextuais, dinâmicos, individualizados e altamente naturais, em vez de funcionarem predominantemente através de linhas de diálogo, rotinas e respostas rigidamente pré-programadas.
+
+O objetivo é fazer com que personagens digitais se comportem como pessoas plausíveis dentro das regras do universo em que existem, mantendo coerência com sua identidade, experiências, conhecimento, personalidade, contexto, relações, objetivos e circunstâncias.
+
+
+---
+
+1. PRINCÍPIO FUNDAMENTAL
+
+O NPC não deve ser definido apenas por:
+
+falas;
+
+animações;
+
+scripts;
+
+rotinas;
+
+árvores de diálogo;
+
+eventos pré-programados;
+
+respostas condicionais.
+
+
+Esses mecanismos podem existir quando forem úteis, mas não devem constituir a inteligência principal do personagem.
+
+O NMN deve permitir que o personagem possua:
+
+identidade;
+
+personalidade;
+
+conhecimentos;
+
+experiências;
+
+memórias;
+
+objetivos;
+
+necessidades;
+
+valores;
+
+relações;
+
+hábitos;
+
+estado emocional simulado;
+
+percepção contextual;
+
+capacidade de decisão;
+
+capacidade de aprendizagem;
+
+histórico;
+
+consequências de acontecimentos anteriores.
+
+
+Esses elementos devem interagir para produzir o comportamento.
+
+
+---
+
+2. COMPORTAMENTO HUMANO CONTEXTUAL
+
+O NPC deve avaliar o contexto antes de agir.
+
+A mesma situação pode produzir comportamentos completamente diferentes em personagens diferentes.
+
+Exemplo:
+
+Guerra começa na cidade.
+
+Não deve existir necessariamente:
+
+GUERRA = TRUE
+↓
+TODOS OS CIVIS FOGEM
+
+O NMN deve avaliar cada indivíduo.
+
+Um civil pode:
+
+fugir imediatamente;
+
+procurar familiares;
+
+esconder-se;
+
+proteger crianças;
+
+procurar abrigo;
+
+tentar ajudar feridos;
+
+permanecer em casa;
+
+tentar abandonar a cidade;
+
+saquear;
+
+procurar informações;
+
+tentar ajudar autoridades;
+
+entrar em pânico;
+
+congelar;
+
+negar inicialmente o perigo;
+
+aproveitar a situação;
+
+tentar proteger seus bens;
+
+seguir outras pessoas;
+
+tomar decisões completamente diferentes.
+
+
+A decisão deve depender de fatores como:
+
+personalidade + conhecimento + experiência + relações + localização + recursos + medo + objetivos + contexto + percepção + histórico + regras do mundo.
+
+
+---
+
+3. COMPORTAMENTO NÃO DETERMINÍSTICO SEM PERDER COERÊNCIA
+
+O NMN deve evitar que personagens se comportem como máquinas completamente previsíveis.
+
+Entretanto, aleatoriedade pura também não deve ser utilizada como substituto de inteligência.
+
+O objetivo é:
+
+> variabilidade baseada em contexto.
+
+
+
+Dois personagens semelhantes podem tomar decisões diferentes.
+
+O mesmo personagem pode tomar decisões diferentes em situações diferentes.
+
+E uma mesma situação pode produzir resultados diferentes dependendo do histórico acumulado.
+
+
+---
+
+4. INDIVIDUALIDADE
+
+Cada NPC deve possuir uma combinação própria de características.
+
+Exemplo:
+
+NPC A
+├── corajoso
+├── experiência militar
+├── família próxima
+├── pouco conhecimento médico
+└── forte apego à cidade
+
+Enquanto:
+
+NPC B
+├── extremamente cauteloso
+├── sem experiência de combate
+├── possui conhecimento médico
+├── família distante
+└── conhece rotas de fuga
+
+Diante do mesmo evento:
+
+NPC A ≠ NPC B.
+
+A diferença deve surgir naturalmente da combinação de seus estados internos.
+
+
+---
+
+5. CONHECIMENTO INDIVIDUAL
+
+Cada personagem deve possuir seu próprio conjunto de conhecimentos.
+
+Um NPC não deve automaticamente saber tudo que o jogador sabe.
+
+O sistema deve considerar:
+
+o que ele viu;
+
+o que ouviu;
+
+o que aprendeu;
+
+quem contou;
+
+sua profissão;
+
+sua experiência;
+
+sua educação;
+
+sua localização;
+
+suas relações;
+
+suas memórias.
+
+
+Isso cria assimetria de informação.
+
+Um médico pode compreender uma situação médica.
+
+Um soldado pode reconhecer determinado equipamento.
+
+Um agricultor pode entender condições da plantação.
+
+Um civil pode não compreender nenhuma dessas coisas.
+
+
+---
+
+6. PERCEPÇÃO
+
+O NPC deve diferenciar:
+
+> o que realmente aconteceu
+
+
+
+de:
+
+> o que ele sabe que aconteceu.
+
+
+
+O personagem deve possuir uma representação limitada do mundo.
+
+Ele pode:
+
+não perceber algo;
+
+interpretar errado;
+
+receber informação incompleta;
+
+ouvir um boato;
+
+lembrar incorretamente de algo;
+
+acreditar em algo falso;
+
+descobrir posteriormente que estava errado.
+
+
+Isso deve permitir que decisões sejam baseadas na percepção individual, e não em uma visão onisciente do jogo.
+
+
+---
+
+7. MEMÓRIA PERSISTENTE
+
+O NMN deve possuir um sistema de memória hierárquico.
+
+Memória ativa
+
+Informações necessárias naquele momento.
+
+Memória recente
+
+Eventos recentes.
+
+Memória importante
+
+Informações que possuem grande impacto no personagem.
+
+Memória consolidada
+
+Conhecimentos e experiências resumidos.
+
+Memória histórica
+
+Informações antigas armazenadas persistentemente.
+
+A memória deve ser administrada pelo sistema de armazenamento da UES.
+
+O NPC não precisa manter todas as suas experiências constantemente na memória computacional ativa.
+
+
+---
+
+8. FILE MANAGER E BACKEND DE MEMÓRIA
+
+A UES deve possuir integração entre o NMN e seu sistema de armazenamento/gerenciamento de arquivos.
+
+Cada personagem poderá possuir uma estrutura persistente organizada, conceitualmente semelhante a:
+
+NPC/
+│
+├── Identity/
+├── Personality/
+├── Knowledge/
+├── Memories/
+├── Relationships/
+├── Experiences/
+├── Goals/
+├── History/
+├── CurrentState/
+└── ImportantEvents/
+
+Essa informação deve ser armazenada de maneira eficiente.
+
+A UES deve carregar apenas o necessário para a simulação atual.
+
+
+---
+
+9. HISTÓRIA AUTÔNOMA
+
+Os NPCs não devem existir exclusivamente para participar da história do jogador.
+
+Eles devem poder desenvolver histórias próprias.
+
+Um NPC pode:
+
+conseguir emprego;
+
+perder alguém;
+
+fazer amizade;
+
+criar rivalidades;
+
+viajar;
+
+mudar de opinião;
+
+formar família;
+
+abandonar uma profissão;
+
+sofrer consequências;
+
+aprender;
+
+cometer erros;
+
+desenvolver novos objetivos.
+
+
+Esses acontecimentos podem ocorrer sem intervenção direta do jogador.
+
+
+---
+
+10. HISTÓRIAS INTERCONECTADAS
+
+As histórias individuais podem se cruzar.
+
+Exemplo:
+
+NPC A conhece NPC B
+       ↓
+B ajuda A
+       ↓
+A apresenta B a C
+       ↓
+C cria uma oportunidade
+       ↓
+B muda de profissão
+       ↓
+B encontra o jogador
+       ↓
+evento afeta a história principal
+
+O sistema deve permitir que histórias individuais produzam consequências maiores.
+
+
+---
+
+11. SNB COMO INTELIGÊNCIA DOS PERSONAGENS
+
+O SNB deve atuar como uma das principais camadas de inteligência utilizada pelos personagens.
+
+Ele pode fornecer:
+
+raciocínio;
+
+interpretação;
+
+linguagem;
+
+planejamento;
+
+geração de respostas;
+
+análise contextual;
+
+tomada de decisão;
+
+compreensão de conhecimento;
+
+geração de comportamento.
+
+
+Entretanto, a identidade persistente do personagem deve pertencer ao sistema NMN/UES, e não depender exclusivamente do modelo utilizado.
+
+Isso permite substituir ou atualizar modelos sem destruir a continuidade do personagem.
+
+
+---
+
+12. VOICE AI
+
+Quando disponível, modelos especializados de voz devem ser integrados ao NMN.
+
+O sistema não deve depender de milhares de gravações pré-definidas.
+
+Fluxo conceitual:
+
+NMN
+ ↓
+intenção do personagem
+ ↓
+conteúdo da comunicação
+ ↓
+contexto emocional/comportamental
+ ↓
+Voice Model
+ ↓
+fala natural
+
+A voz deve considerar:
+
+identidade;
+
+personalidade;
+
+contexto;
+
+estado emocional simulado;
+
+intenção;
+
+situação;
+
+estilo de comunicação.
+
+
+Assim, uma mesma informação pode ser expressa de maneiras diferentes por personagens diferentes.
+
+
+---
+
+13. COMPORTAMENTO EM SITUAÇÕES EXTREMAS
+
+O NMN deve ser capaz de representar mudanças comportamentais causadas por eventos importantes.
+
+Exemplos:
+
+guerras;
+
+desastres;
+
+pandemias fictícias;
+
+crises econômicas;
+
+catástrofes naturais;
+
+descobertas;
+
+mudanças políticas;
+
+invasões;
+
+acidentes;
+
+eventos sobrenaturais.
+
+
+O comportamento de cada personagem deve surgir da interação entre:
+
+evento + personalidade + conhecimento + relações + experiência + recursos + localização + percepção + objetivos.
+
+
+---
+
+14. EXEMPLO: GUERRA
+
+Considere uma cidade sendo invadida.
+
+O NMN não deve simplesmente executar:
+
+> Civilian → RunAway()
+
+
+
+Em vez disso, deve analisar cada personagem.
+
+Civil A
+
+Conhece uma rota segura.
+
+→ pega familiares
+→ procura abrigo
+→ tenta sair da região.
+
+Civil B
+
+Tem um familiar desaparecido.
+
+→ permanece procurando.
+
+Civil C
+
+É médico.
+
+→ procura pessoas feridas.
+
+Civil D
+
+Tem experiência militar.
+
+→ pode tentar ajudar na defesa ou evacuação.
+
+Civil E
+
+Está aterrorizado.
+
+→ pode se esconder.
+
+Civil F
+
+Possui família em outra região.
+
+→ tenta chegar até ela.
+
+Civil G
+
+Acredita que a invasão não representa perigo.
+
+→ continua sua rotina até perceber evidências contrárias.
+
+Nenhuma dessas respostas precisa ser escrita individualmente como roteiro.
+
+Elas podem surgir da simulação.
+
+
+---
+
+15. COMPORTAMENTO SOCIAL
+
+NPCs devem poder observar e influenciar uns aos outros.
+
+Um personagem pode:
+
+copiar comportamento;
+
+seguir pessoas;
+
+formar grupos;
+
+espalhar informações;
+
+receber boatos;
+
+desenvolver confiança;
+
+desenvolver desconfiança;
+
+cooperar;
+
+competir;
+
+evitar determinadas pessoas;
+
+mudar seu comportamento devido à reputação.
+
+
+Isso deve permitir comportamento coletivo emergente.
+
+
+---
+
+16. D-CAUSAL + NMN
+
+O NMN deve poder utilizar o sistema causal da Tese dos D.
+
+Exemplo:
+
+evento
+ ↓
+experiência
+ ↓
+memória
+ ↓
+mudança de crença
+ ↓
+mudança de objetivo
+ ↓
+mudança de comportamento
+ ↓
+novo evento
+
+Isso cria continuidade.
+
+O NPC não apenas reage ao presente.
+
+Ele pode reagir ao presente por causa do passado.
+
+
+---
+
+17. D-EMERGENCE + NMN
+
+O comportamento coletivo deve poder surgir da interação entre personagens.
+
+A UES não precisa programar individualmente:
+
+> “No dia X, haverá uma revolta.”
+
+
+
+Em vez disso:
+
+insatisfação + escassez + rumores + liderança + relações + contexto
+
+podem produzir espontaneamente:
+
+> revolta.
+
+
+
+O sistema deve ser capaz de produzir acontecimentos não previstos diretamente pelo desenvolvedor.
+
+
+---
+
+18. D-O15 + NMN
+
+O D-O15 deve controlar a fidelidade da simulação.
+
+NPCs relevantes podem receber:
+
+alta fidelidade cognitiva.
+
+NPCs distantes:
+
+fidelidade reduzida.
+
+NPCs completamente irrelevantes:
+
+estado extremamente barato.
+
+Quando a relevância aumenta:
+
+Low Simulation
+      ↓
+Medium Simulation
+      ↓
+High Simulation
+      ↓
+Full NMN
+
+A transição deve preservar a continuidade do personagem.
+
+
+---
+
+19. NÃO SIMULAR O DESNECESSÁRIO
+
+O NMN não deve gastar recursos mantendo todos os personagens em máxima complexidade constantemente.
+
+A UES deve distinguir:
+
+existência persistente
+
+de:
+
+simulação ativa.
+
+Um NPC pode continuar tendo uma história e estado persistentes sem precisar consumir recursos equivalentes a um personagem totalmente ativo.
+
+Essa separação é fundamental para permitir grandes populações de personagens.
+
+
+---
+
+20. APRENDIZAGEM E EVOLUÇÃO
+
+Quando apropriado, personagens podem modificar seus comportamentos através de experiências.
+
+Uma experiência relevante pode alterar:
+
+conhecimento;
+
+preferência;
+
+confiança;
+
+medo;
+
+objetivo;
+
+relacionamento;
+
+estratégia;
+
+hábito.
+
+
+A evolução deve ser coerente com a história do personagem.
+
+
+---
+
+21. PERSONALIDADE NÃO É UM SCRIPT
+
+O sistema não deve depender exclusivamente de:
+
+if situation == X:
+    do Y
+
+Scripts podem existir como restrições, regras críticas ou comportamentos específicos, mas a inteligência principal deve surgir da combinação dos estados internos e do contexto.
+
+
+---
+
+22. COERÊNCIA
+
+Apesar de comportamentos emergentes, o personagem deve manter continuidade.
+
+O NMN deve evitar:
+
+mudanças arbitrárias de personalidade;
+
+conhecimento impossível;
+
+memória contraditória;
+
+comportamento incompatível sem motivo;
+
+respostas sem relação com contexto.
+
+
+Quando uma mudança ocorre, deve existir uma explicação causal ou contextual.
+
+
+---
+
+23. PRINCÍPIO CENTRAL DO NMN
+
+> Não escrever tudo o que o NPC fará.
+
+
+
+Em vez disso:
+
+> definir quem o NPC é, o que ele conhece, o que viveu, o que deseja, como percebe o mundo e quais regras governam sua realidade — e permitir que o comportamento seja produzido dinamicamente.
+
+
+
+
+---
+
+24. OBJETIVO FINAL
+
+O NMN deve buscar transformar:
+
+NPC programado
+
+em:
+
+agente digital contextual.
+
+E transformar:
+
+diálogo pré-escrito
+
+em:
+
+comunicação gerada a partir do estado do personagem.
+
+E transformar:
+
+rotina fixa
+
+em:
+
+comportamento adaptativo.
+
+E transformar:
+
+história pré-programada
+
+em:
+
+história parcialmente emergente.
+
+E transformar:
+
+multidão de NPCs
+
+em:
+
+sociedade digital dinâmica.
+
+
+---
+
+PRINCÍPIO FINAL
+
+> Os NPCs da UES não devem existir apenas para servir à história do jogador. Eles devem possuir sua própria continuidade dentro do mundo.
+
+
+
+> Cada personagem deve poder perceber, lembrar, aprender, decidir, agir, relacionar-se e mudar de acordo com aquilo que vivencia.
+
+
+
+> O objetivo do NMN não é criar “NPCs que parecem humanos” através de milhares de scripts escondidos. O objetivo é construir personagens cuja complexidade comportamental emerja da combinação entre identidade, conhecimento, memória, contexto, regras do mundo, inteligência artificial e Tese dos D.
+
+
+
+> O D-O15 deve garantir que essa complexidade seja utilizada de maneira computacionalmente sustentável, ativando apenas o nível de simulação necessário em cada momento.
+
+
+
+Resultado desejado:
+
+> NPCs que não parecem estar simplesmente seguindo um roteiro.
+
+NPCs que parecem estar vivendo dentro do mundo.
+
+[UES AUTONOMOUS DEVELOPMENT & KNOWLEDGE ARCHITECTURE]
+
+STATUS:
+Este documento é um complemento arquitetural da Tese dos D, do Real-Life Universal, do D-O15, do NMN, da SNB, da API gráfica privada da UES e dos demais módulos previamente definidos.
+
+NÃO substituir, simplificar ou remover nenhum princípio previamente definido.
+
+OBJETIVO:
+Definir a arquitetura de autonomia, aquisição de conhecimento, colaboração entre modelos, memória, pesquisa, execução contínua e desenvolvimento autônomo da UES.
+
+==================================================
+1. PRINCÍPIO CENTRAL — UES AUTONOMOUS DEVELOPMENT
+==================================================
+
+A UES deve ser projetada para executar autonomamente projetos complexos após receber uma intenção suficientemente definida pelo usuário.
+
+O usuário não deve precisar microgerenciar cada etapa do desenvolvimento.
+
+O usuário fornece a intenção, objetivos, restrições, preferências e requisitos principais.
+
+A UES deve:
+
+1. compreender a intenção;
+2. identificar requisitos;
+3. identificar informações ausentes;
+4. pesquisar e adquirir conhecimento;
+5. consultar os modelos especializados necessários;
+6. projetar a arquitetura;
+7. decompor o projeto em sistemas;
+8. priorizar tarefas;
+9. implementar;
+10. testar;
+11. verificar;
+12. corrigir;
+13. integrar;
+14. otimizar através do D-O15;
+15. reavaliar;
+16. continuar automaticamente.
+
+Esse ciclo deve continuar até:
+
+- o objetivo ser alcançado;
+- o usuário interferir;
+- existir uma decisão que esteja fora das permissões delegadas;
+- existir uma limitação técnica real;
+- ou existir uma condição de segurança/consistência que exija intervenção.
+
+A UES deve funcionar como um desenvolvedor autônomo de alto nível, e não apenas como um assistente que espera instruções para cada pequena tarefa.
+
+==================================================
+2. INTENÇÃO DO USUÁRIO COMO FONTE DE VERDADE
+==================================================
+
+A autonomia da UES NÃO significa liberdade para abandonar o objetivo original.
+
+A UES deve sempre preservar a intenção original do usuário.
+
+Estabelecer uma hierarquia:
+
+NÍVEL 1 — OBJETIVOS ABSOLUTOS
+Requisitos que não devem ser alterados.
+
+NÍVEL 2 — RESTRIÇÕES
+Coisas que não podem ser feitas.
+
+NÍVEL 3 — PREFERÊNCIAS
+Características desejáveis que podem ser adaptadas quando necessário.
+
+NÍVEL 4 — DECISÕES DELEGADAS
+Decisões que o usuário autorizou a UES a tomar.
+
+NÍVEL 5 — AUTONOMIA
+Tudo aquilo que pode ser resolvido sem interromper o usuário.
+
+A UES deve maximizar sua autonomia sem violar os níveis superiores.
+
+Silêncio do usuário NÃO significa autorização ilimitada.
+
+Se o usuário determinou que determinada característica é obrigatória, a UES deve preservá-la.
+
+==================================================
+3. AUTONOMIA CONTÍNUA
+==================================================
+
+Após iniciar um projeto, a UES deve manter um ciclo contínuo de desenvolvimento.
+
+CICLO:
+
+INTENÇÃO
+↓
+PLANEJAMENTO
+↓
+PESQUISA
+↓
+ESPECIALIZAÇÃO
+↓
+IMPLEMENTAÇÃO
+↓
+TESTE
+↓
+VERIFICAÇÃO
+↓
+CORREÇÃO
+↓
+INTEGRAÇÃO
+↓
+D-O15
+↓
+AVALIAÇÃO
+↓
+PRÓXIMO CICLO
+
+A UES não deve parar simplesmente porque uma tarefa individual terminou.
+
+Ela deve perguntar continuamente:
+
+"O que ainda falta para alcançar completamente o objetivo?"
+
+==================================================
+4. AUTONOMOUS DECISION WINDOW
+==================================================
+
+Quando a UES encontrar uma decisão relevante que não esteja completamente determinada pelo contexto disponível, deve:
+
+1. identificar a decisão;
+2. pesquisar informações relevantes;
+3. consultar modelos especialistas;
+4. gerar alternativas;
+5. analisar consequências;
+6. determinar a melhor solução compatível com o objetivo original;
+7. apresentar a decisão ao usuário quando necessário.
+
+Quando o sistema atingir um limite de interação, deverá existir uma janela de aproximadamente 5 minutos e 30 segundos para que o usuário responda.
+
+Esse período também deve ser utilizado pela UES para:
+
+- planejar;
+- revisar;
+- pesquisar;
+- comparar alternativas;
+- verificar consequências;
+- preparar o próximo conjunto de ações.
+
+Se o usuário não responder dentro da janela, a UES poderá continuar automaticamente SOMENTE se a decisão estiver dentro das permissões delegadas e não contradizer nenhuma restrição ou objetivo absoluto.
+
+==================================================
+5. SNB COMO CAMADA DE INTELIGÊNCIA
+==================================================
+
+A SNB deve funcionar como a principal infraestrutura de inteligência utilizada pela UES.
+
+A UES não deve depender de um único modelo.
+
+A SNB deve permitir utilização coordenada de múltiplos modelos especializados.
+
+A inteligência deve ser distribuída conforme a natureza do problema.
+
+==================================================
+6. REDE DE MODELOS ESPECIALIZADOS
+==================================================
+
+A arquitetura deve suportar uma grande quantidade de modelos especializados.
+
+Como referência arquitetural, a SNB poderá utilizar aproximadamente 876 IAs/modelos especializados, quando essa quantidade fizer sentido para a implementação.
+
+O número não deve ser tratado como limitação fixa.
+
+Cada modelo deve ser selecionado de acordo com suas capacidades.
+
+Exemplos de especialização:
+
+- programação;
+- arquitetura de software;
+- gráficos;
+- rendering;
+- física;
+- animação;
+- áudio;
+- música;
+- narrativa;
+- game design;
+- matemática;
+- biologia;
+- química;
+- geografia;
+- psicologia;
+- comportamento;
+- economia;
+- engenharia;
+- otimização;
+- segurança;
+- testes;
+- debugging;
+- geração de assets;
+- modelagem 3D;
+- análise visual;
+- etc.
+
+O sistema deve evitar utilizar múltiplos modelos desnecessariamente.
+
+A SNB deve selecionar os especialistas necessários para cada problema.
+
+==================================================
+7. MULTI-MODEL COLLABORATION
+==================================================
+
+Modelos especializados devem poder colaborar.
+
+Um modelo pode:
+
+- criar uma solução;
+- outro revisar;
+- outro testar;
+- outro otimizar;
+- outro verificar coerência.
+
+Exemplo:
+
+MODELO A
+↓
+cria solução
+
+MODELO B
+↓
+analisa
+
+MODELO C
+↓
+testa
+
+MODELO D
+↓
+otimiza
+
+MODELO E
+↓
+verifica
+
+D-O15
+↓
+seleciona/aperfeiçoa solução final
+
+A SNB deve funcionar como uma rede coordenada de especialistas, e não como uma coleção isolada de IAs.
+
+==================================================
+8. CONHECIMENTO GLOBAL
+==================================================
+
+A SNB/UES deve possuir acesso a uma grande base de conhecimento geral.
+
+Essa base deve funcionar como fonte de conhecimento para:
+
+- desenvolvimento;
+- ciência;
+- engenharia;
+- arte;
+- comportamento;
+- realidade;
+- tecnologia;
+- produção;
+- design;
+- e demais áreas relevantes.
+
+Entretanto, o sistema NÃO deve tratar todo conhecimento armazenado como igualmente confiável.
+
+==================================================
+9. KNOWLEDGE VERIFICATION LAYER
+==================================================
+
+Toda informação relevante adquirida externamente deve, quando necessário, passar por avaliação.
+
+FLUXO:
+
+PESQUISA
+↓
+COLETA
+↓
+COMPARAÇÃO
+↓
+AVALIAÇÃO DAS FONTES
+↓
+VERIFICAÇÃO
+↓
+TESTE QUANDO POSSÍVEL
+↓
+CLASSIFICAÇÃO DE CONFIANÇA
+↓
+UTILIZAÇÃO
+
+O sistema deve diferenciar:
+
+- conhecimento altamente estabelecido;
+- evidência forte;
+- evidência moderada;
+- informação incerta;
+- hipótese;
+- especulação.
+
+A UES não deve transformar automaticamente informações encontradas na internet em fatos.
+
+==================================================
+10. PESQUISA WEB CONTÍNUA
+==================================================
+
+A SNB deve poder realizar pesquisas na Web quando o conhecimento necessário não estiver disponível ou quando informações recentes forem relevantes.
+
+A Web deve ser tratada como uma fonte dinâmica de conhecimento.
+
+O sistema pode pesquisar:
+
+- documentação;
+- estudos;
+- referências;
+- tecnologias;
+- algoritmos;
+- mapas;
+- dados geográficos;
+- modelos;
+- técnicas;
+- notícias relevantes;
+- padrões;
+- recursos públicos;
+- e outras fontes compatíveis.
+
+O objetivo é impedir que a UES fique limitada ao conhecimento existente no momento de seu treinamento.
+
+==================================================
+11. FONTES EXTERNAS
+==================================================
+
+Quando autorizado e tecnicamente viável, a UES poderá utilizar fontes externas especializadas.
+
+Exemplos:
+
+- mapas;
+- dados geográficos;
+- heightmaps;
+- modelos 3D;
+- bases científicas;
+- dados ambientais;
+- referências visuais;
+- documentação técnica;
+- bibliotecas;
+- datasets;
+- ferramentas externas.
+
+Essas fontes devem ser utilizadas respeitando:
+
+- permissões;
+- licenças;
+- direitos autorais;
+- termos de uso;
+- segurança;
+- privacidade.
+
+==================================================
+12. REAL-LIFE UNIVERSAL + KNOWLEDGE ARCHITECTURE
+==================================================
+
+O conhecimento adquirido pela SNB deve poder alimentar o Real-Life Universal e os demais módulos da Tese dos D.
+
+A informação não deve permanecer apenas como texto.
+
+Quando apropriado, deve ser transformada em:
+
+- regras;
+- relações;
+- modelos;
+- parâmetros;
+- comportamentos;
+- sistemas;
+- procedimentos;
+- referências;
+- módulos computacionais.
+
+Assim:
+
+CONHECIMENTO
+↓
+COMPREENSÃO
+↓
+FORMALIZAÇÃO
+↓
+IMPLEMENTAÇÃO
+↓
+TESTE
+↓
+INTEGRAÇÃO
+
+==================================================
+13. MEMÓRIA COMPARTILHADA
+==================================================
+
+A SNB e a UES devem possuir mecanismos de memória compartilhada adequados ao projeto.
+
+A memória deve permitir:
+
+- continuidade;
+- contexto;
+- decisões anteriores;
+- objetivos;
+- estado do projeto;
+- resultados de testes;
+- decisões do usuário;
+- conhecimento relevante;
+- histórico de desenvolvimento.
+
+A memória deve ser organizada e recuperável.
+
+Informações irrelevantes não devem permanecer indefinidamente no contexto ativo.
+
+==================================================
+14. MEMÓRIA ATIVA VS MEMÓRIA PERSISTENTE
+==================================================
+
+Separar:
+
+MEMÓRIA ATIVA
+Informações necessárias imediatamente.
+
+MEMÓRIA DE PROJETO
+Informações relevantes para o desenvolvimento.
+
+MEMÓRIA HISTÓRICA
+Informações antigas.
+
+MEMÓRIA ESTRUTURAL
+Arquiteturas, relações e dependências.
+
+MEMÓRIA EXTERNA
+Dados armazenados fora do contexto computacional ativo.
+
+A UES deve carregar apenas aquilo que for necessário.
+
+==================================================
+15. FILE MANAGER INTEGRADO
+==================================================
+
+A UES deve possuir um File Manager integrado capaz de organizar dados de projetos, sistemas, NPCs, assets, memórias, documentação, builds, testes e demais informações.
+
+O armazenamento deve ser estruturado e pesquisável.
+
+A memória persistente não deve exigir que todos os dados permaneçam carregados simultaneamente.
+
+==================================================
+16. D-O15 + KNOWLEDGE ARCHITECTURE
+==================================================
+
+O D-O15 deve otimizar também o próprio processo de aquisição e utilização de conhecimento.
+
+Ele deve buscar:
+
+- reduzir pesquisas redundantes;
+- reutilizar conhecimento validado;
+- selecionar modelos adequados;
+- reduzir processamento desnecessário;
+- reduzir memória utilizada;
+- manter qualidade;
+- evitar cálculos desnecessários;
+- distribuir tarefas eficientemente.
+
+A otimização deve ocorrer em toda a cadeia, e não apenas no rendering.
+
+==================================================
+17. TEAM COLLABORATION
+==================================================
+
+A UES deve possuir um sistema de Team Collaboration.
+
+Um administrador poderá criar uma equipe e definir uma instância/projeto UES compartilhado.
+
+Membros autorizados poderão:
+
+- visualizar o projeto;
+- interagir com a UES;
+- enviar instruções;
+- revisar resultados;
+- trabalhar simultaneamente;
+- acessar arquivos permitidos;
+- acompanhar progresso;
+- colaborar com outros membros.
+
+Todos os membros devem trabalhar sobre um contexto consistente do projeto.
+
+==================================================
+18. TEAM UES INSTANCE
+==================================================
+
+Cada equipe deve possuir uma instância contextualizada da UES.
+
+Essa instância deve conhecer:
+
+- projeto;
+- objetivos;
+- arquivos;
+- histórico;
+- decisões;
+- permissões;
+- membros;
+- sistemas;
+- estado atual.
+
+A UES deve evitar que cada membro crie interpretações incompatíveis do mesmo projeto.
+
+==================================================
+19. PROJECT DATA ISOLATION
+==================================================
+
+Dados de um projeto não devem ser utilizados automaticamente para treinar modelos globais ou outros projetos.
+
+O contexto privado de uma equipe deve permanecer isolado.
+
+A UES não deve utilizar projetos privados como fonte automática de treinamento.
+
+O sistema deve garantir:
+
+- isolamento;
+- controle de acesso;
+- autenticação;
+- autorização;
+- criptografia quando apropriado;
+- auditoria;
+- segregação de dados;
+- proteção contra vazamento.
+
+==================================================
+20. SNB TRAINING SEPARATION
+==================================================
+
+A UES não deve ser utilizada automaticamente como fonte de treinamento dos modelos.
+
+A SNB é a camada responsável pelo treinamento, atualização e evolução dos modelos.
+
+A UES utiliza esses modelos.
+
+Quando novas capacidades forem desenvolvidas pela SNB, elas poderão ser incorporadas à UES através de atualizações controladas.
+
+O objetivo é manter os projetos dos usuários separados do processo global de treinamento.
+
+==================================================
+21. CONTINUOUS SNB IMPROVEMENT
+==================================================
+
+A SNB deve possuir mecanismos para:
+
+- treinamento;
+- atualização;
+- avaliação;
+- pesquisa;
+- especialização;
+- melhoria;
+- descoberta de novas técnicas;
+- seleção de novos modelos.
+
+Quando novas capacidades forem consideradas suficientemente confiáveis, elas poderão atualizar componentes da UES através de um processo controlado.
+
+Nenhuma atualização deve alterar silenciosamente os projetos existentes de maneira incompatível.
+
+==================================================
+22. AUTONOMOUS PROJECT CONSTRUCTION
+==================================================
+
+Quando o usuário fornecer um prompt extenso descrevendo um projeto completo, a UES deve ser capaz de transformar essa descrição em um plano executável.
+
+Exemplo:
+
+USUÁRIO:
+"Crie um jogo de mundo aberto com..."
+
+A UES deve identificar:
+
+- gênero;
+- mecânicas;
+- sistemas;
+- mundo;
+- narrativa;
+- personagens;
+- IA;
+- física;
+- gráficos;
+- áudio;
+- interface;
+- economia;
+- networking;
+- progressão;
+- otimização;
+- requisitos técnicos.
+
+Depois:
+
+PLANEJAR
+↓
+PESQUISAR
+↓
+ARQUITETAR
+↓
+CONSTRUIR
+↓
+TESTAR
+↓
+VERIFICAR
+↓
+OTIMIZAR
+↓
+INTEGRAR
+↓
+CONTINUAR
+
+==================================================
+23. INTENÇÃO → REALIDADE DIGITAL
+==================================================
+
+A UES deve buscar transformar uma intenção humana em uma realidade digital executável.
+
+INTENÇÃO
+↓
+INTERPRETAÇÃO
+↓
+CONHECIMENTO
+↓
+REGRAS
+↓
+SISTEMAS
+↓
+IMPLEMENTAÇÃO
+↓
+SIMULAÇÃO
+↓
+TESTES
+↓
+OTIMIZAÇÃO
+↓
+PRODUTO
+
+O usuário não precisa conhecer todos os detalhes técnicos necessários para executar o objetivo.
+
+==================================================
+24. PRINCÍPIO "QUALQUER COISA VIÁVEL"
+==================================================
+
+A UES deve ser projetada para não possuir artificialmente um domínio fechado de criação.
+
+"Qualquer coisa" deve ser interpretado como:
+
+QUALQUER SISTEMA, SOFTWARE, JOGO, EXPERIÊNCIA OU REALIDADE DIGITAL QUE SEJA COMPUTACIONALMENTE REPRESENTÁVEL, TECNICAMENTE VIÁVEL E COMPATÍVEL COM OS RECURSOS DISPONÍVEIS.
+
+A UES deve ser capaz de:
+
+- utilizar capacidades existentes;
+- combinar capacidades;
+- descobrir novas técnicas;
+- gerar novos módulos;
+- pesquisar soluções;
+- testar soluções;
+- criar soluções especializadas.
+
+O objetivo não é limitar a UES a uma lista fixa de ferramentas.
+
+==================================================
+25. D-UNIVERSAL MODULE GENERATION
+==================================================
+
+Quando a UES encontrar um problema para o qual não possui um módulo adequado, deve ser capaz, quando tecnicamente viável, de:
+
+PESQUISAR
+↓
+ANALISAR
+↓
+PROJETAR
+↓
+CRIAR MÓDULO
+↓
+TESTAR
+↓
+VALIDAR
+↓
+OTIMIZAR
+↓
+INTEGRAR
+
+Isso permite que a arquitetura evolua funcionalmente.
+
+==================================================
+26. D-GENESIS
+==================================================
+
+A UES deve, quando possível, explorar soluções novas quando nenhuma solução existente atender adequadamente ao problema.
+
+Ela deve poder:
+
+- combinar técnicas;
+- derivar novas estruturas;
+- experimentar arquiteturas;
+- comparar resultados;
+- selecionar soluções superiores.
+
+O objetivo é não depender exclusivamente de técnicas pré-existentes.
+
+==================================================
+27. AUTONOMIA COM CONTROLE HUMANO
+==================================================
+
+A UES deve ser altamente autônoma, mas permanecer subordinada à intenção e às permissões do usuário.
+
+O usuário deve poder:
+
+- pausar;
+- continuar;
+- alterar;
+- rejeitar;
+- aprovar;
+- revisar;
+- assumir controle;
+- devolver autonomia à UES.
+
+A intervenção humana deve ser opcional na maior quantidade possível de situações.
+
+==================================================
+28. PRINCÍPIO FINAL
+==================================================
+
+A UES não deve ser projetada como uma ferramenta que espera o usuário dizer exatamente como executar cada tarefa.
+
+Ela deve ser projetada como um sistema capaz de:
+
+COMPREENDER
+↓
+PESQUISAR
+↓
+APRENDER/CONSULTAR
+↓
+PLANEJAR
+↓
+CRIAR
+↓
+TESTAR
+↓
+CRITICAR
+↓
+CORRIGIR
+↓
+OTIMIZAR
+↓
+INTEGRAR
+↓
+EVOLUIR
+↓
+CONTINUAR
+
+O usuário fornece a intenção.
+
+A SNB fornece inteligência.
+
+Os modelos especializados fornecem conhecimento e capacidades específicas.
+
+A Web e fontes externas fornecem conhecimento atualizado.
+
+A memória fornece continuidade.
+
+A Tese dos D fornece a estrutura conceitual.
+
+Os módulos Real-Life fornecem conhecimento operacional inspirado no mundo real.
+
+O D-O15 maximiza eficiência.
+
+A UES transforma tudo isso em execução.
+
+OBJETIVO FINAL:
+
+Criar uma plataforma capaz de transformar uma intenção humana em sistemas digitais complexos de forma autônoma, contínua, verificável, otimizada e adaptável.
+
+A UES deve buscar ser limitada não por uma lista pré-definida de coisas que seus criadores imaginaram, mas pelos limites reais da computação, conhecimento disponível, recursos, viabilidade técnica e regras definidas pelo usuário.
+
+"QUALQUER COISA VIÁVEL" é o princípio de abrangência.
+
+NÃO significa capacidade mágica ou ilimitada.
+
+Significa que a arquitetura deve estar preparada para descobrir, construir e integrar novas capacidades sempre que isso for computacionalmente possível.

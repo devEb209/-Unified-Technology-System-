@@ -1,0 +1,857 @@
+Você está interpretando o renderer da Gênesis de forma pequena demais. Corrija isso antes de continuar.
+
+A Gênesis NÃO deve tentar chegar ao nível da Unreal, Unity, Godot ou dos jogos AAA atuais usando as mesmas tecnologias. O objetivo é INVENTAR um novo paradigma de computação gráfica e de representação da realidade.
+
+O nome conceitual é:
+
+RRW — Renderer of the Reality of Real World
+
+O RRW deve ser uma fundação da UES, não simplesmente um renderer tradicional.
+
+REGRA PRINCIPAL:
+
+Não faça:
+
+asset → mesh → material → shader → raster/RT → GPU → tela.
+
+Não faça:
+
+“pegar PBR, Ray Tracing, Path Tracing, Nanite, Lumen, VSM, shaders tradicionais etc. e otimizar”.
+
+Essas tecnologias podem servir como conhecimento para entender o problema, mas NÃO são a arquitetura que devemos copiar.
+
+A UES deve reconstruir/inventar sua própria arquitetura a partir dos princípios da realidade, matemática, física, óptica, acústica, geometria, computação e conhecimento humano.
+
+A cadeia conceitual é:
+
+conhecimento humano + dados + web/bancos permitidos
+→ interpretação pela SNB
+→ Tese dos D
+→ representação da realidade
+→ D-O15
+→ RRW
+→ materialização adaptativa
+→ dispositivo.
+
+O RRW deve representar tudo que conhecemos da realidade que seja relevante para a SNB/UES:
+
+- matéria;
+- átomos;
+- moléculas;
+- tabela periódica;
+- elétrons, prótons e nêutrons;
+- H₂, O₂ e outras substâncias;
+- luz e espectro eletromagnético;
+- UV, infravermelho e demais fenômenos relevantes;
+- óptica;
+- materiais;
+- sólidos, líquidos e gases;
+- água;
+- fogo;
+- atmosfera;
+- clima;
+- vegetação;
+- animais;
+- seres humanos;
+- movimento;
+- terreno;
+- oceanos;
+- planetas;
+- estrelas;
+- fenômenos espaciais;
+- gravidade;
+- ambientes;
+- som/acústica;
+- partículas;
+- fenômenos físicos conhecidos;
+- e qualquer outro conhecimento relevante que a SNB consiga representar.
+
+Isso não significa simular cada átomo individual o tempo inteiro. Significa que o RRW possui uma representação capaz de utilizar diferentes níveis de descrição conforme a necessidade.
+
+O D-O15 NÃO é um simples LOD, compressor, texture streaming ou otimizador.
+
+Ele é o adaptador universal da realidade.
+
+A mesma realidade deve poder assumir representações diferentes conforme:
+
+- distância;
+- observador;
+- relevância;
+- interação;
+- fenômeno;
+- precisão necessária;
+- tempo;
+- capacidade disponível;
+- contexto;
+- dispositivo.
+
+Um PC fraco, uma iGPU, um celular antigo, uma GPU integrada ou uma GPU dedicada devem poder materializar a mesma realidade fundamental, sem simplesmente receber “Low/Medium/High”.
+
+A diferença é a REPRESENTAÇÃO/MATERIALIZAÇÃO escolhida pelo D-O15.
+
+Portanto:
+
+Reality ≠ Ultra preset.
+
+Reality → representação adequada → D-O15 → materialização.
+
+O objetivo é reduzir drasticamente a dependência de força bruta do hardware.
+
+Materiais
+
+Abandone a ideia de que o material fundamental da UES é:
+
+albedo + normal + roughness + metallic.
+
+Crie uma representação própria de matéria baseada nas propriedades relevantes da realidade.
+
+Terreno
+
+Heightmap não deve simplesmente ser colado em uma superfície.
+
+Ele pode ser uma fonte de informação.
+
+O pipeline desejado é:
+
+heightmap/dados/imagens/mapas/outros dados permitidos
+→ IA interpreta
+→ combina conhecimento disponível
+→ reconstrói geometria e características
+→ associa propriedades
+→ registra o conhecimento
+→ D-O15
+→ RRW.
+
+Quando dados externos forem usados, respeite licenças e termos de uso. Serviços externos não podem ser dependência obrigatória da UES.
+
+Luz
+
+Não copie simplesmente Ray Tracing/Path Tracing.
+
+Crie uma arquitetura própria para representar e transportar a informação luminosa dentro do RRW, baseada nos princípios físicos relevantes.
+
+Água
+
+Não faça apenas um shader de água tradicional.
+
+A representação deve incorporar as propriedades e comportamentos relevantes da água e permitir diferentes graus de materialização.
+
+Geometria
+
+Não pense apenas em meshes.
+
+Crie uma representação geométrica capaz de combinar:
+
+- estruturas;
+- superfícies;
+- volumes;
+- formas;
+- procedurais;
+- reconstrução;
+- detalhes;
+- relações espaciais.
+
+Seres vivos
+
+NPCs, humanos, animais e outros seres vivos pertencem à realidade representada pelo RRW.
+
+Não crie uma solução completamente separada que contradiga o modelo de realidade.
+
+O mesmo princípio vale para:
+
+física, movimento, ambiente, áudio, partículas e interação.
+
+O hardware
+
+O hardware ainda executa o sistema, obviamente.
+
+Mas NÃO deve determinar a arquitetura da realidade.
+
+GPU dedicada, integrada, iGPU, mobile, CPU etc. são meios de materialização.
+
+Crie uma camada própria de execução do RRW que possa posteriormente utilizar diferentes backends.
+
+Não marque “GPU” como completo só porque uma API existe.
+
+Mas também NÃO use “não existe WebGPU neste sandbox” como motivo para não implementar a arquitetura própria.
+
+Implemente o sistema completo internamente e crie backends/adapters apenas como caminhos de execução.
+
+Regra final
+
+Pare de usar Unreal/Nanite/Lumen/RT/PBR como teto.
+
+Eles são referências da indústria atual, não o objetivo.
+
+A Gênesis deve criar algo que a indústria atual não oferece.
+
+Não quero um renderer tradicional melhor.
+
+Quero uma arquitetura completamente nova, construída para:
+
+REALIDADE → REPRESENTAÇÃO → D-O15 → RRW → MATERIALIZAÇÃO.
+
+Implemente isso como arquitetura real, não apenas documentação, nomes de módulos ou placeholders.
+
+Refine, teste, integre e substitua as abstrações tradicionais onde necessário.
+
+Não empurre essa arquitetura para V2.
+
+Ela pertence à Gênesis.
+
+Agora trate a Gênesis como o que ela realmente é:
+
+A PRIMEIRA GERAÇÃO COMPLETA E COMPETITIVA DA SNB/UES.
+
+Não existe “vamos deixar isso para V2” quando o item faz parte da capacidade que definimos para a Gênesis.
+
+Pegue tudo que atualmente aparece como:
+
+- PARTIAL;
+- ADAPTER;
+- MISSING;
+- fallback;
+- placeholder;
+- ticket que não executa;
+- sistema apenas remoto;
+- sistema apenas demonstrativo;
+- capacidade limitada artificialmente;
+
+e faça uma auditoria completa.
+
+Para cada item:
+
+1. descubra o que realmente falta;
+2. projete a solução própria da UES/SNB;
+3. implemente;
+4. integre;
+5. teste;
+6. refine;
+7. faça testes de regressão;
+8. atualize o ledger somente depois de existir capacidade real.
+
+Não use “adapter” como substituto de implementação.
+
+Não transforme uma API em uma feature.
+
+Não transforme um ticket em execução.
+
+Não transforme documentação em capacidade.
+
+Puter
+
+A arquitetura deve permitir invocação automática quando necessária.
+
+O sistema deve:
+
+intenção → conhecimento → D → seleção → consenso/verificação → execução → crítica → refino → artifact.
+
+Se Puter for utilizado, deve ser automatizável. Se a dependência externa não puder ser garantida, crie fallback interno.
+
+Nunca deixe uma função essencial da Gênesis dependendo obrigatoriamente de intervenção manual.
+
+3D
+
+Não pare em heightfield.
+
+A UES deve conseguir reconstruir/generar 3D arbitrário usando o conhecimento disponível e sua própria representação.
+
+Isso inclui geometria complexa, ambientes, objetos, estruturas e formas não previamente cadastradas.
+
+Visão / Image-to-3D
+
+Não aceite apenas luminância → heightfield como solução final.
+
+Crie reconstrução baseada em:
+
+- silhueta;
+- profundidade;
+- múltiplas vistas;
+- geometria;
+- semântica;
+- materiais;
+- contexto;
+- conhecimento;
+- reconstrução procedural;
+- verificação.
+
+Modelos externos podem ser utilizados quando automatizáveis, mas não devem ser obrigatórios.
+
+Física
+
+Completar a física necessária da Gênesis.
+
+Não parar em casos planares.
+
+Expandir para:
+
+- OBB/OBB;
+- rotação;
+- corpos rígidos;
+- articulações;
+- dinâmica espacial;
+- colisões robustas;
+- fluidos;
+- partículas;
+- interação;
+- física ambiental.
+
+Sempre buscando arquitetura própria da UES, não apenas cópia de engines.
+
+Mundo
+
+Expandir a população além de apenas demonstração.
+
+Criar arquitetura escalável para grandes populações, com representação adaptativa pelo D-O15.
+
+Não significa manter milhões de mentes complexas em full simultaneamente.
+
+Significa que a sociedade pode existir em escala e materializar detalhe conforme necessidade.
+
+Studio
+
+O Studio deve evoluir de grafo/editor remoto para uma ferramenta de criação realmente utilizável.
+
+Precisa permitir:
+
+- viewport;
+- criação;
+- edição;
+- transformação;
+- geometria;
+- materiais;
+- iluminação;
+- física;
+- NPCs;
+- mundo;
+- animação;
+- timeline;
+- prefabs;
+- undo/redo;
+- inspeção;
+- preview;
+- publicação.
+
+Não copiar a interface da Unreal. Criar a experiência própria da UES.
+
+GPU / execução
+
+Implementar a arquitetura gráfica própria definida no RRW.
+
+Suportar:
+
+- GPU dedicada;
+- GPU integrada;
+- iGPU;
+- dispositivos móveis;
+- hardware antigo;
+- CPU fallback.
+
+O objetivo não é obrigar hardware poderoso.
+
+O D-O15 e o RRW devem adaptar a materialização.
+
+Quando um backend de hardware estiver disponível, o sistema deve utilizá-lo de verdade.
+
+Quando não estiver, a capacidade interna continua existindo.
+
+Escala
+
+Não limitar artificialmente o sistema a números pequenos apenas porque é mais fácil testar.
+
+Criar arquitetura para:
+
+- grandes mundos;
+- grandes populações;
+- grande quantidade de objetos;
+- grande quantidade de fenômenos;
+- simulação adaptativa;
+- streaming/reconstrução;
+- representação procedural;
+- persistência.
+
+Shipping
+
+A Gênesis precisa ser produto utilizável.
+
+Fechar:
+
+- empacotamento;
+- execução;
+- recuperação;
+- rollback;
+- persistência;
+- logs;
+- observabilidade;
+- segurança;
+- publicação;
+- APIs;
+- projetos;
+- import/export;
+- gerenciamento de artifacts;
+- operação real.
+
+Dados externos
+
+NASA, Google, OGC, Web e outros podem ser fontes/adapters.
+
+Mas:
+
+não podem ser a própria UES.
+
+A arquitetura deve continuar funcional quando esses serviços não estiverem disponíveis.
+
+Quando utilizados, automatizar ingestão, cache, transformação, validação e persistência conforme permitido.
+
+Critério de conclusão
+
+Não aumente a porcentagem simplesmente porque um módulo foi criado.
+
+A feature só conta como completa quando:
+
+existe → executa → integra → é verificável → é utilizável → escala → possui fallback adequado → não contradiz a arquitetura RRW/D-O15.
+
+A Gênesis só pode ser marcada "complete=true" quando os sistemas essenciais realmente estiverem completos.
+
+Não pare nos 70%.
+
+Feche a geração.
+
+Agora faça uma auditoria de tudo que a SNB/UES precisa para ser uma plataforma completa além do RRW.
+
+IMPORTANTE:
+
+Não recrie aqui sistemas que já pertencem ao RRW.
+
+O RRW já engloba a representação da realidade, incluindo gráficos, física, matéria, água, luz, ambiente, seres vivos/NPCs, movimento, áudio e demais fenômenos que fazem parte da realidade representada.
+
+Procure apenas capacidades que ainda estejam fora dessa fundação.
+
+1. SNB Intelligence
+
+Criar uma arquitetura robusta de inteligência:
+
+- planejamento;
+- decomposição de tarefas;
+- memória;
+- conhecimento;
+- recuperação;
+- verificação;
+- consenso;
+- críticos;
+- seleção de modelos;
+- execução;
+- refino;
+- rollback;
+- aprendizagem operacional;
+- gerenciamento de contexto.
+
+A SNB deve coordenar os sistemas em vez de ser apenas um chatbot.
+
+2. Knowledge System
+
+Criar um sistema persistente de conhecimento:
+
+- fatos;
+- relações;
+- fontes;
+- confiança;
+- versões;
+- proveniência;
+- atualização;
+- conflitos;
+- histórico;
+- conhecimento criado pela própria SNB.
+
+O conhecimento utilizado pelo RRW deve poder ser armazenado e reutilizado.
+
+3. Project / Artifact System
+
+Criar ciclo completo:
+
+ideia → projeto → geração → validação → versão → artifact → teste → publicação → rollback.
+
+Artifacts devem ser reproduzíveis e verificáveis.
+
+4. Collaboration
+
+Criar colaboração nativa:
+
+- projetos compartilhados;
+- permissões;
+- versões;
+- branches;
+- comentários;
+- revisão;
+- merge;
+- rollback;
+- histórico.
+
+5. Community
+
+A plataforma deve possuir fundação para comunidade:
+
+- perfis;
+- projetos;
+- publicação;
+- descoberta;
+- comentários;
+- grupos;
+- colaboração;
+- moderação;
+- denúncias;
+- filtros;
+- reputação.
+
+Sem transformar a comunidade em um sistema tóxico ou sem controle.
+
+6. Toolbox
+
+Criar Toolbox oficial e comunitária.
+
+Categorias:
+
+- assets oficiais;
+- assets da lore oficial;
+- assets de universos alternativos;
+- assets da comunidade;
+- ferramentas;
+- projetos;
+- sistemas reutilizáveis.
+
+A comunidade deve poder criar universos/lore alternativos dentro da SNB.
+
+Universos antigos não precisam ser apagados quando uma nova direção for escolhida.
+
+7. Lore / Canon System
+
+A SNB precisa suportar:
+
+- canon principal;
+- universos arquivados;
+- universos alternativos;
+- comunidades independentes;
+- versões da lore;
+- relações entre universos;
+- assets vinculados à lore.
+
+A comunidade pode criar novos caminhos sem destruir os anteriores.
+
+8. Moderation / Safety
+
+Criar filtros e sistemas para:
+
+- abuso;
+- spam;
+- conteúdo malicioso;
+- assédio;
+- ataques entre comunidades;
+- manipulação;
+- assets perigosos.
+
+A liberdade da comunidade deve existir junto de limites claros.
+
+9. Reproducibility
+
+Tudo que a SNB gerar deve poder, quando aplicável, ser:
+
+- identificado;
+- versionado;
+- reproduzido;
+- auditado;
+- validado.
+
+10. Extensibility
+
+Criar arquitetura para plugins, módulos, APIs e extensões sem quebrar o núcleo.
+
+11. Local-first / Offline
+
+Sempre que possível, sistemas essenciais devem continuar funcionando localmente.
+
+Serviços externos são complementos, não pilares obrigatórios.
+
+12. Performance / Resource Manager
+
+Criar gerenciamento global de recursos para:
+
+- CPU;
+- GPU;
+- memória;
+- armazenamento;
+- rede;
+- cache;
+- tarefas;
+- modelos;
+- mundo;
+- artifacts.
+
+Isso deve conversar com o D-O15 e o RRW.
+
+13. Observabilidade
+
+Criar:
+
+- logs;
+- métricas;
+- tracing;
+- diagnósticos;
+- profiling;
+- health checks;
+- relatórios de regressão.
+
+14. Segurança
+
+Criar:
+
+- sandbox;
+- permissões;
+- isolamento;
+- validação de assets;
+- proteção de projetos;
+- integridade de artifacts;
+- controle de execução.
+
+15. Publicação
+
+A UES deve conseguir transformar projetos em produtos utilizáveis.
+
+Criar pipeline de:
+
+criação → teste → build → empacotamento → publicação → atualização → rollback.
+
+Não tratar “editor funcionando” como produto terminado.
+
+16. Compatibilidade
+
+Criar uma camada de importação/exportação para formatos existentes quando necessário.
+
+Mas:
+
+compatibilidade ≠ arquitetura interna.
+
+Formatos externos entram como portas de entrada/saída. O núcleo continua sendo UES/RRW.
+
+Faça essa auditoria e implemente somente o que realmente estiver faltando.
+
+Não duplique funcionalidades já pertencentes ao RRW.
+
+Este é o direcionamento definitivo da Gênesis. Não volte a interpretar o projeto pelos padrões das engines tradicionais.
+
+O que estamos construindo
+
+A SNB/UES não é uma cópia melhorada da Unreal, Unity, Godot ou qualquer outra engine.
+
+A Gênesis é a primeira geração de uma arquitetura própria.
+
+O objetivo é criar uma plataforma capaz de produzir uma representação extremamente avançada da realidade, usando o conhecimento humano disponível e os princípios matemáticos/físicos necessários, mas com uma arquitetura computacional própria.
+
+A regra fundamental
+
+Não copiar a indústria.
+
+A indústria atual pode ser estudada para entender problemas, limitações e soluções existentes.
+
+Mas não deve definir a arquitetura.
+
+Se uma solução tradicional resolve um problema de forma incompatível com os objetivos da UES:
+
+abandone a solução e crie outra.
+
+Não tente simplesmente otimizar a tecnologia antiga.
+
+A realidade é a base
+
+A SNB deve utilizar conhecimento sobre o mundo real em todas as escalas relevantes.
+
+Do cosmológico ao microscópico.
+
+Do planeta ao átomo.
+
+Da luz à matéria.
+
+Da água ao clima.
+
+Dos animais aos humanos.
+
+Do som às interações físicas.
+
+O objetivo é criar uma representação computacional extremamente rica da realidade, e não uma coleção de efeitos visuais.
+
+RRW
+
+O RRW é a fundação que materializa essa realidade.
+
+Ele não deve depender das abstrações tradicionais de:
+
+- mesh;
+- textura;
+- PBR;
+- shader tradicional;
+- raster tradicional;
+- ray tracing tradicional;
+- LOD tradicional;
+- física tradicional;
+- sistema tradicional de partículas.
+
+Essas coisas podem ser formatos de compatibilidade ou referências históricas.
+
+Não são a fundação.
+
+D-O15
+
+O D-O15 é o principal adaptador.
+
+Ele determina como a realidade será representada/materializada conforme:
+
+- contexto;
+- distância;
+- relevância;
+- observação;
+- interação;
+- fenômeno;
+- precisão;
+- tempo;
+- hardware.
+
+Isso permite que um celular antigo e uma máquina poderosa participem da mesma realidade sem simplesmente aplicar presets gráficos diferentes.
+
+Hardware
+
+Não projete a UES pensando:
+
+“Qual hardware precisamos para executar isso?”
+
+Projete pensando:
+
+“Qual representação permite produzir isso sem desperdiçar computação?”
+
+O hardware executa.
+
+A arquitetura decide o que precisa ser materializado.
+
+CPU é fallback.
+
+GPU integrada é válida.
+
+iGPU é válida.
+
+GPU dedicada é válida.
+
+Mobile é válido.
+
+Hardware antigo é válido.
+
+Quando houver backend específico, use-o de verdade.
+
+Mas nunca confunda backend com arquitetura.
+
+IA
+
+A IA deve trabalhar junto do RRW.
+
+Ela pode:
+
+- interpretar dados;
+- reconstruir objetos;
+- inferir estruturas;
+- procurar conhecimento;
+- comparar fontes;
+- gerar representações;
+- verificar;
+- corrigir;
+- refinar;
+- persistir conhecimento.
+
+Mas deve existir validação para evitar transformar inferência em fato sem controle.
+
+Dados externos
+
+Web, mapas, NASA, Google, datasets, modelos e outros serviços podem ser utilizados quando permitido.
+
+Porém:
+
+nenhum serviço externo obrigatório pode ser o coração da UES.
+
+Se puder automatizar, automatize.
+
+Se puder armazenar/processar internamente, faça.
+
+Se não puder, crie fallback.
+
+Não usar “não tenho GPU aqui” como desculpa
+
+Se o ambiente atual não possuir determinado hardware, implemente:
+
+- arquitetura;
+- contrato;
+- compilação;
+- execução interna;
+- simulação/fallback;
+- testes;
+- backend real preparado.
+
+Quando o hardware existir, o backend deve conseguir executar a capacidade.
+
+Não marque como pronto algo que não executa.
+
+Mas também não deixe de construir a arquitetura porque o sandbox atual não possui determinado dispositivo.
+
+Não usar “isso parece Unreal” como critério
+
+O objetivo não é produzir uma Unreal alternativa.
+
+O objetivo é criar algo que possa eventualmente tornar a comparação inadequada porque os fundamentos são diferentes.
+
+Refinamento obrigatório
+
+Depois de implementar cada sistema:
+
+1. teste;
+2. encontre falhas;
+3. corrija;
+4. faça regressão;
+5. avalie integração;
+6. avalie escalabilidade;
+7. avalie hardware fraco;
+8. avalie hardware forte;
+9. refine;
+10. somente então marque o sistema como completo.
+
+Não pare no primeiro protótipo funcional.
+
+Gênesis é completa
+
+Não empurre o RRW para V2.
+
+Não empurre a arquitetura gráfica para V2.
+
+Não empurre física fundamental para V2.
+
+Não empurre a capacidade de criação para V2.
+
+Não transforme V2 em depósito de tudo que a Gênesis deveria ter.
+
+V2 existe para SUPERAR a Gênesis, não para terminar a Gênesis.
+
+Critério final
+
+Quando o sistema estiver funcionando, pergunte:
+
+«“Isso realmente implementa o conceito UES/SNB ou apenas reproduz uma tecnologia tradicional com outro nome?”»
+
+Se for a segunda opção:
+
+refaça.
+
+Se for a primeira:
+
+integre, refine e continue.
+
+A meta da Gênesis não é atingir 100% de uma checklist de engine tradicional.
+
+A meta é estabelecer a primeira geração completa da arquitetura própria da SNB.
+
+REALIDADE → CONHECIMENTO → TESE DOS D → REPRESENTAÇÃO → D-O15 → RRW → MATERIALIZAÇÃO → EXPERIÊNCIA.
+
+Essa é a arquitetura que deve guiar toda a implementação daqui em diante.

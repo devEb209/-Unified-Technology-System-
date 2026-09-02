@@ -1,0 +1,1487 @@
+Quero expandir a SNB para que ela não seja limitada aos modelos de IA disponíveis no Puter.
+
+A SNB deve funcionar como uma inteligência universal capaz de utilizar MODELOS DE IA + APIs + SDKs + PLUGINS + SOFTWARES + ENGINES + SITES + CLI + BIBLIOTECAS + SCRIPTS + FERRAMENTAS DIGITAIS e, futuramente, HARDWARE/DISPOSITIVOS, sempre respeitando autorização, segurança, licenças e termos de uso.
+
+O objetivo é que o usuário não precise saber qual ferramenta usar.
+
+O usuário fornece o objetivo.
+
+A SNB descobre COMO realizar esse objetivo.
+
+==================================================
+1. UNIVERSAL CAPABILITY FABRIC
+==================================================
+
+Criar uma camada que transforme qualquer recurso externo compatível em uma Capability da SNB.
+
+Uma capability pode ser:
+
+- modelo de IA
+- API
+- SDK
+- plugin
+- biblioteca
+- CLI
+- software desktop
+- software web
+- engine
+- serviço online
+- site autorizado
+- ferramenta de criação
+- ferramenta científica
+- ferramenta de engenharia
+- ferramenta CAD
+- ferramenta 3D
+- ferramenta de animação
+- ferramenta de áudio
+- ferramenta de vídeo
+- ferramenta de imagem
+- ferramenta de programação
+- ferramenta de análise
+- script
+- dispositivo
+
+Criar manifests padronizados para cada capability.
+
+==================================================
+2. UNIVERSAL TOOL REGISTRY
+==================================================
+
+Criar um Registry central com:
+
+- nome
+- versão
+- fornecedor
+- tipo
+- capacidades
+- inputs
+- outputs
+- APIs
+- métodos de execução
+- autenticação
+- permissões
+- dependências
+- custo
+- latência
+- limites
+- licença
+- compatibilidade
+- risco
+- qualidade
+- confiabilidade
+- histórico de sucesso
+
+O Registry precisa ser atualizável sem alterar o núcleo da SNB.
+
+==================================================
+3. TOOL DISCOVERY ENGINE
+==================================================
+
+Criar um sistema que consiga descobrir novas ferramentas.
+
+Quando a SNB recebe uma tarefa:
+
+1. decompor a tarefa;
+2. identificar capacidades necessárias;
+3. procurar ferramentas capazes;
+4. comparar alternativas;
+5. verificar compatibilidade;
+6. verificar segurança/licença;
+7. testar quando necessário;
+8. escolher as melhores.
+
+Não depender de uma lista fixa de ferramentas.
+
+Permitir que novas ferramentas sejam descobertas e adicionadas ao ecossistema.
+
+==================================================
+4. COMPETENCY MAP
+==================================================
+
+Criar um mapa de competência de modelos e ferramentas.
+
+Exemplo:
+
+3D generation:
+A = 96
+B = 91
+C = 84
+
+PBR:
+A = 88
+B = 97
+C = 93
+
+Animation:
+A = 94
+B = 89
+C = 96
+
+Os scores devem vir de benchmarks + resultados reais.
+
+A SNB deve aprender quais ferramentas são melhores para cada tipo de problema.
+
+==================================================
+5. UNIVERSAL ROUTER
+==================================================
+
+O Router deve decidir dinamicamente:
+
+- qual modelo;
+- qual ferramenta;
+- qual versão;
+- qual pipeline;
+- quais parâmetros;
+- qual ordem de execução;
+- quais ferramentas podem rodar em paralelo;
+- quando fazer fallback.
+
+Considerar:
+
+qualidade
+latência
+custo
+confiabilidade
+modalidade
+preferência do usuário
+histórico
+disponibilidade
+risco.
+
+==================================================
+6. MULTI-MODEL + MULTI-TOOL ORCHESTRATION
+==================================================
+
+A SNB não deve escolher apenas UMA IA.
+
+Ela deve combinar especialistas.
+
+Exemplo:
+
+pedido:
+"Crie um personagem AAA para Unreal."
+
+Pipeline:
+
+pesquisa
+→ concept art
+→ seleção de conceito
+→ geração 3D
+→ comparação entre modelos
+→ retopology
+→ UV
+→ materiais
+→ PBR
+→ rig
+→ skin
+→ facial rig
+→ mocap
+→ animação
+→ física
+→ LOD
+→ colisão
+→ otimização
+→ integração Unreal
+→ testes
+→ correções
+→ build final.
+
+A SNB deve criar esse pipeline automaticamente.
+
+==================================================
+7. PIPELINE SYNTHESIS ENGINE
+==================================================
+
+Criar um sistema ainda mais poderoso:
+
+A SNB deve conseguir INVENTAR O PIPELINE necessário para resolver um problema novo.
+
+Não exigir que o desenvolvedor programe manualmente todos os workflows.
+
+Exemplo:
+
+"Quero transformar um vídeo de uma pessoa fazendo um movimento em uma animação pronta para um personagem Unreal."
+
+A SNB deve descobrir:
+
+vídeo
+→ pose estimation
+→ motion extraction
+→ cleanup
+→ retargeting
+→ rig
+→ physics correction
+→ export
+→ Unreal.
+
+Se o pipeline não existir, gerar um novo pipeline temporário.
+
+Se funcionar bem, salvar como workflow reutilizável.
+
+==================================================
+8. WORKFLOW MEMORY
+==================================================
+
+Guardar workflows bem-sucedidos.
+
+Exemplo:
+
+"Character AAA Unreal Pipeline v4"
+
+Salvar:
+
+- ferramentas;
+- modelos;
+- parâmetros;
+- ordem;
+- resultados;
+- erros;
+- correções;
+- tempo;
+- qualidade.
+
+Permitir que a SNB melhore workflows existentes.
+
+==================================================
+9. SELF-OPTIMIZING ROUTER
+==================================================
+
+O Router deve aprender com seus próprios resultados.
+
+Se:
+
+Pipeline A = 82/100
+Pipeline B = 94/100
+
+favorecer B.
+
+Mas não apenas pela média.
+
+Considerar contexto.
+
+Uma ferramenta pode ser melhor para:
+
+- personagens;
+- veículos;
+- arquitetura;
+- hard-surface;
+- animais;
+- low-poly;
+- realismo;
+- estilização.
+
+Criar perfis especializados.
+
+==================================================
+10. TOOL BENCHMARKING
+==================================================
+
+Criar benchmarks automáticos para ferramentas.
+
+Categorias:
+
+- reasoning
+- coding
+- pesquisa
+- visão
+- imagem
+- vídeo
+- áudio
+- 3D
+- animação
+- PBR
+- CAD
+- matemática
+- engenharia
+- simulação
+- planejamento
+- tool-use.
+
+Manter datasets versionados e holdouts.
+
+Nunca permitir que uma ferramenta seja considerada "melhor" apenas por marketing.
+
+==================================================
+11. SCRIPT FALLBACK
+==================================================
+
+Quando não houver API, SDK, plugin ou integração melhor:
+
+usar scripts.
+
+Suportar:
+
+Python
+JavaScript
+TypeScript
+Bash
+scripts Blender
+scripts de engines
+scripts CAD
+scripts específicos de softwares.
+
+Mas scripts devem ser executados em sandbox.
+
+Pipeline:
+
+gerar script
+→ análise estática
+→ Policy Engine
+→ sandbox
+→ execução
+→ logs
+→ artifacts
+→ verifier.
+
+==================================================
+12. UNIVERSAL SOFTWARE AGENT
+==================================================
+
+Criar um agente capaz de operar softwares autorizados.
+
+Combinar:
+
+- visão computacional;
+- compreensão de interface;
+- planejamento;
+- mouse;
+- teclado;
+- scripts;
+- APIs;
+- plugins.
+
+Sempre preferir métodos determinísticos quando existirem.
+
+==================================================
+13. UNIVERSAL BROWSER AGENT
+==================================================
+
+Permitir que a SNB utilize sites autorizados.
+
+Capacidades:
+
+- navegar;
+- pesquisar;
+- preencher;
+- upload;
+- download;
+- acompanhar processos;
+- coletar resultados;
+- executar ferramentas web.
+
+Preferir APIs oficiais.
+
+Nunca contornar:
+
+- CAPTCHA;
+- autenticação;
+- paywalls;
+- anti-bot;
+- limites de acesso;
+- mecanismos de segurança.
+
+==================================================
+14. TOOL ADAPTER FACTORY
+==================================================
+
+Criar um sistema que facilite criar adapters novos.
+
+Exemplo:
+
+BlenderAdapter
+SubstanceAdapter
+CascadeurAdapter
+GodotAdapter
+UnityAdapter
+UnrealAdapter
+RobloxAdapter
+CADAdapter
+BrowserAdapter
+PythonAdapter.
+
+Todos usando interfaces comuns.
+
+Quando uma ferramenta nova for descoberta, gerar um adapter inicial automaticamente quando tecnicamente possível.
+
+==================================================
+15. UNIVERSAL ARTIFACT SYSTEM
+==================================================
+
+Criar contratos universais para artifacts.
+
+A SNB precisa entender:
+
+- imagens;
+- vídeos;
+- áudio;
+- 3D;
+- código;
+- documentos;
+- datasets;
+- cenas;
+- animações;
+- materiais;
+- projetos;
+- builds;
+- arquivos.
+
+Registrar:
+
+proveniência
+versão
+dependências
+licença
+hash
+qualidade
+origem
+transformações.
+
+==================================================
+16. ARTIFACT GRAPH
+==================================================
+
+Criar um grafo mostrando como um resultado foi produzido.
+
+Exemplo:
+
+Concept A
+↓
+3D Model B
+↓
+Retopology C
+↓
+Texture D
+↓
+Rig E
+↓
+Animation F
+↓
+Unreal Asset G
+
+Permitir voltar para qualquer etapa e regenerar.
+
+==================================================
+17. DETERMINISTIC VERIFIER
+==================================================
+
+Nenhuma ferramenta deve ser considerada correta apenas porque respondeu "success".
+
+Verificar resultados.
+
+Código:
+- compilar;
+- testes;
+- lint;
+- security scan.
+
+3D:
+- mesh;
+- UV;
+- normals;
+- topology;
+- polygons;
+- materials;
+- rig;
+- animation;
+- scale.
+
+Imagem:
+- resolução;
+- formato;
+- integridade.
+
+Vídeo:
+- codec;
+- resolução;
+- duração;
+- integridade.
+
+Criar Quality Gates.
+
+==================================================
+18. AUTO-REPAIR ENGINE
+==================================================
+
+Se algo falhar:
+
+detectar
+→ diagnosticar
+→ escolher correção
+→ executar
+→ verificar novamente.
+
+Permitir múltiplas tentativas.
+
+Não repetir cegamente a mesma estratégia.
+
+==================================================
+19. STRATEGY ENGINE
+==================================================
+
+Antes de executar tarefas complexas, gerar múltiplas estratégias.
+
+Exemplo:
+
+Strategy A:
+mais rápida.
+
+Strategy B:
+melhor qualidade.
+
+Strategy C:
+menor custo.
+
+Strategy D:
+maior confiabilidade.
+
+Avaliar e escolher.
+
+Para tarefas importantes, executar pequenas provas antes da execução completa.
+
+==================================================
+20. SIMULATION-FIRST EXECUTION
+==================================================
+
+Sempre que possível, simular uma operação antes de executá-la.
+
+Detectar:
+
+- possíveis falhas;
+- conflitos;
+- dependências;
+- custo;
+- risco;
+- incompatibilidades.
+
+Depois executar.
+
+==================================================
+21. COUNTERFACTUAL PLANNER
+==================================================
+
+Permitir que a SNB pergunte internamente:
+
+"E se eu usar outra ferramenta?"
+
+"E se eu executar em outra ordem?"
+
+"E se eu dividir essa tarefa?"
+
+"E se eu fizer duas partes em paralelo?"
+
+Usar essas comparações para melhorar decisões.
+
+==================================================
+22. MULTI-AGENT DEBATE
+==================================================
+
+Para tarefas complexas, permitir especialistas independentes:
+
+Research Agent
+Planning Agent
+Coding Agent
+Design Agent
+Verification Agent
+Security Agent
+Optimization Agent.
+
+Eles podem produzir soluções independentes.
+
+Um Judge/Verifier compara.
+
+==================================================
+23. ADVERSARIAL VERIFICATION
+==================================================
+
+Depois que um agente produzir uma solução, outro agente deve tentar encontrar erros.
+
+Exemplo:
+
+Creator:
+"Terminei."
+
+Critic:
+"Encontrei 4 problemas."
+
+Creator:
+corrige.
+
+Verifier:
+valida.
+
+Isso reduz erros silenciosos.
+
+==================================================
+24. UNKNOWN MAP
+==================================================
+
+Criar um sistema que registre:
+
+- o que a SNB sabe;
+- o que sabe parcialmente;
+- o que não sabe;
+- o que precisa pesquisar;
+- o que precisa testar;
+- o que precisa de humano.
+
+A SNB nunca deve fingir conhecimento.
+
+==================================================
+25. RESEARCH ENGINE
+==================================================
+
+Quando faltar conhecimento:
+
+pesquisar
+→ coletar fontes
+→ comparar
+→ detectar contradições
+→ avaliar confiabilidade
+→ extrair conhecimento
+→ salvar proveniência.
+
+Não transformar automaticamente qualquer página em "verdade".
+
+==================================================
+26. KNOWLEDGE GRAPH
+==================================================
+
+Criar um grafo de conhecimento com:
+
+entidades
+relações
+fontes
+datas
+confiança
+contradições
+proveniência.
+
+Permitir raciocínio sobre relações.
+
+==================================================
+27. PROJECT MEMORY
+==================================================
+
+A SNB deve lembrar o projeto inteiro.
+
+Exemplo:
+
+jogo:
+- engine;
+- estilo;
+- arquitetura;
+- personagens;
+- assets;
+- código;
+- decisões;
+- bugs;
+- requisitos;
+- testes.
+
+Evitar que agentes esqueçam decisões anteriores.
+
+==================================================
+28. LONG-HORIZON TASK ENGINE
+==================================================
+
+Permitir missões que levem:
+
+minutos
+horas
+dias
+
+sem depender de uma única sessão.
+
+Implementar:
+
+- persistent workers;
+- checkpoints;
+- leases;
+- retries;
+- pause/resume;
+- recovery;
+- progress;
+- approvals.
+
+==================================================
+29. SELF-CRITIQUE
+==================================================
+
+Antes de entregar:
+
+"Isso realmente atende ao pedido?"
+
+"Há algo faltando?"
+
+"Existe uma solução melhor?"
+
+"Os requisitos foram cumpridos?"
+
+Executar verificação final.
+
+==================================================
+30. QUALITY EVOLUTION
+==================================================
+
+Não otimizar apenas para "funcionou".
+
+O objetivo deve ser:
+
+funcionar
+→ funcionar corretamente
+→ funcionar bem
+→ funcionar melhor
+→ funcionar com eficiência.
+
+Registrar qualidade ao longo do tempo.
+
+==================================================
+31. COST/RESOURCE INTELLIGENCE
+==================================================
+
+Mesmo que a SNB seja gratuita para o usuário, internamente os recursos podem ter custos.
+
+O sistema deve otimizar:
+
+- tokens;
+- chamadas;
+- tempo;
+- CPU;
+- GPU;
+- armazenamento;
+- APIs;
+- ferramentas externas.
+
+Escolher soluções eficientes sem sacrificar qualidade desnecessariamente.
+
+==================================================
+32. MODEL SPECIALIZATION
+==================================================
+
+Criar perfis de especialistas.
+
+Não tratar todos os modelos como equivalentes.
+
+Exemplos:
+
+Research Specialist
+Coding Specialist
+3D Specialist
+Animation Specialist
+Math Specialist
+Physics Specialist
+Engineering Specialist
+Vision Specialist
+Creative Specialist
+Planning Specialist
+Security Specialist
+Data Specialist.
+
+Cada especialista recebe:
+
+- instruções específicas;
+- ferramentas específicas;
+- memória relevante;
+- benchmarks próprios;
+- verifier próprio.
+
+==================================================
+33. CAPABILITY COMPOSITION
+==================================================
+
+Permitir combinar capacidades.
+
+Exemplo:
+
+Vision
++
+3D
++
+Physics
++
+Planning
+=
+Robotic Manipulation.
+
+Ou:
+
+Research
++
+Coding
++
+3D
++
+Animation
++
+Audio
++
+Engine
+=
+Game Development.
+
+==================================================
+34. REAL-WORLD TASK PLANNER
+==================================================
+
+Preparar arquitetura para futuramente controlar robôs e dispositivos físicos.
+
+O sistema deverá conseguir transformar:
+
+"Pegue o objeto da mesa e coloque na caixa."
+
+em:
+
+percepção
+→ localização
+→ planejamento
+→ trajetória
+→ controle
+→ execução
+→ verificação.
+
+Nunca assumir que software e mundo físico são iguais.
+
+==================================================
+35. PHYSICAL INTELLIGENCE FOUNDATION
+==================================================
+
+Preparar:
+
+- perception;
+- world model;
+- spatial memory;
+- object recognition;
+- pose estimation;
+- motion planning;
+- simulation;
+- inverse kinematics;
+- trajectory generation;
+- force/torque awareness;
+- safety boundaries.
+
+No futuro, conectar a robôs físicos.
+
+==================================================
+36. SIMULATION LEARNING
+==================================================
+
+Quando houver robótica:
+
+simular antes de executar.
+
+Usar ambientes 3D para:
+
+- testar trajetórias;
+- detectar colisões;
+- prever movimentos;
+- comparar estratégias;
+- treinar políticas.
+
+Somente enviar uma ação física após passar pelos limites de segurança.
+
+==================================================
+37. UNIVERSAL COMPUTER USE
+==================================================
+
+A SNB deve conseguir trabalhar com computadores autorizados.
+
+Interpretar:
+
+- tela;
+- janelas;
+- menus;
+- arquivos;
+- interfaces;
+- documentos.
+
+Executar:
+
+- mouse;
+- teclado;
+- scripts;
+- comandos;
+- APIs.
+
+Sempre dentro das permissões.
+
+==================================================
+38. UNIVERSAL DATA ENGINE
+==================================================
+
+Capaz de trabalhar com:
+
+CSV
+JSON
+SQL
+Excel
+Parquet
+datasets
+logs
+graphs
+documentos.
+
+Permitir:
+
+análise
+limpeza
+visualização
+modelagem
+estatística
+ML
+previsão
+relatórios.
+
+==================================================
+39. UNIVERSAL CODE FACTORY
+==================================================
+
+Para software:
+
+requirements
+→ arquitetura
+→ código
+→ testes
+→ build
+→ security scan
+→ benchmark
+→ correção
+→ release.
+
+Suportar:
+
+Python
+JS/TS
+C/C++
+Rust
+Java
+C#
+GDScript
+Lua
+etc.
+
+==================================================
+40. GAME FACTORY
+==================================================
+
+Para jogos:
+
+GDD
+→ design
+→ arquitetura
+→ gameplay
+→ código
+→ assets
+→ 3D
+→ animação
+→ áudio
+→ UI
+→ mundo
+→ NPCs
+→ física
+→ testes
+→ otimização
+→ build.
+
+Suportar:
+
+Godot
+Unity
+Unreal
+Roblox
+e outras engines.
+
+==================================================
+41. ENGINE FACTORY
+==================================================
+
+A SNB também deve ser capaz de criar engines.
+
+Gerar:
+
+- renderer;
+- scene system;
+- ECS;
+- physics;
+- animation;
+- audio;
+- asset pipeline;
+- scripting;
+- editor;
+- build system;
+- networking;
+- tooling.
+
+A própria SNB deve poder utilizar ferramentas para construir novas ferramentas.
+
+==================================================
+42. META-TOOLING
+==================================================
+
+Uma das capacidades mais importantes:
+
+A SNB deve conseguir criar novas ferramentas quando perceber que nenhuma existente resolve adequadamente o problema.
+
+Exemplo:
+
+"Não existe ferramenta adequada para isso."
+
+Então:
+
+especificação
+→ arquitetura
+→ implementação
+→ testes
+→ sandbox
+→ benchmark
+→ registro no Tool Registry.
+
+Isso cria novas capacidades para a própria SNB.
+
+==================================================
+43. CAPABILITY GAP DETECTOR
+==================================================
+
+Detectar automaticamente:
+
+"Existe uma lacuna na SNB."
+
+Exemplo:
+
+usuários frequentemente pedem determinada tarefa.
+
+As ferramentas atuais obtêm apenas 60/100.
+
+A SNB registra:
+
+Capability Gap.
+
+Depois:
+
+pesquisa ferramentas
+→ tenta combinar ferramentas
+→ tenta criar adapter
+→ tenta criar pipeline
+→ se necessário cria ferramenta própria.
+
+==================================================
+44. CONTINUOUS EVOLUTION
+==================================================
+
+A SNB deve melhorar continuamente.
+
+Monitorar:
+
+- novas IAs;
+- novas APIs;
+- novas ferramentas;
+- novas versões;
+- novas engines;
+- novas técnicas;
+- novos modelos;
+- novos benchmarks.
+
+Quando surgir uma ferramenta melhor:
+
+descobrir
+→ avaliar
+→ sandbox
+→ benchmark
+→ comparar
+→ adicionar
+→ atualizar Router.
+
+==================================================
+45. OPEN ECOSYSTEM
+==================================================
+
+Permitir que a comunidade crie:
+
+- plugins;
+- adapters;
+- agents;
+- tools;
+- workflows;
+- benchmarks;
+- connectors;
+- models;
+- extensions.
+
+Tudo deve passar por:
+
+manifest
+→ permissões
+→ sandbox
+→ testes
+→ verificação.
+
+==================================================
+46. COMMUNITY BENCHMARKING
+==================================================
+
+Permitir que a comunidade envie benchmarks.
+
+Mas separar:
+
+official benchmark
+community benchmark
+experimental benchmark.
+
+Nunca misturar resultados sem identificação.
+
+==================================================
+47. PROVIDER ABSTRACTION
+==================================================
+
+Não acoplar a SNB a um único fornecedor.
+
+Criar interfaces abstratas:
+
+ModelProvider
+ToolProvider
+SearchProvider
+StorageProvider
+ExecutionProvider
+VisionProvider
+AudioProvider
+VideoProvider
+3DProvider.
+
+SSe um fornecedor desaparecer, a SNB deve conseguir trocar.
+
+==================================================
+48. FAIL-SAFE ARCHITECTURE
+==================================================
+
+Uma ferramenta falhando não deve derrubar a missão inteira.
+
+Implementar:
+
+health probes
+timeouts
+retries
+circuit breakers
+cooldowns
+fallbacks
+dead-letter queues
+job recovery.
+
+==================================================
+49. EXECUTION RECEIPTS
+==================================================
+
+Cada execução deve gerar receipt.
+
+Registrar:
+
+execution_id
+tool
+model
+version
+input
+output
+hash
+permissions
+actions
+status
+errors
+artifacts
+verification
+quality.
+
+Diferenciar claramente logs internos de atestação criptográfica de providers.
+
+==================================================
+50. UNIVERSAL TASK GRAPH
+==================================================
+
+Toda missão complexa deve virar um grafo:
+
+GOAL
+ ↓
+REQUIREMENTS
+ ↓
+SUBTASKS
+ ↓
+CAPABILITIES
+ ↓
+TOOLS
+ ↓
+EXECUTIONS
+ ↓
+ARTIFACTS
+ ↓
+VERIFICATION
+ ↓
+FINAL RESULT.
+
+Cada nó deve poder ser:
+
+- executado;
+- pausado;
+- repetido;
+- substituído;
+- verificado.
+
+==================================================
+51. SELF-GENERATED WORKFLOWS
+==================================================
+
+A SNB deve ser capaz de transformar soluções bem-sucedidas em workflows reutilizáveis.
+
+Exemplo:
+
+"AAA Character Pipeline for Unreal"
+
+Depois outro usuário pedir algo semelhante:
+
+usar workflow
+→ adaptar
+→ executar.
+
+==================================================
+52. TOOL SIMULATOR
+==================================================
+
+Antes de integrar uma ferramenta nova, criar testes simulados:
+
+- input;
+- output;
+- erros;
+- limites;
+- comportamento esperado.
+
+Só liberar para produção depois dos testes.
+
+==================================================
+53. PERMISSION-AWARE INTELLIGENCE
+==================================================
+
+A SNB deve saber não apenas:
+
+"Como fazer?"
+
+mas:
+
+"Tenho autorização para fazer isso?"
+
+Se não:
+
+pedir autorização ou explicar a limitação.
+
+==================================================
+54. EXPLAINABLE EXECUTION
+==================================================
+
+Para tarefas importantes, mostrar:
+
+- o que será feito;
+- quais ferramentas serão usadas;
+- por quê;
+- quais arquivos serão alterados;
+- quais permissões serão necessárias;
+- resultado esperado.
+
+Não expor chain-of-thought privado.
+
+Mostrar apenas explicações operacionais úteis.
+
+==================================================
+55. USER CONTROL
+==================================================
+
+Permitir modos:
+
+AUTOMÁTICO
+ASSISTIDO
+MANUAL
+DRY-RUN
+SAFE MODE
+EXPERT MODE.
+
+No Dry Run:
+
+planejar e simular sem executar ações externas.
+
+==================================================
+56. FUTURE PHYSICAL TOOL FABRIC
+==================================================
+
+Preparar integração futura com:
+
+- robôs;
+- sensores;
+- câmeras;
+- impressoras 3D;
+- CNC;
+- microcontroladores;
+- braços robóticos;
+- dispositivos IoT.
+
+Tudo usando o mesmo conceito:
+
+Capability
+→ Tool Registry
+→ Policy
+→ Planner
+→ Execution
+→ Verification.
+
+==================================================
+57. DOMÍNIOS
+==================================================
+
+Não limitar o sistema a software.
+
+Expandir continuamente para:
+
+Ciência
+Medicina responsável
+Engenharia
+Matemática
+Física
+Química
+Biologia
+Agricultura
+Fabricação
+Robótica
+Cybersegurança ética
+Ciência de dados
+Educação
+Arquitetura
+Urbanismo
+Logística
+Sustentabilidade
+Computação
+Linguagem
+Música
+Direito informacional
+Administração
+Software
+Jogos
+Engines
+3D
+Imagem
+Vídeo
+Áudio
+Pesquisa
+Simulação
+Agentes
+Ferramentas
+Integrações
+Acessibilidade
+Geociências
+Meteorologia
+Oceanografia
+Transporte
+Aviação
+Astronomia
+Economia
+Governança
+Manutenção industrial
+Design de produtos
+Gestão de emergências
+Preservação cultural
+Tecnologias assistivas
+e novos domínios que ainda não possuem nome.
+
+Para medicina, direito, segurança e outros domínios de alto impacto, implementar limites, avisos, verificação e encaminhamento adequado em vez de apresentar decisões arriscadas como certezas.
+
+==================================================
+58. PRINCÍPIO CENTRAL DA SNB
+==================================================
+
+A SNB não deve simplesmente:
+
+"responder perguntas".
+
+Ela deve:
+
+ENTENDER
+→ PESQUISAR
+→ PLANEJAR
+→ DESCOBRIR CAPACIDADES
+→ ESCOLHER ESPECIALISTAS
+→ COMBINAR FERRAMENTAS
+→ EXECUTAR
+→ OBSERVAR
+→ VERIFICAR
+→ CORRIGIR
+→ OTIMIZAR
+→ ENTREGAR
+→ APRENDER.
+
+==================================================
+59. META FINAL
+==================================================
+
+A experiência do usuário deve ser:
+
+"Eu digo o que quero.
+A SNB descobre como fazer."
+
+Exemplos:
+
+"Crie um jogo completo."
+"Crie uma engine."
+"Crie um personagem 3D."
+"Faça uma animação."
+"Analise meus dados."
+"Construa um software."
+"Pesquise este problema científico."
+"Crie um projeto arquitetônico."
+"Simule esta máquina."
+"Prepare um experimento."
+"Crie uma textura PBR."
+"Transforme este desenho em um asset."
+"Automatize este trabalho."
+"Use este software para produzir o resultado."
+"Encontre a melhor ferramenta disponível para isso."
+
+A SNB deve determinar automaticamente o pipeline adequado.
+
+==================================================
+60. IMPLEMENTAÇÃO
+==================================================
+
+Antes de criar qualquer coisa:
+
+1. analisar o repositório atual;
+2. identificar sistemas existentes;
+3. reutilizar o que já existe;
+4. evitar duplicação;
+5. verificar quais itens da arquitetura V1 já estão implementados;
+6. implementar primeiro as fundações;
+7. integrar gradualmente;
+8. criar testes;
+9. conectar ao frontend;
+10. documentar;
+11. validar com tarefas reais.
+
+Não criar mockups ou funcionalidades falsas apenas para aparentar que o sistema funciona.
+
+Toda funcionalidade apresentada como disponível deve possuir implementação real ou ser claramente marcada como experimental.
+
+Priorizar nesta ordem:
+
+Tool Registry
+→ Capability System
+→ Policy Engine
+→ Sandbox Execution
+→ Tool Discovery
+→ Competency Map
+→ Universal Router
+→ Tool Agent
+→ Multi-tool Orchestration
+→ Pipeline Synthesis
+→ Verification
+→ Auto-Repair
+→ Memory
+→ Continuous Benchmarking
+→ Community Extensions
+→ Physical Intelligence foundations.
+
+A arquitetura deve ser modular para que novos modelos, sites, softwares, APIs, ferramentas e dispositivos possam ser adicionados sem modificar profundamente o núcleo da SNB.
+
+O objetivo não é criar apenas "mais um chatbot".
+
+O objetivo é construir uma infraestrutura de inteligência capaz de transformar diferentes modelos, ferramentas e recursos externos em um sistema único de execução, pesquisa, criação, automação, verificação e aprendizado contínuo.
