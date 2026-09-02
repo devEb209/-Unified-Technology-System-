@@ -1,4 +1,4 @@
-import type { Domain, DStep } from '../../d-system/src/types.ts';
+import { DOMAINS, type Domain, type DStep } from '../../d-system/src/types.ts';
 import { GEN1_DOMAINS } from '../../d-system/src/types.ts';
 import { ladderFor, stepAt, costOf, capsAt } from '../../d-system/src/ladders.ts';
 import { resolveRequirements, type DomainRequirements } from '../../d-system/src/requirements.ts';
@@ -153,7 +153,10 @@ function marginOf(c: { Qp: number; Qf: number; Qi: number }, f: { QpMin: number;
 type Resolved = ReturnType<typeof resolveRequirements>;
 
 /** Ordem em que domínios são resolvidos: quem é dependência vem antes. */
-export const DOMAIN_ORDER: readonly Domain[] = ['physical', 'temporal', 'social', 'economic', 'behavioral', 'visual'];
+// A ordem é DERIVADA do registro de domínios, não escrita à mão: a versão anterior
+// (lista fixa) significava que adicionar uma era nova exigia lembrar de um segundo
+// lugar — e o domínio ficava silenciosamente fora do fixpoint, decidido como zero.
+export const DOMAIN_ORDER: readonly Domain[] = DOMAINS.filter((d) => ladderFor(d).steps.length > 0);
 
 function bestQuality(list: Candidate[]): Candidate | undefined {
   return list.reduce<Candidate | undefined>((a, b) => (!a || b.Qf + b.Qi > a.Qf + a.Qi ? b : a), undefined);

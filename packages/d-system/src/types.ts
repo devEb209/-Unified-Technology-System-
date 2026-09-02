@@ -5,6 +5,7 @@
 export const DOMAINS = [
   'visual',
   'physical',
+  'terrain',
   'behavioral',
   'social',
   'economic',
@@ -13,7 +14,14 @@ export const DOMAINS = [
 
 export type Domain = (typeof DOMAINS)[number];
 
-/** Domínios com escada definida nesta geração (GÊNESIS). Os demais são slots do contrato. */
+/**
+ * Domínios que o otimizador liga por padrão nesta geração (GÊNESIS). Os demais são
+ * slots do contrato: têm escada, validam, materializam e custam — mas só entram na
+ * decisão quando a cena os exige (via `requires`), porque ligar um domínio por
+ * decreto seria capacidade inventada fora da regra do jogo.
+ * `terrain` entrou aqui como o primeiro domínio novo depois do GEN-1: a prova de que
+ * adicionar era nova é DADO, não reforma do otimizador.
+ */
 export const GEN1_DOMAINS: readonly Domain[] = ['visual', 'physical', 'temporal'];
 
 /**

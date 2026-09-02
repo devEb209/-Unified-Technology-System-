@@ -3,3 +3,4 @@ export * from './materialize.ts';
 export * from './quality.ts';
 export * from './audit.ts';
 export * from './fovea.ts';
+export * from './terrain.ts';

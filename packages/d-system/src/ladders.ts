@@ -60,7 +60,12 @@ function step(D: number, name: string, description: string, cost: CostRelation, 
 const c = (fixed: number, perPixel = 0, perEntity = 0, perLight = 0, perVolume = 0): CostRelation & { perLight: number; perVolume: number } =>
   ({ fixed, perPixel, perEntity, perLight, perVolume });
 
-/** Custo completo de um degrau. `perLight`/`perVolume` são extensões do domínio visual. */
+/**
+ * Custo completo de um degrau. `perLight`/`perVolume` são extensões: `perVolume` é
+ * o canal de quem trabalha por CÉLULA DE CAMPO (visual volumétrico e terreno), por
+ * isso o terreno não precisa de um quinto termo paralelo — um segundo dono para a
+ * mesma grandeza é como escalas divergem.
+ */
 export function costOf(step: DStep, region: { pixels: number; entities: number; lights?: number; volumes?: number }): number {
   const k = step.cost as CostRelation & { perLight?: number; perVolume?: number };
   return (
@@ -123,6 +128,27 @@ const TEMPORAL: DStep[] = [
   step(5, 'frame_synced', 'Por frame. Só onde movimento rápido, interação ou percepção de contato exigem.', c(0, 0, 0.02), { Qp: 1, Qf: 1, Qi: 1, caps: ['aggregate_tick', 'entity_tick', 'frame_tick'], recoverable: ['aggregate_stats', 'entity_set', 'entity_state', 'event_queue', 'contact_history', 'last_event_time'], operators: { Qf: 'tick_rate_supported(frame)' } }),
 ];
 
+// ————————————————————————————————————————————————————— TERRAIN ——————
+// Era GÊNESIS pediu "construir a realidade": terreno não é mesh importado, é campo
+// com leis. Cada degrau abaixo adiciona UMA lei de formação do relevo, e o preço é
+// por volume de célula (O(células), nunca O(entidades)) — ver teste T3/M9.
+const TERRAIN: DStep[] = [
+  step(0, 'base_plane', 'Plano de base do bioma: altitude constante, nenhuma estrutura. Existe para "não ter relevo" ser uma opção real e cobrada.',
+    c(0.5, 0, 0, 0, 0.00002), { Qp: 0.4, Qf: 0, Qi: 0.5, caps: [], recoverable: ['biome_code'], operators: { Qf: 'no_structure' } }),
+  step(1, 'orogeny_fractal', 'Relevo fractal determinístico (fBm + cristas): montanha, platô, vale. Altura como informação, ainda sem água nem gravidade agindo sobre ela.',
+    c(2, 0, 0, 0, 0.00008), { Qp: 0.6, Qf: 0.5, Qi: 0.7, caps: ['heightfield_fractal'], recoverable: ['biome_code', 'elevation_field'], operators: { Qf: 'field(elevation)' } }),
+  step(2, 'hydro_erosion', 'Hidrologia: acúmulo de fluxo, rios que descem de verdade, lagos onde a água não tem para onde ir, e deposição que alisa o vale.',
+    c(4, 0, 0, 0, 0.0002), { Qp: 0.75, Qf: 0.7, Qi: 0.8, caps: ['heightfield_fractal', 'hydrology'], recoverable: ['biome_code', 'elevation_field', 'flow_field', 'water_mask'], operators: { Qf: 'field(flow)+field(water)' } }),
+  step(3, 'material_slope', 'Classes de material derivadas do relevo (rocha, solo, areia) e ângulo de repouso: encosta acima do limite materializa como instável, não como rampa.',
+    c(6, 0, 0, 0, 0.0003), { Qp: 0.85, Qf: 0.85, Qi: 0.9, caps: ['heightfield_fractal', 'hydrology', 'material_class', 'angle_of_repose'], recoverable: ['biome_code', 'elevation_field', 'flow_field', 'water_mask', 'material_field'], operators: { Qf: 'field(material)+constraint(repose)' } }),
+  step(4, 'climate_zones', 'Clima por altitude e latitude: temperatura, umidade, evapotranspiração e zona de vegetação como código — é isto que faz neve ficar acima da linha certa sem ninguém pintar.',
+    c(8, 0, 0, 0, 0.0005), { Qp: 0.95, Qf: 0.92, Qi: 0.95, caps: ['heightfield_fractal', 'hydrology', 'material_class', 'angle_of_repose', 'climate_zones', 'vegetation_zones'], recoverable: ['biome_code', 'elevation_field', 'flow_field', 'water_mask', 'material_field', 'climate_field', 'vegetation_code'], operators: { Qf: 'field(climate)+field(vegetation)' } }),
+  step(5, 'dynamic_deformation', 'Deformação contínua: tsunami assoreia e escava, detrito muda o campo, e o que o jogador fez ontem ainda está lá. Reversibilidade é o custo deste degrau.',
+    c(10, 0, 0, 0, 0.0009), { Qp: 1, Qf: 1, Qi: 1, caps: ['heightfield_fractal', 'hydrology', 'material_class', 'angle_of_repose', 'climate_zones', 'vegetation_zones', 'sediment_transport', 'dynamic_deformation'], recoverable: ['biome_code', 'elevation_field', 'flow_field', 'water_mask', 'material_field', 'climate_field', 'vegetation_code', 'sediment_field', 'deformation_history'], drops: ['deformation_history'] },
+    // escavar e assorear sem histórico por frame é animação, não deformação
+    { prereq: { temporal: 3 } }),
+];
+
 const LADDERS: Record<Domain, Ladder> = {
   visual: { domain: 'visual', purpose: 'O que a região produz de imagem, e o quanto de fenômeno luminoso é transportado em vez de fingido.', steps: VISUAL, defaults: { QpMin: 0.9, QfMin: 0.0, QiMin: 0.0 }, hysteresis: 0.04 },
   physical: { domain: 'physical', purpose: 'Quanto do comportamento mecânico continua verdadeiro — incluindo quando NADA é simulado mas a existência permanece.', steps: PHYSICAL, defaults: { QpMin: 0.0, QfMin: 0.8, QiMin: 0.8 }, hysteresis: 0.04 },
@@ -130,6 +156,7 @@ const LADDERS: Record<Domain, Ladder> = {
   behavioral: { domain: 'behavioral', purpose: 'Nível de mente ativa por entidade (NMN), do agregado ao histórico completo.', steps: [], defaults: { QpMin: 0.0, QfMin: 0.0, QiMin: 0.0 }, hysteresis: 0.04 },
   social: { domain: 'social', purpose: 'Granularidade de relações e influência entre entidades.', steps: [], defaults: { QpMin: 0.0, QfMin: 0.0, QiMin: 0.0 }, hysteresis: 0.04 },
   economic: { domain: 'economic', purpose: 'Granularidade de produção, consumo e preço.', steps: [], defaults: { QpMin: 0.0, QfMin: 0.0, QiMin: 0.0 }, hysteresis: 0.04 },
+  terrain: { domain: 'terrain', purpose: 'Quantas leis de formação do relevo estão ativas na região — de plano morto a terreno que registra o que aconteceu nele.', steps: TERRAIN, defaults: { QpMin: 0.0, QfMin: 0.0, QiMin: 0.0 }, hysteresis: 0.04 },
 };
 
 export function ladderFor(domain: Domain): Ladder {

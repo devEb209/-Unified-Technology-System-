@@ -95,8 +95,43 @@ simulação; na célula em foco o custo líquido é negativo em −0.3 ms a −4
   contradiz a Tese dos D e a própria definição de PRIMORDIAL/DARKNESS. Teoria entra
   como **candidato com custo declarado**, nunca como conclusão.
 
+### 2.4 Terreno: como a altura chega à cena
+
+1. **Objetivo:** relevo que obedece leis (rio desce, encosta respeita o ângulo de
+   repouso, neve na linha de neve) e que registra o que aconteceu nele.
+2. **Restrição imutável:** decisão é por CÉLULA do Spatial Grid, nunca por entidade;
+   o frame não transporta mesh nem altura explícita (allowlist do `dframe`).
+3. **Soluções:**
+   - **(a) altura importada (`.png`/`.raw`/`.glb`)** — o padrão da indústria. Barato,
+     mas o motor passa a obedecer um asset estático: sem lei, sem deformação
+     persistente, e o custo vira O(pixels) de textura. **[adiada: só como
+     `heightfield_ref` resolvido fora do frame]**
+   - **(b) campo procedural POR LEI, escalonado em D** — cada degrau liga uma lei:
+     orogenia → hidrologia → ângulo de repouso → clima → deformação. **[escolhida:
+     `packages/terrain` não existe — é `packages/rrw-mat/src/terrain.ts` + escada
+     `terrain` em `d-system`]**
+   - **(c) terreno como agregados do `world`** (alturas resumidas por região, sem
+     campo): cobre colisão grosseira a custo zero, mas não dá hidologia nem marca do
+     tsunami. **[rejeitada: viola o requisito "realidade", não o orçamento]**
+   - **(d) heightfield implícito em shader** (o truque do "raymarching de terreno"):
+     rende sem asset, mas é exatamente o "shader tradicional" proibido em
+     `REAL UES:11-17`. **[rejeitada por contrato, não por custo]**
+   - **(e) simulação de formação em tempo de criação (erosão de milhões de ticks
+     offline, campo congelado como código)** — é o que "construir a realidade"
+     significa de verdade; pesado, e hoje a D5 cobre só a deformação contínua.
+     **[fronteira — PRIMORDIAL: aqui entra física, não engine]**
+4. **Custo/risco:** custo é `perVolume` (células de campo) — testado como exato (T3);
+   risco é o clima derivar de altitude que a cena não declarou (aconteceu: o materializador
+   tinha uma tabela de bioma e corrigia a cena → virou erro de projeto, e o conserto é
+   a chave `base_altitude_m` no frame, não uma tabela melhor).
+5. **Escolha + medição:** (b) implementada com T1–T10 (10 testes). Medido: linha de
+   neve **emerge** como faixa parcial (não cobertor), rio forma lago em bacia fechada,
+   encosta acima do ângulo de repoudo do material é marcada como instável. Pendente no
+   aparelho: custo de materializar g×g por célula a 716.098 un/s — e o próximo passo é
+   o `plan` decidir `terrain` por região com o `device.json`.
+
 ## 3. Próximas linhas a preencher (na ordem)
 
-terreno/asset → NMN (`behavioral`) → social/econômico → execução multi-device →
-taxa por célula (2.1e). Cada uma abre aqui **antes** de virar código, com ≥4
+NMN (`behavioral`) → social/econômico → execução multi-device → taxa por célula
+(2.1e) → erosão offline (2.4e). Cada uma abre aqui **antes** de virar código, com ≥4
 alternativas e um número de aparelho como critério de fechamento.

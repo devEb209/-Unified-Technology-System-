@@ -194,3 +194,29 @@ do hardware** — e a promessa honesta é "18–36% de recuperação de trabalho
 medido", não "metade da tela". A técnica entra no plano por região quando o campo de
 elevação/asset existir, e o registro do método (protocolo de 5 campos, ≥4 alternativas
 antes de qualquer "não") está em `docs/canonical/Solucoes-Por-Sistema.md`.
+
+## 2026-09-03 (tarde) — domínio `terrain` entrou como DADO, sem tocar no otimizador
+
+Escada nova (`d-system`): orogenia fractal → hidrologia (fluxo downhill com
+empate determinístico) → ângulo de repouso → clima derivado (gradiente altimétrico
++ latitude) → deformação contínua. Materialização em
+`packages/rrw-mat/src/terrain.ts` com 10 testes (T1–T10) e `uts demo` mostrando o
+contato dos seis degraus lado a lado (lei ativa por painel; rio, lago, encosta
+instável e **linha de neve emergem** da fórmula, nada é pintado).
+
+Duas correções estruturais que saíram do trabalho, e que valem mais que o terreno:
+
+1. `DOMAIN_ORDER` era uma **lista à mão** de domínios. Com o terrain na escada, ele
+   ficou silenciosamente fora do fixpoint (decidido como zero) — o que é exatamente o
+   modo como "a engine não suporta o que o contrato diz" acontece. A ordem passou a
+   ser DERIVADA do registro (`DOMAINS.filter(d => ladderFor(d).steps.length > 0)`);
+   teste T10 prende isso.
+2. O materializador tinha uma **tabela de altitude por bioma** que corrigia o frame.
+   Isso é medidor consertando medido. Saiu a tabela como oráculo e entrou
+   `base_altitude_m` no `Representation` (chave nova da allowlist, tipo `number`):
+   a cena declara, o terreno deriva. Neve a 3.000 m no equador, que a tabela
+   produzia, não é mais possível.
+
+Custo: `perVolume` (células de campo), exato em Δ e independente de entidades (T3).
+Slot `behavioral`/`social`/`economic` continua fora do `DOMAIN_ORDER` por ser vazio,
+não por esquecimento — e o `isMaterialized()` mostra o motivo.

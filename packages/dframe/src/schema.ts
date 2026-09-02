@@ -23,6 +23,11 @@ export const REPRESENTATION_KEY_TYPES: Record<string, 'number' | 'integer' | 'en
   detail_class: 'enum',
   matter_state_code: 'code',
   sky_model: 'enum',
+  // adicionado com o domínio `terrain`: altitude de BASE do bioma, em metros. É o
+  // elo que faltava para o clima ser derivado de fato — sem ele, "cordilheira" e
+  // "planície" chegavam ao materializador como enfeite do `heightfield_ref` e o
+  // resultado era temperatura errada por construção (28 °C a 2.600 m).
+  base_altitude_m: 'number',
 };
 
 /** Chaves proibidas em qualquer nível do frame, independentemente do valor. */

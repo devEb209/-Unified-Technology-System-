@@ -14,6 +14,7 @@ import { writeFileSync } from 'node:fs';
 import { materializeVisual } from '../../rrw-mat/src/materialize.ts';
 import { measureQp } from '../../rrw-mat/src/quality.ts';
 import { visualFrameAtD, encodePNG, frameToRGBA } from '../../rrw-mat/src/render.ts';
+import { materializeTerrain, terrainFrameAtD } from '../../rrw-mat/src/terrain.ts';
 import { ladderFor } from '../../d-system/src/ladders.ts';
 import { interpolate, presentBudget } from '../../do15/src/present.ts';
 
@@ -56,6 +57,49 @@ function sheet(tick: number, mode: 'step' | 'interp') {
   for (let i = 0; i < mat.length; i++) {
     const img = frameToRGBA(mat[i], { size, grid: true });
     for (let y = 0; y < size; y++) data.set(img.data.subarray(y * size * 4, (y + 1) * size * 4), (y * w + i * size) * 4);
+  }
+  return { png: encodePNG({ w, h, data }), rows };
+}
+
+/** contato de terreno: os 6 degraus da MESMA região, cada campo vindo das leis ativas */
+function terrainSheet(tick: number) {
+  const size = 256, cols = 6;
+  const w = size * cols, h = size;
+  const data = new Uint8Array(w * h * 4);
+  const rows: { D: number; relief: number; waterCells: number; unstable: number; snow: number }[] = [];
+  for (let D = 0; D < cols; D++) {
+    const f = materializeTerrain(terrainFrameAtD(D, { biome: 'montanha_nevada', baseAltitudeM: 4400 } as never), {
+      gridSize, cellSize: 4, domainMeters: 600000, reliefM: 700, latitudeSpanDeg: 0.25, deformations: [{ x: 0.5, y: 0.5, radius: 0.1, depth: 40 + tick * 4 }],
+    } as never);
+    let mn = Infinity, mx = -Infinity;
+    for (const v of f.elevation) { mn = Math.min(mn, v); mx = Math.max(mx, v); }
+    const span = mx - mn || 1;
+    for (let y = 0; y < size; y++) {
+      for (let xx = 0; xx < size; xx++) {
+        const cx = Math.min(f.g - 1, Math.floor((xx * f.g) / size));
+        const cy = Math.min(f.g - 1, Math.floor((y * f.g) / size));
+        const i = cy * f.g + cx;
+        const k = (f.elevation[i] - mn) / span;
+        const veg = f.vegetation[i];
+        let r = 40 + 150 * k, g = 55 + 140 * k, b = 60 + 150 * k;
+        if (f.water[i] > 0) { r = 30; g = 70; b = 140 + 60 * k; }
+        if (veg === 'snow') { r = 235; g = 238; b = 245; }
+        else if (veg === 'conifer') { r = 30; g = 70; b = 45; }
+        else if (veg === 'forest') { r = 34; g = 88; b = 48; }
+        else if (veg === 'tundra') { r = 120; g = 128; b = 110; }
+        if (f.material[i] === 1) { r = r * 0.8 + 60; g = g * 0.8 + 58; b = b * 0.8 + 55; }
+        if (f.unstable[i]) { r = 190; g = 90; b = 40; }
+        const o = (y * w + D * size + xx) * 4;
+        data[o] = r | 0; data[o + 1] = g | 0; data[o + 2] = b | 0; data[o + 3] = 255;
+      }
+    }
+    rows.push({
+      D,
+      relief: Number((mx - mn).toFixed(1)),
+      waterCells: f.water.reduce((a: number, v: number) => a + (v > 0 ? 1 : 0), 0),
+      unstable: f.unstable.reduce((a: number, v: number) => a + v, 0),
+      snow: f.vegetation.filter((v: string) => v === 'snow').length,
+    });
   }
   return { png: encodePNG({ w, h, data }), rows };
 }
@@ -106,6 +150,12 @@ a{color:#9ecbff}
   <div class="mut">sim ${simHz} Hz · tela ${dispHz} Hz · ${unitsPerSecond} un/s <span class="no">(escala de placeholder — troque por device.json medido)</span></div>
 </section>
 <section>
+  <h1>terreno: as leis ativas, por degrau</h1>
+  <img src="/terrain.png?tick=0" alt="contato de terreno nos seis degraus" style="border-top:1px solid #232323">
+  <table id="tr"><thead><tr><th>D</th><th>relevo (m)</th><th>células de lago</th><th>encostas instáveis</th><th>células de neve</th></tr></thead><tbody></tbody></table>
+  <div class="mut">mesma região, mesma cena: cada painel só tem as LEIS daquele degrau. Neve e rio não foram pintados — saem da altitude/fluxo. Vermelho = encosta acima do ângulo de repouso do material.</div>
+</section>
+<section>
   <h1>o que isto ainda não é</h1>
   <pre>não é raster nem GPU: não há mesh, textura, shader nem draw call — então nenhum
 fps desta página descreve o seu A70. Para isso: node bin/uts.mjs measure --out device.json
@@ -125,6 +175,12 @@ async function pr(){
   const j=await (await fetch('/present.json')).json();
   document.getElementById('pr').textContent=j.text;
 }
+async function tr(){
+  const j=await (await fetch('/terrain.json?tick='+(tick-1))).json();
+  document.querySelector('#tr tbody').innerHTML=j.rows.map(r=>'<tr><td>D'+r.D+'</td><td>'+r.relief+'</td><td>'+r.waterCells+'</td><td>'+r.unstable+'</td><td>'+r.snow+'</td></tr>').join('');
+  const im=document.querySelector('img[src^="/terrain.png"]'); if(im) im.src='/terrain.png?tick='+(tick-1);
+}
+tr();setInterval(tr,1000);
 document.getElementById('tog').onclick=e=>{e.preventDefault();on=!on;clearInterval(timer);timer=on?setInterval(refresh,1000):null;e.target.textContent=on?'ligada':'desligada';};
 refresh();pr();timer=setInterval(refresh,1000);
 </script></html>`;
@@ -153,6 +209,8 @@ const server = createServer((req, res) => {
     return res.end(html());
   }
   if (u.pathname === '/sheet.png') return png(res, sheet(tick, mode).png);
+  if (u.pathname === '/terrain.png') return png(res, terrainSheet(tick).png);
+  if (u.pathname === '/terrain.json') return json(res, { tick, rows: terrainSheet(tick).rows, QpMin, note: 'cada painel tem as leis daquele degrau ativas; nada aqui foi pintado, salvo a cor de exibição' });
   if (u.pathname === '/sheet.json') {
     const { rows } = sheet(tick, mode);
     return json(res, { rows, tick, mode, grid: gridSize, QpMin, simHz, dispHz });
