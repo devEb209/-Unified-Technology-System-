@@ -1,0 +1,9 @@
+{
+  "name": "@uts/cli",
+  "version": "0.1.0-genesis",
+  "private": true,
+  "type": "module",
+  "description": "CLI GEN-1: `measure` calibra unidades de custo no aparelho; `plan` gera plan.json (por célula × domínio) a partir de uma cena.",
+  "bin": { "uts": "./run.js" },
+  "exports": { ".": "./src/plan.ts", "./measure": "./src/measure.ts" }
+}

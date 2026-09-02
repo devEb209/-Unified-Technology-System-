@@ -1,0 +1,8 @@
+{
+  "name": "@uts/world",
+  "version": "0.1.0-genesis",
+  "private": true,
+  "type": "module",
+  "description": "Estado persistente do mundo por célula do Spatial Grid: DFrames vigentes + agregados de vida dormindo. Local-first.",
+  "exports": { ".": "./src/index.ts" }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "uts",
+  "private": true,
+  "version": "0.1.0-genesis",
+  "description": "UTS — Unified Technology System / UES — Unified Engine System. GÊNESIS (GEN-1).",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "test": "node --disable-warning=ExperimentalWarning --test packages/*/test/*.test.ts",
+    "measure": "node --disable-warning=ExperimentalWarning packages/cli/run.js measure",
+    "plan": "node --disable-warning=ExperimentalWarning packages/cli/run.js plan",
+    "validate": "node --disable-warning=ExperimentalWarning -e \"import('./packages/d-system/src/ladders.ts').then(m=>{const e=m.validateAll();console.log(e.length?JSON.stringify(e,null,2):'escadas válidas');process.exit(e.length?1:0)})\""
+  }
+}

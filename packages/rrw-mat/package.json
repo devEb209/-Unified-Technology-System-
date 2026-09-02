@@ -1,0 +1,8 @@
+{
+  "name": "@uts/rrw-mat",
+  "version": "0.1.0-genesis",
+  "private": true,
+  "type": "module",
+  "description": "MATERIALIZAÇÃO: códigos semânticos do DFrame → campo luminoso por célula, e a medição de Qp que dá conteúdo ao piso perceptual.",
+  "exports": { ".": "./src/index.ts" }
+}
