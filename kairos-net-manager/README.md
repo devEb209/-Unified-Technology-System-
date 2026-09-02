@@ -25,7 +25,8 @@ Na primeira execução, toque em **Marcar como minha** no painel. O app grava o 
 O corte de tráfego de terceiros só é efetivo através do roteador. Em **Ajustes → Painel do Roteador**, informe usuário e senha do painel; o app tenta os endpoints comuns (OpenWrt/LuCI, TP-Link, Mercusys, APIs genéricas). Sem isso, o estado é mantido localmente e reaplicado a cada ciclo.
 
 ## Gerar o APK
-O build roda no GitHub Actions (`.github/workflows/kairos-apk.yml`):
+O workflow pronto está em `kairos-net-manager/ci/kairos-apk.yml`.
+Copie-o para `.github/workflows/kairos-apk.yml` pela interface do GitHub (o token do agente não tem permissão de escrever em workflows), depois:
 1. Actions → **Käirōs Net Manager - Build APK** → *Run workflow*
 2. Baixe o artefato **KairosNetManager-APK** (acessível apenas a quem tem acesso ao repositório)
 
