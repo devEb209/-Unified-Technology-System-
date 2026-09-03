@@ -108,10 +108,14 @@ class KairosVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Emite uma nova lista de cópias para o Compose recompor de fato. */
     private fun persist() {
-        store.saveDevices(devices.value)
-        devices.value = devices.value.toList()
+        val snapshotList = devices.value.map { it.copy() }
+        store.saveDevices(snapshotList)
+        devices.value = snapshotList
     }
+
+    fun byId(id: String): Device? = devices.value.firstOrNull { it.id == id }
 
     private fun log(d: Device, ev: String, detail: String = "") =
         store.addHistory(HistoryEntry(System.currentTimeMillis(), d.id, ev, detail))

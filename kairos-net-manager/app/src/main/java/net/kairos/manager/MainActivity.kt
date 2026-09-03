@@ -47,8 +47,6 @@ class MainActivity : ComponentActivity() {
         }
         perms.launch(list.toTypedArray())
     }
-
-    override fun onPause() { super.onPause(); }
 }
 
 @Composable

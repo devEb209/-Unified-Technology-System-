@@ -62,7 +62,7 @@ class Store(ctx: Context) {
 
     // ---------- Histórico ----------
     fun addHistory(e: HistoryEntry) {
-        val arr = JSONArray(p.getString("history", "[]"))
+        val arr = JSONArray(p.getString("history", "[]") ?: "[]")
         arr.put(JSONObject().apply {
             put("ts", e.ts); put("dev", e.deviceId); put("ev", e.event); put("dt", e.detail)
         })
@@ -76,7 +76,7 @@ class Store(ctx: Context) {
     }
 
     fun history(deviceId: String? = null): List<HistoryEntry> {
-        val arr = JSONArray(p.getString("history", "[]"))
+        val arr = JSONArray(p.getString("history", "[]") ?: "[]")
         val out = mutableListOf<HistoryEntry>()
         for (i in 0 until arr.length()) {
             val o = arr.getJSONObject(i)

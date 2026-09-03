@@ -1,5 +1,6 @@
 package net.kairos.manager.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -177,7 +178,7 @@ fun fmtBytes(b: Long): String = when {
 fun DevicesScreen(vm: KairosVM) {
     val devs by vm.devices.collectAsState()
     val mine by vm.onMyNetwork.collectAsState()
-    var selected by remember { mutableStateOf<Device?>(null) }
+    var selectedId by remember { mutableStateOf<String?>(null) }
     var query by remember { mutableStateOf("") }
 
     Column(Modifier.fillMaxSize().padding(horizontal = 14.dp)) {
@@ -201,25 +202,30 @@ fun DevicesScreen(vm: KairosVM) {
             Spacer(Modifier.height(10.dp))
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(list, key = { it.id }) { d -> DeviceRow(vm, d) { selected = d } }
+            items(list, key = { it.id }) { d -> DeviceRow(vm, d) { selectedId = d.id } }
             item { Spacer(Modifier.height(80.dp)) }
         }
     }
 
-    selected?.let { DeviceSheet(vm, it) { selected = null } }
+    selectedId?.let { id ->
+        val live = devs.firstOrNull { it.id == id }
+        if (live == null) selectedId = null
+        else DeviceSheet(vm, live) { selectedId = null }
+    }
 }
 
 @Composable
 private fun DeviceRow(vm: KairosVM, d: Device, onOpen: () -> Unit) {
-    var tick by remember { mutableStateOf(0) }
-    LaunchedEffect(d.pausedUntil) {
-        while (d.isPaused) { tick++; kotlinx.coroutines.delay(1000) }
+    var pauseLabel by remember(d.id) { mutableStateOf(if (d.isPaused) vm.pauseLeft(d) else "") }
+    LaunchedEffect(d.id, d.pausedUntil) {
+        while (d.isPaused) { pauseLabel = vm.pauseLeft(d); kotlinx.coroutines.delay(1000) }
+        pauseLabel = ""
     }
     KCard(Modifier.clickable(onClick = onOpen)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
-                Modifier.size(10.dp).clip(RoundedCornerShape(5.dp))
-                    .then(Modifier).background2(if (d.online) KGreen else KMuted)
+                Modifier.size(10.dp)
+                    .background(if (d.online) KGreen else KMuted, RoundedCornerShape(5.dp))
             )
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
@@ -230,7 +236,7 @@ private fun DeviceRow(vm: KairosVM, d: Device, onOpen: () -> Unit) {
                 }
                 Text("${d.ip}  •  ${d.mac.ifBlank { "MAC oculto" }}", color = KMuted, fontSize = 11.sp)
                 Text("Prioridade ${d.priority}/5  •  ${if (d.rttMs >= 0) "${d.rttMs}ms" else "—"}", color = KMuted, fontSize = 11.sp)
-                if (d.isPaused) Text("PAUSA BLINDADA ${vm.pauseLeft(d)}", color = KAmber, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                if (pauseLabel.isNotEmpty()) Text("PAUSA BLINDADA $pauseLabel", color = KAmber, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton({ vm.toggleBlock(d) }) {
@@ -245,16 +251,17 @@ private fun DeviceRow(vm: KairosVM, d: Device, onOpen: () -> Unit) {
     }
 }
 
-private fun Modifier.background2(c: Color) = this.then(
-    androidx.compose.foundation.background(c, RoundedCornerShape(5.dp))
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DeviceSheet(vm: KairosVM, d: Device, onClose: () -> Unit) {
-    var name by remember { mutableStateOf(d.name) }
-    var cap by remember { mutableStateOf(d.bandwidthCapKbps.toString()) }
+    var name by remember(d.id) { mutableStateOf(d.name) }
+    var cap by remember(d.id) { mutableStateOf(d.bandwidthCapKbps.toString()) }
     var confirmPause by remember { mutableStateOf(false) }
+    var pauseLeft by remember(d.id) { mutableStateOf(if (d.isPaused) vm.pauseLeft(d) else "") }
+    LaunchedEffect(d.id, d.pausedUntil) {
+        while (d.isPaused) { pauseLeft = vm.pauseLeft(d); kotlinx.coroutines.delay(1000) }
+        pauseLeft = ""
+    }
 
     ModalBottomSheet(onDismissRequest = onClose, containerColor = KSurf) {
         Column(Modifier.padding(18.dp).fillMaxWidth()) {
@@ -285,7 +292,7 @@ private fun DeviceSheet(vm: KairosVM, d: Device, onClose: () -> Unit) {
             }
             if (d.isPaused) {
                 Spacer(Modifier.height(8.dp))
-                Text("Pausa blindada ativa: ${vm.pauseLeft(d)} — não pode ser desfeita.",
+                Text("Pausa blindada ativa: $pauseLeft — não pode ser desfeita.",
                     color = KAmber, fontSize = 12.sp)
             }
 
