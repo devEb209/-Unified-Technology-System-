@@ -74,8 +74,9 @@ fun KairosApp() {
         Triple("Painel", Icons.Default.Dashboard, 0),
         Triple("Aparelhos", Icons.Default.Devices, 1),
         Triple("Histórico", Icons.Default.History, 2),
-        Triple("Sistemas", Icons.Default.GridView, 3),
-        Triple("Ajustes", Icons.Default.Settings, 4)
+        Triple("Ferramentas", Icons.Default.Build, 3),
+        Triple("Sistemas", Icons.Default.GridView, 4),
+        Triple("Ajustes", Icons.Default.Settings, 5)
     )
 
     KairosBackground {
@@ -111,7 +112,8 @@ fun KairosApp() {
                     0 -> DashboardScreen(vm)
                     1 -> DevicesScreen(vm)
                     2 -> HistoryScreen(vm)
-                    3 -> SystemsScreen(vm)
+                    3 -> ToolsScreen(vm)
+                    4 -> SystemsScreen(vm)
                     else -> SettingsScreen(vm) { Auth.lock(); unlocked = false }
                 }
             }
