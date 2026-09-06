@@ -1,0 +1,11 @@
+{
+  "name": "Memory_0246_Persistent",
+  "category": "UTS AI Memory - Persistent Knowledge",
+  "file": "3246/5000",
+  "physicalSystems": 200,
+  "quality": "GROUND_TRUTH",
+  "memoryTypes": ["message", "conversation", "short-term", "long-term", "user", "project", "preferences", "decisions"],
+  "knowledge": "Persistent knowledge system for UTS - facts, relations, sources, confidence, versions, provenance, update, conflicts, history, knowledge created by SNB",
+  "power": "INFINITO",
+  "canCreate": "literally everything"
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="uesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <rect x="30" y="30" width="140" height="140" rx="20" fill="none" stroke="url(#uesGrad)" stroke-width="3" opacity="0.5"/>
+  <rect x="45" y="45" width="110" height="110" rx="15" fill="url(#uesGrad)" opacity="0.15"/>
+  <g>
+    <rect x="60" y="70" width="80" height="8" rx="4" fill="url(#uesGrad)"/>
+    <rect x="60" y="85" width="60" height="8" rx="4" fill="url(#uesGrad)" opacity="0.7"/>
+    <rect x="60" y="100" width="70" height="8" rx="4" fill="url(#uesGrad)" opacity="0.5"/>
+    <circle cx="70" cy="125" r="8" fill="url(#uesGrad)"/>
+    <circle cx="90" cy="125" r="8" fill="url(#uesGrad)" opacity="0.7"/>
+    <circle cx="110" cy="125" r="8" fill="url(#uesGrad)" opacity="0.5"/>
+    <circle cx="130" cy="125" r="8" fill="url(#uesGrad)" opacity="0.3"/>
+  </g>
+  <text x="100" y="175" font-family="Arial" font-size="20" font-weight="900" text-anchor="middle" fill="url(#uesGrad)">UES</text>
+</svg>
