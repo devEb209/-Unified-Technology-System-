@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="utsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#utsGrad)" stroke-width="3" opacity="0.3">
+    <animate attributeName="r" values="85;95;85" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="url(#utsGrad)" stroke-width="2" opacity="0.5">
+    <animate attributeName="r" values="65;75;65" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <g filter="url(#glow)">
+    <path d="M100 30 L130 70 L120 70 L140 120 L100 100 L60 120 L80 70 L70 70 Z" fill="url(#utsGrad)"/>
+    <circle cx="100" cy="100" r="12" fill="white" opacity="0.9"/>
+  </g>
+  <text x="100" y="165" font-family="Arial, sans-serif" font-size="22" font-weight="900" text-anchor="middle" fill="url(#utsGrad)">UTS</text>
+</svg>

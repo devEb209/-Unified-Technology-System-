@@ -1,0 +1,26 @@
+# Ignore large platform data (500K files, 2GB) - already in other branches as zips
+Arkhe/Platform/
+Arkhe/Installer/ARKHE_*.rbxm
+Arkhe/Installer/ARKHE_*.zip
+Arkhe/Installer/ARKHE_*.apk
+Arkhe/Installer/*.zip
+# Keep small files
+!Arkhe/Installer/*.txt
+!Arkhe/Installer/*.lua
+!Arkhe/Installer/*.html
+# Ignore other large
+*.rbxm
+*.apk
+*.zip
+!assets/**/*.svg
+!UTS/**/*.lua
+!UTS/**/*.js
+!UTS/**/*.json
+!DsOS/**/*
+!UES/**/*
+!SingularityAI/**/*
+!SNB/**/*
+!ArkheRoblox/**/*
+# Allow our zips for UTS/DsOS small
+!UTS.zip
+!DsOS.zip
