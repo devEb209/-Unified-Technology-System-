@@ -1,0 +1,28 @@
+{
+  "product": "ARKHER STUDIOS",
+  "generation": 1,
+  "version": "1.0.0-dev.1",
+  "status": "DEVELOPMENT_NOT_COMPLETE_V1",
+  "zipEntries": 45,
+  "zipCrcAndContents": "passed",
+  "artifacts": [
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxl",
+      "bytes": 52015,
+      "sha256": "f83054e00e64dd1b0c68f3520b74ac7f2befdfe62410a902865441b29716fdf4"
+    },
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxm",
+      "bytes": 53065,
+      "sha256": "a2c60b62b29fa77944d4cb0723dfc592e2043e6d00fb4fef65a14f3cf0658fe5"
+    },
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.zip",
+      "bytes": 197261,
+      "sha256": "97700ba52b441248afac56292e4fd9bd4a9473618c2caedaa3e31497b38727c5"
+    }
+  ],
+  "robloxStudio": "NOT_TESTED",
+  "formal10000Systems": "NOT_CERTIFIED",
+  "formal100000Features": "NOT_CERTIFIED"
+}

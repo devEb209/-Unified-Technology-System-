@@ -24,3 +24,20 @@ Arkhe/Installer/*.zip
 # Allow our zips for UTS/DsOS small
 !UTS.zip
 !DsOS.zip
+
+# Reproducible recovery build: keep intermediate data and dependencies out of Git.
+.cache/
+build/
+node_modules/
+__pycache__/
+*.pyc
+
+# Only the four explicitly requested final downloads are tracked.
+!downloads/2026-09-06/UTS_MAXIMO_RECUPERADO.rbxm
+!downloads/2026-09-06/ARKHE_MAXIMO_RECUPERADO.rbxm
+!downloads/2026-09-06/AUTO_ORGANIZER_MAXIMO.rbxm
+!downloads/2026-09-06/3_MAXIMOS_RECUPERADOS.zip
+
+# Focused ARKHER development artifacts requested for direct delivery.
+!arkher/releases/g1-development/ARKHER_STUDIOS_G1_DEV.rbxm
+!arkher/releases/g1-development/ARKHER_STUDIOS_G1_DEV.zip

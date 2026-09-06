@@ -1,0 +1,18 @@
+{
+  "name": "uts-recovery-packaging",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Binary Roblox model packaging and independent verification; not the UTS runtime.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node test-luau.mjs"
+  },
+  "dependencies": {
+    "luau-web": "1.4.0",
+    "rbx-dom": "0.3.0",
+    "rbx-reader": "1.5.10"
+  }
+}

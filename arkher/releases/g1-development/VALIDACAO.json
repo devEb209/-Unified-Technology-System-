@@ -1,0 +1,120 @@
+{
+  "product": "ARKHER STUDIOS",
+  "generation": 1,
+  "version": "1.0.0-dev.1",
+  "releaseStatus": "DEVELOPMENT_NOT_FINAL_V1",
+  "brief": {
+    "commit": "c849100aec49e344cf915cbbe5b31bcc707963ee",
+    "blob": "9f628f98e103d1fedea1a7c418ecb50ecdf21fcf"
+  },
+  "compiledLuauSources": 20,
+  "sources": [
+    {
+      "file": "Core/Budget.luau",
+      "sha256": "6cb2eb7c295bc1a8bd9699d16a23dbfab23a81fe26769ac7ca8c4d012d122e8d"
+    },
+    {
+      "file": "Core/Graph.luau",
+      "sha256": "69b29a1282f97e5767efba09c0733d770f2edd6996b973d9b353d3d131ed42cc"
+    },
+    {
+      "file": "Core/Planner.luau",
+      "sha256": "10a77330e0da65f1275d1a3a76823b26d33989afe0dece21cc2be443a4bcf3c7"
+    },
+    {
+      "file": "Core/Procedural.luau",
+      "sha256": "b8a6849ee6d35693c97f117c2b515bbf48362dbe613c56d1d5d3c76cba724680"
+    },
+    {
+      "file": "Core/Project.luau",
+      "sha256": "70508ef8d11f343a6f9b1e096c87f7bf5a7e85bbf81803c6f2b58dde3fbacccc"
+    },
+    {
+      "file": "Core/Runtime.luau",
+      "sha256": "f5bbf8e4b5ac9e8a05f6e06fad7dad7fbaeb5d172f8f0f1b247798971446aa62"
+    },
+    {
+      "file": "Core/Schema.luau",
+      "sha256": "665ef98d60f499d8775a71ca2a187a8e7f53bac84ee51169d44c099bc27e4726"
+    },
+    {
+      "file": "Core/Session.luau",
+      "sha256": "1a209b7128bef0bfe41b1fc54caacfaec047496e8b80bad2b96aa93d76026cd4"
+    },
+    {
+      "file": "Core/Transform.luau",
+      "sha256": "7343a65afe90fbe9a4c696df1628688eda789c8f3061839be3028136e0203f81"
+    },
+    {
+      "file": "Core/Util.luau",
+      "sha256": "ffdc629f5af3ac3d4a3905a7706b7197b303977c2b86a9f766d9deb1762ffe64"
+    },
+    {
+      "file": "Client/Camera.luau",
+      "sha256": "c95fa7aafe7179900ae33f4a2d8a447c3d00529a8c3ba632cd9f74727a280e70"
+    },
+    {
+      "file": "Client/Editor.luau",
+      "sha256": "84faa1539be1866710974a900451cdb7d5b5b094812dd9dba2d8b4f1b2f9c74c"
+    },
+    {
+      "file": "Client/Entry.luau",
+      "sha256": "3a9c52e01cdc293f6c6e9fd1652dd72e97835b3caf3487135cc888f804195c22"
+    },
+    {
+      "file": "Client/Renderer.luau",
+      "sha256": "b3f188d8bd022d87b77e501eb9233dad288001ea2c4090e700e4d025ef0b5419"
+    },
+    {
+      "file": "Server/Config.luau",
+      "sha256": "687a42c06e233dbd459c410bc6d55f65a0ad5eebeb742090e6d3d4c665025bd8"
+    },
+    {
+      "file": "Server/DataStoreStore.luau",
+      "sha256": "be45d4e189528b72bb5c04af87fb4ec36ba8f5b4f12b5456eb472402917e94fd"
+    },
+    {
+      "file": "Server/Provider.luau",
+      "sha256": "0590451b2fdd69d830c6eb8c8436c31f60b5cec54b698c0f02f8702ff8184b24"
+    },
+    {
+      "file": "Server/Bootstrap.server.luau",
+      "sha256": "3417bcbae8c25ac829b6712484fee5dbff3654f4251d7e72f7c6102abaaa15b1"
+    },
+    {
+      "file": "Client/Bootstrap.client.luau",
+      "sha256": "2cce9565cefd79df0d96485fd336afa012211c2c90dc4b6932de00386a5dac04"
+    },
+    {
+      "file": "Install.luau",
+      "sha256": "8673e5c7ce75da6899e0607b9d1525c75584f8bd7adcd7ef3ce997ba637b79df"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxl",
+      "bytes": 52015,
+      "sha256": "f83054e00e64dd1b0c68f3520b74ac7f2befdfe62410a902865441b29716fdf4",
+      "instances": 33,
+      "nativeRoundTrip": "passed",
+      "independentRead": "passed",
+      "independentFloat32RelativeTolerance": 0.000002,
+      "deterministicBytes": "passed"
+    },
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxm",
+      "bytes": 53065,
+      "sha256": "a2c60b62b29fa77944d4cb0723dfc592e2043e6d00fb4fef65a14f3cf0658fe5",
+      "instances": 34,
+      "nativeRoundTrip": "passed",
+      "independentRead": "passed",
+      "independentFloat32RelativeTolerance": 0.000002,
+      "deterministicBytes": "passed"
+    }
+  ],
+  "robloxStudioImport": "NOT_TESTED",
+  "clientServerRuntime": "NOT_TESTED",
+  "mobileConsoleVR": "NOT_TESTED",
+  "formal10000Systems": "NOT_CERTIFIED",
+  "formal100000Features": "NOT_CERTIFIED"
+}
