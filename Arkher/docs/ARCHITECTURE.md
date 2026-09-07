@@ -124,3 +124,35 @@ conflict records) + `collab/workspace` (commits · branches · checkout · histo
 revert) give a project-level version control that is engine-native, not file-based. `taskgraph` +
 `collab/build` turn validation, analysis, tests, optimization, packaging and publishing into one
 content-hashed incremental graph with release gates: unchanged work is never redone.
+
+---
+
+## 11. The world stack (Round 3)
+
+Scene, terrain and procedural generation are three layers of one stack; each is usable alone and
+each is driven by D-O15 budgets rather than by hard-coded constants:
+
+```
+   procedural/worldgen.lua      biomes -> terrain -> rivers -> sites -> cities
+        |                       -> highways -> vegetation -> population
+        +-- procedural/city.lua        grid -> blocks -> zoning -> lots -> buildings
+        |
+   terrain/terrain.lua          tiled heightfields - materials - erosion - rivers - LOD meshes
+        |
+   world/scene.lua              scenegraph + prefab + spatial hash + BVH raycast + LOD bands
+        |
+   world/streaming.lua          chunker + viewers + hysteresis + memory budget + pinning
+        |
+   runtime/kits_world.lua       scenegraph prefab heightfield voxel spline mesh
+                                chunker wfc lsystem scatter network simulation
+```
+
+**Determinism is a hard architectural rule here.** Every generator takes a seed, every random draw
+goes through `kernel/random` (xoshiro128\*\*) and every noise sample through `kernel/noise`, so
+`worldgen:checksum()` is stable across devices and across runs. That is what makes a generated world
+*reviewable*: two people on two machines get byte-identical worlds from one number.
+
+**Life without observers.** `Kits.simulation` classifies every entity as full, reduced or
+statistical relative to the observer. Distant settlements keep accumulating state through a cheap
+aggregate function and reconcile exactly when the observer arrives — the "Modo Vida Real" rule from
+the specification, implemented under a per-tick entity budget instead of an unbounded update loop.

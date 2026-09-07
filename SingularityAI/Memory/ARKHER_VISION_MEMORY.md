@@ -94,3 +94,37 @@ Status: **partially implemented**.
 (document · commands · selection · layout · widget · inspector · viewport). The shipped
 `ARKHER_V1_STUDIO_PLUGIN.rbxmx` is only a *display adapter* that lets that IDE drive a Roblox Studio
 session — every command it exposes is executed by ARKHER code. Status: **architectural rule**.
+
+---
+
+# ROUND 3 RECORDS (Scene/World · Terrain · Procedural)
+
+## VISION-013 — GPU voxel meshing / compute-shader surface extraction
+**Memory note:** Roblox exposes no compute API, so marching-cubes-class meshing cannot run on the
+GPU. ARKHER ships the complete CPU surface extractor (`voxel` kit: 6-neighbour face extraction,
+flood fill, material histograms) under a D-O15 mesh budget; the GPU path is recorded as a V2
+platform capability. Status: **partially implemented**.
+
+## VISION-014 — Planetary-scale unbounded terrain
+**Memory note:** ARKHER terrain is tiled and unbounded *by construction* — tiles are created on
+demand and streamed by the Streaming Director. A shipped Roblox place is still bounded by device
+memory, so the planetary paging ledger is documented as intent while what ships is unbounded tiling
+under a measured memory budget. Status: **partially implemented**.
+
+## VISION-015 — Round-tripping into Roblox native smooth-terrain voxels
+**Memory note:** the Terrain Framework owns heightfields, materials, erosion, rivers and LOD meshes
+as engine data. Writing that data into Roblox's own `Terrain` voxel store (and reading it back) is
+adapter work, kept strictly below the abstraction line, scheduled with the Round 4 adapter pass.
+Status: **scheduled**.
+
+## VISION-016 — Persistent cross-server world state ("Modo Vida Real" at platform scale)
+**Memory note:** the `simulation` kit already keeps the world alive when unobserved through
+full / reduced / statistical tiers, and its state is serialisable and reconcilable (`catchUp`).
+Persisting that state across many Roblox servers needs the networking family (Round 7) and the
+Reality Layer original technology (Round 8). Status: **partially implemented**.
+
+## VISION-017 — Learned procedural style transfer
+**Memory note:** Round-3 procedural generation is deterministic and grammar-based (WFC, L-systems,
+rule synthesiser, Poisson-disc scatter, A\* networks) precisely so results are reproducible,
+debuggable and identical on every device. A learned component that imitates a reference style is a
+Singularity AI capability (Round 8, category T), not a procedural one. Status: **scheduled**.

@@ -103,13 +103,60 @@
    "topic": "ARKHER Studio is not a Roblox Studio plugin",
    "interpretation": "Standing architectural rule restated for Round 2: ARKHER Studio is ARKHER's own IDE (document/commands/selection/layout/widget/inspector/viewport). Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx is only a display adapter that lets that IDE drive a Roblox Studio session.",
    "status": "architectural-rule"
+  },
+  {
+   "id": "VISION-013",
+   "topic": "GPU voxel meshing / compute-shader surface extraction",
+   "interpretation": "Roblox exposes no compute API, so marching-cubes-class meshing cannot run on the GPU. ARKHER ships the complete CPU surface extractor (voxel kit: 6-neighbour face extraction, flood fill, histograms) and a mesh budget governed by D-O15; the GPU path is recorded as a platform capability.",
+   "adopted_target": {
+    "cpu_extractor": "shipped in Round 3",
+    "gpu_path": "ARKHER V2 / platform capability"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-014",
+   "topic": "Planetary-scale unbounded terrain",
+   "interpretation": "ARKHER terrain is tiled and unbounded by construction (tiles are created on demand and streamed), but a shipped Roblox place is bounded by device memory. The planetary streaming ledger and its paging policy are documented as intent; what ships is unbounded tiling under a measured memory budget.",
+   "adopted_target": {
+    "tiled_streaming": "shipped in Round 3",
+    "planetary_paging": "ARKHER V2"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-015",
+   "topic": "Round-tripping into Roblox native smooth-terrain voxels",
+   "interpretation": "The Terrain Framework owns heightfields, materials, erosion, rivers and LOD meshes as engine data. Writing that data into Roblox's own Terrain voxel store (and reading it back) is adapter work, kept strictly below the abstraction line.",
+   "adopted_target": {
+    "engine_terrain": "shipped in Round 3",
+    "roblox_terrain_adapter": "Round 4 (E/F adapter pass)"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-016",
+   "topic": "Persistent cross-server world state (Modo Vida Real at platform scale)",
+   "interpretation": "The simulation kit already keeps the world alive when unobserved through full/reduced/statistical tiers, and the state is serialisable. Persisting and reconciling that state across many Roblox servers requires the networking family and the Reality Layer original technology.",
+   "adopted_target": {
+    "single_server_life": "shipped in Round 3",
+    "cross_server_persistence": "Round 7 (R) + Round 8 (Z Reality Layer)"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-017",
+   "topic": "Learned procedural style transfer",
+   "interpretation": "Round 3 procedural generation is deterministic and grammar-based (WFC, L-systems, rule synthesiser, Poisson scatter, A* networks) precisely so that results are reproducible and debuggable. A learned component that imitates a reference style is a Singularity AI capability, not a procedural one.",
+   "adopted_target": {
+    "deterministic_generation": "shipped in Round 3",
+    "style_learning": "Round 8 (T Singularity AI)"
+   },
+   "status": "scheduled"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
  "verification_command": "node tools/harness.js tests/engine_spec.lua",
  "updated": "2026-09-07",
- "rounds_recorded": [
-  1,
-  2
- ]
+ "rounds_recorded": 3
 }

@@ -1085,11 +1085,16 @@ return function(A)
 	local Studio = A:import("arkher/runtime/kits_studio")
 	for _, name in ipairs(Studio.NAMES) do Kits[name] = Studio[name] end
 
+	local World = A:import("arkher/runtime/kits_world")
+	for _, name in ipairs(World.NAMES) do Kits[name] = World[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
 		"document", "commands", "selection", "layout", "widget", "inspector",
-		"nodegraph", "source", "session", "merge", "taskgraph" }
+		"nodegraph", "source", "session", "merge", "taskgraph",
+		"scenegraph", "prefab", "heightfield", "voxel", "spline", "mesh",
+		"chunker", "wfc", "lsystem", "scatter", "network", "simulation" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]

@@ -79,6 +79,10 @@ return function(A)
 		self.kit.results.assertions = self.kit.results.assertions + 1
 		if not (a < b) then error(string.format("expected %s < %s %s", tostring(a), tostring(b), tostring(msg or "")), 2) end
 	end
+	function A:lte(a, b, msg)
+		self.kit.results.assertions = self.kit.results.assertions + 1
+		if not (a <= b) then error(string.format("expected %s <= %s %s", tostring(a), tostring(b), tostring(msg or "")), 2) end
+	end
 
 	function TestKit:run()
 		local t0 = os and os.clock and os.clock() or 0

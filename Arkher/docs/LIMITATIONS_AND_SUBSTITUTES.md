@@ -18,4 +18,10 @@ The registry below is live in code (`src/platform/adapter.lua`, `Adapter.LIMITAT
 | No engine-level version control | **ARKHER Project VCS** — commits, branches, checkout, history, common-ancestor and three-way merge over the project tree | Round 2 (Y) |
 | No incremental build system | **ARKHER Task Graph** — dependency topology with content input hashing, artifact cache and invalidation cascade | Round 2 (B/U/Y) |
 
+| No compute-shader meshing | **ARKHER Voxel Surface Extractor** — CPU sparse-volume face extraction, flood fill and mesh welding under a D-O15 mesh budget | Round 3 (D) |
+| Instance-count ceiling on large worlds | **ARKHER Streaming Director** — chunked load sets with hysteresis, memory-budget capacity, per-frame work budget and pinning | Round 3 (C) |
+| Roblox Terrain is a fixed voxel store | **ARKHER Terrain Framework** — engine-owned tiled heightfields, materials, thermal+hydraulic erosion, river tracing and LOD mesh building; the Roblox store is one output target | Round 3 (D) |
+| No world simulation when unobserved | **ARKHER Living Simulation ("Modo Vida Real")** — full / reduced / statistical tiers with catch-up reconciliation, driven by D-O15 | Round 3 (C/M) |
+| No engine-side procedural generation | **ARKHER Procedural Intelligence** — WFC constraint solving, L-system grammars, Poisson-disc scatter, A\* road networks and a deterministic 8-step world pipeline with checksums | Round 3 (M) |
+
 Each substitute is a *design of our own*, not an emulation of the original vendor technology.

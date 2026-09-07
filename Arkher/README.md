@@ -1,8 +1,8 @@
 # ARKHER V1 — UES Engine for Roblox
 
-> **Status: ROUND 2 delivered — Kernel + ARKHER Studio.**
-> 3,250 real systems · 51,512 features · 3,300 modules · 100% of them boot and pass their own self-test.
-> That is **32.5% of the 10,000-system floor and 51.5% of the 100,000-feature floor**.
+> **Status: ROUND 3 delivered — Kernel + ARKHER Studio + World.**
+> 5,150 real systems · 83,076 features · 5,206 modules · 100% of them boot and pass their own self-test.
+> That is **51.5% of the 10,000-system floor and 83.1% of the 100,000-feature floor**.
 
 ARKHER is **not** a Roblox Studio plugin, not a script pack and not a wrapper around Roblox APIs.
 It is a full engine architecture (UES + D-O15 + Singularity AI) that treats Roblox as *one platform
@@ -22,8 +22,8 @@ the whole engine is verified in CI by a real Lua VM before it ever reaches Studi
 
 | What | File | How |
 |---|---|---|
-| **Model** (recommended) | `Releases/ARKHER_V1_ROUND2.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
-| **Place** | `Releases/ARKHER_V1_ROUND2.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
+| **Model** (recommended) | `Releases/ARKHER_V1_ROUND3.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
+| **Place** | `Releases/ARKHER_V1_ROUND3.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
 | **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
 | **Source (Rojo)** | this folder | `rojo serve` with the included `default.project.json`. |
 
@@ -32,9 +32,9 @@ After insert, press **Play**. The Output window prints the live boot report:
 ```
 ====================================================================
 ARKHER 1.0.0  (ARKHER V1)  platform=roblox
-  modules registered : 3300
-  systems online     : 3250  (A=520  S=620  X=410  B=700  U=600  Y=400)
-  self-test          : 3250 passed / 0 failed
+  modules registered : 5206
+  systems online     : 5150  (A=520  S=620  X=410  B=700  U=600  Y=400  C=644  D=640  M=616)
+  self-test          : 5150 passed / 0 failed
   device             : phone (tier mobile, score 41)
   D-O15 budgets      : frame 16.6ms, draws 500, parts 6000, mem 700MB
   quality preset     : renderScale=0.78 lodBias=1.50 vfx=0.45 npcTick=6
@@ -46,7 +46,7 @@ engine frame cost. Tap it to collapse.
 
 ---
 
-## What is actually shipped (Rounds 1–2)
+## What is actually shipped (Rounds 1–3)
 
 | Category | Family | Systems | Features | State |
 |---|---|---:|---:|---|
@@ -56,13 +56,24 @@ engine frame cost. Tap it to collapse.
 | **B** | ARKHER STUDIO / IDE | 700 | 11,700 | complete |
 | **U** | SCRIPTING / CODE INTELLIGENCE | 600 | 9,640 | complete |
 | **Y** | COLLABORATION / PRODUCTION | 400 | 6,560 | complete |
-| | **Total shipped** | **3,250** | **51,512** | **verified** |
+| **C** | SCENE / WORLD | 644 | 10,580 | complete |
+| **D** | TERRAIN | 640 | 11,040 | complete |
+| **M** | PROCEDURAL GENERATION | 616 | 9,944 | complete |
+| | **Total shipped** | **5,150** | **83,076** | **verified** |
 
-Against the ARKHER spec target of ≥10,000 systems, this is **32.5% of the system target and 51.5%
+Against the ARKHER spec target of ≥10,000 systems, this is **51.5% of the system target and 83.1%
 of the 100,000-feature target**, fully finished — no placeholders, no "TODO" systems.
-Round-by-round detail: `docs/ROUND1_REPORT.md`, `docs/ROUND2_REPORT.md`.
+Round-by-round detail: `docs/ROUND1_REPORT.md`, `docs/ROUND2_REPORT.md`, `docs/ROUND3_REPORT.md`.
 
 Underneath the catalog sits the hand-written kernel (every file is real, tested code):
+
+**World / terrain / procedural runtime (Round 3):** `runtime/kits_world` (12 kits: scenegraph ·
+prefab · heightfield · voxel · spline · mesh · chunker · wfc · lsystem · scatter · network ·
+simulation), `world/scene` (Scene Framework: BVH raycast, spatial queries, LOD bands),
+`world/streaming` (Streaming Director: hysteresis, memory budget, pinning), `terrain/terrain`
+(Terrain Framework: tiled heightfields, erosion, rivers, materials, LOD meshes),
+`procedural/city` (zoning → lots → buildings), `procedural/worldgen` (8-step deterministic
+world pipeline with "Modo Vida Real" simulation).
 
 **Studio / code / collaboration runtime (Round 2):** `runtime/kits_studio` (11 kits: document ·
 commands · selection · layout · widget · inspector · nodegraph · source · session · merge ·
@@ -87,7 +98,8 @@ cd Arkher
 npm install fengari          # a real Lua VM in Node
 node tools/harness.js tests/kernel_spec.lua   # 80 tests / 272 assertions
 node tools/harness.js tests/studio_spec.lua   # 30 tests / 121 assertions (Studio, code, collab)
-node tools/harness.js tests/engine_spec.lua   # boots all 3,250 systems + self-tests
+node tools/harness.js tests/world_spec.lua    # 28 tests / 275 assertions (world, terrain, procedural)
+node tools/harness.js tests/engine_spec.lua   # boots all 5,150 systems + self-tests
 python3 tools/validate_release.py             # byte-checks the .rbxmx / .rbxlx
 ```
 
@@ -106,7 +118,7 @@ Inside Roblox the same tests run through `arkher/kernel/testkit`.
    every budget is a measured number (`src/do15/device.lua`).
 4. **Portable by construction.** Luau has no bitwise operators, Lua 5.3 has no `bit32` — ARKHER ships
    `src/kernel/bits.lua` so hashing, RNG and noise give *identical results on every host*.
-5. **Every system proves itself.** `engine:verify()` runs 3,250 self-tests at boot.
+5. **Every system proves itself.** `engine:verify()` runs 5,150 self-tests at boot.
 
 ---
 
@@ -117,8 +129,8 @@ Rounds are 10–20% each, delivered complete. See `docs/ROADMAP.md`.
 | Round | Categories | Systems | Cumulative |
 |---|---|---:|---:|
 | **1 (done)** | A core, S D-O15, X security | 1,550 | 15.5% |
-| **2 (done)** | B editor/IDE, U scripting, Y collaboration | 1,700 | **32.5%** |
-| 3 | C scene/world, D terrain, M procedural | ~1,900 | ~52% |
+| **2 (done)** | B editor/IDE, U scripting, Y collaboration | 1,700 | 32.5% |
+| **3 (done)** | C scene/world, D terrain, M procedural | 1,900 | **51.5%** |
 | 4 | E materials, F rendering, G neural reconstruction | ~1,800 | ~70% |
 | 5 | H physics, I animation, J characters | ~1,500 | ~85% |
 | 6 | K NMN/NPC, L world simulation | ~1,300 | ~98% |

@@ -51,6 +51,19 @@ def kit_config(kit, key, seed, area_slug):
         "session":      '{ id = ID, maxOps = %d }' % (1024 + seed % 7168),
         "merge":        '{ id = ID, strategy = "%s" }' % (["three-way","ours","theirs"][seed % 3]),
         "taskgraph":    '{ id = ID, incremental = true }',
+        "synthesizer":  '{ id = ID, seed = %d }' % seed,
+        "scenegraph":   '{ id = ID }',
+        "prefab":       '{ id = ID }',
+        "heightfield":  '{ id = ID, width = %d, height = %d, cellSize = %d }' % (16 + (seed % 3) * 8, 16 + (seed % 3) * 8, 2 + seed % 6),
+        "voxel":        '{ id = ID }',
+        "spline":       '{ id = ID, tension = %.2f, closed = %s }' % (0.35 + (seed % 40) / 100, "false"),
+        "mesh":         '{ id = ID }',
+        "chunker":      '{ id = ID, size = %d, radius = %d, maxPerTick = %d }' % (64 + (seed % 4) * 32, 256 + (seed % 6) * 64, 2 + seed % 6),
+        "wfc":          '{ id = ID }',
+        "lsystem":      '{ id = ID, axiom = "F", angle = %d, step = %.1f }' % (18 + seed % 22, 3 + seed % 5),
+        "scatter":      '{ id = ID, seed = %d, minDistance = %d, density = %.2f }' % (seed, 6 + seed % 14, 0.6 + (seed % 60) / 100),
+        "network":      '{ id = ID }',
+        "simulation":   '{ id = ID, fullRadius = %d, reducedRadius = %d, budget = %d }' % (120 + (seed % 6) * 40, 600 + (seed % 8) * 100, 32 + seed % 96),
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -861,6 +874,476 @@ SPEC["taskgraph"] = ("""		function inst.installPipeline()
 		ok = ok and inst.artifact("emit") ~= nil and inst.cacheEfficiency() > 0
 		return ok""")
 
+
+# ---------------------------------------------------------------- round 3 kits
+SPEC["scenegraph"] = ("""		function inst.buildSample()
+			if inst.get("root") then return inst.stats().nodes end
+			inst.addNode("root", { position = Vec.vec3(0, 0, 0), tags = { S.area } })
+			inst.addNode("hub", { position = Vec.vec3(S.params.baseRadius, 0, 0), tags = { "hub" } }, "root")
+			for i = 1, 3 do
+				inst.addNode("leaf" .. i, { position = Vec.vec3(i * 10, 0, 0),
+					tags = { "leaf" }, radius = S.params.detailWeight * 10 }, "hub")
+			end
+			return inst.stats().nodes
+		end
+		function inst.attach(id, parent) return inst.setParent(id, parent) end
+		function inst.flatten()
+			local out = {}
+			inst.traverse(function(node, depth) out[#out + 1] = { id = node.id, depth = depth } end)
+			return out
+		end
+		function inst.moveHub(offset)
+			inst.buildSample()
+			inst.setPosition("hub", Vec.vec3(offset, 0, 0))
+			return inst.worldPosition("leaf1")
+		end""",
+"""		inst.buildSample()
+		local ok = inst.stats().nodes == 5
+		ok = ok and inst.worldPosition("leaf1").x == S.params.baseRadius + 10
+		ok = ok and inst.depthOf("leaf1") == 2
+		ok = ok and #inst.withTag("leaf") == 3
+		ok = ok and inst.moveHub(500).x == 510
+		ok = ok and #inst.flatten() == 5
+		ok = ok and inst.bounds() ~= nil
+		ok = ok and inst.remove("hub") == 4
+		return ok and inst.stats().nodes == 1""")
+
+SPEC["prefab"] = ("""		function inst.ensureTemplate()
+			if inst.templates[S.area] then return S.area end
+			inst.define(S.area, { props = { weight = S.params.baseWeight, detail = S.params.detailWeight,
+				kind = S.key }, tags = { S.area } })
+			return S.area
+		end
+		function inst.spawnMany(n)
+			inst.ensureTemplate()
+			local ids = {}
+			for i = 1, (n or 4) do ids[#ids + 1] = inst.instantiate(S.area, i == 1 and { weight = 99 } or nil) end
+			return ids
+		end
+		function inst.retune(key, value)
+			inst.ensureTemplate()
+			return inst.editTemplate(S.area, key, value)
+		end
+		function inst.overrideRate()
+			local total, overridden = 0, 0
+			for _, i in pairs(inst.instances) do
+				total = total + 1
+				for _ in pairs(i.overrides) do overridden = overridden + 1 break end
+			end
+			if total == 0 then return 0 end
+			return overridden / total
+		end""",
+"""		local ids = inst.spawnMany(4)
+		local ok = #ids == 4
+		ok = ok and inst.instances[ids[1]].props.weight == 99
+		ok = ok and inst.retune("weight", 7) == 3
+		ok = ok and inst.instances[ids[2]].props.weight == 7
+		ok = ok and inst.instances[ids[1]].props.weight == 99
+		ok = ok and inst.overrideRate() == 0.25
+		inst.revert(ids[1], "weight")
+		ok = ok and inst.instances[ids[1]].props.weight == 7
+		return ok and #inst.instancesOf(S.area) == 4""")
+
+SPEC["heightfield"] = ("""		function inst.shape()
+			inst.applyNoise({ frequency = 0.02 + S.params.detailWeight * 0.05,
+				amplitude = 20 + S.params.ceiling / 8, seed = S.params.horizon * 7919, octaves = 3 })
+			return inst.range()
+		end
+		function inst.sculptAt(x, y, radius, strength)
+			return inst.raise(x, y, radius or 3, strength or S.params.baseWeight * 10)
+		end
+		function inst.profile(samples)
+			local out = {}
+			local n = samples or 8
+			for i = 0, n do
+				local t = i / n
+				out[#out + 1] = inst.sample(t * (inst.width - 1) * inst.cellSize, (inst.height / 2) * inst.cellSize)
+			end
+			return out
+		end
+		function inst.roughness()
+			local total, n = 0, 0
+			for y = 2, inst.height - 1, 2 do
+				for x = 2, inst.width - 1, 2 do
+					total = total + inst.slopeAt(x, y)
+					n = n + 1
+				end
+			end
+			if n == 0 then return 0 end
+			return total / n
+		end""",
+"""		local lo, hi = inst.shape()
+		local ok = hi > lo
+		local before = inst.get(4, 4)
+		inst.sculptAt(4, 4, 3, 15)
+		ok = ok and inst.get(4, 4) > before
+		inst.flatten(6, 6, 2, 0, 1)
+		ok = ok and math.abs(inst.get(6, 6)) < 0.001
+		ok = ok and #inst.profile(4) == 5
+		ok = ok and inst.roughness() >= 0
+		ok = ok and inst.erodeThermal(1, 1.0, 0.5) >= 0
+		local lod = inst.downsample()
+		ok = ok and lod.width == math.floor(inst.width / 2)
+		inst.normalize(0, 10)
+		local lo2, hi2 = inst.range()
+		return ok and math.abs(lo2) < 0.001 and math.abs(hi2 - 10) < 0.001""")
+
+SPEC["voxel"] = ("""		function inst.buildSample()
+			if inst.count > 0 then return inst.count end
+			inst.fillBox(1, 1, 1, 3, 3, 3, inst.materials[1])
+			return inst.count
+		end
+		function inst.carveAt(x, y, z, radius) return inst.carveSphere(x, y, z, radius or 1) end
+		function inst.density()
+			local b = inst.bounds()
+			if not b then return 0 end
+			local volume = math.max(1, (b.max.x - b.min.x + 1) * (b.max.y - b.min.y + 1) * (b.max.z - b.min.z + 1))
+			return inst.count / volume
+		end
+		function inst.surfaceRatio()
+			if inst.count == 0 then return 0 end
+			return inst.surfaceFaces() / (inst.count * 6)
+		end""",
+"""		inst.buildSample()
+		local ok = inst.count == 27
+		ok = ok and inst.surfaceFaces() == 54
+		ok = ok and math.abs(inst.density() - 1) < 0.001
+		ok = ok and inst.surfaceRatio() > 0.3
+		ok = ok and inst.carveAt(2, 2, 2, 0.9) == 1
+		ok = ok and inst.count == 26
+		ok = ok and inst.floodFill(1, 1, 1, inst.materials[2]) > 10
+		return ok and inst.bounds() ~= nil""")
+
+SPEC["spline"] = ("""		function inst.buildDefault()
+			if inst.count() > 0 then return inst.count() end
+			local span = S.params.baseRadius / 2
+			inst.addPoint(Vec.vec3(0, 0, 0))
+			inst.addPoint(Vec.vec3(span, 0, 0))
+			inst.addPoint(Vec.vec3(span * 2, 0, span))
+			inst.addPoint(Vec.vec3(span * 3, 0, span))
+			return inst.count()
+		end
+		function inst.path(samples)
+			inst.buildDefault()
+			return inst.resample(samples or 8)
+		end
+		function inst.corridor(width, samples)
+			inst.buildDefault()
+			return inst.offset(width or S.params.detailWeight * 10, samples or 8)
+		end
+		function inst.deviation(point)
+			inst.buildDefault()
+			local _, _, d = inst.closestPoint(point)
+			return d
+		end""",
+"""		inst.buildDefault()
+		local ok = inst.count() == 4
+		ok = ok and inst.arcLength() > 0
+		ok = ok and #inst.path(6) == 6
+		ok = ok and #inst.corridor(5, 4) == 5
+		local mid = inst.evaluate(0.5)
+		ok = ok and type(mid.x) == "number"
+		ok = ok and math.abs(inst.tangent(0.5):length() - 1) < 0.01
+		ok = ok and inst.deviation(Vec.vec3(0, 0, 0)) < 1e-6
+		return ok and inst.pointAtDistance(inst.arcLength() * 0.5) ~= nil""")
+
+SPEC["mesh"] = ("""		function inst.buildBox(size)
+			local s = size or (4 + S.params.detailWeight * 8)
+			inst.box(Vec.vec3(0, 0, 0), Vec.vec3(s, s, s))
+			return inst.stats().triangles
+		end
+		function inst.buildTower(footprint, height)
+			local f = footprint or 8
+			local poly = { Vec.vec3(0, 0, 0), Vec.vec3(f, 0, 0), Vec.vec3(f, 0, f), Vec.vec3(0, 0, f) }
+			return inst.extrude(poly, height or (10 + S.params.ceiling / 20))
+		end
+		function inst.optimize()
+			local welded = inst.weld()
+			local dropped = inst.simplify(1e-6)
+			inst.computeNormals()
+			return welded, dropped
+		end
+		function inst.surfaceArea() return inst.area() end""",
+"""		local tris = inst.buildBox(10)
+		local ok = tris == 12 and inst.stats().vertices == 8
+		ok = ok and math.abs(inst.surfaceArea() - 600) < 1
+		ok = ok and inst.buildTower(8, 20) == 4
+		ok = ok and inst.stats().triangles > 12
+		local welded, dropped = inst.optimize()
+		ok = ok and welded >= 0 and dropped >= 0
+		ok = ok and inst.stats().normals == inst.stats().vertices
+		return ok and inst.bounds() ~= nil""")
+
+SPEC["chunker"] = ("""		function inst.focus(position)
+			inst.lastFocus = position
+			return inst.update(position)
+		end
+		function inst.streamStep(position)
+			inst.focus(position or inst.lastFocus or Vec.vec3(0, 0, 0))
+			return inst.pump()
+		end
+		function inst.coverage()
+			local tracked = inst.stats().tracked
+			if tracked == 0 then return 0 end
+			return inst.loaded / tracked
+		end
+		function inst.lodProfile(position)
+			local out = {}
+			for _, key in ipairs(inst.loadedKeys()) do
+				local lod = inst.lodOf(key, position)
+				out[lod] = (out[lod] or 0) + 1
+			end
+			return out
+		end""",
+"""		local toLoad = inst.focus(Vec.vec3(0, 0, 0))
+		local ok = #toLoad > 0
+		local moved = inst.streamStep(Vec.vec3(0, 0, 0))
+		ok = ok and moved > 0 and moved <= inst.maxPerTick
+		ok = ok and inst.loaded == moved
+		ok = ok and inst.coverage() > 0
+		local profile = inst.lodProfile(Vec.vec3(0, 0, 0))
+		ok = ok and profile[0] ~= nil
+		local _, toUnload = inst.update(Vec.vec3(1e6, 0, 1e6))
+		return ok and #toUnload == moved""")
+
+SPEC["wfc"] = ("""		function inst.installTiles()
+			if inst.tiles["core"] then return inst end
+			inst.defineTile("core", { up = "a", down = "a", left = "a", right = "a" }, 3)
+			inst.defineTile("edge", { up = "a", down = "b", left = "a", right = "a" }, 2)
+			inst.defineTile("outer", { up = "b", down = "b", left = "a", right = "a" }, 1)
+			return inst
+		end
+		function inst.generate(width, height)
+			inst.installTiles()
+			return inst.solve(width or 5, height or 5, S.params.horizon * 104729 + 7)
+		end
+		function inst.tileHistogram()
+			if not inst.result then inst.generate() end
+			return inst.histogram()
+		end
+		function inst.consistency()
+			if not inst.result then inst.generate() end
+			local ok, bad = inst.validate()
+			return ok, bad
+		end""",
+"""		local grid = inst.generate(5, 5)
+		local ok = #grid == 25
+		for i = 1, 25 do ok = ok and inst.tiles[grid[i]] ~= nil end
+		local twin = Kits.create("wfc", { id = "probe" })
+		twin.defineTile("core", { up = "a", down = "a", left = "a", right = "a" }, 3)
+		twin.defineTile("edge", { up = "a", down = "b", left = "a", right = "a" }, 2)
+		twin.defineTile("outer", { up = "b", down = "b", left = "a", right = "a" }, 1)
+		local grid2 = twin.solve(5, 5, S.params.horizon * 104729 + 7)
+		for i = 1, 25 do ok = ok and grid[i] == grid2[i] end
+		local histogram = inst.tileHistogram()
+		local total = 0
+		for _, n in pairs(histogram) do total = total + n end
+		ok = ok and total == 25
+		local consistent = inst.consistency()
+		return ok and type(consistent) == "boolean" """)
+
+SPEC["lsystem"] = ("""		function inst.installRules()
+			if inst.rules["F"] then return inst end
+			inst.addRule("F", "F[+F]F[-F]F")
+			inst.addRule("X", "F[+X][-X]FX")
+			return inst
+		end
+		function inst.grow(iterations)
+			inst.installRules()
+			return inst.iterate(iterations or 2)
+		end
+		function inst.geometry(origin)
+			if not inst.current then inst.grow(2) end
+			return inst.interpret(origin or Vec.vec3(0, 0, 0))
+		end
+		function inst.complexity()
+			local segments = inst.geometry()
+			return #segments, inst.totalLength()
+		end""",
+"""		local expanded = inst.grow(2)
+		local ok = #expanded > 20
+		local segments = inst.geometry(Vec.vec3(0, 0, 0))
+		ok = ok and #segments > 5
+		local count, length = inst.complexity()
+		ok = ok and count == #segments and length > 0
+		ok = ok and inst.bounds() ~= nil
+		inst.reset()
+		return ok and inst.stats().iterations == 0""")
+
+SPEC["scatter"] = ("""		function inst.distribute(bounds, attempts)
+			local Spatial = A:import("arkher/kernel/spatial")
+			local box = bounds or Spatial.aabb(Vec.vec3(0, 0, 0), Vec.vec3(200, 0, 200))
+			return inst.generate(box, attempts or 200)
+		end
+		function inst.spacing()
+			if #inst.points == 0 then inst.distribute() end
+			return inst.minimumSpacing()
+		end
+		function inst.prune(predicate)
+			local kept = {}
+			for _, p in ipairs(inst.points) do
+				if predicate(p) then kept[#kept + 1] = p end
+			end
+			local removed = #inst.points - #kept
+			inst.points = kept
+			return removed
+		end
+		function inst.coverage(area)
+			if #inst.points == 0 then inst.distribute() end
+			return #inst.points / math.max(1, area or 40000)
+		end""",
+"""		local points = inst.distribute(nil, 200)
+		local ok = #points > 0
+		ok = ok and inst.spacing() >= (#points > 1 and inst.minDistance or 0)
+		ok = ok and inst.stats().rejected >= 0
+		local removed = inst.prune(function(p) return p.x <= 100 end)
+		ok = ok and removed >= 0
+		for _, p in ipairs(inst.points) do ok = ok and p.x <= 100 end
+		ok = ok and inst.coverage(40000) >= 0
+		return ok""")
+
+SPEC["network"] = ("""		function inst.buildGrid(size, spacing)
+			if inst.gridIds then return inst.gridIds end
+			local n = size or 3
+			local step = spacing or 100
+			local ids = {}
+			for r = 0, n - 1 do
+				ids[r] = {}
+				for c = 0, n - 1 do
+					ids[r][c] = inst.addNode(Vec.vec3(c * step, 0, r * step), "junction")
+				end
+			end
+			for r = 0, n - 1 do
+				for c = 0, n - 1 do
+					if c < n - 1 then inst.addEdge(ids[r][c], ids[r][c + 1], { class = "street" }) end
+					if r < n - 1 then inst.addEdge(ids[r][c], ids[r + 1][c], { class = "street" }) end
+				end
+			end
+			inst.gridIds = ids
+			inst.gridSize = n
+			inst.gridSpacing = step
+			return ids
+		end
+		function inst.routeAcross()
+			local ids = inst.buildGrid()
+			local n = inst.gridSize
+			return inst.route(ids[0][0], ids[n - 1][n - 1])
+		end
+		function inst.topology()
+			inst.buildGrid()
+			return { junctions = #inst.junctions(3), deadEnds = #inst.deadEnds(),
+				connected = inst.connected(), length = inst.totalLength() }
+		end
+		function inst.snap(position)
+			inst.buildGrid()
+			return inst.nearestNode(position)
+		end""",
+"""		inst.buildGrid(3, 100)
+		local path, cost = inst.routeAcross()
+		local ok = path ~= nil and #path == 5
+		ok = ok and math.abs(cost - 400) < 0.001
+		local topology = inst.topology()
+		ok = ok and topology.connected == true and topology.deadEnds == 0
+		ok = ok and math.abs(topology.length - 1200) < 0.001
+		local nearest = inst.snap(Vec.vec3(95, 0, 5))
+		return ok and nearest == inst.gridIds[0][1]""")
+
+SPEC["simulation"] = ("""		function inst.populate(n)
+			if inst.stats().entities > 0 then return inst.stats().entities end
+			for i = 1, (n or 6) do
+				inst.spawn(S.key .. "." .. i, {
+					position = Vec.vec3(i * 100, 0, 0),
+					state = { value = 10, ticks = 0 },
+					update = function(st, dt) st.value = st.value + dt st.ticks = st.ticks + 1 end,
+					aggregate = function(st, elapsed) st.value = st.value + elapsed * 0.25 end,
+				})
+			end
+			return inst.stats().entities
+		end
+		function inst.observeAt(position)
+			inst.populate()
+			return inst.setObserver(position or Vec.vec3(0, 0, 0))
+		end
+		function inst.run(ticks, dt)
+			inst.populate()
+			local processed = 0
+			for _ = 1, (ticks or 30) do processed = processed + inst.tick(dt or 1 / 30) end
+			return processed
+		end
+		function inst.total() return inst.aggregateState("value") end""",
+"""		inst.populate(6)
+		local counts = inst.observeAt(Vec.vec3(0, 0, 0))
+		local ok = counts.full + counts.reduced + counts.statistical == 6
+		local before = inst.total()
+		local processed = inst.run(30, 1 / 30)
+		ok = ok and processed > 0
+		ok = ok and inst.total() > before
+		ok = ok and #inst.query(1e9) == 6
+		ok = ok and inst.catchUp(S.key .. ".1", 10)
+		return ok and inst.stats().ticks == 30""")
+
+
+SPEC["field"] = ("""		function inst.height(x, y)
+			return inst.sample(x, y) * (20 + S.params.ceiling / 10)
+		end
+		function inst.ridgeHeight(x, y)
+			return inst.sampleRidged(x, y) * (20 + S.params.ceiling / 10)
+		end
+		function inst.patch(size, step)
+			local n = size or 8
+			return inst.region(0, 0, n, n, step or 2)
+		end
+		function inst.steepness(x, y)
+			return inst.slope(x, y)
+		end
+		function inst.banded(x, y, steps)
+			return inst.terraced(x, y, steps or (4 + S.params.horizon % 6))
+		end""",
+"""		local a = inst.sample(12.5, -7.25)
+		local b = inst.sample(12.5, -7.25)
+		local ok = a == b and type(a) == "number"
+		ok = ok and inst.height(3, 3) == inst.sample(3, 3) * (20 + S.params.ceiling / 10)
+		ok = ok and type(inst.ridgeHeight(3, 3)) == "number"
+		local rows = inst.patch(8, 2)
+		ok = ok and #rows == 5 and #rows[1] == 5
+		ok = ok and inst.steepness(4, 4) >= 0
+		local terr = inst.banded(4, 4, 5)
+		ok = ok and type(terr) == "number"
+		return ok and inst.stats().samples > 0""")
+
+SPEC["synthesizer"] = ("""		function inst.installGrammar()
+			if inst.stats().rules > 0 then return inst end
+			inst.addRule("root", { { value = "block block", weight = 3 }, { value = "block", weight = 1 } })
+			inst.addRule("block", { { value = "wall roof", weight = 2 }, { value = "wall", weight = 1 } })
+			return inst
+		end
+		function inst.synthesize(attempts)
+			inst.installGrammar()
+			return inst.generate("root", attempts or 6)
+		end
+		function inst.requireToken(token)
+			inst.installGrammar()
+			inst.addConstraint("requires." .. token, function(result)
+				return string.find(result, token, 1, true) ~= nil
+			end)
+			return inst
+		end
+		function inst.tokenCount(result)
+			local n = 0
+			for _ in string.gmatch(result or "", "%S+") do n = n + 1 end
+			return n
+		end""",
+"""		inst.installGrammar()
+		local ok = inst.stats().rules == 2
+		local result, satisfied = inst.synthesize(6)
+		ok = ok and type(result) == "string" and satisfied == true
+		ok = ok and inst.tokenCount(result) >= 1
+		inst.requireToken("roof")
+		local guarded, met = inst.synthesize(12)
+		ok = ok and (not met or string.find(guarded, "roof", 1, true) ~= nil)
+		ok = ok and inst.deterministicCheck("root") == true
+		return ok and inst.stats().generated > 0""")
+
 def params_for(kit, seed):
     p = {
         "scale": round(1.0 + (seed % 30) / 10, 3),
@@ -973,7 +1456,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 2, "categories": {}, "systems": [], "totals": {}}
+                "round": 3, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -1095,6 +1578,18 @@ KIT_METHODS = {
     "session": ["join", "leave", "acquireLock", "releaseLock", "submit", "rebase", "since", "updatePresence", "activeUsers", "stats"],
     "merge": ["diff", "threeWay", "resolve", "hasConflicts", "conflictPaths", "stats"],
     "taskgraph": ["addTask", "resolveOrder", "inputHash", "run", "invalidate", "artifact", "stats"],
+    "scenegraph": ["addNode", "get", "setParent", "markDirty", "setPosition", "setScale", "worldPosition", "worldScale", "traverse", "descendants", "withTag", "remove", "bounds", "visibleFrom", "depthOf", "stats"],
+    "prefab": ["define", "instantiate", "override", "revert", "editTemplate", "instancesOf", "diff", "destroy", "stats"],
+    "heightfield": ["inBounds", "get", "set", "fill", "applyNoise", "sample", "normalAt", "slopeAt", "raise", "lower", "flatten", "smooth", "terrace", "erodeThermal", "erodeHydraulic", "range", "normalize", "downsample", "checksum", "stats"],
+    "voxel": ["set", "get", "has", "fillBox", "fillSphere", "carveSphere", "neighbors", "surfaceFaces", "floodFill", "bounds", "histogram", "stats"],
+    "spline": ["addPoint", "setPoint", "count", "evaluate", "tangent", "buildLUT", "arcLength", "pointAtDistance", "resample", "offset", "closestPoint", "stats"],
+    "mesh": ["addVertex", "addTriangle", "addQuad", "box", "extrude", "revolve", "computeNormals", "weld", "area", "bounds", "simplify", "stats"],
+    "chunker": ["keyOf", "coordOf", "center", "bounds", "neighbors", "state", "setState", "update", "pump", "lodOf", "loadedKeys", "stats"],
+    "wfc": ["defineTile", "compatible", "solve", "at", "histogram", "validate", "stats"],
+    "lsystem": ["addRule", "iterate", "reset", "interpret", "bounds", "totalLength", "stats"],
+    "scatter": ["addMask", "generate", "filterBySlope", "cluster", "minimumSpacing", "stats"],
+    "network": ["addNode", "addEdge", "route", "junctions", "deadEnds", "totalLength", "nearestNode", "connected", "stats"],
+    "simulation": ["spawn", "despawn", "setObserver", "classify", "tick", "catchUp", "query", "aggregateState", "stats"],
 }
 
 build()

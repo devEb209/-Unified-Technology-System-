@@ -1,4 +1,4 @@
-# ARKHER V1 :: catalog specification (round 1 = A, S, X; round 2 = B, U, Y)
+# ARKHER V1 :: catalog specification (R1 = A, S, X; R2 = B, U, Y; R3 = C, D, M)
 # Each system = area x aspect. Aspect decides the kit (a real working machine) and the
 # specialized methods emitted for that system.
 
@@ -198,6 +198,113 @@ AREAS_Y = [
     ("Studio Metrics", "studiometrics"), ("Knowledge Base", "knowledge"),
 ]
 
+
+# ---------------------------------------------------------------- ROUND 3 (C, D, M)
+ASPECTS_C = [
+    ("Scene Graph",         "scenegraph", "hierarchical world state with lazy world transforms"),
+    ("Instancing",          "prefab",     "template instancing with per-instance overrides"),
+    ("Spatial Index",       "index",      "spatial acceleration of world queries"),
+    ("Streaming",           "chunker",    "chunked residency driven by viewer distance"),
+    ("Living Simulation",   "simulation", "tiered simulation that keeps running unobserved"),
+    ("Registry",            "registry",   "catalogued world records, tags and queries"),
+    ("Pipeline",            "pipeline",   "staged processing of world data"),
+    ("Query Cache",         "cache",      "memoized world queries with eviction"),
+    ("LOD Policy",          "policy",     "fidelity band scheduling for world content"),
+    ("Persistence Codec",   "codec",      "encode, diff and patch of persisted world state"),
+    ("Relationship Graph",  "graph",      "world relationships and reachability"),
+    ("Budget Governor",     "budgeter",   "world resource allocation under a hard budget"),
+    ("Event Ledger",        "ledger",     "append-only world event journal"),
+    ("Recovery",            "recovery",   "checkpointing and rollback of world state"),
+]
+
+AREAS_C = [
+    ("World Root", "worldroot"), ("Region", "region"), ("Zone", "zone"), ("Cell", "cell"),
+    ("Chunk", "chunk"), ("Entity", "entity"), ("Actor", "actor"), ("Prop", "prop"),
+    ("Interactive Object", "interactive"), ("Spawn Point", "spawnpoint"), ("Portal", "portal"),
+    ("Trigger Volume", "trigger"), ("Boundary", "boundary"), ("Navigation", "navigation"),
+    ("Waypoint", "waypoint"), ("Path", "path"), ("Landmark", "landmark"),
+    ("Point Of Interest", "poi"), ("Building Instance", "buildinginstance"),
+    ("Vegetation Instance", "veginstance"), ("Water Body", "waterbody"), ("Road Segment", "roadsegment"),
+    ("Bridge", "bridge"), ("Tunnel", "tunnel"), ("Interior", "interior"), ("Room", "room"),
+    ("Door", "door"), ("Light Instance", "lightinstance"), ("Sound Emitter", "soundemitter"),
+    ("Weather Zone", "weatherzone"), ("Time Of Day", "timeofday"), ("Season", "season"),
+    ("Climate", "climate"), ("Ecosystem", "ecosystem"), ("Wildlife", "wildlife"),
+    ("Traffic", "traffic"), ("Crowd", "crowd"), ("Economy Node", "economynode"),
+    ("Faction Territory", "territory"), ("Quest Volume", "questvolume"), ("Save State", "savestate"),
+    ("Replication Group", "replicationgroup"), ("Ownership", "ownership"),
+    ("Visibility Set", "visibilityset"), ("Occlusion Volume", "occlusionvolume"),
+    ("World Origin Shift", "originshift"),
+]
+
+ASPECTS_D = [
+    ("Heightfield",        "heightfield", "editable height data with sculpt and erosion"),
+    ("Voxel Volume",       "voxel",       "sparse volumetric material data"),
+    ("Sculpt Commands",    "commands",    "undoable terrain edits with grouping"),
+    ("Material Composer",  "composer",    "weighted blending of terrain layers"),
+    ("Mesh Builder",       "mesh",        "triangle mesh extraction for the terrain surface"),
+    ("Tile Streaming",     "chunker",     "tile residency driven by viewer distance"),
+    ("Erosion Solver",     "solver",      "iterative convergence of the erosion model"),
+    ("Noise Field",        "field",       "procedural elevation and mask fields"),
+    ("Spline Feature",     "spline",      "curve-driven terrain features"),
+    ("Scatter Layer",      "scatter",     "blue-noise placement over the surface"),
+    ("LOD Policy",         "policy",      "tile fidelity scheduling"),
+    ("Tile Registry",      "registry",    "catalogued terrain tiles and metadata"),
+    ("Compression Codec",  "codec",       "terrain payload size reduction"),
+    ("Analysis",           "analyzer",    "statistical analysis of terrain metrics"),
+    ("Recovery",           "recovery",    "checkpointing and rollback of terrain edits"),
+    ("Budget Governor",    "budgeter",    "terrain work allocation under a hard budget"),
+]
+
+AREAS_D = [
+    ("Heightmap", "heightmap"), ("Voxel Terrain", "voxelterrain"), ("Sculpting", "sculpting"),
+    ("Smoothing", "smoothing"), ("Erosion", "erosion"), ("Hydraulic Erosion", "hydraulic"),
+    ("Thermal Erosion", "thermal"), ("Sediment", "sediment"), ("River", "river"), ("Lake", "lake"),
+    ("Ocean", "ocean"), ("Coastline", "coastline"), ("Beach", "beach"), ("Cliff", "cliff"),
+    ("Mountain", "mountain"), ("Valley", "valley"), ("Canyon", "canyon"), ("Plateau", "plateau"),
+    ("Dune", "dune"), ("Cave", "cave"), ("Overhang", "overhang"), ("Arch", "arch"),
+    ("Crater", "crater"), ("Volcano", "volcano"), ("Glacier", "glacier"), ("Snow Line", "snowline"),
+    ("Biome Blend", "biomeblend"), ("Material Layer", "materiallayer"), ("Texture Splat", "splat"),
+    ("Vegetation Mask", "vegmask"), ("Road Carving", "roadcarve"), ("Foundation Flatten", "foundation"),
+    ("Collision Field", "collisionfield"), ("Navigation Mesh", "navmesh"), ("Terrain LOD", "terrainlod"),
+    ("Tile Streaming", "tilestreaming"), ("Terrain Compression", "terraincompression"),
+    ("Terrain Painting", "terrainpainting"), ("Terrain Import", "terrainimport"),
+    ("Terrain Export", "terrainexport"),
+]
+
+ASPECTS_M = [
+    ("Grammar",             "lsystem",     "rewriting grammar interpreted into geometry"),
+    ("Constraint Solver",   "wfc",         "socket-constrained tiling with entropy collapse"),
+    ("Distribution",        "scatter",     "blue-noise distribution with masks"),
+    ("Network Planner",     "network",     "graph planning with A* routing"),
+    ("Spline Layout",       "spline",      "curve layout, arc length and offsets"),
+    ("Mesh Synthesis",      "mesh",        "procedural triangle mesh construction"),
+    ("Noise Field",         "field",       "coherent noise driving the generator"),
+    ("Rule Synthesizer",    "synthesizer", "rule expansion with constraints"),
+    ("Instancing",          "prefab",      "template instancing of generated content"),
+    ("Generation Pipeline", "pipeline",    "ordered generation stages"),
+    ("Result Cache",        "cache",       "reuse of expensive generation results"),
+    ("Determinism Ledger",  "ledger",      "seed and output journal proving reproducibility"),
+    ("Seed Registry",       "registry",    "catalogued seeds and generated artefacts"),
+    ("Validation Recovery", "recovery",    "checkpointing and rollback of generation state"),
+]
+
+AREAS_M = [
+    ("Seed", "seed"), ("Deterministic Random", "detrandom"), ("Biome Map", "biomemap"),
+    ("Continent", "continent"), ("Island", "island"), ("Mountain Range", "mountainrange"),
+    ("River Network", "rivernetwork"), ("Road Network", "roadnetwork"), ("Rail Network", "railnetwork"),
+    ("Trail", "trail"), ("City Layout", "citylayout"), ("District", "district"), ("Block", "block"),
+    ("Lot", "lot"), ("Building Footprint", "footprint"), ("Facade", "facade"), ("Floor Plan", "floorplan"),
+    ("Interior Layout", "interiorlayout"), ("Furniture", "furniture"), ("Village", "village"),
+    ("Farmland", "farmland"), ("Fence", "fence"), ("Wall", "wall"), ("Ruin", "ruin"),
+    ("Dungeon", "dungeon"), ("Cave System", "cavesystem"), ("Maze", "maze"),
+    ("Bridge Generation", "bridgegen"), ("Tower", "tower"), ("Wall Circuit", "wallcircuit"),
+    ("Forest", "forest"), ("Tree", "tree"), ("Grass", "grass"), ("Rock Field", "rockfield"),
+    ("Debris", "debris"), ("Cloud", "cloud"), ("Star Field", "starfield"),
+    ("Texture Synthesis", "texturesynth"), ("Material Variation", "materialvariation"),
+    ("Damage Pattern", "damage"), ("Crowd Distribution", "crowddist"), ("Loot Table", "loot"),
+    ("Quest Graph", "questgraph"), ("Name Generator", "namegen"),
+]
+
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
               doc="Kernel-level engine capability: the UES foundation every other ARKHER framework stands on."),
@@ -211,4 +318,10 @@ CATEGORIES = {
               doc="Scripting capability: reading, understanding, transforming, generating and running ARKHER code."),
     "Y": dict(family="COLLABORATION / PRODUCTION", prefix="collab", areas=AREAS_Y, aspects=ASPECTS_Y,
               doc="Collaboration capability: many creators, one project, with review, merge, release and audit."),
+    "C": dict(family="SCENE / WORLD", prefix="world", areas=AREAS_C, aspects=ASPECTS_C,
+              doc="World capability: what exists, where it is, who owns it, and how it keeps living."),
+    "D": dict(family="TERRAIN", prefix="terrain", areas=AREAS_D, aspects=ASPECTS_D,
+              doc="ARKHER Terrain Framework capability: sculpt, erode, paint, stream and mesh the ground itself."),
+    "M": dict(family="PROCEDURAL", prefix="proc", areas=AREAS_M, aspects=ASPECTS_M,
+              doc="Procedural capability: deterministic synthesis of worlds, cities, structures and detail from a seed."),
 }
