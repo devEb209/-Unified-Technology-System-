@@ -32,3 +32,7 @@ Arkher/package-lock.json
 !Arkher/Releases/*.rbxmx
 !Arkher/Releases/*.rbxlx
 __pycache__/
+
+# ARKHER V1 binary release artifacts (3 MB each, byte-validated by tools/validate_rbxm.py)
+!Arkher/Releases/*.rbxm
+!Arkher/Releases/*.rbxl
