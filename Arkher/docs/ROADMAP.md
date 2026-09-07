@@ -10,7 +10,7 @@ Each round finishes whole categories: generated, booted, self-tested, packaged a
 | **3 — World** ✅ | C Scene/World (644), D Terrain (640), M Procedural (616) | **1,900** | **31,564** | 19% | **51.5%** |
 | **4 — Image** ✅ | E Materials (600), F Rendering (700), G Neural (504) | **1,804** | **29,726** | 18% | **69.5%** |
 | **5 — Motion** ✅ | H Physics (700), I Animation (520), J Characters (330) | **1,550** | **25,670** | 15.5% | **85.0%** |
-| 6 — Life | K NMN/NPC, L World simulation | ~1,300 | ~20,000 | 13% | ~98% |
+| **6 — Life** ✅ | K NMN/NPC (700), L World simulation (600) | **1,300** | **22,850** | 13% | **98.0%** |
 | 7 — Experience | N VFX, O Audio, P Gameplay, Q UI, R Networking | ~2,100 | ~32,000 | 21% | ~119% |
 | 8 — Intelligence | T Singularity AI, V Assets, W Cinematic, Z ARKHER original tech | ~2,600 | ~40,000 | 26% | **≥145%** |
 

@@ -140,7 +140,7 @@ def build_plugin(path):
     return len(data)
 
 
-ROUND = os.environ.get("ARKHER_ROUND", "ROUND5")
+ROUND = os.environ.get("ARKHER_ROUND", "ROUND6")
 
 if __name__ == "__main__":
     mpath = os.path.join(REL, "ARKHER_V1_%s.rbxmx" % ROUND)

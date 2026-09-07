@@ -1,4 +1,4 @@
-# ARKHER V1 :: catalog specification (R1 = A, S, X; R2 = B, U, Y; R3 = C, D, M)
+# ARKHER V1 :: catalog specification (R1 A,S,X; R2 B,U,Y; R3 C,D,M; R4 E,F,G; R5 H,I,J; R6 K,L)
 # Each system = area x aspect. Aspect decides the kit (a real working machine) and the
 # specialized methods emitted for that system.
 
@@ -528,6 +528,86 @@ AREAS_J = [
 ]
 
 
+# ---------------------------------------------------------------- round 6 :: K NPC / NMN
+ASPECTS_K = [
+    ("Mind Network",        "mindnet",      "the learned policy that turns perception into a decision"),
+    ("Memory",              "memory",       "episodic memory with decay, recall and consolidation"),
+    ("Drive System",        "need",         "drives that decay, turn urgent and get satisfied"),
+    ("Emotion",             "emotion",      "appraisal of events into valence, arousal and mood"),
+    ("Perception",          "perception",   "sight, hearing and bounded attention"),
+    ("Reactive Behaviour",  "behaviortree", "sequences, selectors, decorators and cooldowns"),
+    ("Utility Reasoning",   "utility",      "scored option selection with response curves"),
+    ("Goal Planner",        "planner",      "backward GOAP planning to reach a goal state"),
+    ("Navigation",          "navgraph",     "grid pathfinding, smoothing, line of sight and flow fields"),
+    ("Crowd Steering",      "crowd",        "local avoidance, cohesion and arrival at scale"),
+    ("Social Relations",    "society",      "affinity, factions, reputation and gossip"),
+    ("Daily Schedule",      "schedule",     "hour-by-hour routine with priority interruptions"),
+    ("Thinking Budget",     "budgeter",     "allocation of per-frame thinking time across NPCs"),
+    ("Recovery",            "recovery",     "checkpointing and rollback of NPC state"),
+]
+
+AREAS_K = [
+    ("NPC Brain", "npcbrain"), ("Neural Policy", "neuralpolicy"), ("Learning Loop", "learningloop"),
+    ("Reward Model", "rewardmodel"), ("Episodic Memory", "episodicmemory"),
+    ("Semantic Memory", "semanticmemory"), ("Working Memory", "workingmemory"),
+    ("Memory Consolidation", "consolidation"), ("Forgetting", "forgetting"),
+    ("Hunger Drive", "hungerdrive"), ("Rest Drive", "restdrive"), ("Safety Drive", "safetydrive"),
+    ("Social Drive", "socialdrive"), ("Purpose Drive", "purposedrive"),
+    ("Emotional State", "emotionalstate"), ("Mood", "mood"), ("Personality", "personality"),
+    ("Temperament", "temperament"), ("Vision", "vision"), ("Hearing", "hearing"),
+    ("Scent", "scent"), ("Attention", "attention"), ("Threat Assessment", "threatassessment"),
+    ("Curiosity", "curiosity"), ("Behaviour Tree", "behaviourtree"),
+    ("Behaviour State Machine", "behaviourstate"), ("Utility Selection", "utilityselection"),
+    ("Goal Selection", "goalselection"), ("Plan Execution", "planexecution"),
+    ("Interruption", "interruption"), ("Pathfinding", "pathfinding"),
+    ("Local Avoidance", "localavoidance"), ("Crowd Flow", "crowdflow"), ("Formation", "formation"),
+    ("Follow Behaviour", "followbehaviour"), ("Patrol Route", "patrolroute"),
+    ("Flee Behaviour", "fleebehaviour"), ("Combat Behaviour", "combatbehaviour"),
+    ("Dialogue Behaviour", "dialoguebehaviour"), ("Trade Behaviour", "tradebehaviour"),
+    ("Work Behaviour", "workbehaviour"), ("Idle Behaviour", "idlebehaviour"),
+    ("Relationship", "relationship"), ("Faction Membership", "factionmembership"),
+    ("Reputation", "reputation"), ("Gossip", "gossip"), ("Daily Routine", "dailyroutine"),
+    ("Sleep Cycle", "sleepcycle"), ("NPC LOD", "npclod"), ("NPC Debug", "npcdebug"),
+]
+
+# ------------------------------------------------------- round 6 :: L WORLD SIMULATION
+ASPECTS_L = [
+    ("Simulation Core",   "simulation", "observer-driven fidelity, catch-up and aggregate state"),
+    ("Ecology",           "ecology",    "populations, predation, harvesting and carrying capacity"),
+    ("Economy",           "economy",    "stock, production, demand, price discovery and trade"),
+    ("Society",           "society",    "relations, factions, reputation and cohesion of the region"),
+    ("Calendar",          "schedule",   "hours, days and seasons driving the region"),
+    ("Region Graph",      "graph",      "connectivity, components and shortest path between places"),
+    ("Route Network",     "network",    "roads, rivers and routes between settlements"),
+    ("History Ledger",    "ledger",     "auditable journal of everything the world did"),
+    ("State Codec",       "codec",      "persistence, diffing and checksum of the world state"),
+    ("Streaming",         "streamer",   "distance-driven residency of simulated regions"),
+    ("Fidelity Policy",   "policy",     "rules that pick full, cohort or statistical simulation"),
+    ("Aggregate Cache",   "cache",      "reuse of expensive aggregate computations"),
+    ("Analysis",          "analyzer",   "trend, anomaly and stability analysis of the world"),
+    ("Forecast",          "predictor",  "prediction of the region's next state"),
+    ("Recovery",          "recovery",   "checkpoint and rollback of the persistent world"),
+]
+
+AREAS_L = [
+    ("Living World", "livingworld"), ("Region Fidelity", "regionfidelity"),
+    ("Offscreen Simulation", "offscreensim"), ("Catch Up", "catchup"),
+    ("Population", "population"), ("Cohort", "cohort"), ("Reification", "reification"),
+    ("Settlement", "settlement"), ("Village Life", "villagelife"), ("City Life", "citylife"),
+    ("Agriculture", "agriculture"), ("Livestock", "livestock"), ("Wildlife", "wildlife"),
+    ("Predation", "predation"), ("Vegetation", "vegetation"), ("Weather", "weather"),
+    ("Climate", "climate"), ("Season", "season"), ("Day Night Cycle", "daynight"),
+    ("Water Cycle", "watercycle"), ("Resource Node", "resourcenode"),
+    ("Production Chain", "productionchain"), ("Market", "market"),
+    ("Price Discovery", "pricediscovery"), ("Trade Route", "traderoute"), ("Caravan", "caravan"),
+    ("Wealth Distribution", "wealth"), ("Taxation", "taxation"), ("Law", "law"),
+    ("Crime", "crime"), ("Justice", "justice"), ("Faction Politics", "factionpolitics"),
+    ("Diplomacy", "diplomacy"), ("War", "war"), ("Migration", "migration"),
+    ("Disease", "disease"), ("Festival", "festival"), ("World Event", "worldevent"),
+    ("World History", "worldhistory"), ("World Persistence", "worldpersistence"),
+]
+
+
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
               doc="Kernel-level engine capability: the UES foundation every other ARKHER framework stands on."),
@@ -559,4 +639,8 @@ CATEGORIES = {
               doc="ARKHER Animation Framework capability: skeletons, clips, layers, IK and physical blending."),
     "J": dict(family="CHARACTERS / DIGITAL HUMANS", prefix="character", areas=AREAS_J, aspects=ASPECTS_J,
               doc="ARKHER Digital Human capability: a body that moves, reacts, dresses, ages and scales to a crowd."),
+    "K": dict(family="NPC / NEURAL MIND NETWORK", prefix="npc", areas=AREAS_K, aspects=ASPECTS_K,
+              doc="ARKHER NMN capability: minds that perceive, remember, feel, plan, move and live together."),
+    "L": dict(family="WORLD SIMULATION", prefix="sim", areas=AREAS_L, aspects=ASPECTS_L,
+              doc="ARKHER Living World capability: a world that keeps living, at the fidelity the observer deserves."),
 }

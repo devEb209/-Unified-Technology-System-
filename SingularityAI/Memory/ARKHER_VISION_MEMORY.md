@@ -207,3 +207,33 @@ does not pretend otherwise: five appearance tiers, a nearest-first evaluation bu
 and frozen-pose bands, and a crowd tier that moves only the capsule and skips the rig entirely.
 Larger populations are a *simulation* problem (category L, Round 6: statistical crowds promoted to
 full agents only when observed), not an animation problem. Status: **substituted**.
+
+## VISION-029 — LLM-class NPC dialogue and open-ended conversation
+**Memory note:** ARKHER ships a Neural Mind Network that genuinely decides and genuinely learns —
+a small recurrent policy whose reward is the NPC's own wellbeing delta. Free-form language is a
+different machine: billions of parameters and a network round trip per line, which no Roblox place
+can host. So dialogue ships as *behaviour and social consequence* (category K: dialogue behaviour,
+gossip, reputation, disposition), and the language layer stays a Singularity AI service boundary
+scheduled for Round 8 (category T). Status: **substituted**.
+
+## VISION-030 — Persistent world state continuing across servers and sessions
+**Memory note:** the world is serialisable, diffable and checksummed; the same seed replays the
+same history, and a region advances by elapsed time when it is loaded (catch-up integration). What
+the platform does not give ARKHER is an always-on authoritative process — DataStore is storage, not
+a simulation host. Resumable state is shipped; continuous cross-server simulation is recorded here
+and depends on a host that exists outside the place. Status: **partially implemented**.
+
+## VISION-031 — Full-fidelity simulation of every individual in the whole world
+**Memory note:** every person, everywhere, every tick is orders of magnitude beyond a mobile frame.
+ARKHER's substitute is observer-driven fidelity: individuals where someone can perceive them,
+cohorts nearby, aggregate rates beyond — with deterministic reification, so a re-materialised
+villager arrives with a plausible history and memories instead of being born on the spot. What a
+player can observe is identical; the cost scales with perception, not with world size.
+Status: **substituted**.
+
+## VISION-032 — Per-individual economic ledgers for an entire civilisation
+**Memory note:** the shipped economy is real — goods, stock, production, demand, elastic price
+discovery, and trades that move both goods and money — at market and settlement granularity, wired
+into trade routes, taxation, laws, prosperity and migration. Tracking every coin of every person
+scales with population rather than with observation, so it is preserved here and enabled only
+inside the region the player currently occupies. Status: **substituted**.

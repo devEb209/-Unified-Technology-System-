@@ -233,3 +233,42 @@ Four rules hold this stack together:
    integrates as physical bones with distance joints, detects when it has settled, and blends back
    toward animation on recovery. A character can be hit, fall, settle and stand up without ever
    teleporting or popping.
+
+## 14. The life stack (Round 6)
+
+```
+   sim/world_simulation.lua   regions at 3 fidelities, clock/seasons, events, reification
+        |                     full (agents) <-> cohort (groups) <-> statistical (rates)
+        +-- sim/civilization.lua   settlements, factions, trade routes, laws, war, migration
+        |
+        +-- npc/agent.lua      4 LOD tiers, BT + utility + GOAP + schedule arbitration,
+        |        |             navigation with an LRU path cache, crowd steering, frame budget
+        |        +-- npc/mind.lua   perception -> memory -> needs -> emotion -> mindnet policy
+        |                           urgency override, wellbeing-delta reward, learning
+        |
+   runtime/kits_life.lua   mindnet memory need emotion perception behaviortree utility planner
+                           navgraph crowd society economy schedule ecology
+```
+
+Four rules hold this stack together:
+
+1. **The loop is closed.** Perception writes memories, memories and drives form the observation
+   vector, the policy net picks an action, the action changes the world, the change moves the
+   NPC's wellbeing, and that delta is the reward that updates the net. Nothing in that chain is a
+   lookup table; remove any link and the behaviour degrades in a way you can see.
+
+2. **Biology beats the policy.** A drive above 0.75 urgency overrides the network entirely
+   (eat, rest, flee, socialise, work). A learned policy that lets an NPC starve while it optimises
+   something else is not intelligence, it is a bug — so the architecture forbids it structurally
+   rather than hoping the reward shaping catches it.
+
+3. **Fidelity is chosen by the observer and is reversible.** `classify()` maps observer distance to
+   full / cohort / statistical; `aggregate()` folds individuals into cohorts on demotion and
+   `reify()` re-materialises them — deterministically, with a plausible history and memories — on
+   promotion. The world therefore keeps living at a cost proportional to how much of it anyone can
+   actually perceive, which is what makes a living world affordable on a phone.
+
+4. **Consequence propagates, and it is audited.** Ecology feeds economy, economy feeds prosperity,
+   prosperity feeds migration and unrest, unrest feeds revolt and law. Every step is numeric, every
+   step is written to a chronicle, and `checksum()` over the whole world proves that the same seed
+   produces the same history — which is what makes a persistent world testable.

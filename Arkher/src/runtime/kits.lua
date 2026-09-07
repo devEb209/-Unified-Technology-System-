@@ -1094,6 +1094,9 @@ return function(A)
 	local Motion = A:import("arkher/runtime/kits_motion")
 	for _, name in ipairs(Motion.NAMES) do Kits[name] = Motion[name] end
 
+	local Life = A:import("arkher/runtime/kits_life")
+	for _, name in ipairs(Life.NAMES) do Kits[name] = Life[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
@@ -1103,6 +1106,8 @@ return function(A)
 		"chunker", "wfc", "lsystem", "scatter", "network", "simulation",
 		"material", "sampler", "shadegraph", "framegraph", "camera", "visibility",
 		"impostor", "lightrig", "probe", "temporal", "upscaler", "inference",
+		"mindnet", "memory", "need", "emotion", "perception", "behaviortree",
+		"utility", "planner", "navgraph", "crowd", "society", "economy", "schedule", "ecology",
 		"rigidbody", "collider", "contact", "constraint", "raycaster", "charmotor",
 		"vehicle", "skeleton", "clip", "animator", "ik", "ragdoll" }
 

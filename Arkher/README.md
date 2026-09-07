@@ -1,8 +1,8 @@
 # ARKHER V1 — UES Engine for Roblox
 
-> **Status: ROUND 5 delivered — Kernel + ARKHER Studio + World + Image + Motion.**
-> 8,504 real systems · 138,472 features · 8,573 modules · 100% of them boot and pass their own self-test.
-> That is **85.0% of the 10,000-system floor — and 138.5% of the 100,000-feature requirement**.
+> **Status: ROUND 6 delivered — Kernel + ARKHER Studio + World + Image + Motion + Life.**
+> 9,804 real systems · 161,322 features · 9,878 modules · 100% of them boot and pass their own self-test.
+> That is **98.0% of the 10,000-system floor — and 161.3% of the 100,000-feature requirement**.
 
 ARKHER is **not** a Roblox Studio plugin, not a script pack and not a wrapper around Roblox APIs.
 It is a full engine architecture (UES + D-O15 + Singularity AI) that treats Roblox as *one platform
@@ -22,8 +22,8 @@ the whole engine is verified in CI by a real Lua VM before it ever reaches Studi
 
 | What | File | How |
 |---|---|---|
-| **Model** (recommended) | `Releases/ARKHER_V1_ROUND5.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
-| **Place** | `Releases/ARKHER_V1_ROUND5.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
+| **Model** (recommended) | `Releases/ARKHER_V1_ROUND6.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
+| **Place** | `Releases/ARKHER_V1_ROUND6.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
 | **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
 | **Source (Rojo)** | this folder | `rojo serve` with the included `default.project.json`. |
 
@@ -66,15 +66,26 @@ engine frame cost. Tap it to collapse.
 | **H** | PHYSICS | 700 | 11,600 | complete |
 | **I** | ANIMATION | 520 | 8,520 | complete |
 | **J** | CHARACTERS / DIGITAL HUMANS | 330 | 5,550 | complete |
-| | **Total shipped** | **8,504** | **138,472** | **verified** |
+| **K** | NPC / NEURAL MIND NETWORK | 700 | 12,850 | complete |
+| **L** | WORLD SIMULATION | 600 | 10,000 | complete |
+| | **Total shipped** | **9,804** | **161,322** | **verified** |
 
-Against the ARKHER spec target of ≥10,000 systems and ≥100,000 functionalities, this is **85.0% of
-the system target and 138.5% of the feature target** — the functionality requirement is met and
+Against the ARKHER spec target of ≥10,000 systems and ≥100,000 functionalities, this is **98.0% of
+the system target and 161.3% of the feature target** — the functionality requirement is met and
 exceeded, fully finished, no placeholders, no "TODO" systems.
-Round-by-round detail: `docs/ROUND1_REPORT.md` … `docs/ROUND5_REPORT.md`. The UI palette and its
+Round-by-round detail: `docs/ROUND1_REPORT.md` … `docs/ROUND6_REPORT.md`. The UI palette and its
 accessibility audit are in `docs/DESIGN_SYSTEM.md`.
 
 Underneath the catalog sits the hand-written kernel (every file is real, tested code):
+
+**Life runtime (Round 6):** `runtime/kits_life` (14 kits: mindnet · memory · need · emotion ·
+perception · behaviortree · utility · planner · navgraph · crowd · society · economy · schedule ·
+ecology), `npc/mind` (the Neural Mind Network: perception → memory → drives → emotion → policy, with
+a wellbeing-delta reward and a hard urgency override), `npc/agent` (4 LOD tiers, behaviour tree +
+utility + GOAP + daily schedule arbitration, navigation with an LRU path cache, crowd steering,
+per-frame thinking budget), `sim/world_simulation` ("Modo Vida Real": regions at full / cohort /
+statistical fidelity, deterministic reification, clock and seasons, world events with consequences),
+`sim/civilization` (settlements, factions, trade routes, laws, war, migration, revolt, chronicle).
 
 **Motion runtime (Round 5):** `runtime/kits_motion` (12 kits: rigidbody · collider · contact ·
 constraint · raycaster · charmotor · vehicle · skeleton · clip · animator · ik · ragdoll),
@@ -127,7 +138,8 @@ node tools/harness.js tests/studio_spec.lua   # 30 tests / 121 assertions (Studi
 node tools/harness.js tests/world_spec.lua    # 28 tests / 275 assertions (world, terrain, procedural)
 node tools/harness.js tests/render_spec.lua   # 21 tests / 182 assertions (materials, rendering, neural)
 node tools/harness.js tests/motion_spec.lua   # 25 tests / 218 assertions (physics, animation, characters)
-node tools/harness.js tests/engine_spec.lua   # boots all 8,504 systems + self-tests
+node tools/harness.js tests/life_spec.lua     # 26 tests / 230 assertions (NPC minds, world sim, civilization)
+node tools/harness.js tests/engine_spec.lua   # boots all 9,804 systems + self-tests
 python3 tools/validate_release.py             # byte-checks the .rbxmx / .rbxlx
 ```
 
@@ -146,7 +158,7 @@ Inside Roblox the same tests run through `arkher/kernel/testkit`.
    every budget is a measured number (`src/do15/device.lua`).
 4. **Portable by construction.** Luau has no bitwise operators, Lua 5.3 has no `bit32` — ARKHER ships
    `src/kernel/bits.lua` so hashing, RNG and noise give *identical results on every host*.
-5. **Every system proves itself.** `engine:verify()` runs 8,504 self-tests at boot.
+5. **Every system proves itself.** `engine:verify()` runs 9,804 self-tests at boot.
 
 ---
 
@@ -160,8 +172,8 @@ Rounds are 10–20% each, delivered complete. See `docs/ROADMAP.md`.
 | **2 (done)** | B editor/IDE, U scripting, Y collaboration | 1,700 | 32.5% |
 | **3 (done)** | C scene/world, D terrain, M procedural | 1,900 | 51.5% |
 | **4 (done)** | E materials, F rendering, G neural reconstruction | 1,804 | 69.5% |
-| **5 (done)** | H physics, I animation, J characters/digital humans | 1,550 | **85.0%** |
-| 6 | K NMN/NPC, L world simulation | ~1,300 | ~98% |
+| **5 (done)** | H physics, I animation, J characters/digital humans | 1,550 | 85.0% |
+| **6 (done)** | K NMN/NPC, L world simulation | 1,300 | **98.0%** |
 | 7 | N VFX, O audio, P gameplay, Q UI, R networking | ~2,100 | ~119% |
 | 8 | T Singularity AI, V assets, W cinematic, Z original tech | ~2,600 | ≥145% of the 10k floor |
 

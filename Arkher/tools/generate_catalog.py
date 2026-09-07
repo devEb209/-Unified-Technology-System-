@@ -93,6 +93,27 @@ def kit_config(kit, key, seed, area_slug):
         "animator":     '{ id = ID, budget = %d }' % (4 + seed % 12),
         "ik":           '{ id = ID, iterations = %d, tolerance = %.4f }' % (4 + seed % 12, 0.001),
         "ragdoll":      '{ id = ID, blendSpeed = %.2f }' % (2 + (seed % 40) / 10),
+        "mindnet":      '{ id = ID, inputs = %d, hidden = %d, seed = %d, learningRate = %.3f, exploration = %.3f }'
+                        % (6 + seed % 4, 4 + seed % 5, seed, 0.05 + (seed % 10) / 200, 0.02 + (seed % 8) / 200),
+        "memory":       '{ id = ID, capacity = %d, decayRate = %.3f, consolidateAt = %d }'
+                        % (32 + seed % 96, 0.02 + (seed % 10) / 200, 2 + seed % 4),
+        "need":         '{ id = ID }',
+        "emotion":      '{ id = ID, inertia = %.2f, decayRate = %.2f, baselineArousal = %.2f }'
+                        % (0.75 + (seed % 20) / 100, 0.2 + (seed % 30) / 100, 0.1 + (seed % 20) / 100),
+        "perception":   '{ id = ID, sightRange = %d, hearingRange = %d, attentionSlots = %d, fov = %.3f }'
+                        % (25 + (seed % 8) * 5, 12 + (seed % 6) * 4, 3 + seed % 4, 1.6 + (seed % 40) / 100),
+        "behaviortree": '{ id = ID }',
+        "utility":      '{ id = ID, momentum = %.2f }' % ((seed % 20) / 100),
+        "planner":      '{ id = ID, maxDepth = %d }' % (6 + seed % 6),
+        "navgraph":     '{ id = ID, width = %d, height = %d, cellSize = %d }'
+                        % (24 + (seed % 4) * 8, 24 + (seed % 4) * 8, 2 + seed % 4),
+        "crowd":        '{ id = ID, radius = %.2f, maxSpeed = %.2f, cellSize = %d }'
+                        % (0.4 + (seed % 10) / 20, 3 + (seed % 30) / 10, 6 + seed % 6),
+        "society":      '{ id = ID, decayRate = %.3f, gossipReach = %d }'
+                        % (0.005 + (seed % 10) / 1000, 2 + seed % 4),
+        "economy":      '{ id = ID, elasticity = %.2f }' % (0.15 + (seed % 30) / 100),
+        "schedule":     '{ id = ID, startHour = %d }' % (6 + seed % 6),
+        "ecology":      '{ id = ID }',
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -2292,7 +2313,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 5, "categories": {}, "systems": [], "totals": {}}
+                "round": 6, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -2450,6 +2471,550 @@ KIT_METHODS = {
     "animator": ["addClip", "addLayer", "play", "stop", "setWeight", "setBlendTree", "setParameter", "evaluate", "isBlending", "stats"],
     "ik": ["twoBone", "fabrik", "lookAt", "footPlacement", "stats"],
     "ragdoll": ["addBone", "setAnimatedPose", "activate", "deactivate", "step", "settled", "pose", "recover", "centerOfMass", "stats"],
+    "mindnet": ["addAction", "build", "forward", "decide", "reinforce", "resetState", "parameters", "exportWeights", "importWeights", "memoryBytes", "stats"],
+    "memory": ["remember", "tick", "recall", "recallNear", "strongest", "consolidate", "knows", "factCount", "forget", "stats"],
+    "need": ["define", "tick", "satisfy", "urgency", "mostUrgent", "vector", "wellbeing", "stats"],
+    "emotion": ["appraise", "tick", "label", "intensity", "mood", "influence", "reset", "stats"],
+    "perception": ["place", "canSee", "canHear", "salience", "submit", "scan", "focus", "clear", "stats"],
+    "behaviortree": ["addNode", "attach", "setRoot", "set", "get", "tick", "depth", "reset", "stats"],
+    "utility": ["addOption", "addConsideration", "score", "evaluate", "ranking", "stats"],
+    "planner": ["addAction", "plan", "planCost", "simulate", "stats"],
+    "navgraph": ["inBounds", "setCost", "block", "costAt", "walkable", "toWorld", "toCell", "blockRect", "findPath", "lineOfSight", "smooth", "worldPath", "pathLength", "flowField", "stats"],
+    "crowd": ["add", "remove", "setTarget", "seek", "neighbors", "separation", "cohesion", "alignment", "step", "arrivedCount", "averageSpeed", "stats"],
+    "society": ["join", "leave", "affinity", "interact", "setFactionStanding", "disposition", "gossip", "tick", "friendsOf", "cohesion", "stats"],
+    "economy": ["defineGood", "addMarket", "setStock", "setProduction", "setDemand", "totalStock", "totalDemand", "updatePrices", "priceOf", "tick", "trade", "balance", "stats"],
+    "schedule": ["addSlot", "activeAt", "interrupt", "advance", "isNight", "nextActivity", "locationFor", "stats"],
+    "ecology": ["addSpecies", "link", "populationOf", "step", "harvest", "seed", "biomass", "stable", "stats"],
 }
+
+# ---------------------------------------------------------------- round 6 :: life kits
+SPEC["mindnet"] = ("""		function inst.installActions(list)
+			local n = 0
+			for _, name in ipairs(list) do
+				if inst.addAction(name) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.defaultActions()
+			if #inst.actionOrder > 0 then return #inst.actionOrder end
+			inst.installActions({ "observe", "approach", "avoid", "work" })
+			return #inst.actionOrder
+		end
+		function inst.observation(values)
+			local vec = {}
+			for i = 1, inst.inputs do vec[i] = values[i] or 0 end
+			return vec
+		end
+		function inst.think(values)
+			inst.defaultActions()
+			return inst.decide(inst.observation(values))
+		end
+		function inst.learn(values, reward)
+			inst.think(values)
+			return inst.reinforce(reward or 0)
+		end
+		function inst.preference(name)
+			local a = inst.actions[name]
+			if not a then return 0 end
+			return a.value
+		end
+		function inst.confidence(values)
+			inst.defaultActions()
+			local scores = inst.forward(inst.observation(values))
+			local best, second = -math.huge, -math.huge
+			for _, v in pairs(scores) do
+				if v > best then second = best best = v
+				elseif v > second then second = v end
+			end
+			if second == -math.huge then return 1 end
+			return math.min(1, math.abs(best - second))
+		end
+		function inst.brainBytes() return inst.memoryBytes() + inst.inputs * 8 end""",
+"""		local obs = { 0.2, 0.7, 0.1, 0.4, 0.9, 0.3, 0.5, 0.6, 0.2, 0.1 }
+		local action = inst.think(obs)
+		local ok = action ~= nil and inst.parameters() > 10
+		for _ = 1, 5 do inst.learn(obs, 1) end
+		ok = ok and inst.preference(action) ~= nil and inst.confidence(obs) >= 0
+		local w = inst.exportWeights()
+		ok = ok and inst.importWeights(w) == #w
+		inst.resetState()
+		return ok and inst.brainBytes() > 0 and inst.stats().updates >= 5""")
+
+SPEC["memory"] = ("""		function inst.rememberBatch(list)
+			local n = 0
+			for _, e in ipairs(list) do
+				inst.remember(e.kind, e.payload or {}, e.salience or 0.5, e.position)
+				n = n + 1
+			end
+			return n
+		end
+		function inst.reinforceFact(kind, times)
+			for _ = 1, (times or inst.consolidateAt) do
+				inst.remember(kind, { rehearsed = true }, 0.7)
+			end
+			return inst.consolidate()
+		end
+		function inst.mostSalient()
+			local best = nil
+			for _, e in ipairs(inst.episodes) do
+				if not best or e.salience > best.salience then best = e end
+			end
+			return best
+		end
+		function inst.pressure() return #inst.episodes / math.max(1, inst.capacity) end
+		function inst.age(seconds)
+			inst.tick(seconds or 1)
+			return inst.time
+		end
+		function inst.summary()
+			local kinds = {}
+			for _, e in ipairs(inst.episodes) do kinds[e.kind] = (kinds[e.kind] or 0) + 1 end
+			return kinds
+		end""",
+"""		local n = inst.rememberBatch({
+			{ kind = "seen", salience = 0.8, position = Vec.vec3(1, 0, 0) },
+			{ kind = "heard", salience = 0.3 } })
+		local ok = n == 2 and #inst.recall("seen") == 1
+		ok = ok and inst.mostSalient().kind == "seen"
+		ok = ok and #inst.recallNear(Vec.vec3(1, 0, 0), 3) == 1
+		inst.reinforceFact("seen", inst.consolidateAt + 1)
+		ok = ok and inst.knows("seen") and inst.factCount() >= 1
+		inst.age(2)
+		return ok and inst.pressure() > 0 and inst.summary().seen ~= nil""")
+
+SPEC["need"] = ("""		function inst.installDrives()
+			if #inst.order > 0 then return #inst.order end
+			inst.define("food", { value = 0.7, decay = 0.02, threshold = 0.35 })
+			inst.define("rest", { value = 0.8, decay = 0.015, threshold = 0.3 })
+			inst.define("safety", { value = 0.9, decay = 0.005, threshold = 0.5 })
+			inst.define("social", { value = 0.6, decay = 0.01, threshold = 0.25 })
+			return #inst.order
+		end
+		function inst.starve(name, seconds)
+			inst.installDrives()
+			inst.tick(seconds or 60)
+			return inst.urgency(name)
+		end
+		function inst.critical(threshold)
+			local out = {}
+			for _, name in ipairs(inst.order) do
+				if inst.urgency(name) > (threshold or 0.5) then out[#out + 1] = name end
+			end
+			return out
+		end
+		function inst.satisfyAll(amount)
+			for _, name in ipairs(inst.order) do inst.satisfy(name, amount or 1) end
+			return inst.wellbeing()
+		end
+		function inst.deficit() return 1 - inst.wellbeing() end""",
+"""		local ok = inst.installDrives() == 4
+		ok = ok and inst.wellbeing() > 0.5
+		ok = ok and inst.starve("food", 40) > 0
+		ok = ok and #inst.critical(0) > 0
+		ok = ok and inst.mostUrgent() ~= nil and #inst.vector() == 4
+		return ok and inst.satisfyAll(1) > 0.9 and inst.deficit() < 0.1""")
+
+SPEC["emotion"] = ("""		function inst.good(intensity) return inst.appraise(0.8, intensity or 0.6) end
+		function inst.bad(intensity) return inst.appraise(-0.8, intensity or 0.6) end
+		function inst.settle(seconds, step)
+			local dt = step or 0.5
+			local n = math.max(1, math.floor((seconds or 4) / dt))
+			for _ = 1, n do inst.tick(dt) end
+			return inst.valence, inst.arousal
+		end
+		function inst.expression()
+			local name, distance = inst.label()
+			return { label = name, distance = distance,
+				intensity = inst.intensity(), mood = inst.mood() }
+		end
+		function inst.boldness(base) return inst.influence(base or 1) end
+		function inst.isDistressed() return inst.valence < -0.3 and inst.arousal > 0.3 end""",
+"""		inst.bad(1)
+		local ok = inst.valence < 0 and inst.isDistressed()
+		local e = inst.expression()
+		ok = ok and e.label ~= nil and e.intensity > 0 and inst.boldness(1) < 1
+		inst.settle(30, 0.5)
+		ok = ok and math.abs(inst.valence - inst.baselineValence) < 0.2
+		inst.good(1)
+		return ok and inst.valence > 0 and inst.stats().appraisals == 2""")
+
+SPEC["perception"] = ("""		function inst.stand(x, z)
+			return inst.place(Vec.vec3(x or 0, 0, z or 0), Vec.vec3(0, 0, 1))
+		end
+		function inst.submitMany(list)
+			for _, e in ipairs(list) do inst.submit(e.id, e.position, e.opts) end
+			return #inst.stimuli
+		end
+		function inst.sweep() return inst.scan() end
+		function inst.threatLevel()
+			local worst = 0
+			for _, e in ipairs(inst.attention) do
+				if (e.threat or 0) > worst then worst = e.threat end
+			end
+			return worst
+		end
+		function inst.sees(id)
+			for _, e in ipairs(inst.attention) do
+				if e.id == id then return true end
+			end
+			return false
+		end
+		function inst.rangeOf(sense)
+			if sense == "hearing" then return inst.hearingRange end
+			return inst.sightRange
+		end""",
+"""		inst.stand(0, 0)
+		inst.submitMany({
+			{ id = "close", position = Vec.vec3(0, 0, 3), opts = { threat = 0.9, intensity = 0.9 } },
+			{ id = "far", position = Vec.vec3(0, 0, 12), opts = { intensity = 0.3 } },
+			{ id = "behind", position = Vec.vec3(0, 0, -900) } })
+		local attention = inst.sweep()
+		local ok = #attention > 0 and inst.sees("close") and inst.threatLevel() > 0.5
+		ok = ok and inst.canSee(Vec.vec3(0, 0, 5)) and not inst.canSee(Vec.vec3(0, 0, -5))
+		ok = ok and inst.rangeOf("hearing") > 0 and inst.focus() ~= nil
+		return ok and inst.clear() == 3""")
+
+SPEC["behaviortree"] = ("""		function inst.buildRoutine()
+			if #inst.order > 0 then return #inst.order end
+			inst.addNode("root", "selector")
+			inst.addNode("threatSeq", "sequence")
+			inst.addNode("isThreat", "condition",
+				{ condition = function(bb) return bb.threat == true end })
+			inst.addNode("flee", "action",
+				{ action = function(bb) bb.doing = "flee" return "success" end })
+			inst.addNode("work", "action",
+				{ action = function(bb) bb.doing = "work" return "success" end })
+			inst.attach("root", "threatSeq")
+			inst.attach("threatSeq", "isThreat")
+			inst.attach("threatSeq", "flee")
+			inst.attach("root", "work")
+			inst.setRoot("root")
+			return #inst.order
+		end
+		function inst.runRoutine(dt, blackboard)
+			inst.buildRoutine()
+			if blackboard then
+				for k, v in pairs(blackboard) do inst.set(k, v) end
+			end
+			inst.tick(dt or 0.1)
+			return inst.get("doing")
+		end
+		function inst.successRate()
+			local total = inst.successes + inst.failures
+			if total == 0 then return 0 end
+			return inst.successes / total
+		end
+		function inst.nodeCount()
+			inst.buildRoutine()
+			return #inst.order
+		end""",
+"""		local ok = inst.buildRoutine() == 5
+		ok = ok and inst.runRoutine(0.1, { threat = false }) == "work"
+		ok = ok and inst.runRoutine(0.1, { threat = true }) == "flee"
+		ok = ok and inst.depth() >= 2 and inst.nodeCount() == 5
+		ok = ok and inst.successRate() > 0
+		inst.reset()
+		return ok and inst.stats().nodes == 5""")
+
+SPEC["utility"] = ("""		function inst.buildOptions()
+			if #inst.order > 0 then return #inst.order end
+			inst.addOption("eat")
+			inst.addConsideration("eat", "hunger",
+				function(ctx) return 1 - (ctx.food or 1) end, "quadratic")
+			inst.addOption("rest")
+			inst.addConsideration("rest", "fatigue",
+				function(ctx) return 1 - (ctx.energy or 1) end, "linear")
+			inst.addOption("work")
+			inst.addConsideration("work", "duty", function(ctx) return ctx.duty or 0 end, "linear")
+			return #inst.order
+		end
+		function inst.choose(ctx, dt)
+			inst.buildOptions()
+			return inst.evaluate(ctx or {}, dt or 0)
+		end
+		function inst.best(ctx)
+			inst.buildOptions()
+			return inst.ranking(ctx or {})[1]
+		end
+		function inst.margin(ctx)
+			inst.buildOptions()
+			local ranking = inst.ranking(ctx or {})
+			if #ranking < 2 then return 1 end
+			return ranking[1].score - ranking[2].score
+		end
+		function inst.optionNames()
+			inst.buildOptions()
+			return inst.order
+		end""",
+"""		local ok = inst.buildOptions() == 3
+		ok = ok and inst.choose({ food = 0.02, energy = 1, duty = 0 }, 0) == "eat"
+		ok = ok and inst.choose({ food = 1, energy = 0.02, duty = 0 }, 0) == "rest"
+		ok = ok and inst.best({ food = 1, energy = 1, duty = 0.9 }).name == "work"
+		ok = ok and inst.margin({ food = 0.1, energy = 1, duty = 0 }) > 0
+		return ok and #inst.optionNames() == 3 and inst.stats().evaluations >= 2""")
+
+SPEC["planner"] = ("""		function inst.buildDomain()
+			if #inst.order > 0 then return #inst.order end
+			inst.addAction("makeTool", { pre = { hasTool = false },
+				effects = { hasTool = true }, cost = 1 })
+			inst.addAction("gather", { pre = { hasTool = true },
+				effects = { hasFood = true }, cost = 2 })
+			inst.addAction("cook", { pre = { hasFood = true },
+				effects = { fed = true }, cost = 2 })
+			return #inst.order
+		end
+		function inst.startState()
+			return { hasTool = false, hasFood = false, fed = false }
+		end
+		function inst.planFor(goal, initial)
+			inst.buildDomain()
+			return inst.plan(initial or inst.startState(), goal or { fed = true })
+		end
+		function inst.canReach(goal, initial)
+			return inst.planFor(goal, initial) ~= nil
+		end
+		function inst.stepNames()
+			local out = {}
+			for _, name in ipairs(inst.lastPlan or {}) do out[#out + 1] = name end
+			return out
+		end
+		function inst.replanCost(goal, initial)
+			local plan, cost = inst.planFor(goal, initial)
+			if not plan then return math.huge end
+			return cost
+		end""",
+"""		local ok = inst.buildDomain() == 3
+		local plan, cost = inst.planFor()
+		ok = ok and plan ~= nil and #plan == 3 and cost == 5
+		local final, done = inst.simulate(inst.startState(), plan)
+		ok = ok and done and final.fed == true
+		ok = ok and inst.canReach({ hasTool = true })
+		ok = ok and not inst.canReach({ impossible = true })
+		return ok and inst.replanCost() == 5 and #inst.stepNames() >= 0""")
+
+SPEC["navgraph"] = ("""		function inst.wall(x, z0, z1) return inst.blockRect(x, z0, x, z1) end
+		function inst.route(sx, sz, tx, tz)
+			local path = inst.findPath(sx, sz, tx, tz)
+			if not path then return nil end
+			return inst.worldPath(inst.smooth(path))
+		end
+		function inst.reachable(sx, sz, tx, tz) return inst.findPath(sx, sz, tx, tz) ~= nil end
+		function inst.clearAll()
+			inst.cells = {}
+			return true
+		end
+		function inst.coverage()
+			local blocked = 0
+			for _, cost in pairs(inst.cells) do
+				if cost < 0 then blocked = blocked + 1 end
+			end
+			return 1 - blocked / (inst.width * inst.height)
+		end
+		function inst.steerFrom(field, x, z) return field.direction(x, z) end""",
+"""		local ok = inst.walkable(1, 1)
+		inst.wall(4, 0, 6)
+		ok = ok and not inst.walkable(4, 3)
+		local route = inst.route(1, 1, 8, 1)
+		ok = ok and route ~= nil and #route >= 2
+		ok = ok and inst.reachable(1, 1, 8, 8) and inst.coverage() < 1
+		ok = ok and not inst.lineOfSight(1, 3, 8, 3)
+		local field = inst.flowField(8, 1)
+		ok = ok and inst.steerFrom(field, 1, 1):length() > 0
+		inst.clearAll()
+		return ok and inst.walkable(4, 3)""")
+
+SPEC["crowd"] = ("""		function inst.spawnRing(count, radius)
+			local n = count or 6
+			local r = radius or 6
+			for i = 1, n do
+				local angle = (i / n) * math.pi * 2
+				inst.add("a" .. i, Vec.vec3(math.cos(angle) * r, 0, math.sin(angle) * r), {})
+				inst.setTarget("a" .. i, Vec.vec3(-math.cos(angle) * r, 0, -math.sin(angle) * r))
+			end
+			return #inst.order
+		end
+		function inst.simulate(seconds, dt)
+			local step = dt or 1 / 20
+			local n = math.max(1, math.floor((seconds or 1) / step))
+			for _ = 1, n do inst.step(step) end
+			return inst.steps
+		end
+		function inst.closestPair()
+			local best = math.huge
+			for i = 1, #inst.order do
+				for j = i + 1, #inst.order do
+					local d = inst.agents[inst.order[i]].position:distance(
+						inst.agents[inst.order[j]].position)
+					if d < best then best = d end
+				end
+			end
+			return best
+		end
+		function inst.densityAt(position, radius)
+			local n = 0
+			for _, id in ipairs(inst.order) do
+				if inst.agents[id].position:distance(position) <= (radius or 5) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.clearAgents()
+			local ids = {}
+			for i, id in ipairs(inst.order) do ids[i] = id end
+			for _, id in ipairs(ids) do inst.remove(id) end
+			return #inst.order
+		end""",
+"""		local ok = inst.spawnRing(6, 6) == 6
+		inst.simulate(1.5, 1 / 20)
+		ok = ok and inst.steps >= 30 and inst.closestPair() > 0.05
+		ok = ok and inst.densityAt(Vec.vec3(), 40) == 6
+		ok = ok and inst.averageSpeed() >= 0 and inst.arrivedCount() >= 0
+		return ok and inst.clearAgents() == 0""")
+
+SPEC["society"] = ("""		function inst.populate(names, faction)
+			for _, name in ipairs(names) do inst.join(name, { faction = faction }) end
+			return #inst.memberOrder
+		end
+		function inst.bond(a, b, times)
+			for _ = 1, (times or 3) do inst.interact(a, b, 1, 0.4) end
+			return inst.affinity(a, b)
+		end
+		function inst.feud(a, b, times)
+			for _ = 1, (times or 3) do inst.interact(a, b, -1, 0.4) end
+			return inst.affinity(a, b)
+		end
+		function inst.circleOf(id) return inst.friendsOf(id, 0.25) end
+		function inst.standing(id)
+			local m = inst.members[id]
+			if not m then return 0 end
+			return m.reputation
+		end
+		function inst.factionOf(id)
+			local m = inst.members[id]
+			if not m then return nil end
+			return m.faction
+		end""",
+"""		local ok = inst.populate({ "ana", "bo", "cy" }, "village") == 3
+		ok = ok and inst.bond("ana", "bo", 4) > 0.3
+		ok = ok and inst.feud("ana", "cy", 4) < 0
+		ok = ok and #inst.circleOf("ana") == 1
+		ok = ok and inst.factionOf("bo") == "village"
+		inst.gossip("ana", "cy", -1)
+		ok = ok and inst.standing("cy") <= 0
+		inst.tick(1)
+		return ok and inst.cohesion() ~= nil and inst.disposition("ana", "bo") > 0""")
+
+SPEC["economy"] = ("""		function inst.bootstrap()
+			if #inst.goodOrder > 0 then return #inst.goodOrder end
+			inst.defineGood("food", { basePrice = 8 })
+			inst.defineGood("ore", { basePrice = 14 })
+			inst.addMarket("farm", { wealth = 400 })
+			inst.addMarket("town", { wealth = 700 })
+			inst.setStock("farm", "food", 200)
+			inst.setStock("town", "ore", 120)
+			inst.setProduction("farm", "food", 6)
+			inst.setDemand("town", "food", 4)
+			return #inst.goodOrder
+		end
+		function inst.runDays(days)
+			inst.bootstrap()
+			for _ = 1, (days or 4) do inst.tick(1) end
+			return inst.ticks
+		end
+		function inst.shipment(good, amount)
+			inst.bootstrap()
+			return inst.trade("farm", "town", good or "food", amount or 20)
+		end
+		function inst.scarcity(good)
+			local stock = inst.totalStock(good)
+			if stock <= 0 then return 1 end
+			return math.min(1, inst.totalDemand(good) / stock)
+		end
+		function inst.wealthOf(marketId)
+			local m = inst.markets[marketId]
+			if not m then return 0 end
+			return m.wealth
+		end""",
+"""		local ok = inst.bootstrap() == 2
+		inst.runDays(4)
+		ok = ok and inst.priceOf("food") > 0
+		ok = ok and inst.shipment("food", 20) > 0
+		ok = ok and inst.markets.town.stock.food > 0 and inst.wealthOf("town") < 700
+		ok = ok and inst.scarcity("food") >= 0 and inst.balance() ~= nil
+		return ok and inst.totalStock("food") > 0 and inst.stats().trades >= 1""")
+
+SPEC["schedule"] = ("""		function inst.buildDay()
+			if #inst.slots > 0 then return #inst.slots end
+			inst.addSlot("sleep", 22, 6, { priority = 3 })
+			inst.addSlot("eat", 6, 8, { priority = 2 })
+			inst.addSlot("work", 8, 18, { priority = 2, location = Vec.vec3(12, 0, 0) })
+			inst.addSlot("social", 18, 22, { priority = 1 })
+			return #inst.slots
+		end
+		function inst.at(hour)
+			inst.buildDay()
+			local slot = inst.activeAt(hour)
+			if not slot then return nil end
+			return slot.activity
+		end
+		function inst.fastForward(hours)
+			inst.buildDay()
+			return inst.advance(hours or 1)
+		end
+		function inst.emergency(activity, hours)
+			inst.buildDay()
+			inst.interrupt(activity or "flee", hours or 0.5, 9)
+			return inst.advance(0.1)
+		end
+		function inst.hourOfDay() return inst.time end""",
+"""		local ok = inst.buildDay() == 4
+		ok = ok and inst.at(9) == "work" and inst.at(23) == "sleep" and inst.at(3) == "sleep"
+		inst.fastForward(2)
+		ok = ok and inst.stats().current ~= nil
+		ok = ok and inst.emergency("flee", 1) == "flee"
+		inst.fastForward(2)
+		ok = ok and inst.hourOfDay() >= 0 and inst.isNight() ~= nil
+		return ok and inst.locationFor("work") ~= nil""")
+
+SPEC["ecology"] = ("""		function inst.buildFoodChain()
+			if #inst.order > 0 then return #inst.order end
+			inst.addSpecies("grass", { population = 800, growth = 0.5, capacity = 2000 })
+			inst.addSpecies("deer", { population = 180, growth = 0.25, capacity = 700 })
+			inst.addSpecies("wolf", { population = 18, growth = -0.12, capacity = 80 })
+			inst.link("deer", "grass", { predation = 0.0004, efficiency = 0.3 })
+			inst.link("wolf", "deer", { predation = 0.0009, efficiency = 0.35 })
+			return #inst.order
+		end
+		function inst.advanceSeasons(steps, dt)
+			inst.buildFoodChain()
+			for _ = 1, (steps or 20) do inst.step(dt or 0.5) end
+			return inst.ticks
+		end
+		function inst.dominant()
+			local best, bestPop = nil, -1
+			for _, name in ipairs(inst.order) do
+				local pop = inst.populationOf(name)
+				if pop > bestPop then bestPop = pop best = name end
+			end
+			return best, bestPop
+		end
+		function inst.pressureOn(name)
+			local total = 0
+			for _, link in ipairs(inst.links) do
+				if link.prey == name then
+					total = total + link.predation * inst.populationOf(link.predator)
+				end
+			end
+			return total
+		end
+		function inst.cull(name, fraction)
+			return inst.harvest(name, inst.populationOf(name) * (fraction or 0.1))
+		end""",
+"""		local ok = inst.buildFoodChain() == 3
+		inst.advanceSeasons(24, 0.5)
+		ok = ok and inst.biomass() > 100 and inst.dominant() == "grass"
+		ok = ok and inst.pressureOn("deer") > 0 and inst.cull("deer", 0.1) > 0
+		inst.seed("deer", 10)
+		return ok and inst.populationOf("deer") > 0 and inst.stats().ticks >= 24""")
+
 
 build()

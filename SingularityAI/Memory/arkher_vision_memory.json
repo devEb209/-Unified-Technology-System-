@@ -263,10 +263,50 @@
     "statistical_population": "scheduled for round 6"
    },
    "status": "substituted"
+  },
+  {
+   "id": "VISION-029",
+   "topic": "LLM-class NPC dialogue and open-ended conversation",
+   "interpretation": "ARKHER ships a Neural Mind Network that decides and learns at runtime (small recurrent policy, reward = wellbeing delta). Free-form language needs a hosted model of billions of parameters and per-request network calls, which no Roblox place can host. Dialogue is shipped as a behaviour and a social-consequence system (category K), not as generated prose; the language layer is a Singularity AI service boundary for round 8 (category T).",
+   "adopted_target": {
+    "decision_and_learning_mind": "shipped in Round 6",
+    "free_form_language": "singularity service, scheduled for round 8"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-030",
+   "topic": "Persistent world state continuing across servers and sessions",
+   "interpretation": "The world simulation is fully serialisable, diffable and checksummed, so a host that can store and resume it will reproduce the exact same history from the same seed. What the platform does not provide is an always-on authoritative process; DataStore is storage, not a simulation host. ARKHER therefore ships resumable state plus catch-up integration (a region advances by elapsed time on load) and records true cross-server continuous simulation here.",
+   "adopted_target": {
+    "resumable_checksummed_world": "shipped in Round 6",
+    "always_on_authoritative_host": "platform capability"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-031",
+   "topic": "Full-fidelity simulation of every individual in the whole world",
+   "interpretation": "Simulating every person everywhere costs orders of magnitude more than a mobile frame allows. ARKHER's answer is observer-driven fidelity: individuals where someone can perceive them, cohorts nearby, pure aggregate rates beyond, with deterministic reification that gives a re-materialised individual a plausible history and memories. The outcome a player can observe is the same; the cost is proportional to perception, not to world size.",
+   "adopted_target": {
+    "three_tier_fidelity_with_reification": "shipped in Round 6",
+    "universal_full_fidelity": "vision only"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-032",
+   "topic": "Per-individual economic ledgers for an entire civilisation",
+   "interpretation": "ARKHER ships a real economy - goods, stock, production, demand, elastic price discovery and trade that moves goods and money - at market and settlement granularity, plus trade routes, taxation, laws and migration driven by prosperity. Tracking every coin of every person scales with population instead of with what is observed, so it is preserved here and enabled only for the region the player is actually inside.",
+   "adopted_target": {
+    "market_level_economy": "shipped in Round 6",
+    "per_individual_ledger": "scoped to the observed region"
+   },
+   "status": "substituted"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
  "verification_command": "node tools/harness.js tests/engine_spec.lua",
  "updated": "2026-09-07",
- "rounds_recorded": 5
+ "rounds_recorded": 6
 }
