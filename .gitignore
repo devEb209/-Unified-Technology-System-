@@ -24,3 +24,15 @@ Arkhe/Installer/*.zip
 # Allow our zips for UTS/DsOS small
 !UTS.zip
 !DsOS.zip
+
+# ARKHER build environment
+Arkher/node_modules/
+Arkher/package-lock.json
+# ARKHER releases ARE shipped (raw download links) - keep them
+!Arkher/Releases/*.rbxmx
+!Arkher/Releases/*.rbxlx
+__pycache__/
+
+# ARKHER V1 binary release artifacts (3 MB each, byte-validated by tools/validate_rbxm.py)
+!Arkher/Releases/*.rbxm
+!Arkher/Releases/*.rbxl

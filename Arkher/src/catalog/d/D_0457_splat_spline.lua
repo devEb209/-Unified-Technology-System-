@@ -1,0 +1,118 @@
+-- ARKHER SYSTEM D.0457 :: Texture Splat Spline Feature
+-- Category D - TERRAIN
+-- ARKHER Terrain Framework capability: sculpt, erode, paint, stream and mesh the ground itself.
+-- Kit: spline (curve-driven terrain features)
+--@arkher-module
+return function(A)
+	local Kits = A:import("arkher/runtime/kits")
+	local Vec = A:import("arkher/kernel/vec")
+
+	local S = {}
+	S.id = "D.0457"
+	S.key = "arkher.terrain.splat.spline_feature"
+	S.name = "Texture Splat Spline Feature"
+	S.category = "D"
+	S.family = "TERRAIN"
+	S.area = "Texture Splat"
+	S.aspect = "Spline Feature"
+	S.kit = "spline"
+	S.version = "1.0.0"
+	S.deps = { "arkher.terrain.splat.noise_field" }
+	S.tags = { "d", "splat", "spline", "terrain" }
+	S.description = "Texture Splat Spline Feature: curve-driven terrain features for the Texture Splat subsystem."
+	S.params = {
+		backlogLimit = 17,
+		baseRadius = 360,
+		baseWeight = 0.59,
+		bias = 0.09,
+		biasWeight = 0.14,
+		ceiling = 329,
+		detailWeight = 0.49,
+		failureTolerance = 4,
+		horizon = 2,
+		integrator = "verlet",
+		minConfidence = 0.49,
+		minThrottle = 0.245,
+		regressionSlope = 0.095,
+		saturation = 0.79,
+		scale = 3.9
+	}
+	S.features = { "addPoint", "setPoint", "count", "evaluate", "tangent", "buildLUT", "arcLength", "pointAtDistance", "resample", "offset", "closestPoint", "stats", "buildDefault", "path", "corridor", "deviation", "describe", "health", "integrate", "selfTest" }
+
+	function S.create(ctx)
+		ctx = ctx or {}
+		local inst = Kits.create("spline", { id = "arkher.terrain.splat.spline_feature", tension = 0.44, closed = false })
+		inst.system = S
+		inst.ctx = ctx
+
+		function inst.buildDefault()
+			if inst.count() > 0 then return inst.count() end
+			local span = S.params.baseRadius / 2
+			inst.addPoint(Vec.vec3(0, 0, 0))
+			inst.addPoint(Vec.vec3(span, 0, 0))
+			inst.addPoint(Vec.vec3(span * 2, 0, span))
+			inst.addPoint(Vec.vec3(span * 3, 0, span))
+			return inst.count()
+		end
+		function inst.path(samples)
+			inst.buildDefault()
+			return inst.resample(samples or 8)
+		end
+		function inst.corridor(width, samples)
+			inst.buildDefault()
+			return inst.offset(width or S.params.detailWeight * 10, samples or 8)
+		end
+		function inst.deviation(point)
+			inst.buildDefault()
+			local _, _, d = inst.closestPoint(point)
+			return d
+		end
+
+		function inst.describe()
+			return { id = S.id, key = S.key, name = S.name, category = S.category, family = S.family,
+				area = S.area, aspect = S.aspect, kit = S.kit, features = S.features,
+				params = S.params, stats = inst.stats() }
+		end
+
+		function inst.health()
+			local st = inst.stats()
+			local status = "ok"
+			for k, v in pairs(st) do
+				if k == "failures" and type(v) == "number" and v > 0 then status = "degraded" end
+				if k == "blocked" and type(v) == "number" and v > 0 and status == "ok" then status = "throttled" end
+			end
+			return { system = S.key, status = status, stats = st }
+		end
+
+		function inst.integrate(engine)
+			if not engine then return false end
+			inst.engine = engine
+			if engine.bus then
+				engine.bus:subscribe("arkher.terrain.splat.*", function(payload) inst.lastSignal = payload end)
+			end
+			if engine.registry then engine.registry[S.key] = inst end
+			return true
+		end
+
+		function inst.selfTest()
+			local ok, err = pcall(function()
+		inst.buildDefault()
+		local ok = inst.count() == 4
+		ok = ok and inst.arcLength() > 0
+		ok = ok and #inst.path(6) == 6
+		ok = ok and #inst.corridor(5, 4) == 5
+		local mid = inst.evaluate(0.5)
+		ok = ok and type(mid.x) == "number"
+		ok = ok and math.abs(inst.tangent(0.5):length() - 1) < 0.01
+		ok = ok and inst.deviation(Vec.vec3(0, 0, 0)) < 1e-6
+		return ok and inst.pointAtDistance(inst.arcLength() * 0.5) ~= nil
+			end)
+			if not ok then return false, tostring(err) end
+			return err == true or err == nil, err
+		end
+
+		return inst
+	end
+
+	return S
+end

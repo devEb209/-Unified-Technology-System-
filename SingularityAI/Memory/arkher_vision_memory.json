@@ -1,0 +1,393 @@
+{
+ "namespace": "singularity.memory.vision",
+ "owner": "Singularity AI",
+ "created": "2026-09-07",
+ "policy": "Aspirational or non-implemented statements are preserved as vision memory, never shipped as implemented features.",
+ "records": [
+  {
+   "id": "VISION-001",
+   "topic": "1B physical files",
+   "interpretation": "Granularity Doctrine: one responsibility per module; count systems/features, not files.",
+   "adopted_target": {
+    "roblox_modules": "10k-15k",
+    "software_modules": "60k-150k streamed",
+    "features": "100000+"
+   },
+   "status": "reinterpreted"
+  },
+  {
+   "id": "VISION-002",
+   "topic": "Surpass reality in quality",
+   "interpretation": "Perceptual Superiority Doctrine: highest perceived fidelity per millisecond and per watt on the same device.",
+   "status": "active-goal"
+  },
+  {
+   "id": "VISION-003",
+   "topic": "Infinite content and quality",
+   "interpretation": "Unbounded Architecture Rule: no artificial ceilings in registries, catalogs, LOD chains or generators.",
+   "status": "architectural-rule"
+  },
+  {
+   "id": "VISION-004",
+   "topic": "Legacy program numbers",
+   "claims": [
+    "138080 files",
+    "27.6M physical",
+    "278.9B functional",
+    "100K/100M evolution",
+    "620 folders 5580 files RBXM"
+   ],
+   "interpretation": "Historical ambition and packaging experiments; not engine features.",
+   "status": "archived-history"
+  },
+  {
+   "id": "VISION-005",
+   "topic": "Roblox hyperrealism",
+   "interpretation": "Concrete program: PBR discipline, probe GI, temporal reconstruction, geometry virtualization, micro-detail, motion quality, spatial audio, imperfection cues.",
+   "status": "scheduled-round-4-5"
+  },
+  {
+   "id": "VISION-006",
+   "topic": "AAA games in days with AI",
+   "interpretation": "Time-to-World Objective measured in hours from prompt to playable optimized world.",
+   "status": "scheduled-round-8"
+  },
+  {
+   "id": "VISION-007",
+   "topic": "Console and VR parity",
+   "interpretation": "Device tiers exist with real budgets; full runtime parity scheduled.",
+   "status": "partial-implemented"
+  },
+  {
+   "id": "VISION-008",
+   "topic": "Native ARKHER text-editor surface (Round 2)",
+   "interpretation": "Roblox offers no editable code surface to a plugin. ARKHER implements the full model side (tokenizer, symbols, diagnostics, completion, rename, metrics) in arkher/runtime/kits_studio (source kit) and arkher/code/intelligence; the pixel-level editor surface is adapter work.",
+   "adopted_target": {
+    "model_layer": "shipped in Round 2",
+    "surface": "ARKHER V2 platform adapter"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-009",
+   "topic": "Peer-to-peer live collaboration transport",
+   "interpretation": "The session/OT layer (presence, locks, op log, rebase) is real and transport agnostic. Roblox networking is authoritative-server only, so true P2P transport is an adapter capability, not an engine claim.",
+   "adopted_target": {
+    "logic": "shipped in Round 2 (session kit + collab/workspace)",
+    "transport": "ARKHER V2 networking adapter"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-010",
+   "topic": "Binary asset diff/merge",
+   "interpretation": "Round 2 ships a complete three-way merge over structured project trees. Binary asset (mesh/texture) diffing needs a content-addressed asset pipeline, which lands with category V.",
+   "adopted_target": {
+    "tree_merge": "shipped in Round 2",
+    "binary_merge": "Round 8 (V Asset Pipeline)"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-011",
+   "topic": "Distributed build farm",
+   "interpretation": "The taskgraph kit is incremental and content-hashed, which is the hard part. Distributing those tasks across machines is a platform capability, not an engine feature.",
+   "adopted_target": {
+    "incremental_local": "shipped in Round 2",
+    "distributed": "ARKHER V2"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-012",
+   "topic": "ARKHER Studio is not a Roblox Studio plugin",
+   "interpretation": "Standing architectural rule restated for Round 2: ARKHER Studio is ARKHER's own IDE (document/commands/selection/layout/widget/inspector/viewport). Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx is only a display adapter that lets that IDE drive a Roblox Studio session.",
+   "status": "architectural-rule"
+  },
+  {
+   "id": "VISION-013",
+   "topic": "GPU voxel meshing / compute-shader surface extraction",
+   "interpretation": "Roblox exposes no compute API, so marching-cubes-class meshing cannot run on the GPU. ARKHER ships the complete CPU surface extractor (voxel kit: 6-neighbour face extraction, flood fill, histograms) and a mesh budget governed by D-O15; the GPU path is recorded as a platform capability.",
+   "adopted_target": {
+    "cpu_extractor": "shipped in Round 3",
+    "gpu_path": "ARKHER V2 / platform capability"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-014",
+   "topic": "Planetary-scale unbounded terrain",
+   "interpretation": "ARKHER terrain is tiled and unbounded by construction (tiles are created on demand and streamed), but a shipped Roblox place is bounded by device memory. The planetary streaming ledger and its paging policy are documented as intent; what ships is unbounded tiling under a measured memory budget.",
+   "adopted_target": {
+    "tiled_streaming": "shipped in Round 3",
+    "planetary_paging": "ARKHER V2"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-015",
+   "topic": "Round-tripping into Roblox native smooth-terrain voxels",
+   "interpretation": "The Terrain Framework owns heightfields, materials, erosion, rivers and LOD meshes as engine data. Writing that data into Roblox's own Terrain voxel store (and reading it back) is adapter work, kept strictly below the abstraction line.",
+   "adopted_target": {
+    "engine_terrain": "shipped in Round 3",
+    "roblox_terrain_adapter": "Round 4 (E/F adapter pass)"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-016",
+   "topic": "Persistent cross-server world state (Modo Vida Real at platform scale)",
+   "interpretation": "The simulation kit already keeps the world alive when unobserved through full/reduced/statistical tiers, and the state is serialisable. Persisting and reconciling that state across many Roblox servers requires the networking family and the Reality Layer original technology.",
+   "adopted_target": {
+    "single_server_life": "shipped in Round 3",
+    "cross_server_persistence": "Round 7 (R) + Round 8 (Z Reality Layer)"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-017",
+   "topic": "Learned procedural style transfer",
+   "interpretation": "Round 3 procedural generation is deterministic and grammar-based (WFC, L-systems, rule synthesiser, Poisson scatter, A* networks) precisely so that results are reproducible and debuggable. A learned component that imitates a reference style is a Singularity AI capability, not a procedural one.",
+   "adopted_target": {
+    "deterministic_generation": "shipped in Round 3",
+    "style_learning": "Round 8 (T Singularity AI)"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-018",
+   "topic": "Author-written GPU shaders",
+   "interpretation": "The platform exposes no shader authoring. ARKHER ships the entire shading model above that line: a node graph with cycle rejection, constant folding and compilation to Luau, plus a layered material resolver. The adapter maps resolved parameters onto whatever surface types exist.",
+   "adopted_target": {
+    "shade_graph_and_resolver": "shipped in Round 4",
+    "gpu_shader_authoring": "platform capability, not claimed"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-019",
+   "topic": "Hardware ray tracing and path-traced global illumination",
+   "interpretation": "No ray tracing API exists on the target platform. ARKHER substitutes irradiance probe volumes encoded in SH9 with trilinear interpolation and budgeted incremental relight, which is measurable and runs on a phone.",
+   "adopted_target": {
+    "probe_gi": "shipped in Round 4",
+    "hardware_rt": "future generation / other platforms"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-020",
+   "topic": "Convolutional and transformer models on device",
+   "interpretation": "The inference kit is dense-layer only with real backpropagation and fixed-point quantization, which is what a mobile frame budget honestly allows. Larger architectures belong to server-side authoring tools that export quantized weights ARKHER loads at boot.",
+   "adopted_target": {
+    "dense_inference_on_device": "shipped in Round 4",
+    "large_models": "authoring-time, Round 8 (T Singularity AI)"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-021",
+   "topic": "Framebuffer-level post processing",
+   "interpretation": "ARKHER owns exposure, ACES tonemapping, height fog and contrast-adaptive sharpening as parameter mathematics. A true fullscreen post chain requires a render target the platform does not expose to user code.",
+   "adopted_target": {
+    "parameter_post": "shipped in Round 4",
+    "fullscreen_post_chain": "adapter capability"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-022",
+   "topic": "Variable rate shading and vendor upscaling hooks (DLSS/FSR/XeSS class)",
+   "interpretation": "Standing rule from the specification: never bolt on a vendor technology. ARKHER's own Reconstruction Framework - resolution ladder with hysteresis, edge-aware reconstruction, temporal accumulation with variance clipping and a trained scale policy - is the substitute and is fully implemented.",
+   "adopted_target": {
+    "arkher_reconstruction": "shipped in Round 4",
+    "vendor_hooks": "explicitly rejected by the specification"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-023",
+   "topic": "Native rigid-body middleware (PhysX / Havok / Jolt class)",
+   "interpretation": "The platform runs no native physics module a script can steer, and its own solver is not addressable, deterministic or budgetable. ARKHER owns the whole loop: fixed timestep, spatial-hash broadphase, analytic manifolds, sequential impulses with warm starting, Baumgarte correction, joints and a checksum CI asserts twice per build.",
+   "adopted_target": {
+    "arkher_physics_abstraction": "shipped in Round 5",
+    "platform_solver": "output adapter only"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-024",
+   "topic": "Continuous collision detection for bullet-speed objects",
+   "interpretation": "Conservative Minkowski-expanded sweeps solve the character and projectile cases at mobile cost. Per-shape conservative advancement against rotating convex meshes is scheduled with the mesh-collider work.",
+   "adopted_target": {
+    "sphere_sweeps": "shipped in Round 5",
+    "full_ccd": "scheduled"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-025",
+   "topic": "GPU cloth, soft bodies and destruction (Blast class)",
+   "interpretation": "Cloth, soft-body and destruction areas exist in category H with real budgeting, policy, analysis and recovery, and the constraint kit ships breakable joints and a distance-joint rope/ragdoll solver. Vertex-level cloth and fracture meshing need runtime geometry the adapter cannot generate.",
+   "adopted_target": {
+    "breakable_joints": "shipped in Round 5",
+    "vertex_cloth_and_fracture": "scheduled"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-026",
+   "topic": "Learned motion matching (neural pose search)",
+   "interpretation": "Classical motion matching is implemented: explicit feature vectors, weighted cost, stride-sampled k-best search inside a hard budget, hysteresis and blend-in. Compressing the database into a learned network belongs to Singularity AI (category T, Round 8) because the trainer is an authoring-time tool.",
+   "adopted_target": {
+    "classical_motion_matching": "shipped in Round 5",
+    "learned_motion_matching": "scheduled for round 8"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-027",
+   "topic": "Skeletal skinning, morph targets and facial rigs at vertex level",
+   "interpretation": "ARKHER owns the rig - bones, poses, blending, masks, IK, ragdoll and per-distance bone budgets. Per-vertex deformation and morph targets need runtime mesh generation the platform does not expose; the adapter maps ARKHER poses onto the rig types that exist.",
+   "adopted_target": {
+    "rig_layer": "shipped in Round 5",
+    "vertex_deformation": "adapter capability"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-028",
+   "topic": "Thousands of fully simulated characters at once",
+   "interpretation": "The honest number on a phone is dozens of animated rigs. ARKHER ships five appearance tiers, a nearest-first evaluation budget, quarter-rate and frozen-pose bands and a crowd tier that skips the rig entirely. Larger populations are a world-simulation problem (category L, Round 6).",
+   "adopted_target": {
+    "budgeted_crowd": "shipped in Round 5",
+    "statistical_population": "scheduled for round 6"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-029",
+   "topic": "LLM-class NPC dialogue and open-ended conversation",
+   "interpretation": "ARKHER ships a Neural Mind Network that decides and learns at runtime (small recurrent policy, reward = wellbeing delta). Free-form language needs a hosted model of billions of parameters and per-request network calls, which no Roblox place can host. Dialogue is shipped as a behaviour and a social-consequence system (category K), not as generated prose; the language layer is a Singularity AI service boundary for round 8 (category T).",
+   "adopted_target": {
+    "decision_and_learning_mind": "shipped in Round 6",
+    "free_form_language": "singularity service, scheduled for round 8"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-030",
+   "topic": "Persistent world state continuing across servers and sessions",
+   "interpretation": "The world simulation is fully serialisable, diffable and checksummed, so a host that can store and resume it will reproduce the exact same history from the same seed. What the platform does not provide is an always-on authoritative process; DataStore is storage, not a simulation host. ARKHER therefore ships resumable state plus catch-up integration (a region advances by elapsed time on load) and records true cross-server continuous simulation here.",
+   "adopted_target": {
+    "resumable_checksummed_world": "shipped in Round 6",
+    "always_on_authoritative_host": "platform capability"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-031",
+   "topic": "Full-fidelity simulation of every individual in the whole world",
+   "interpretation": "Simulating every person everywhere costs orders of magnitude more than a mobile frame allows. ARKHER's answer is observer-driven fidelity: individuals where someone can perceive them, cohorts nearby, pure aggregate rates beyond, with deterministic reification that gives a re-materialised individual a plausible history and memories. The outcome a player can observe is the same; the cost is proportional to perception, not to world size.",
+   "adopted_target": {
+    "three_tier_fidelity_with_reification": "shipped in Round 6",
+    "universal_full_fidelity": "vision only"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-032",
+   "topic": "Per-individual economic ledgers for an entire civilisation",
+   "interpretation": "ARKHER ships a real economy - goods, stock, production, demand, elastic price discovery and trade that moves goods and money - at market and settlement granularity, plus trade routes, taxation, laws and migration driven by prosperity. Tracking every coin of every person scales with population instead of with what is observed, so it is preserved here and enabled only for the region the player is actually inside.",
+   "adopted_target": {
+    "market_level_economy": "shipped in Round 6",
+    "per_individual_ledger": "scoped to the observed region"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-033",
+   "topic": "Real-time convolution reverb, HRTF binaural audio and hardware DSP",
+   "interpretation": "ARKHER ships a real DSP chain (biquad filtering, delay, envelope following, soft clipping), a hierarchical mixer with ducking and priority voice stealing, and spatialisation with distance attenuation, panning, occlusion and doppler. Per-sample convolution against measured impulse responses and head-related transfer functions needs a DSP callback the platform does not expose. The substitute is parametric: filter-and-delay reverb per zone, occlusion filtering, and a panning law - the perceptual result at a fraction of the cost.",
+   "adopted_target": {
+    "parametric_dsp_and_spatialisation": "shipped in Round 7",
+    "convolution_and_hrtf": "recorded, requires an audio callback the platform does not provide"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-034",
+   "topic": "GPU particle simulation with millions of particles",
+   "interpretation": "The VFX framework simulates pooled particles on the CPU with shaped emission, analytic force fields, curl turbulence, ground collision and trails, all inside one shared global budget with four distance LOD bands. Compute-shader particle systems are not reachable from the platform, so the substitute is budget-first: quality bands that cut spawn rate and capacity with distance, a priority allocator that starves background effects before hero effects, and per-frame stepping that never exceeds the frame budget.",
+   "adopted_target": {
+    "budgeted_cpu_vfx_with_lod": "shipped in Round 7",
+    "gpu_compute_particles": "recorded as a platform capability"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-035",
+   "topic": "Dedicated authoritative servers with rollback netcode",
+   "interpretation": "ARKHER ships authoritative replication with interest management, delta snapshots under an MTU, a synchronised clock with jitter buffering, client prediction with reconciliation and input replay, rate guarding and lag-compensated hit validation against a recorded position history. Full rollback netcode - re-simulating the whole world several frames back every time an input arrives late - assumes a deterministic lockstep simulation and a dedicated host process. ARKHER rewinds transforms for hit validation instead, which is what a player perceives, and records full rollback here.",
+   "adopted_target": {
+    "authoritative_replication_prediction_and_lag_compensation": "shipped in Round 7",
+    "world_rollback_netcode": "recorded, depends on a dedicated deterministic host"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-036",
+   "topic": "Native platform UI with system fonts, native gestures and per-pixel effects",
+   "interpretation": "The interface framework ships a real responsive layout solver (flex with safe areas, weights, breakpoints), a retained widget tree with property bindings, a unified input map where one action is bound to touch, gamepad and keyboard at once, tweening, theming and enforced accessibility audits (44pt targets, WCAG AA contrast). Native text shaping, OS gesture recognisers and per-pixel UI shaders are not exposed; ARKHER models gestures itself and themes with token colours the adapter can honour.",
+   "adopted_target": {
+    "responsive_accessible_ui_framework": "shipped in Round 7",
+    "native_text_shaping_and_ui_shaders": "recorded as a platform capability"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-037",
+   "topic": "A large language model running inside the engine",
+   "interpretation": "The spec asks for Singularity AI to accept any human sentence and drive the whole engine from it. ARKHER Round 8 ships a real, deterministic language front end: a lexicon of verbs, targets, qualifiers, numbers and device constraints, keyword patterns that recover an intent when no verb is spoken, a confidence score with an explicit 'not understood' refusal, a semantic knowledge graph with transitive inference, hashed embeddings with similarity search, a dependency-ordered planner that verifies and rolls back, and a critic that scores the result. What it cannot do is run transformer weights on the client: there is no tensor runtime, no GPU compute and no room for billions of parameters in a Roblox session. Generative free-form language stays here; the deterministic pipeline is what actually ships and it never hallucinates a build step.",
+   "adopted_target": {
+    "intent_parsing_knowledge_planning_and_critique": "shipped in Round 8",
+    "on_device_transformer_inference": "recorded, depends on a tensor runtime the platform does not expose",
+    "server_side_model_calls": "recorded, an adapter concern for a future generation"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-038",
+   "topic": "A native asset cooking toolchain with GPU block compression",
+   "interpretation": "The asset pipeline in Round 8 is real: typed import with required-field validation, unit normalization, content hashing with deduplication, dependency resolution, LOD chains derived from actual triangle counts, mip chains derived from actual texture dimensions, per-platform cooking against mobile/PC/console/VR budgets, size-bounded bundling, manifests and delta patches against a previous manifest. What it cannot do is parse FBX or PNG binaries and emit BCn/ASTC blocks: Roblox owns ingestion and gives no access to raw texture memory. ARKHER therefore cooks descriptors, budgets and residency plans - the decisions - and hands the bytes to the platform adapter.",
+   "adopted_target": {
+    "validation_dedup_lod_mip_cook_bundle_and_patch": "shipped in Round 8",
+    "binary_format_parsing_and_block_compression": "recorded, owned by the platform ingestion service"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-039",
+   "topic": "Film-grade cinematic post processing on the GPU",
+   "interpretation": "The cinematic framework ships shots, sequences, a scrubable timeline with eased keyframes, clips and once-only events, camera rigs with dolly/orbit/crane/follow modes, smoothing, shake with decay, focus tracking, circle-of-confusion computation and subject framing, plus a colour grade that is arithmetic rather than a lookup blob: exposure stops, contrast about a pivot, luma-correct saturation, lift/gamma/gain, white balance, filmic and Reinhard tone curves, named looks and auto-exposure. What it cannot do is write per-pixel depth of field, motion blur or a 3D LUT: no post-process shader hook exists. ARKHER computes the signals a renderer would need and the adapter applies whatever the platform exposes.",
+   "adopted_target": {
+    "timeline_camera_language_grading_math_and_coverage_analysis": "shipped in Round 8",
+    "per_pixel_dof_motion_blur_and_lut_application": "recorded, needs a post-process hook the platform does not expose"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-040",
+   "topic": "A world that keeps simulating on a dedicated host while every player is away",
+   "interpretation": "Adaptive World Intelligence ships the Modo Vida Real contract inside a session: regions carry an observation tier, the simulation fabric steps ecology, economy, society and weather at the rate that tier earns, unobserved regions run in coarse statistical mode and accumulate debt, returning to a region reconciles that debt in one pass instead of rewinding, world memory keeps an epoch-stamped history that compacts into summaries, and checkpoints with checksums restore an exact state. What it cannot do is keep running when no Roblox server holds the place: there is no always-on process. The substitute is honest - persist the checkpoint, and on the next boot advance the world by the elapsed wall-clock through the same coarse model, so the world the player returns to is the world that would have existed.",
+   "adopted_target": {
+    "observation_tiers_coarse_mode_debt_reconciliation_memory_and_checkpoints": "shipped in Round 8",
+    "always_on_dedicated_world_process": "recorded, replaced by elapsed-time catch-up on boot"
+   },
+   "status": "substituted"
+  }
+ ],
+ "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
+ "verification_command": "node tools/harness.js tests/engine_spec.lua",
+ "updated": "2026-09-07",
+ "rounds_recorded": 8
+}

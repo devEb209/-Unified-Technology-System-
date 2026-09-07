@@ -1,0 +1,28 @@
+{
+  "name": "ARKHER",
+  "globIgnorePaths": ["**/node_modules/**", "**/Releases/**"],
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "ARKHER": {
+        "$path": "src"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "ARKHER_Boot": {
+        "$path": "roblox/boot.server.lua"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "ARKHER_HUD": {
+          "$path": "roblox/hud.client.lua"
+        }
+      }
+    }
+  }
+}
