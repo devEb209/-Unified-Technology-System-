@@ -16,6 +16,9 @@ def digest(data):
 
 def main():
     validation = json.loads((OUTPUT / 'VALIDACAO.json').read_text())
+    for source in validation['sources']:
+        if digest((ROOT / 'arkher/src' / source['file']).read_bytes()) != source['sha256']:
+            raise ValueError('Source changed after binary compilation: ' + source['file'])
     tests = (ROOT / 'build/arkher/tests.json').read_bytes()
     if json.loads(tests)['failed'] != 0:
         raise ValueError('Tests did not pass')
@@ -26,6 +29,8 @@ def main():
         'BRIEF_ORIGINAL.txt': (ROOT / 'ARKHER STUDIOS👑').read_bytes(),
         'VALIDACAO.json': (OUTPUT / 'VALIDACAO.json').read_bytes(),
         'TESTES.json': tests,
+        'PROGRESSO.md': (ROOT / 'arkher/progress/README.md').read_bytes(),
+        'PROGRESSO.json': (ROOT / 'arkher/progress/REPORT.json').read_bytes(),
         'LICENSE': (ROOT / 'LICENSE').read_bytes(),
         'LICENSE-COMMERCIAL': (ROOT / 'LICENSE-COMMERCIAL').read_bytes(),
         'LICENSE-LEGAL': (ROOT / 'LICENSE-LEGAL').read_bytes(),
@@ -35,7 +40,7 @@ def main():
         if len(data) != artifact['bytes'] or digest(data) != artifact['sha256']:
             raise ValueError('Artifact changed after binary validation')
         entries[artifact['file']] = data
-    for folder in ['arkher/src', 'arkher/tests', 'arkher/tools']:
+    for folder in ['arkher/src', 'arkher/tests', 'arkher/tools', 'arkher/progress']:
         for path in sorted((ROOT / folder).rglob('*')):
             if path.is_file() and '__pycache__' not in path.parts:
                 entries['SOURCE/' + path.relative_to(ROOT).as_posix()] = path.read_bytes()
@@ -62,7 +67,7 @@ def main():
     artifacts = [{k: a[k] for k in ('file', 'bytes', 'sha256')} for a in validation['artifacts']]
     data = (OUTPUT / NAME).read_bytes()
     artifacts.append({'file': NAME, 'bytes': len(data), 'sha256': digest(data)})
-    manifest = {'product': 'ARKHER STUDIOS', 'generation': 1, 'version': '1.0.0-dev.1',
+    manifest = {'product': 'ARKHER STUDIOS', 'generation': 1, 'version': validation['version'],
                 'status': 'DEVELOPMENT_NOT_COMPLETE_V1', 'zipEntries': len(entries),
                 'zipCrcAndContents': 'passed', 'artifacts': artifacts,
                 'robloxStudio': 'NOT_TESTED', 'formal10000Systems': 'NOT_CERTIFIED',

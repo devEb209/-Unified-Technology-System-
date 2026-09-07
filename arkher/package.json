@@ -1,12 +1,15 @@
 {
   "name": "arkher-studios",
-  "version": "1.0.0-dev.1",
+  "version": "1.0.0-dev.2",
   "private": true,
   "description": "ARKHER Generation 1 development: own Luau scene/editor/simulation core with Roblox platform adapters. Full V1 scope remains incomplete.",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node tools/test.mjs",
-    "build": "node tools/test.mjs && node tools/build.mjs && python3 tools/package.py"
+    "build": "node tools/test.mjs && python3 tools/progress.py && python3 -m unittest discover -s tests -p \"test_*.py\" && node tools/build.mjs && python3 tools/package.py",
+    "progress": "python3 tools/progress.py"
   }
 }

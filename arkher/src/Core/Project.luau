@@ -58,6 +58,10 @@ function Project:_apply(state, operations)
 			assert(type(operation.patch)=="table","Patch obrigatório")
 			for key,value in pairs(operation.patch) do node[op][key]=Util.copy(value) end
 			state.nodes[node.id]=Schema.node(node,node.id)
+		elseif op=="npc" then
+			local node=edit(operation.id);assert(node.kind=="npc","Selecione um NPC")
+			for key,value in pairs(operation.patch or {}) do node.npc[key]=Util.copy(value) end
+			state.nodes[node.id]=Schema.node(node,node.id)
 		elseif op=="light" then
 			local node=edit(operation.id);assert(node.kind=="light","Selecione uma luz")
 			for key,value in pairs(operation.patch or {}) do node.light[key]=value end
@@ -65,7 +69,7 @@ function Project:_apply(state, operations)
 		elseif op=="rename" then edit(operation.id).name=Util.text(operation.name,"",100)
 		elseif op=="parent" then
 			local node=edit(operation.id);node.parent=Util.text(operation.parent,"",80)
-			assert(not node.body.dynamic or node.parent=="","Corpo dinâmico deve ficar na raiz")
+			assert((not node.body.dynamic and node.kind~="npc") or node.parent=="","Corpo dinâmico/NPC deve ficar na raiz")
 		elseif op=="delete" then
 			assert(state.nodes[operation.id],"Entidade inexistente")
 			local removed={[operation.id]=true}
@@ -195,6 +199,9 @@ function Project.example()
 		{op="add",node={name="Corpo B",kind="sphere",transform={position={x=7,y=18,z=2}},body={dynamic=true},surface={material="stone",color={r=.9,g=.52,b=.28}}}},
 		{op="add",node={name="Luz principal",kind="light",transform={position={x=0,y=20,z=0}},surface={color={r=.8,g=.94,b=1}}}},
 		{op="city",position={x=72,y=0,z=0},options={blocks=3,seed=137}},
+		{op="add",node={name="Explorador A",kind="npc",transform={position={x=-18,y=8,z=12}},npc={seed=7,fov=200}}},
+		{op="add",node={name="Explorador B",kind="npc",transform={position={x=12,y=8,z=-12}},npc={seed=19,hunger=.75}}},
+		{op="add",node={name="Alimento",kind="box",body={collidable=false},transform={position={x=18,y=8,z=0},size={x=2,y=2,z=2}},surface={material="neon",color={r=.9,g=.72,b=.2}},metadata={food=true,foodAmount=5}}},
 	},0)
 	self.undoStack={}
 	return self

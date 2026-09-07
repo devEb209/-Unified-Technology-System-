@@ -55,4 +55,5 @@ function Transform.bounds(state, node, cache)
 	}
 end
 
+Transform.multiplyRotation = multiply
 return Transform

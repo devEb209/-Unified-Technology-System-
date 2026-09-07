@@ -25,8 +25,8 @@ Fonte integral: `ARKHER STUDIOS👑`, blob `9f628f98e103d1fedea1a7c418ecb50ecdf2
 | G — Neural/Upscaling | Não implementado | Pesquisa, algoritmos, modelos, execução e validação de reconstrução própria |
 | H — Physics | Parcial: gravidade, broad phase, AABB e heightfield vertical | Rigid bodies completos, OBB/CCD, soft bodies, fluidos, cloth/hair, destruição |
 | I — Animation | Parcial: grafo numérico/vetorial executável | Rig, IK/FK, skeletal animation, retargeting, motion matching, compressão |
-| J — Digital human | Não implementado | Corpo, rig, face, pele, cabelo, customização, comportamento físico |
-| K — NPC/NMN | Não implementado no ARKHER desta etapa | Memória, percepção, planejamento, relações, aprendizagem e navegação integrados |
+| J — Digital human | Não implementado; NPC usa manequim de primitivas | Corpo/rig humano, face, pele, cabelo, customização e comportamento físico completos |
+| K — NPC/NMN | Parcial: necessidades, memórias, percepção, A*, decisões e checkpoints | NMN completo, relações sociais, ocupações, aprendizagem ampla, navegação dinâmica/multinível e validação no Roblox |
 | L — World simulation | Parcial: relógio e parâmetros ambientais | Clima, ecologia, populações, sociedades, economia, infraestrutura |
 | M — Procedural | Parcial: heightfield e cidade determinísticos | Geradores semânticos completos, interiores, quests, ecossistemas e demais famílias |
 | N — VFX | Não implementado | Framework de partículas/VFX e editores |
@@ -54,3 +54,7 @@ Um item só poderá sair de pendente/parcial quando houver finalidade, código e
 - APIs/recursos indisponíveis da plataforma exigem alternativas reais e limitações explícitas; não recebem status fictício de concluídos.
 
 A implementação permanece concentrada no **ARKHER**, sem continuar a construção separada da UTS ou do DsOS nesta etapa.
+
+## Relatório de cobertura
+
+A contagem rastreável das entradas explicitamente nomeadas está em [progress/README.md](progress/README.md). Cobertura parcial não é conclusão da V1; os alvos 10K/100K permanecem não certificados.

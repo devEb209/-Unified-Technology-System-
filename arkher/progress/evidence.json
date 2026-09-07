@@ -1,0 +1,312 @@
+[
+  {
+    "status": "partial",
+    "scope": "Scene graph/project v1: identidade, componentes fixos, estado imutável, histórico e validação. Não é a implementação integral de todos os sistemas do Core.",
+    "files": [
+      "arkher/src/Core/Project.luau",
+      "arkher/src/Core/Schema.luau"
+    ],
+    "tests": [
+      "a failed multi-command transaction changes nothing",
+      "hierarchy cycle is rejected atomically",
+      "undo and redo retain identity and monotonic revisions"
+    ],
+    "entries": [
+      "A/UES Core",
+      "A/Entity System",
+      "A/Component System",
+      "A/State System",
+      "A/Type System",
+      "A/Metadata System",
+      "A/Serialization System",
+      "A/Deserialization System",
+      "A/Validation System",
+      "A/Versioning",
+      "B/Undo/Redo",
+      "C/ARKHER Scene Graph",
+      "C/Metadata",
+      "C/Editor Scenes",
+      "C/Preview Scenes",
+      "X/Project Validation",
+      "X/Data Validation",
+      "X/Version Validation"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Caminhos de editor/UI implementados, ainda sem teste integrado no Studio/dispositivos; editores especializados permanecem incompletos.",
+    "files": [
+      "arkher/src/Client/Editor.luau",
+      "arkher/src/Client/Entry.luau",
+      "arkher/src/Client/Camera.luau"
+    ],
+    "tests": [
+      "hierarchical translation rotation and uniform scale compose",
+      "NPC configuration is validated and remains editable with undo"
+    ],
+    "entries": [
+      "A/ARKHER Editor Runtime",
+      "B/Main Editor",
+      "B/Viewport",
+      "B/Scene Hierarchy",
+      "B/Inspector",
+      "B/Terrain Editor",
+      "B/Physics Editor",
+      "B/AI Editor",
+      "B/Visual Scripting",
+      "B/Graph Editor",
+      "B/Project Settings",
+      "B/Search",
+      "B/Selection",
+      "B/Transform",
+      "B/Gizmos",
+      "B/Tool Context",
+      "B/Layout System",
+      "Q/Editor UI",
+      "Q/UI Components",
+      "Q/UI Layout",
+      "Q/UI Navigation",
+      "Q/UI Scaling",
+      "Q/Responsive UI"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Fork, relógio e checkpoints executáveis. Não inclui a simulação completa de mundos/persistência do catálogo.",
+    "files": [
+      "arkher/src/Core/Runtime.luau",
+      "arkher/src/Core/Session.luau"
+    ],
+    "tests": [
+      "simulation runs on a fork and never mutates authoring state",
+      "NPC snapshots preserve authoritative future evolution"
+    ],
+    "entries": [
+      "A/ARKHER Runtime",
+      "A/Engine Bootstrap",
+      "A/Environment System",
+      "C/Runtime Scenes",
+      "C/Simulation Scenes",
+      "C/Dynamic Worlds",
+      "C/Time System",
+      "C/Day/Night",
+      "L/Time",
+      "P/Save System",
+      "P/Game State",
+      "X/State Recovery",
+      "X/Failure Recovery",
+      "Y/Project Snapshots"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Heightfields e cidades por quarteirões; não há terreno volumétrico, erosão ou geração urbana completa.",
+    "files": [
+      "arkher/src/Core/Procedural.luau",
+      "arkher/src/Core/Project.luau"
+    ],
+    "tests": [
+      "terrain generation is deterministic by seed",
+      "terrain brush edits canonical height data and supports undo",
+      "smooth uses the original field, not order-dependent in-place neighbors",
+      "city generator creates geometry and actual scene hierarchy"
+    ],
+    "entries": [
+      "D/Heightfield",
+      "D/Sculpt",
+      "D/Smooth",
+      "D/Flatten",
+      "D/Raise",
+      "D/Lower",
+      "D/Terrain Materials",
+      "D/Terrain Procedural Framework",
+      "M/Procedural Terrain",
+      "M/Procedural Buildings",
+      "M/Procedural Roads",
+      "M/Procedural Cities",
+      "M/Seed Management",
+      "M/Deterministic Generation"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Adapter Roblox de Parts/materiais/luzes, pooling e orçamento de materialização. Não é um renderer GPU próprio nem prova de qualidade perceptual.",
+    "files": [
+      "arkher/src/Client/Renderer.luau",
+      "arkher/src/Core/Budget.luau"
+    ],
+    "tests": [
+      "D-O15 budget responds to measured frame time with hysteresis",
+      "material updates are validated and undoable",
+      "light parameters produce a valid project operation"
+    ],
+    "entries": [
+      "A/Object Pool",
+      "A/Resource Lifetime",
+      "D/Terrain LOD",
+      "E/Material Core",
+      "E/Runtime Materials",
+      "E/Material Instances",
+      "F/Lighting Pipeline",
+      "F/Adaptive Rendering",
+      "S/Frame Analyzer",
+      "S/Adaptive Quality",
+      "S/Dynamic LOD",
+      "S/Resource Prioritization"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "AABB conservador, heightfield vertical e navegação A* 2.5D com orçamento. Corpos rígidos completos, CCD, física avançada e navegação multinível ainda pendentes.",
+    "files": [
+      "arkher/src/Core/Runtime.luau",
+      "arkher/src/Core/WorldQuery.luau",
+      "arkher/src/Core/Navigation.luau"
+    ],
+    "tests": [
+      "own AABB solver resolves a falling body against static geometry",
+      "heightfield contact uses actual generated cell height",
+      "navigation plans an actual route around a blocking wall"
+    ],
+    "entries": [
+      "H/Physics Core",
+      "H/Rigid Bodies",
+      "H/Collision",
+      "H/Spatial Partitioning",
+      "H/Terrain Physics",
+      "B/Navigation Editor"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Linguagem de dados com oito operadores e animação esquemática. Não é rigging, mocap, IDE ou framework de animação completo.",
+    "files": [
+      "arkher/src/Core/Graph.luau",
+      "arkher/src/Client/Renderer.luau"
+    ],
+    "tests": [
+      "visual graph performs real dataflow and emits validated scene operations",
+      "visual scripting drives simulation from the same scene graph"
+    ],
+    "entries": [
+      "I/Animation Graph",
+      "I/Procedural Animation",
+      "I/Procedural Locomotion",
+      "U/Visual Scripting",
+      "U/Node Programming",
+      "U/Graph Programming",
+      "U/Code Validation"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "NMN parcial: percepção, memória limitada/consolidada, necessidades, stress, coragem, decisões por contexto, A* e checkpoint. Não inclui aprendizagem geral, personalidade completa, sociedade, ocupações ou inteligência humana.",
+    "files": [
+      "arkher/src/Core/NPC.luau",
+      "arkher/src/Core/WorldQuery.luau",
+      "arkher/src/Core/Navigation.luau"
+    ],
+    "tests": [
+      "NPC does not know an unseen source behind its field of view",
+      "static occlusion prevents knowledge through walls",
+      "NPC hears an explicit noise stimulus behind it without omniscient sight",
+      "a perceived hazard produces a traceable flee decision",
+      "needs cause rest and recovery instead of a fixed movement script",
+      "food interaction consumes finite scene stock and records the source",
+      "bounded NPC decisions are fair while all needs continue evolving",
+      "NPC snapshots preserve authoritative future evolution"
+    ],
+    "entries": [
+      "K/NPC Perception",
+      "K/NPC Memory",
+      "K/NPC Goals",
+      "K/NPC Needs",
+      "K/NPC Personality",
+      "K/NPC Emotion",
+      "K/NPC Decision System",
+      "K/NPC Planning",
+      "K/NPC Adaptation",
+      "K/navigation",
+      "K/reaction",
+      "K/long-term state",
+      "K/environmental awareness",
+      "K/NPC Brain",
+      "K/NPC Vision",
+      "K/NPC Hearing"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Sessão autoritativa, permissões de editor, limites e CAS. Testes de lógica/mocks não certificam networking, DataStore, isolamento e colaboração em produção.",
+    "files": [
+      "arkher/src/Core/Session.luau",
+      "arkher/src/Server/Bootstrap.server.luau",
+      "arkher/src/Server/DataStoreStore.luau"
+    ],
+    "tests": [
+      "server session denies unauthorized requests and spoofed payload identity",
+      "collaborative revisions reject a stale second editor",
+      "request rate budget recovers with elapsed time",
+      "DataStore adapter applies compare-and-swap and preserves an existing save"
+    ],
+    "entries": [
+      "A/Permission System",
+      "A/Error System",
+      "A/Configuration System",
+      "R/Network Abstraction",
+      "R/Replication",
+      "R/State Synchronization",
+      "R/Entity Replication",
+      "X/Input Validation",
+      "X/Permission System",
+      "X/Error Recovery",
+      "X/Multiplayer Validation",
+      "Y/Real-time Collaboration",
+      "Y/Multi-user Editing",
+      "Y/Scene Collaboration",
+      "Y/Conflict Resolution",
+      "Y/Change Tracking",
+      "Y/Revision History",
+      "Y/Permissions"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Regras locais, provider configurável, contexto de cena e planos com aprovação. Não há certificação de LLM real, inteligência universal ou de toda a Singularity.",
+    "files": [
+      "arkher/src/Core/Planner.luau",
+      "arkher/src/Core/Session.luau",
+      "arkher/src/Server/Provider.luau"
+    ],
+    "tests": [
+      "local AI produces executable plans but does not apply them",
+      "AI confirmation is mandatory and bound to requesting user",
+      "AI provider output cannot inject source or arbitrary commands"
+    ],
+    "entries": [
+      "T/Singularity Core",
+      "T/Planner",
+      "T/Executor",
+      "T/Verifier",
+      "T/Context System",
+      "M/AI-assisted Generation"
+    ]
+  },
+  {
+    "status": "partial",
+    "scope": "Import/export de projetos JSON e builds binários do editor. Não é pipeline geral de assets/formatos nem publicação automática.",
+    "files": [
+      "arkher/tools/build.mjs",
+      "arkher/tools/package.py",
+      "arkher/README.md"
+    ],
+    "tests": [
+      "project replacement round trips all authored entities"
+    ],
+    "entries": [
+      "B/Documentation",
+      "Y/Build Automation",
+      "Y/Automated Testing"
+    ]
+  }
+]

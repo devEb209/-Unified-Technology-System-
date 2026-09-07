@@ -1,13 +1,13 @@
 {
   "product": "ARKHER STUDIOS",
   "generation": 1,
-  "version": "1.0.0-dev.1",
+  "version": "1.0.0-dev.2",
   "releaseStatus": "DEVELOPMENT_NOT_FINAL_V1",
   "brief": {
     "commit": "c849100aec49e344cf915cbbe5b31bcc707963ee",
     "blob": "9f628f98e103d1fedea1a7c418ecb50ecdf21fcf"
   },
-  "compiledLuauSources": 20,
+  "compiledLuauSources": 24,
   "sources": [
     {
       "file": "Core/Budget.luau",
@@ -18,36 +18,52 @@
       "sha256": "69b29a1282f97e5767efba09c0733d770f2edd6996b973d9b353d3d131ed42cc"
     },
     {
+      "file": "Core/NPC.luau",
+      "sha256": "d3110e81f814ce0eb602e3a13e4195655cae16436be5823e8518549d69cf3c23"
+    },
+    {
+      "file": "Core/Navigation.luau",
+      "sha256": "40ca3301746db9b0448295561b627e866be5292c5c25abda05f0c1e4569b8aed"
+    },
+    {
       "file": "Core/Planner.luau",
-      "sha256": "10a77330e0da65f1275d1a3a76823b26d33989afe0dece21cc2be443a4bcf3c7"
+      "sha256": "8bc82f63c6d0b84dcfdd11973d1fabe0c7d161ce16a19d985278739c4aa6fed7"
     },
     {
       "file": "Core/Procedural.luau",
       "sha256": "b8a6849ee6d35693c97f117c2b515bbf48362dbe613c56d1d5d3c76cba724680"
     },
     {
+      "file": "Core/Progress.luau",
+      "sha256": "290f6906b597666f79ddd65fa8fb7371a5a45e4008f9a4b4160484c7d7e412a9"
+    },
+    {
       "file": "Core/Project.luau",
-      "sha256": "70508ef8d11f343a6f9b1e096c87f7bf5a7e85bbf81803c6f2b58dde3fbacccc"
+      "sha256": "cf34e36f3f27bb4782cf4812a30af137bdd4be958ccb68a2f0f14803878c304c"
     },
     {
       "file": "Core/Runtime.luau",
-      "sha256": "f5bbf8e4b5ac9e8a05f6e06fad7dad7fbaeb5d172f8f0f1b247798971446aa62"
+      "sha256": "ff21788b310ae097505c69591550bf62d7ac9d9a9f3a419dcf3e84a260cbdb67"
     },
     {
       "file": "Core/Schema.luau",
-      "sha256": "665ef98d60f499d8775a71ca2a187a8e7f53bac84ee51169d44c099bc27e4726"
+      "sha256": "b4a51f0f40c41d0043d032c6e14cbe1d311c8df3de5e253b19f591eb48487624"
     },
     {
       "file": "Core/Session.luau",
-      "sha256": "1a209b7128bef0bfe41b1fc54caacfaec047496e8b80bad2b96aa93d76026cd4"
+      "sha256": "ffe8115c113d7678dddff353f58f751f7acd4fbfa8b541040851dd027e34ae10"
     },
     {
       "file": "Core/Transform.luau",
-      "sha256": "7343a65afe90fbe9a4c696df1628688eda789c8f3061839be3028136e0203f81"
+      "sha256": "e967cc1d03a25c5fc8546bcf502c66a44a9aaa4671c30b5d501c27c6d107a0b6"
     },
     {
       "file": "Core/Util.luau",
       "sha256": "ffdc629f5af3ac3d4a3905a7706b7197b303977c2b86a9f766d9deb1762ffe64"
+    },
+    {
+      "file": "Core/WorldQuery.luau",
+      "sha256": "fd03a12f8af3f64f377e3a36e5c4054f58e82d0f96e2834f5688ec22ef7e6ea0"
     },
     {
       "file": "Client/Camera.luau",
@@ -55,19 +71,19 @@
     },
     {
       "file": "Client/Editor.luau",
-      "sha256": "84faa1539be1866710974a900451cdb7d5b5b094812dd9dba2d8b4f1b2f9c74c"
+      "sha256": "d7579ec327f1b966cded60e6a0b2a5aeeb8988a942393c01ea61393271da51da"
     },
     {
       "file": "Client/Entry.luau",
-      "sha256": "3a9c52e01cdc293f6c6e9fd1652dd72e97835b3caf3487135cc888f804195c22"
+      "sha256": "dcc1539358df2b87e097696234724d2772e5c889701bb82e5bd02d3d85f55394"
     },
     {
       "file": "Client/Renderer.luau",
-      "sha256": "b3f188d8bd022d87b77e501eb9233dad288001ea2c4090e700e4d025ef0b5419"
+      "sha256": "0fc78390c4208879497b7a754efef0abcad27b5dffbea3d20fdef96349527805"
     },
     {
       "file": "Server/Config.luau",
-      "sha256": "687a42c06e233dbd459c410bc6d55f65a0ad5eebeb742090e6d3d4c665025bd8"
+      "sha256": "e3073eae0e718541e1983a13389b7fa04c1576e828c9504cd77f61c1d79ad53e"
     },
     {
       "file": "Server/DataStoreStore.luau",
@@ -79,7 +95,7 @@
     },
     {
       "file": "Server/Bootstrap.server.luau",
-      "sha256": "3417bcbae8c25ac829b6712484fee5dbff3654f4251d7e72f7c6102abaaa15b1"
+      "sha256": "27ed2a8f7c0d2b0afd78c641f6e3e5818c6154573e2f7c8419bf7e9dfa2c1139"
     },
     {
       "file": "Client/Bootstrap.client.luau",
@@ -93,9 +109,9 @@
   "artifacts": [
     {
       "file": "ARKHER_STUDIOS_G1_DEV.rbxl",
-      "bytes": 52015,
-      "sha256": "f83054e00e64dd1b0c68f3520b74ac7f2befdfe62410a902865441b29716fdf4",
-      "instances": 33,
+      "bytes": 68302,
+      "sha256": "7d0010d491c63e6f6f37e4705cb1b8331b004ed39b0a74c027274c16e9afd392",
+      "instances": 37,
       "nativeRoundTrip": "passed",
       "independentRead": "passed",
       "independentFloat32RelativeTolerance": 0.000002,
@@ -103,9 +119,9 @@
     },
     {
       "file": "ARKHER_STUDIOS_G1_DEV.rbxm",
-      "bytes": 53065,
-      "sha256": "a2c60b62b29fa77944d4cb0723dfc592e2043e6d00fb4fef65a14f3cf0658fe5",
-      "instances": 34,
+      "bytes": 69410,
+      "sha256": "c3f72671013692ba31374e2282e2addde7bc02a4a2068d7c4e4cf391b54c4048",
+      "instances": 38,
       "nativeRoundTrip": "passed",
       "independentRead": "passed",
       "independentFloat32RelativeTolerance": 0.000002,

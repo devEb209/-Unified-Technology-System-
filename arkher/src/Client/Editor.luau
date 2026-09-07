@@ -39,6 +39,8 @@ function Editor.new(playerGui, callbacks)
 	button(self.toolbar,"Salvar",function() callbacks.request("save") end,65)
 	button(self.toolbar,"Carregar",function() callbacks.request("load") end,78)
 	button(self.toolbar,"Exportar",function() callbacks.export() end,76)
+	button(self.toolbar,"Checkpoint",function() callbacks.request("checkpoint") end,95)
+	button(self.toolbar,"Retomar",function() self:dialog("Retomar checkpoint","O checkpoint vira o novo estado base. Parar retorna a essas poses; Undo preserva o projeto anterior.","",function(text) callbacks.resume(text) end) end,80)
 	button(self.toolbar,"Importar",function() self:dialog("Importar projeto","Cole um projeto arkher.project/1 completo. A importação é validada e pode ser desfeita.","",function(text) callbacks.import(text) end) end,78)
 	for _,entry in ipairs({{"select","Selecionar"},{"move","Mover"},{"rotate","Girar"},{"scale","Escalar"}}) do
 		button(self.toolbar,entry[2],function() self.tool=entry[1];self.mobilePanel=nil;self:layout();callbacks.tool(entry[1]);self:status("Ferramenta: "..entry[2]) end,entry[1]=="select" and 86 or 66)
@@ -49,6 +51,7 @@ function Editor.new(playerGui, callbacks)
 	self.playButton.BackgroundColor3=Color3.fromRGB(32,84,76)
 	button(self.toolbar,"Hierarquia",function() self.mobilePanel=self.mobilePanel=="left" and nil or "left";self:layout() end,88)
 	button(self.toolbar,"Inspector",function() self.mobilePanel=self.mobilePanel=="right" and nil or "right";self:layout() end,86)
+	button(self.toolbar,"Progresso",function() callbacks.progress() end,86)
 	button(self.toolbar,"Ajuda",function() self:dialog("ARKHER / controles", "Editor da experiência, não plugin do Studio.",
 		"Câmera: botão direito arrasta para orbitar; botão do meio move; roda aproxima. WASD move quando o cursor está no viewport.\n\nTouch: arraste para orbitar, dois dedos para zoom; toque curto seleciona.\n\nGamepad: analógicos movem/orbitam; R2/L2 aproximam; A seleciona o centro.\n\nEdição: selecione no viewport ou hierarquia. Use gizmos ou números no inspector. Ctrl+Z/Y desfaz/refaz. F enquadra. Delete remove com undo.\n\nSimular executa um fork; Parar restaura o estado autorado.\n\nIA local = regras explícitas, não LLM. Provider externo só é usado se configurado no servidor e selecionado aqui. Planos exigem prévia + confirmação.\n\nDataStore: desativado por padrão; Exportar JSON funciona sem serviço externo.\n\nEsta implementação ainda não cumpre o escopo integral de 10K/100K da V1.",nil) end,58)
 	self.viewport=make("Frame",{Name="ViewportInput",BackgroundTransparency=1,Active=false},self.root)
@@ -83,6 +86,9 @@ function Editor.new(playerGui, callbacks)
 	button(self.quick,"Cidade",function() callbacks.execute({{op="city",options={blocks=3,seed=42}}}) end,75)
 	button(self.quick,"Esfera",function() callbacks.add("sphere") end,72)
 	button(self.quick,"Luz",function() callbacks.add("light") end,58)
+	button(self.quick,"NPC",function() callbacks.add("npc") end,62)
+	button(self.quick,"Alimento",function() callbacks.stimulus("food") end,80)
+	button(self.quick,"Perigo",function() callbacks.stimulus("hazard") end,72)
 	button(self.quick,"Noite",function() callbacks.execute({{op="environment",patch={timeOfDay=22}}}) end,67)
 	button(self.quick,"Dia",function() callbacks.execute({{op="environment",patch={timeOfDay=14}}}) end,55)
 	self.footer=make("Frame",{BackgroundColor3=colors.field,BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.fromScale(0,1),Size=UDim2.new(1,0,0,27)},self.root)
@@ -159,7 +165,7 @@ end
 function Editor:inspectorFor(id)
 	self.rebuilding=true
 	for _,child in ipairs(self.inspector:GetChildren()) do child:Destroy() end
-	self.fields={}
+	self.fields={};self.agentLabel=nil
 	make("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,7)},self.inspector)
 	local node=self.state and self.state.nodes[id]
 	if not node then
@@ -222,6 +228,18 @@ function Editor:inspectorFor(id)
 		button(self.inspector,node.body.dynamic and "Dinâmica: ATIVA" or "Dinâmica: ESTÁTICA",function() execute({{op="body",id=entityId,patch={dynamic=not node.body.dynamic}}}) end,225)
 		triple("VELOCIDADE INICIAL",node.body.velocity,function(value) execute({{op="body",id=entityId,patch={velocity=value}}}) end)
 	end
+	if node.kind=="npc" then
+		label(self.inspector,"NMN / ESTADO NO CORE",11).TextColor3=colors.accent
+		self.agentLabel=label(self.inspector,"Inicie a simulação para observar necessidades, memória e decisões.",11)
+		self.agentLabel.TextWrapped=true;self.agentLabel.TextTruncate=Enum.TextTruncate.None;self.agentLabel.Size=UDim2.new(1,0,0,92)
+		button(self.inspector,"Memória e trajeto / inspecionar",function() self.callbacks.inspectNpc(entityId) end,225)
+		button(self.inspector,node.npc.enabled and "Cérebro: ATIVO" or "Cérebro: PAUSADO",function() execute({{op="npc",id=entityId,patch={enabled=not node.npc.enabled}}}) end,225)
+		button(self.inspector,"Objetivo: "..node.npc.behavior,function() execute({{op="npc",id=entityId,patch={behavior=node.npc.behavior=="wander" and "goTo" or "wander"}}}) end,225)
+		triple("DESTINO / goTo",node.npc.target,function(value) execute({{op="npc",id=entityId,patch={target=value}}}) end)
+		for _,item in ipairs({{"VELOCIDADE","speed"},{"VISÃO / DISTÂNCIA","sight"},{"CAMPO DE VISÃO / GRAUS","fov"},{"AUDIÇÃO / ALCANCE","hearing"},{"CORAGEM / 0..1","bravery"},{"ENERGIA INICIAL / 0..1","energy"},{"FOME INICIAL / 0..1","hunger"}}) do
+			numberField(item[1],node.npc[item[2]],function(value) execute({{op="npc",id=entityId,patch={[item[2]]=value}}}) end)
+		end
+	end
 	if node.kind=="light" then
 		numberField("INTENSIDADE DA LUZ",node.light.intensity,function(value) execute({{op="light",id=entityId,patch={intensity=value}}}) end)
 		numberField("ALCANCE DA LUZ",node.light.range,function(value) execute({{op="light",id=entityId,patch={range=value}}}) end)
@@ -277,6 +295,12 @@ function Editor:showPlan(result)
 	local lines={result.plan.label,"", "Origem: "..tostring(result.plan.origin),"Operações: "..result.proof.operations,"Entidades: "..result.proof.entitiesBefore.." → "..result.proof.entitiesAfter,"", "A execução só acontece após esta confirmação. Prévia válida por 90 segundos.",""}
 	for index,operation in ipairs(result.plan.operations) do table.insert(lines,index..". "..tostring(operation.op).." "..tostring(operation.id or "")) end
 	self:dialog("Prévia Singularity", "Plano validado contra a revisão atual. Você pode desfazer a transação depois.",table.concat(lines,"\n"),function() self.callbacks.applyPlan(result.token) end,true)
+end
+
+function Editor:agentStatus(summary)
+	if self.agentLabel and summary then
+		self.agentLabel.Text=string.format("%s / %s\nFome %.2f · energia %.2f · stress %.2f\nMemórias recentes: %d\nCausa: %s\n%s",summary.mode,summary.goal,summary.hunger,summary.energy,summary.stress,summary.memoryCount,summary.lastCause,summary.lastError)
+	end
 end
 
 function Editor:destroy() self.gui:Destroy() end

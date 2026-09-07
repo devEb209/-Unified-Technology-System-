@@ -32,7 +32,7 @@ end
 local configured,provider=pcall(Provider.create,HttpService,Config.Provider,Planner)
 if not configured then warn("[ARKHER] Provider não inicializado; revise a configuração do servidor.");provider=nil end
 local accumulated=0
-local session=Session.new({authorize=authorized,storage=storage,provider=provider,maxDynamics=Config.MaxDynamics,
+local session=Session.new({authorize=authorized,storage=storage,provider=provider,maxDynamics=Config.MaxDynamics,maxNPCs=Config.MaxNPCs,npcThinkBudget=Config.NPCThinkBudget,
 	token=function() return HttpService:GenerateGUID(false) end,
 	emit=function(packet)
 		packet.pendingSimulationSeconds=accumulated

@@ -6,6 +6,35 @@ Implementação focada **somente no ARKHER: UES + Singularity AI sobre a platafo
 
 **Esta entrega ainda não é a V1 integral do prompt.** Os mínimos de 10.000 sistemas reais e 100.000 funcionalidades não foram atingidos/certificados. Não foram gerados getters, aliases ou arquivos vazios para inflar essa contagem. Os requisitos restantes continuam na V1; veja [V1_SCOPE.md](V1_SCOPE.md).
 
+## Continuação da G1 — `1.0.0-dev.2`
+
+Esta atualização continua **na Geração 1**, não é a V2. Acrescenta:
+
+- NPCs esquemáticos com necessidades, coragem, stress simulado, objetivos e memória episódica limitada/consolidada.
+- Percepção por alcance/campo de visão, oclusão contra obstáculos estáticos e heightfield, e estímulos explícitos de ruído. Isso não é reprodução de áudio nem consciência.
+- Navegação A* própria, sem delegar a lógica ao `PathfindingService`, com limites de busca, cache, rejeição de áreas sem chão e caminhos ao redor de obstáculos estáticos.
+- Decisões de fuga, descanso, busca/consumo de alimento finito, exploração por seed e destino `goTo`.
+- Orçamento de decisões por passo, enquanto movimento e necessidades continuam evoluindo para todos os NPCs ativos.
+- Inspector de necessidades/causa/memórias e consulta do estado completo do agente.
+- Checkpoints de simulação que preservam posições, velocidades, relógio, memória e RNG dos NPCs; teste de continuação determinística após restore.
+- Botão **Progresso** e relatório rastreável ao prompt, sem confundir cobertura parcial com conclusão.
+
+### Como testar NPCs e checkpoints
+
+1. Use **NPC** na barra inferior ou peça `crie um NPC x=0 y=8 z=0`.
+2. No inspector, configure `wander` ou `goTo`, destino, velocidade, visão, audição, energia e fome.
+3. Use **Alimento** ou **Perigo** para criar estímulos com dados explícitos no scene graph.
+4. Clique **Simular**, selecione o NPC e veja seu estado/causa. **Memória e trajeto** consulta os dados reais do Core.
+5. **Checkpoint** exporta o fork ativo. Pare e use **Retomar** para importar o JSON e continuar. A retomada usa as poses do checkpoint como novo estado base; o projeto anterior permanece no Undo.
+
+A navegação atual é 2.5D e considera geometria estática; não é navmesh multinível, crowd avoidance completo, IK, rig humano ou NMN completo. A aparência é um manequim de primitivas. Memórias recentes são limitadas a 32 episódios, com consolidação de contadores e fatos observados limitados; não é uma autobiografia ilimitada. A representação pode ser omitida por orçamento, mas a simulação correspondente permanece no Core. Checkpoints copiados pelo editor continuam sujeitos ao limite de 200 KB da operação.
+
+## Porcentagem: cobertura não é conclusão
+
+Consulte [progress/README.md](progress/README.md) e `progress/REPORT.json`. O relatório separa entradas com código **parcial**, entradas sem implementação rastreada e validação ponta a ponta. O denominador é a lista explícita do catálogo, com aliases NPC consolidados; não são os 10.000 sistemas ou 100.000 funcionalidades certificados, nem uma previsão de esforço restante.
+
+Não foi emitida uma garantia de que toda tecnologia será viável no Roblox. O compromisso de escopo é não eliminar requisitos silenciosamente nem chamar a V1 de completa antes da evidência necessária.
+
 ## Abrir a experiência
 
 ### Caminho recomendado: `.rbxl`
@@ -134,12 +163,11 @@ Na raiz da cópia das fontes:
 
 ```sh
 npm ci --ignore-scripts --prefix tools/roblox-package
-node arkher/tools/test.mjs
-node arkher/tools/build.mjs
-python3 arkher/tools/package.py
+npm run build --prefix arkher
 ```
 
-- `test.mjs`: lógica Core/Session e adapter DataStore com mock, via Luau WASM; compila também os scripts de plataforma.
+- `test.mjs`: lógica Core/Session/NPC/navegação e adapter DataStore com mock, via Luau WASM; compila também os scripts de plataforma.
+- `progress.py`: extrai o checklist do prompt, verifica evidências e calcula cobertura; testes Python impedem que aliases/parciais virem conclusão.
 - `build.mjs`: arquivos binários nativos LZ4; releitura nativa e independente; hierarquia, strings e booleanos exatos. O leitor independente usa tolerância relativa `2e-6` para Float32; a comparação nativa permanece exata.
 - `package.py`: ZIP único, CRC e hashes dos binários.
 

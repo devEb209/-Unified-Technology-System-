@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const deps = createRequire(path.join(root, 'tools/roblox-package/package.json'));
 const { LuauState } = await import(pathToFileURL(deps.resolve('luau-web')).href);
-const names = ['Util','Transform','Schema','Procedural','Graph','Project','Budget','Runtime','Planner','Session'];
+const names = ['Util','Transform','Schema','Procedural','Graph','Project','Budget','WorldQuery','Navigation','NPC','Runtime','Planner','Session'];
 const passed = [];
 const state = await LuauState.createAsync({ recordPass: name => { passed.push(name); console.log('PASS', name); } });
 let compiled = 0;
@@ -28,6 +28,7 @@ try {
   bundle += 'local PlatformStore = (function()\n' + fs.readFileSync(path.join(root,'arkher/src/Server/DataStoreStore.luau'),'utf8') + '\nend)()\n';
   bundle += fs.readFileSync(path.join(root,'arkher/tests/core.luau'),'utf8');
   bundle += '\n' + fs.readFileSync(path.join(root,'arkher/tests/session.luau'),'utf8');
+  bundle += '\n' + fs.readFileSync(path.join(root,'arkher/tests/npc.luau'),'utf8');
   await state.loadstring(bundle,'arkher-core-tests',true)();
   if (passed.length < 30) throw new Error('Test suite did not finish');
   const report = { product:'ARKHER',generation:1,status:'development',passed:passed.length,failed:0,

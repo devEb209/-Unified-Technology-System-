@@ -7,6 +7,7 @@ local Transform = require(CoreFolder:WaitForChild("Transform"))
 local Graph = require(CoreFolder:WaitForChild("Graph"))
 local Util = require(CoreFolder:WaitForChild("Util"))
 local Budget = require(CoreFolder:WaitForChild("Budget"))
+local Progress = require(CoreFolder:WaitForChild("Progress"))
 local Entry = {}
 
 function Entry.start(package,player)
@@ -64,6 +65,12 @@ function Entry.start(package,player)
 				local text=http:JSONEncode(result.state)
 				if #text>200000 then ui:status("Projeto grande para copiar no editor; use DataStore",true);return end
 				ui:dialog("Exportar projeto ARKHER","JSON completo do estado autorado, não do fork de simulação.",text,nil)
+			elseif action=="inspectNpc" then
+				ui:dialog("NMN / "..result.id,"Estado real do agente no Core: necessidades, memórias, fontes percebidas, causa e trajeto.",http:JSONEncode(result.brain),nil)
+			elseif action=="checkpoint" then
+				local text=http:JSONEncode(result.checkpoint)
+				if #text>200000 then ui:status("Checkpoint excede orçamento de cópia do editor; dados continuam no servidor",true);return end
+				ui:dialog("Checkpoint da simulação","Inclui poses, necessidades, memória, decisões e RNG dos NPCs. Guarde o JSON para retomar.",text,nil)
 			elseif action=="save" then ui:status("DataStore: revisão "..result.savedRevision.." salva; versão "..result.storageVersion)
 			else ui:status("Concluído: "..action.." · revisão "..tostring(state.packet and state.packet.state.revision or 0)) end
 		end)
@@ -82,6 +89,21 @@ function Entry.start(package,player)
 	end
 	ui=Editor.new(player:WaitForChild("PlayerGui"),{
 		request=request,execute=execute,select=select,add=add,focus=focus,
+		inspectNpc=function(id) request("inspectNpc",{id=id}) end,
+		progress=function() ui:dialog("Progresso da V1 / evidências","Cobertura não equivale a conclusão. Os alvos de 10K sistemas e 100K funcionalidades permanecem não certificados.",Progress.explanation,nil) end,
+		resume=function(text)
+			if #text>200000 then ui:status("Checkpoint excede orçamento do editor",true);return end
+			local ok,checkpoint=pcall(http.JSONDecode,http,text)
+			if not ok then ui:status("JSON de checkpoint inválido",true);return end
+			request("resumeSimulation",{checkpoint=checkpoint,confirm=true})
+		end,
+		stimulus=function(kind)
+			local target=controller and controller.target or Vector3.new(0,2,0)
+			execute({{op="add",node={name=kind=="food" and "Recurso de alimento" or "Zona de perigo",kind="box",body={collidable=false},
+				transform={position={x=target.X,y=math.max(2,target.Y),z=target.Z},size={x=2,y=2,z=2}},
+				surface={material="neon",color=kind=="food" and {r=.95,g=.72,b=.22} or {r=.95,g=.22,b=.27}},
+				metadata=kind=="food" and {food=true,foodAmount=5} or {hazard=true}}}})
+		end,
 		tool=function(tool) state.tool=tool end,
 		plan=function(prompt,provider) request("plan",{prompt=prompt,provider=provider}) end,
 		applyPlan=function(token) request("applyPlan",{token=token,confirm=true}) end,
@@ -94,7 +116,9 @@ function Entry.start(package,player)
 		end,
 		animate=function(id)
 			local n=node();if not n then return end
-			execute({{op="body",id=id,patch={dynamic=false}},{op="graph",id="motion_"..id,graph=Graph.oscillator(id,n.transform.position)}})
+			local operations={{op="body",id=id,patch={dynamic=false}}}
+			if n.kind=="npc" then table.insert(operations,{op="npc",id=id,patch={enabled=false}}) end
+			table.insert(operations,{op="graph",id="motion_"..id,graph=Graph.oscillator(id,n.transform.position)});execute(operations)
 		end,
 		graph=function(id)
 			local n=node();if not n then return end
@@ -198,6 +222,7 @@ function Entry.start(package,player)
 			accept(packet)
 		elseif packet.kind=="frame" and state.packet and state.packet.mode=="play" and packet.epoch==state.packet.epoch then
 			renderer:applyFrame(packet);state.serverMs=packet.cpuMs or 0
+			if state.selected then ui:agentStatus(renderer.agentStates[state.selected]) end
 		end
 	end)
 	local statElapsed=0

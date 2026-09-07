@@ -23,7 +23,7 @@ function Renderer.new(workspaceService, lighting)
 end
 
 function Renderer:setState(state)
-	self.state=Util.copy(state);self.environment=nil;self.dirty=true
+	self.state=Util.copy(state);self.environment=nil;self.agentStates={};self.dirty=true
 end
 
 function Renderer:previewTransform(id, transform)
@@ -35,6 +35,11 @@ function Renderer:applyFrame(frame)
 	for id,position in pairs(frame.positions or {}) do
 		if self.state.nodes[id] then self.state.nodes[id].transform.position=position end
 	end
+	for id,rotation in pairs(frame.rotations or {}) do
+		if self.state.nodes[id] then self.state.nodes[id].transform.rotation=rotation end
+	end
+	for id,summary in pairs(frame.agents or {}) do self.agentStates[id]=summary end
+	for id,amount in pairs(frame.resources or {}) do if self.state.nodes[id] then self.state.nodes[id].metadata.foodAmount=amount end end
 	self.environment=frame.environment
 	self.dirty=true
 end
@@ -47,12 +52,12 @@ function Renderer:rebuild(budget)
 	for _,id in ipairs(state.order) do if state.nodes[id].kind=="terrain" then terrains+=1 end end
 	local errorMaximum=0
 	self.metrics.unsupported=0
-	local function emit(key,node,position,size,rotation,errorValue)
+	local function emit(key,node,position,size,rotation,errorValue,shape,color)
 		if size.x<.05 or size.y<.05 or size.z<.05 or size.x>2048 or size.y>2048 or size.z>2048
 			or math.abs(position.x)>1000000 or math.abs(position.y)>1000000 or math.abs(position.z)>1000000 then
 			self.metrics.unsupported+=1;return -- retained in Core; needs another representation, never silently clamped
 		end
-		table.insert(descriptors,{key=key,id=node.id,node=node,position=position,size=size,rotation=rotation,error=errorValue or 0})
+		table.insert(descriptors,{key=key,id=node.id,node=node,position=position,size=size,rotation=rotation,error=errorValue or 0,shape=shape,color=color})
 	end
 	for _,id in ipairs(state.order) do
 		local node=state.nodes[id]
@@ -77,6 +82,24 @@ function Renderer:rebuild(budget)
 				emit(id..":"..row..":"..col,node,{x=pose.position.x+offset.x,y=pose.position.y+offset.y,z=pose.position.z+offset.z},
 					{x=width*terrain.cell*pose.scale,y=(height-terrain.base)*pose.scale,z=depth*terrain.cell*pose.scale},pose.rotation,approximation)
 			end end
+		elseif node.kind=="npc" then
+			local size=node.transform.size
+			local summary=self.agentStates[id] or {}
+			local swing=(summary.mode=="walking" or summary.mode=="fleeing") and math.sin((summary.phase or 0)*2)*25 or 0
+			local pieces={
+				{"torso",0,.04,0,.7,.4,.7,0,"box"},
+				{"head",0,.37,0,.55,.25,.6,0,"sphere"},
+				{"armL",-.47,.02,0,.22,.4,.4,-swing,"box"},
+				{"armR",.47,.02,0,.22,.4,.4,swing,"box"},
+				{"legL",-.23,-.31,0,.28,.38,.45,swing,"box"},
+				{"legR",.23,-.31,0,.28,.38,.45,-swing,"box"},
+			}
+			for _,piece in ipairs(pieces) do
+				local offset=Transform.rotate(pose.rotation,{x=piece[2]*size.x*pose.scale,y=piece[3]*size.y*pose.scale,z=piece[4]*size.z*pose.scale})
+				local rotation=Transform.multiplyRotation(pose.rotation,Transform.rotation({x=piece[8],y=0,z=0}))
+				emit(id..":"..piece[1],node,{x=pose.position.x+offset.x,y=pose.position.y+offset.y,z=pose.position.z+offset.z},
+					{x=piece[5]*size.x*pose.scale,y=piece[6]*size.y*pose.scale,z=piece[7]*size.z*pose.scale},rotation,0,piece[9],piece[1]=="head" and {r=.81,g=.67,b=.51} or nil)
+			end
 		elseif node.kind~="group" then
 			local size=node.transform.size
 			if node.kind=="light" then size={x=1,y=1,z=1} end
@@ -96,11 +119,12 @@ function Renderer:part(descriptor)
 	end
 	local node=descriptor.node
 	part.Name=node.name;part:SetAttribute("ArkherNodeId",node.id)
-	part.Shape=if node.kind=="sphere" or node.kind=="light" then Enum.PartType.Ball elseif node.kind=="cylinder" then Enum.PartType.Cylinder else Enum.PartType.Block
+	part.Shape=if descriptor.shape=="sphere" or node.kind=="sphere" or node.kind=="light" then Enum.PartType.Ball elseif node.kind=="cylinder" then Enum.PartType.Cylinder else Enum.PartType.Block
 	part.Size=Vector3.new(descriptor.size.x,descriptor.size.y,descriptor.size.z)
 	local surface=node.surface
 	part.Material=if node.kind=="light" then Enum.Material.Neon else materials[surface.material] or Enum.Material.Slate
-	part.Color=Color3.new(surface.color.r,surface.color.g,surface.color.b)
+	local color=descriptor.color or surface.color
+	part.Color=Color3.new(color.r,color.g,color.b)
 	part.Transparency=surface.transparency;part.Reflectance=surface.reflectance
 	local light=part:FindFirstChild("ARKHER_LIGHT")
 	if node.kind=="light" then
@@ -141,11 +165,27 @@ function Renderer:render(cameraPosition, budget, selected, dt)
 	end
 	table.sort(candidates,function(a,b) local sa,sb=score(a),score(b);return if sa==sb then a.key<b.key else sa<sb end)
 	local kept,selectedPart={},nil
-	for i=1,math.min(#candidates,budget) do
-		local descriptor=candidates[i];kept[descriptor.key]=true
+	local groups={}
+	for _,descriptor in ipairs(candidates) do
+		if descriptor.node.kind=="npc" then
+			groups[descriptor.id]=groups[descriptor.id] or {};table.insert(groups[descriptor.id],descriptor)
+		end
+	end
+	local used,visited=0,{}
+	local function materialize(descriptor)
+		kept[descriptor.key]=true;used+=1
 		local part=self:part(descriptor)
 		part.CFrame=part.CFrame:Lerp(self.targets[descriptor.key],math.min(1,dt*22))
 		if descriptor.id==selected and not selectedPart then selectedPart=part end
+	end
+	for _,descriptor in ipairs(candidates) do
+		if groups[descriptor.id] then
+			if not visited[descriptor.id] then
+				visited[descriptor.id]=true
+				local group=groups[descriptor.id]
+				if used+#group<=budget then for _,piece in ipairs(group) do materialize(piece) end end
+			end
+		elseif used<budget then materialize(descriptor) end
 	end
 	local count=0
 	for key,part in pairs(self.parts) do

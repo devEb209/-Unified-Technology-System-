@@ -13,7 +13,7 @@ function Session.new(options)
 	return setmetatable({project=options.project or Project.example(),authorize=options.authorize or function() return false end,
 		clock=options.clock or os.clock,token=options.token or function() return tostring(os.clock()) end,
 		emit=options.emit or function() end,storage=options.storage,provider=options.provider,
-		mode="edit",epoch=0,runtime=nil,buckets={},plans={},busy={},storageVersion=0,maxDynamics=options.maxDynamics or 128},Session)
+		mode="edit",epoch=0,runtime=nil,buckets={},plans={},busy={},storageVersion=0,maxDynamics=options.maxDynamics or 128,maxNPCs=options.maxNPCs or 64,npcThinkBudget=options.npcThinkBudget or 8},Session)
 end
 
 function Session:guard(userId, action)
@@ -40,9 +40,18 @@ end
 
 function Session:handle(userId, action, payload)
 	self:guard(userId,action)
-	payload=payload or {};Util.data(payload,action=="replace" and 600000 or 30000)
+	payload=payload or {};Util.data(payload,(action=="replace" or action=="resumeSimulation") and 700000 or 30000)
 	if action=="state" then return self:snapshot() end
 	if action=="export" then return {state=self.project:snapshot()} end
+	if action=="inspectNpc" then
+		assert(self.runtime and self.mode=="play" and payload.epoch==self.epoch,"Inicie a simulação para inspecionar a memória")
+		local brain=assert(self.runtime.npcs.brains[payload.id],"NPC não encontrado nesta execução")
+		return {brain=Util.copy(brain),id=payload.id}
+	end
+	if action=="checkpoint" then
+		assert(self.runtime and self.mode=="play" and payload.epoch==self.epoch,"Inicie a simulação antes de exportar um checkpoint")
+		return {checkpoint=self.runtime:checkpoint()}
+	end
 	if action=="stop" then
 		assert(payload.epoch==self.epoch,"Execução mudou; atualize")
 		self.mode="edit";self.runtime=nil;self.epoch+=1;self:notify();return self:snapshot()
@@ -55,7 +64,12 @@ function Session:handle(userId, action, payload)
 	elseif action=="undo" then self.project:undo(payload.revision);self:notify();return self:snapshot()
 	elseif action=="redo" then self.project:redo(payload.revision);self:notify();return self:snapshot()
 	elseif action=="play" then
-		local runtime=Runtime.new(self.project.state,{maxDynamics=self.maxDynamics})
+		local runtime=Runtime.new(self.project.state,{maxDynamics=self.maxDynamics,maxNPCs=self.maxNPCs,npcThinkBudget=self.npcThinkBudget})
+		self.runtime=runtime;self.mode="play";self.epoch+=1;self:notify();return self:snapshot()
+	elseif action=="resumeSimulation" then
+		assert(payload.confirm==true,"Confirme a retomada do checkpoint")
+		local runtime=Runtime.restore(payload.checkpoint,{maxDynamics=self.maxDynamics,maxNPCs=self.maxNPCs,npcThinkBudget=self.npcThinkBudget})
+		self.project:replace(runtime.state,payload.revision)
 		self.runtime=runtime;self.mode="play";self.epoch+=1;self:notify();return self:snapshot()
 	elseif action=="replace" then self.project:replace(payload.state,payload.revision);self:notify();return self:snapshot()
 	elseif action=="new" then self.project:replace(Schema.empty("Novo projeto"),payload.revision);self:notify();return self:snapshot()

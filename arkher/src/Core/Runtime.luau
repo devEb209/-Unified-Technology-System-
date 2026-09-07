@@ -4,6 +4,8 @@
 local Util = require(script.Parent:WaitForChild("Util"))
 local Transform = require(script.Parent:WaitForChild("Transform"))
 local Graph = require(script.Parent:WaitForChild("Graph"))
+local Schema = require(script.Parent:WaitForChild("Schema"))
+local NPC = require(script.Parent:WaitForChild("NPC"))
 local Runtime = {}
 Runtime.__index = Runtime
 local axes = {"x","y","z"}
@@ -24,6 +26,7 @@ end
 function Runtime.new(state, options)
 	local self=setmetatable({state=Util.copy(state),time=0,ticks=0,contacts=0,candidates=0,graphs={},errors={}},Runtime)
 	local dynamics=0
+	self.npcs=NPC.new(self.state,{maxNPCs=(options or {}).maxNPCs or 64,thinkBudget=(options or {}).npcThinkBudget or 8})
 	for _,id in ipairs(state.order) do
 		local node=state.nodes[id]
 		if node.body.dynamic then dynamics+=1 end
@@ -62,10 +65,19 @@ function Runtime:step(dt)
 	Util.number(dt,.05,.001,.1)
 	self.time+=dt;self.ticks+=1;self.contacts=0;self.candidates=0;self.changed={}
 	local state=self.state
+	local geometryChanged=false
 	state.environment.timeOfDay=(state.environment.timeOfDay+dt*state.environment.timeScale/60)%24
 	for _,entry in ipairs(self.graphs) do
 		local ok,operations=pcall(Graph.evaluate,state,entry.graph,self.time,entry.compiled)
-		if ok then for _,op in ipairs(operations) do state.nodes[op.id].transform.position=op.position;self.changed[op.id]=true end
+		if ok then for _,op in ipairs(operations) do
+			local node=state.nodes[op.id]
+			if node.kind=="npc" and node.npc.enabled then
+				table.insert(self.errors,"NPC ativo é controlado pelo NMN, não pelo grafo: "..node.id)
+			else
+				node.transform.position=op.position;self.changed[op.id]=true
+				if not node.body.dynamic then geometryChanged=true end
+			end
+		end
 		else table.insert(self.errors,tostring(operations));if #self.errors>16 then table.remove(self.errors,1) end end
 	end
 	local terrain, moving, previous = {}, {}, {}
@@ -144,13 +156,48 @@ function Runtime:step(dt)
 			end
 		end
 	end
+	if geometryChanged then self.npcs:refreshGeometry() end
+	local npcChanges=self.npcs:step(dt,self.time)
+	for id in pairs(npcChanges) do self.changed[id]=true end
+	while #self.errors>16 do table.remove(self.errors,1) end
 	return self:frame()
 end
 
 function Runtime:frame()
-	local transforms={}
-	for id in pairs(self.changed or {}) do transforms[id]=table.clone(self.state.nodes[id].transform.position) end
-	return {time=self.time,tick=self.ticks,positions=transforms,environment=table.clone(self.state.environment),contacts=self.contacts,candidates=self.candidates,errors=table.clone(self.errors)}
+	local transforms,rotations={},{}
+	for id in pairs(self.changed or {}) do
+		transforms[id]=table.clone(self.state.nodes[id].transform.position)
+		rotations[id]=table.clone(self.state.nodes[id].transform.rotation)
+	end
+	return {time=self.time,tick=self.ticks,positions=transforms,rotations=rotations,environment=table.clone(self.state.environment),
+		contacts=self.contacts,candidates=self.candidates,errors=table.clone(self.errors),
+		agents=self.ticks%4==0 and self.npcs:summary() or {},resources=table.clone(self.npcs.resourceChanges),
+		npcMetrics={count=#self.npcs.ids,thinking=self.npcs.thinking,perceptionCandidates=self.npcs.perceived,paths=self.npcs.navigation.requests,expanded=self.npcs.navigation.expanded}}
+end
+
+function Runtime:checkpoint()
+	return {format="arkher.simulation/1",state=Util.copy(self.state),time=self.time,ticks=self.ticks,
+		agents=self.npcs:snapshot(),errors=table.clone(self.errors)}
+end
+
+function Runtime.restore(checkpoint,options)
+	Util.data(checkpoint,700000)
+	assert(checkpoint.format=="arkher.simulation/1","Versão de checkpoint inválida")
+	local state=Util.copy(checkpoint.state)
+	assert(type(state)=="table" and type(state.nodes)=="table","Estado de checkpoint ausente")
+	for id,node in pairs(state.nodes) do state.nodes[id]=Schema.node(node,id) end
+	Schema.validate(state)
+	local runtime=Runtime.new(state,options)
+	runtime.time=Util.number(checkpoint.time,0,0,1e9)
+	runtime.ticks=Util.number(checkpoint.ticks,0,0,1000000000)
+	assert(runtime.ticks%1==0,"Tick de checkpoint inválido")
+	runtime.npcs:restore(checkpoint.agents)
+	if checkpoint.errors then
+		assert(type(checkpoint.errors)=="table" and #checkpoint.errors<=16,"Erros do checkpoint inválidos")
+		for _,message in ipairs(checkpoint.errors) do Util.text(message,"",500) end
+		runtime.errors=Util.copy(checkpoint.errors)
+	end
+	return runtime
 end
 
 return Runtime

@@ -10,6 +10,7 @@ const { createDom, readBinary } = deps('rbx-dom');
 const { parseBuffer } = deps('rbx-reader');
 const { LuauState } = await import(pathToFileURL(deps.resolve('luau-web')).href);
 const output = path.join(root,'arkher/releases/g1-development');
+const version = JSON.parse(fs.readFileSync(path.join(root,'arkher/package.json'),'utf8')).version;
 fs.mkdirSync(output,{recursive:true});
 const sha = data => crypto.createHash('sha256').update(data).digest('hex');
 const node = (className,name,children=[],properties={}) => ({className,name,children,properties});
@@ -27,7 +28,7 @@ function moduleFolder(relative) {
 const library=folder('ARKHER',[
   moduleFolder('Core'),moduleFolder('Client'),
   folder('Remotes',[node('RemoteFunction','Request'),node('RemoteEvent','Event')]),
-  text('Version','ARKHER G1 · 1.0.0-dev.1 · full V1 not certified'),
+  text('Version',`ARKHER G1 · ${version} · full V1 not certified`),
 ]);
 const server=folder('ARKHER_SERVER',[
   scriptNode('Server/Config.luau','ModuleScript','Config'),
@@ -98,7 +99,7 @@ for (const [name,spec] of [['ARKHER_STUDIOS_G1_DEV.rbxl',place],['ARKHER_STUDIOS
   artifacts.push({file:name,bytes:binary.length,sha256:sha(binary),instances,nativeRoundTrip:'passed',independentRead:'passed',independentFloat32RelativeTolerance:2e-6,deterministicBytes:'passed'});
   console.log(name,binary.length,'bytes;',instances,'instances; both parsers agree.');
 }
-const report={product:'ARKHER STUDIOS',generation:1,version:'1.0.0-dev.1',releaseStatus:'DEVELOPMENT_NOT_FINAL_V1',
+const report={product:'ARKHER STUDIOS',generation:1,version,releaseStatus:'DEVELOPMENT_NOT_FINAL_V1',
   brief:{commit:'c849100aec49e344cf915cbbe5b31bcc707963ee',blob:'9f628f98e103d1fedea1a7c418ecb50ecdf21fcf'},
   compiledLuauSources:compiled,sources:[...new Map(sources.map(s => [s.file,s])).values()],artifacts,
   robloxStudioImport:'NOT_TESTED',clientServerRuntime:'NOT_TESTED',mobileConsoleVR:'NOT_TESTED',formal10000Systems:'NOT_CERTIFIED',formal100000Features:'NOT_CERTIFIED'};

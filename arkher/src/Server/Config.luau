@@ -5,6 +5,8 @@ return {
 	PersistenceEnabled = false, -- enable only after publishing and configuring Studio API access as appropriate.
 	DataStoreName = "ARKHER_PROJECTS_G1",
 	DataStoreKey = "team-project",
+	MaxNPCs = 64,
+	NPCThinkBudget = 8, -- decisions per simulation step; movement/needs continue for all active NPCs.
 	MaxDynamics = 128, -- active simulation budget, NOT a count/limit of architectural systems.
 	Provider = {
 		Endpoint = "", -- HTTPS Chat Completions-compatible endpoint, explicitly chosen by the experience owner.
