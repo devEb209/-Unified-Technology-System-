@@ -1,0 +1,32 @@
+{
+  "commit": "ec118120dc9d19219d876ef1a2e08b0941a626fb",
+  "publication": "git push completed on the session branch",
+  "artifacts": [
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxl",
+      "bytes": 68302,
+      "sha256": "7d0010d491c63e6f6f37e4705cb1b8331b004ed39b0a74c027274c16e9afd392",
+      "url": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/ec118120dc9d19219d876ef1a2e08b0941a626fb/arkher/releases/g1-development/ARKHER_STUDIOS_G1_DEV.rbxl",
+      "apiRemoteBytes": "SHA256 and Git blob identity verified",
+      "rawHost": "NOT_VERIFIED: TLS/SSL connection has been closed (EOF) (_ssl.c:992)"
+    },
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.rbxm",
+      "bytes": 69410,
+      "sha256": "c3f72671013692ba31374e2282e2addde7bc02a4a2068d7c4e4cf391b54c4048",
+      "url": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/ec118120dc9d19219d876ef1a2e08b0941a626fb/arkher/releases/g1-development/ARKHER_STUDIOS_G1_DEV.rbxm",
+      "apiRemoteBytes": "SHA256 and Git blob identity verified",
+      "rawHost": "NOT_VERIFIED: TLS/SSL connection has been closed (EOF) (_ssl.c:992)"
+    },
+    {
+      "file": "ARKHER_STUDIOS_G1_DEV.zip",
+      "bytes": 308833,
+      "sha256": "2ba259cebe008acd303fe8554a0e5aaae307234ec9ccfbd70698f7a1721611dd",
+      "url": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/ec118120dc9d19219d876ef1a2e08b0941a626fb/arkher/releases/g1-development/ARKHER_STUDIOS_G1_DEV.zip",
+      "apiRemoteBytes": "SHA256 and Git blob identity verified",
+      "rawHost": "NOT_VERIFIED: TLS/SSL connection has been closed (EOF) (_ssl.c:992)"
+    }
+  ],
+  "studioRuntime": "NOT_TESTED",
+  "fullV1": "NOT_COMPLETE"
+}
