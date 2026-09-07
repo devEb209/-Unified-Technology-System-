@@ -1,0 +1,305 @@
+{
+  "version": "2026.09.06-recovered.1",
+  "provenance": {
+    "baseCommit": "d9087f9ba26bf171fe175d274d925b4cd5f911f2",
+    "baselineFilesPreserved": 13534,
+    "legacyZip": "ARKHE_100K_SINGLE_FILE.zip",
+    "legacyZipSha256": "1843956c57f1ad7e1bbc194cf65150cbb7700137f91621ee6736d3c6b99c6c72",
+    "legacyFilesPreserved": 100000,
+    "redundantZipsOmitted": [
+      "UTS_5K_MOST_POWERFUL_AI.zip",
+      "DsOS_5K_DIVINE_OS.zip",
+      "UTS_DsOS_10K_SINGLE.zip"
+    ],
+    "priorLocalCommit961ee39": "not available locally or via GitHub commit lookup",
+    "prior138080FilesClaim": "not recovered; not certified",
+    "physicalSystemsClaim": "not measured; legacy counters are not evidence of physical simulation"
+  },
+  "sourceArchives": {
+    "UTS": {
+      "format": "uts-source-archive/1",
+      "files": 113534,
+      "bytes": 104836909,
+      "fragments": 116653,
+      "pages": 793,
+      "inventorySha256": "33997d99715023933623235fe7c4c7efcd5bce806b07d65d5eb16bad9ebdafd3",
+      "status": "preserved data, not executed or certified as functional"
+    },
+    "ARKHE": {
+      "format": "uts-source-archive/1",
+      "files": 1007,
+      "bytes": 18555094,
+      "fragments": 3184,
+      "pages": 114,
+      "inventorySha256": "001f8f66c337c68254558006fdcdf322d524af77b7a23221ab686f4d60239373",
+      "status": "preserved data, not executed or certified as functional"
+    }
+  },
+  "sourceByteForByteRecoveryAndSha256": "passed",
+  "pythonUnitTests": {
+    "passed": 14,
+    "skipped": 0
+  },
+  "luauUnitTests": {
+    "passed": 35,
+    "failed": 0,
+    "names": [
+      "scheduler completes real callbacks",
+      "scheduler bounded capacity and cancellation",
+      "scheduler rejects duplicate ids and nonfinite inputs",
+      "scheduler uses per-step budget and rotates work",
+      "scheduler contains callback failures",
+      "scheduler processes each repeating task at most once per step",
+      "scheduler enforces maximum callbacks and avoids recursive Step",
+      "scheduler callback may cancel and replace itself safely",
+      "organizer preview is non-mutating",
+      "organizer requires explicit confirmation",
+      "organizer routes library to ServerStorage and runtime to ReplicatedStorage",
+      "organizer undo restores exact original parents",
+      "organizer refuses existing destination names without overwrites",
+      "organizer rejects conflicts between selected imports",
+      "organizer duplicate selection is idempotent",
+      "organizer supports UTS and Arkhe in one transaction",
+      "organizer rejects unmarked imports and unknown services",
+      "organizer refuses active scripts",
+      "organizer rejects stale source names and new active scripts",
+      "organizer preflights destination races before moving anything",
+      "organizer rolls prior moves back after parent-write failure",
+      "organizer reports failed rollback rather than claiming success",
+      "organizer undo refuses externally edited installations",
+      "organizer rejects forged plans and receipts",
+      "organizer detects a destination container added after preview",
+      "organizer retains installation when an undo write fails",
+      "archive is lazy and joins fragments exactly",
+      "archive missing lookup and LRU cache are bounded",
+      "archive pagination is ordered and has no duplicate fragments",
+      "archive validates pagination limits",
+      "archive rejects missing or duplicated fragments",
+      "visual profile requires opt-in and can restore",
+      "visual profile never writes engine-protected style settings",
+      "visual profile refuses to overwrite external changes on restore",
+      "scene audit counts actual instances without claiming physical systems"
+    ],
+    "environment": "Luau WASM with mocked Roblox instances; NOT Studio"
+  },
+  "models": [
+    {
+      "file": "UTS_MAXIMO_RECUPERADO.rbxm",
+      "format": "RBXM binary (LZ4)",
+      "bytes": 19315189,
+      "sha256": "41391e00fdf6fb26ef1709b95b60ad4bbd971aaf5cb214b1ce1cef7e08474d6f",
+      "instances": 812,
+      "stringValues": 801,
+      "moduleScripts": 2,
+      "autoExecutingScripts": 0,
+      "nativeRoundTrip": "passed",
+      "independentParser": "passed",
+      "fullHierarchyAndPropertyComparison": "passed",
+      "luauCompilation": "passed",
+      "deterministicBinary": "passed",
+      "robloxStudioImport": "NOT_TESTED",
+      "runtimeInRoblox": "NOT_TESTED",
+      "tools": {
+        "rbxDom": "0.3.0",
+        "rbxReader": "1.5.10",
+        "luauWeb": "1.4.0",
+        "upstream": {
+          "upstreamCommit": "43d1f129f2eb1fd055512f039863ff35ae5a10f1",
+          "crates": [
+            {
+              "name": "rbx_types",
+              "version": "3.1.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_dom_weak",
+              "version": "4.2.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection",
+              "version": "7.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection_database",
+              "version": "3.0.0+roblox-728",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_xml",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_binary",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflector",
+              "version": "0.1.0",
+              "kind": "upstream-binary"
+            },
+            {
+              "name": "rbx_util",
+              "version": "0.2.1",
+              "kind": "upstream-binary"
+            }
+          ],
+          "packages": [
+            "rbx_dom_lua (Luau package, Roblox runtime only)"
+          ]
+        }
+      }
+    },
+    {
+      "file": "ARKHE_MAXIMO_RECUPERADO.rbxm",
+      "format": "RBXM binary (LZ4)",
+      "bytes": 1739038,
+      "sha256": "9b5325e01592d310ca6a1370a0a7ef5b7649982373ba3dca2dcf9216c56169d3",
+      "instances": 134,
+      "stringValues": 121,
+      "moduleScripts": 4,
+      "autoExecutingScripts": 0,
+      "nativeRoundTrip": "passed",
+      "independentParser": "passed",
+      "fullHierarchyAndPropertyComparison": "passed",
+      "luauCompilation": "passed",
+      "deterministicBinary": "passed",
+      "robloxStudioImport": "NOT_TESTED",
+      "runtimeInRoblox": "NOT_TESTED",
+      "tools": {
+        "rbxDom": "0.3.0",
+        "rbxReader": "1.5.10",
+        "luauWeb": "1.4.0",
+        "upstream": {
+          "upstreamCommit": "43d1f129f2eb1fd055512f039863ff35ae5a10f1",
+          "crates": [
+            {
+              "name": "rbx_types",
+              "version": "3.1.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_dom_weak",
+              "version": "4.2.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection",
+              "version": "7.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection_database",
+              "version": "3.0.0+roblox-728",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_xml",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_binary",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflector",
+              "version": "0.1.0",
+              "kind": "upstream-binary"
+            },
+            {
+              "name": "rbx_util",
+              "version": "0.2.1",
+              "kind": "upstream-binary"
+            }
+          ],
+          "packages": [
+            "rbx_dom_lua (Luau package, Roblox runtime only)"
+          ]
+        }
+      }
+    },
+    {
+      "file": "AUTO_ORGANIZER_MAXIMO.rbxm",
+      "format": "RBXM binary (LZ4)",
+      "bytes": 5836,
+      "sha256": "2ebcbeb807f404701f5dcf6e9f9dc7174d3f01c3878155706dd89d20c0bc2782",
+      "instances": 9,
+      "stringValues": 5,
+      "moduleScripts": 2,
+      "autoExecutingScripts": 0,
+      "nativeRoundTrip": "passed",
+      "independentParser": "passed",
+      "fullHierarchyAndPropertyComparison": "passed",
+      "luauCompilation": "passed",
+      "deterministicBinary": "passed",
+      "robloxStudioImport": "NOT_TESTED",
+      "runtimeInRoblox": "NOT_TESTED",
+      "tools": {
+        "rbxDom": "0.3.0",
+        "rbxReader": "1.5.10",
+        "luauWeb": "1.4.0",
+        "upstream": {
+          "upstreamCommit": "43d1f129f2eb1fd055512f039863ff35ae5a10f1",
+          "crates": [
+            {
+              "name": "rbx_types",
+              "version": "3.1.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_dom_weak",
+              "version": "4.2.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection",
+              "version": "7.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflection_database",
+              "version": "3.0.0+roblox-728",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_xml",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_binary",
+              "version": "3.0.0",
+              "kind": "library"
+            },
+            {
+              "name": "rbx_reflector",
+              "version": "0.1.0",
+              "kind": "upstream-binary"
+            },
+            {
+              "name": "rbx_util",
+              "version": "0.2.1",
+              "kind": "upstream-binary"
+            }
+          ],
+          "packages": [
+            "rbx_dom_lua (Luau package, Roblox runtime only)"
+          ]
+        }
+      }
+    }
+  ],
+  "robloxStudio": "NOT_TESTED",
+  "hyperrealismBenchmark": "NOT_IMPLEMENTED / NOT_MEASURED",
+  "notRecovered": [
+    "961ee39",
+    "the claimed 138080-file final build",
+    "the former Auto Organizer source",
+    "the claimed 620-folder/5580-module Roblox model"
+  ]
+}

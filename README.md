@@ -1,4 +1,20 @@
 # UTS • Unified Technology System
+
+## ARKHER STUDIOS — active development focus
+
+ARKHER is **UES + Singularity AI on Roblox**, with its own scene/editor/simulation core and a Roblox materialization adapter. See [ARKHER instructions and files](arkher/README.md), the [V1 scope](arkher/V1_SCOPE.md), and the [traceable progress report](arkher/progress/README.md). Partial coverage is **not** final V1 completion; the 10K/100K targets are not certified.
+
+## Verified recovery work — 2026-09-06
+
+The new [recovery guide](docs/MAXIMOS_RECUPERADOS.md) distinguishes preserved legacy data from implemented and tested utilities. The [UTS / Arkhe realism plan](docs/HIPERREALISMO_UTS_ARKHE.md) explains the engineering required for large-scale physics and hyperrealism.
+
+Native binary models and a single ZIP are built into [`downloads/2026-09-06/`](downloads/2026-09-06/). See `VALIDACAO.json` for actual checks and `MANIFEST.json` / `SHA256SUMS.txt` for artifact integrity. Roblox Studio import/runtime testing is **not** performed by the offline build.
+
+**Historical claims below are preserved for context, not verified capabilities.** File counts, metadata such as `Physical = 200`, and promises of “infinite power” do not establish implemented physical systems, AI performance, rendering quality, or a functioning native OS. The missing local commit `961ee39` was not recovered.
+
+---
+
+### Historical project description (unverified claims)
 ### The Most Powerful Platform in History • 500K Files • 100M Physical Systems • Ground Truth Quality
 
 > **UTS is the platform itself.** The APK app with the platform (UES and DsOS + Singularity AI which is part of puter JS of all AIs). This AI system of UTS goes to UES, DsOS and Singularity AI.

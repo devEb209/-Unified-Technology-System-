@@ -1,0 +1,43 @@
+{
+  "commit": "2399b3f3d278af4e3caba58c38345a18880edfc5",
+  "verification": "Every remote artifact was downloaded via GitHub raw-content API; SHA-256 and Git blob hashes matched. Direct raw-host requests failed with TLS EOF from this environment and are not marked as tested.",
+  "downloads": [
+    {
+      "file": "UTS_MAXIMO_RECUPERADO.rbxm",
+      "bytes": 19315189,
+      "sha256": "41391e00fdf6fb26ef1709b95b60ad4bbd971aaf5cb214b1ce1cef7e08474d6f",
+      "gitBlobSha": "13585ae7056373712b0fe2c17f5180e342614d8c",
+      "rawUrl": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/2399b3f3d278af4e3caba58c38345a18880edfc5/downloads/2026-09-06/UTS_MAXIMO_RECUPERADO.rbxm",
+      "githubApiRawBytes": "verified",
+      "rawHostRequest": "NOT_VERIFIED: TLS handshake failed (EOF) from this environment"
+    },
+    {
+      "file": "ARKHE_MAXIMO_RECUPERADO.rbxm",
+      "bytes": 1739038,
+      "sha256": "9b5325e01592d310ca6a1370a0a7ef5b7649982373ba3dca2dcf9216c56169d3",
+      "gitBlobSha": "e38d0c59732f134488dfd6e3123bacb133355aba",
+      "rawUrl": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/2399b3f3d278af4e3caba58c38345a18880edfc5/downloads/2026-09-06/ARKHE_MAXIMO_RECUPERADO.rbxm",
+      "githubApiRawBytes": "verified",
+      "rawHostRequest": "NOT_VERIFIED: TLS handshake failed (EOF) from this environment"
+    },
+    {
+      "file": "AUTO_ORGANIZER_MAXIMO.rbxm",
+      "bytes": 5836,
+      "sha256": "2ebcbeb807f404701f5dcf6e9f9dc7174d3f01c3878155706dd89d20c0bc2782",
+      "gitBlobSha": "878acc2e644a08a44cac6dbe9d5b98b9e46832f1",
+      "rawUrl": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/2399b3f3d278af4e3caba58c38345a18880edfc5/downloads/2026-09-06/AUTO_ORGANIZER_MAXIMO.rbxm",
+      "githubApiRawBytes": "verified",
+      "rawHostRequest": "NOT_VERIFIED: TLS handshake failed (EOF) from this environment"
+    },
+    {
+      "file": "3_MAXIMOS_RECUPERADOS.zip",
+      "bytes": 27521158,
+      "sha256": "787f237e15a87e11a4229a855a507c6b443a25baa6aa29cb9973ede2f1539922",
+      "gitBlobSha": "0a1a7e768616cfe194d967c3918f7b9f446264f3",
+      "rawUrl": "https://raw.githubusercontent.com/devEb209/-Unified-Technology-System-/2399b3f3d278af4e3caba58c38345a18880edfc5/downloads/2026-09-06/3_MAXIMOS_RECUPERADOS.zip",
+      "githubApiRawBytes": "verified",
+      "rawHostRequest": "NOT_VERIFIED: TLS handshake failed (EOF) from this environment"
+    }
+  ],
+  "reproducibleFullRebuild": "All three RBXM files and the complete ZIP rebuilt byte-identically before publication."
+}
