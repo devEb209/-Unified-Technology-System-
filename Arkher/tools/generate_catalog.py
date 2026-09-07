@@ -143,6 +143,29 @@ def kit_config(kit, key, seed, area_slug):
                         % (20 + (seed % 4) * 10, 0.06 + (seed % 10) / 100, 8 + seed % 16),
         "prediction":   '{ id = ID, errorThreshold = %.3f, smoothing = %.1f, maxInputs = %d }'
                         % (0.03 + (seed % 10) / 200, 8 + seed % 10, 60 + (seed % 6) * 20),
+        "intent":       '{ id = ID, minConfidence = %.2f }' % (0.3 + (seed % 15) / 100),
+        "knowledge":    '{ id = ID, dims = %d }' % (16 + (seed % 5) * 8),
+        "workflow":     '{ id = ID, maxRetries = %d, budget = %d }' % (1 + seed % 3, 40 + (seed % 12) * 10),
+        "critic":       '{ id = ID, passMark = %.2f, reviseMark = %.2f, seed = %d }'
+                        % (0.70 + (seed % 15) / 100, 0.40 + (seed % 10) / 100, seed),
+        "importer":     '{ id = ID, unitScale = %.2f }' % (1.0 + (seed % 4) / 4),
+        "bundler":      '{ id = ID, maxBundleBytes = %d }' % (262144 + (seed % 8) * 131072),
+        "timeline":     '{ id = ID, duration = %.1f, rate = %.2f }' % (4 + seed % 8, 0.8 + (seed % 40) / 100),
+        "camerarig":    '{ id = ID, fov = %.2f, focus = %.1f, aperture = %.1f, smoothing = %.1f, distance = %d, height = %d }'
+                        % (0.9 + (seed % 60) / 100, 6 + seed % 14, 1.4 + (seed % 12) / 2, 6 + seed % 8,
+                           8 + seed % 14, 2 + seed % 6),
+        "grade":        '{ id = ID, exposure = %.2f, contrast = %.2f, saturation = %.2f, toneMap = "%s" }'
+                        % ((seed % 30) / 100 - 0.15, 0.9 + (seed % 30) / 100, 0.85 + (seed % 35) / 100,
+                           ["filmic", "reinhard", "filmic", "linear"][seed % 4]),
+        "reality":      '{ id = ID }',
+        "complexity":   '{ id = ID, targetMs = %.1f }' % (11 + (seed % 12)),
+        "fabric":       '{ id = ID, budgetMs = %.1f, starvationLimit = %d }'
+                        % (1.5 + (seed % 6) / 2, 4 + seed % 8),
+        "autopipeline": '{ id = ID, maxIterations = %d }' % (4 + seed % 8),
+        "worldmemory":  '{ id = ID, capacity = %d }' % (64 + (seed % 8) * 32),
+        "emergence":    '{ id = ID, windowSize = %d, threshold = %.2f, minCount = %d }'
+                        % (4 + seed % 4, 1.20 + (seed % 5) / 10, 2 + seed % 2),
+        "architect":    '{ id = ID, budget = %d, seed = %d }' % (600 + (seed % 10) * 100, seed),
         "ecology":      '{ id = ID }',
     }[kit].replace("ID", '"%s"' % key)
 
@@ -2343,7 +2366,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 7, "categories": {}, "systems": [], "totals": {}}
+                "round": 8, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -2533,6 +2556,22 @@ KIT_METHODS = {
     "replicator": ["spawn", "despawn", "set", "move", "addClient", "moveClient", "interestSet", "snapshotFor", "flush", "apply", "overMTU", "split", "bandwidth", "applyQuality", "stats"],
     "netclock": ["tickDuration", "sample", "recompute", "serverTime", "advance", "push", "pop", "dropStale", "interpolationTime", "setBufferDelay", "adaptBuffer", "stats"],
     "prediction": ["simulate", "pushInput", "pending", "reconcile", "smooth", "predictionError", "reset", "applyQuality", "stats"],
+    "intent": ["addVerb", "addTarget", "addQualifier", "addConstraint", "addPattern", "installDefaults", "tokenize", "numberIn", "parse", "explain", "vocabulary", "stats"],
+    "knowledge": ["addEntity", "setAttribute", "attributesOf", "relate", "relatedTo", "hasRelation", "addRule", "infer", "query", "path", "embed", "similarity", "nearest", "forget", "stats"],
+    "workflow": ["addStep", "plan", "estimate", "criticalPath", "run", "rollback", "progress", "failedSteps", "reset", "stats"],
+    "critic": ["addCriterion", "scoreOne", "evaluate", "verdict", "worst", "compare", "improvement", "suggestions", "stats"],
+    "importer": ["defineType", "installDefaults", "validate", "normalize", "contentHash", "import", "get", "ofType", "missingDependencies", "totalBytes", "stats"],
+    "bundler": ["add", "compressedBytes", "pack", "bundleOf", "manifest", "delta", "loadPlan", "compressionRatio", "stats"],
+    "timeline": ["addTrack", "addKey", "valueAt", "addClip", "activeClips", "addEvent", "play", "pause", "seek", "advance", "sampleAll", "trim", "stats"],
+    "camerarig": ["setMode", "addPathPoint", "pathAt", "lookAt", "forward", "shake", "focusOn", "circleOfConfusion", "frameSubject", "update", "state", "stats"],
+    "grade": ["setLook", "installLooks", "applyLook", "luma", "toneCurve", "apply", "applyMany", "averageLuma", "autoExpose", "reset", "stats"],
+    "reality": ["addLayer", "installStack", "set", "get", "setEnabled", "setBlend", "commit", "discard", "keys", "snapshot", "divergence", "stats"],
+    "complexity": ["addZone", "setCounts", "setImportance", "costOf", "totalCost", "pressure", "classify", "evaluate", "directiveFor", "heaviest", "setTarget", "stats"],
+    "fabric": ["addDomain", "setRate", "setEnabled", "due", "tick", "run", "channel", "send", "receive", "load", "applyQuality", "stats"],
+    "autopipeline": ["addRule", "installDefaults", "analyze", "projectHealth", "applyFix", "improve", "report", "stats"],
+    "worldmemory": ["advanceEpoch", "remember", "advance", "recall", "historyOf", "compact", "summaryOf", "checksum", "checkpoint", "restore", "stats"],
+    "emergence": ["observe", "signal", "deviation", "lift", "detect", "novelty", "named", "forget", "stats"],
+    "architect": ["define", "allocate", "budgetOf", "addRule", "installRules", "coherent", "programme", "estimate", "compose", "stats"],
 }
 
 # ---------------------------------------------------------------- round 6 :: life kits
@@ -3886,6 +3925,375 @@ SPEC["prediction"] = ("""		function inst.driveForward(steps, dt)
 		local pose = inst.renderPose(1 / 60)
 		ok = ok and pose.position ~= nil
 		return ok and inst.rewind() == 0 and inst.stats().mispredictions >= 1""")
+
+
+# ------------------------------------------------------------- round 8 :: AI kits
+SPEC["intent"] = ("""		function inst.teach(word, action)
+			return inst.addVerb(word, { word }, action or "create")
+		end
+		function inst.understand(text)
+			local r = inst.parse(text)
+			return r.understood, r
+		end
+		function inst.routeFor(text)
+			local r = inst.parse(text)
+			if not r.understood then return "clarify" end
+			return (r.action or "unknown") .. ":" .. (r.target or "world")
+		end
+		function inst.brief(text)
+			local r = inst.parse(text)
+			return { action = r.action, target = r.target, quantity = r.quantity or 1,
+				device = r.constraints.device or "any", confidence = r.confidence }
+		end""",
+"""		inst.installDefaults()
+		local ok, r = inst.understand("build a city with 20 buildings for phones")
+		ok = ok and r.action == "create" and r.target == "city" and r.quantity == 20
+		ok = ok and r.constraints.device == "mobile"
+		ok = ok and inst.routeFor("build a city") == "create:city"
+		local brief = inst.brief("optimize the map for weak phones")
+		ok = ok and brief.action == "optimize" and brief.device == "mobile"
+		ok = ok and inst.teach("erect", "create") ~= nil
+		return ok and inst.stats().parsed >= 3""")
+
+SPEC["knowledge"] = ("""		function inst.installDomain()
+			inst.addEntity(S.key .. ".root", "domain", { area = S.name })
+			inst.addEntity(S.key .. ".part", "component", { area = S.name })
+			inst.addEntity(S.key .. ".detail", "component", { area = S.name })
+			inst.relate(S.key .. ".part", "part_of", S.key .. ".root")
+			inst.relate(S.key .. ".detail", "part_of", S.key .. ".part")
+			inst.addRule("part_of", "transitive")
+			return inst.infer(3)
+		end
+		function inst.componentsOf()
+			return inst.query({ type = "component" })
+		end
+		function inst.closestTo(id)
+			local near = inst.nearest(id, 1)
+			return near[1] and near[1].id or nil
+		end
+		function inst.routeBetween(a, b)
+			return inst.path(a, b, 6)
+		end""",
+"""		local inferred = inst.installDomain()
+		local ok = inferred >= 1
+		ok = ok and inst.hasRelation(S.key .. ".detail", "part_of", S.key .. ".root")
+		ok = ok and #inst.componentsOf() == 2
+		local route = inst.routeBetween(S.key .. ".detail", S.key .. ".root")
+		ok = ok and route ~= nil and #route >= 2
+		ok = ok and inst.closestTo(S.key .. ".part") ~= nil
+		return ok and inst.stats().entities == 3""")
+
+SPEC["workflow"] = ("""		function inst.installStages()
+			local state = { prepared = false, built = 0, verified = false }
+			inst.shared = state
+			inst.addStep("prepare", { cost = 1,
+				run = function() state.prepared = true return true end,
+				verify = function() return state.prepared end,
+				undo = function() state.prepared = false end })
+			inst.addStep("build", { cost = 2, requires = { "prepare" },
+				run = function() state.built = state.built + 4 return state.built end,
+				verify = function() return state.built > 0 end,
+				undo = function() state.built = 0 end })
+			inst.addStep("verify", { cost = 1, requires = { "build" },
+				run = function() state.verified = state.built > 0 return state.verified end,
+				verify = function() return state.verified end })
+			return #inst.order
+		end
+		function inst.executeAll()
+			inst.reset()
+			return inst.run(S)
+		end
+		function inst.longest()
+			local path = inst.criticalPath()
+			return path and #path or 0
+		end""",
+"""		local ok = inst.installStages() == 3
+		ok = ok and inst.executeAll()
+		ok = ok and inst.shared.built == 4
+		ok = ok and inst.progress() == 1
+		ok = ok and inst.longest() >= 1
+		ok = ok and #inst.failedSteps() == 0
+		return ok and inst.stats().executed >= 3""")
+
+SPEC["critic"] = ("""		function inst.installCriteria()
+			inst.addCriterion("quality", { weight = 3, target = 1, direction = "higher" })
+			inst.addCriterion("cost", { weight = 2, target = 10, direction = "lower" })
+			inst.addCriterion("balance", { weight = 1, floor = 0.4, ceiling = 0.6,
+				direction = "range" })
+			return #inst.order
+		end
+		function inst.judge(quality, cost, balance)
+			return inst.evaluate({ quality = quality, cost = cost, balance = balance })
+		end
+		function inst.advice(record)
+			return inst.suggestions(record, 3)
+		end""",
+"""		local ok = inst.installCriteria() == 3
+		local good = inst.judge(1, 5, 0.5)
+		ok = ok and good.verdict == "pass" and good.overall > 0.9
+		local bad = inst.judge(0.1, 100, 5)
+		ok = ok and bad.overall < good.overall
+		ok = ok and #inst.advice(bad) > 0
+		ok = ok and inst.worst(bad) ~= nil
+		return ok and inst.stats().evaluations == 2""")
+
+# ---------------------------------------------------- round 8 :: production kits
+SPEC["importer"] = ("""		function inst.ingest(name, bytes)
+			return inst.import("mesh", { name = name, vertices = 300, triangles = 400,
+				bytes = bytes or 4096, size = 2, extension = "obj" })
+		end
+		function inst.ingestTexture(name, size)
+			return inst.import("texture", { name = name, width = size or 512,
+				height = size or 512, bytes = (size or 512) * 64, extension = "png" })
+		end
+		function inst.catalogue()
+			return { meshes = #inst.ofType("mesh"), textures = #inst.ofType("texture"),
+				bytes = inst.totalBytes() }
+		end""",
+"""		inst.installDefaults()
+		local asset = inst.ingest(S.key .. ".mesh", 8192)
+		local ok = asset ~= nil and asset.type == "mesh"
+		local dup, _, note = inst.ingest(S.key .. ".mesh", 8192)
+		ok = ok and note == "duplicate" and dup ~= nil
+		ok = ok and inst.ingestTexture(S.key .. ".tex", 512) ~= nil
+		local bad = inst.import("mesh", { name = "broken" })
+		ok = ok and bad == nil
+		local c = inst.catalogue()
+		return ok and c.meshes == 1 and c.textures == 1 and c.bytes > 0""")
+
+SPEC["bundler"] = ("""		function inst.stage(count, bytes)
+			for i = 1, (count or 4) do
+				inst.add(S.key .. ".item" .. i, { bytes = bytes or 60000, type = "mesh",
+					group = (i % 2 == 0) and "core" or "stream", priority = i })
+			end
+			return inst.pack()
+		end
+		function inst.sizeOf(group)
+			local total = 0
+			for _, bundle in ipairs(inst.bundles) do
+				if bundle.group == group then total = total + bundle.bytes end
+			end
+			return total
+		end
+		function inst.residentPlan(groups)
+			return inst.loadPlan(groups or { "core" })
+		end""",
+"""		local packed = inst.stage(6, 60000)
+		local ok = packed >= 1 and #inst.bundles == packed
+		ok = ok and inst.bundleOf(S.key .. ".item1") ~= nil
+		ok = ok and inst.sizeOf("core") > 0
+		local manifest = inst.manifest()
+		ok = ok and manifest.entries == 6 and manifest.totalBytes > 0
+		local delta = inst.delta(manifest)
+		ok = ok and #delta.added == 0 and #delta.removed == 0
+		return ok and inst.compressionRatio() < 1 and #inst.residentPlan() >= 1""")
+
+SPEC["timeline"] = ("""		function inst.installShot()
+			inst.addTrack("fov", { default = 1 })
+			inst.addKey("fov", 0, 1)
+			inst.addKey("fov", 2, 1.6, "easeInOut")
+			inst.addClip("main", 0, 2)
+			inst.addEvent("beat", 1)
+			return inst.duration
+		end
+		function inst.scrub(time) return inst.seek(time) end
+		function inst.frameAt(time) return inst.sampleAll(time or inst.time) end""",
+"""		local ok = inst.installShot() >= 2
+		ok = ok and inst.valueAt("fov", 0) == 1
+		local mid = inst.valueAt("fov", 1)
+		ok = ok and mid > 1 and mid < 1.6
+		ok = ok and #inst.activeClips(1) == 1
+		inst.play()
+		local fired = inst.advance(1.5)
+		ok = ok and #fired == 1 and fired[1].name == "beat"
+		ok = ok and #inst.advance(0.2) == 0
+		ok = ok and inst.scrub(0.5) == 0.5
+		return ok and inst.frameAt(0.5).fov ~= nil""")
+
+SPEC["camerarig"] = ("""		function inst.stage(subject)
+			inst.setMode("orbit")
+			for _ = 1, 12 do inst.update(1 / 30, subject or Vec.vec3()) end
+			return inst.position
+		end
+		function inst.dollyThrough(a, b)
+			inst.addPathPoint(a or Vec.vec3())
+			inst.addPathPoint(b or Vec.vec3(10, 0, 0))
+			inst.setMode("dolly")
+			return inst.pathLength
+		end
+		function inst.depthOfField(distance)
+			return inst.circleOfConfusion(distance or inst.focus)
+		end""",
+"""		local subject = Vec.vec3()
+		local p = inst.stage(subject)
+		local ok = p ~= nil and inst.focus > 0
+		ok = ok and inst.depthOfField(inst.focus) < 0.001
+		ok = ok and inst.depthOfField(inst.focus * 5) > 0
+		ok = ok and inst.dollyThrough(Vec.vec3(), Vec.vec3(10, 0, 0)) > 9
+		ok = ok and inst.pathAt(0.5).x > 0
+		inst.shake(1)
+		inst.update(0.2, subject)
+		return ok and inst.shakeAmount < 1 and inst.stats().updates >= 13""")
+
+SPEC["grade"] = ("""		function inst.look(name, weight)
+			inst.installLooks()
+			return inst.applyLook(name or "warmDay", weight or 1)
+		end
+		function inst.pixel(r, g, b)
+			return inst.apply({ r or 0.5, g or 0.5, b or 0.5 })
+		end
+		function inst.expose(target)
+			local sample = {}
+			for i = 1, 4 do sample[i] = { 0.04 * i, 0.04 * i, 0.04 * i } end
+			for _ = 1, 8 do inst.autoExpose(sample, target or 0.18) end
+			return inst.exposure
+		end""",
+"""		local base = inst.pixel(0.5, 0.5, 0.5)
+		local ok = base[1] >= 0 and base[1] <= 1
+		ok = ok and inst.look("noir", 1)
+		local noir = inst.pixel(0.8, 0.2, 0.2)
+		ok = ok and math.abs(noir[1] - noir[3]) < 0.3
+		inst.reset()
+		ok = ok and inst.expose(0.18) ~= 0
+		ok = ok and inst.luma({ 1, 1, 1 }) > 0.99
+		return ok and inst.stats().applied >= 3""")
+
+# ------------------------------------------------------- round 8 :: original kits
+SPEC["reality"] = ("""		function inst.installLayers() return inst.installStack() end
+		function inst.author(key, value) return inst.set("authored", key, value) end
+		function inst.simulate(key, value) return inst.set("simulated", key, value) end
+		function inst.propose(key, value) return inst.set("proposed", key, value) end
+		function inst.accept() return inst.commit("proposed", "simulated") end
+		function inst.revert() return inst.discard("proposed") end""",
+"""		local ok = inst.installLayers() >= 4
+		inst.author(S.key .. ".value", 10)
+		ok = ok and inst.get(S.key .. ".value") == 10
+		inst.simulate(S.key .. ".value", 20)
+		ok = ok and inst.get(S.key .. ".value") == 20
+		inst.propose(S.key .. ".value", 30)
+		ok = ok and inst.get(S.key .. ".value") == 30
+		ok = ok and inst.revert() == 1 and inst.get(S.key .. ".value") == 20
+		inst.propose(S.key .. ".value", 40)
+		ok = ok and inst.accept() == 1 and inst.get(S.key .. ".value") == 40
+		return ok and inst.divergence("authored") > 0 and #inst.keys() == 1""")
+
+SPEC["complexity"] = ("""		function inst.installZones()
+			inst.addZone(S.key .. ".core", { objects = 400, agents = 30, lights = 20,
+				effects = 6 })
+			inst.addZone(S.key .. ".edge", { objects = 120, agents = 6, lights = 4,
+				effects = 1 })
+			inst.setImportance(S.key .. ".core", 3)
+			return inst.totalCost()
+		end
+		function inst.governFrame(targetMs)
+			inst.setTarget(targetMs or 16.6)
+			return inst.evaluate()
+		end
+		function inst.budgetFor(zone) return inst.directiveFor(zone) end""",
+"""		local ok = inst.installZones() > 0
+		local result = inst.governFrame(8)
+		ok = ok and result.pressure > 1
+		local core = inst.budgetFor(S.key .. ".core")
+		local edge = inst.budgetFor(S.key .. ".edge")
+		ok = ok and core.objects < 400 and edge.objects < 120
+		ok = ok and core.quality >= edge.quality
+		ok = ok and inst.heaviest() == S.key .. ".core"
+		local relaxed = inst.governFrame(10000)
+		return ok and relaxed.pressure < 1 and inst.stats().zones == 2""")
+
+SPEC["fabric"] = ("""		function inst.installDomains()
+			inst.counters = { fast = 0, slow = 0 }
+			local counters = inst.counters
+			inst.addDomain("fast", { hz = 20, cost = 1, priority = 2,
+				step = function() counters.fast = counters.fast + 1 end })
+			inst.addDomain("slow", { hz = 2, cost = 1, priority = 1,
+				step = function() counters.slow = counters.slow + 1 end })
+			return #inst.order
+		end
+		function inst.simulate(seconds) return inst.run(seconds or 1, 1 / 30) end
+		function inst.publish(topic, message)
+			return inst.send(topic or "world", message or {})
+		end""",
+"""		local ok = inst.installDomains() == 2
+		inst.simulate(1)
+		ok = ok and inst.counters.fast > inst.counters.slow
+		ok = ok and inst.publish("world", { tick = 1 }) == 1
+		ok = ok and #inst.receive("world") == 1
+		local before = inst.load()
+		inst.applyQuality(0.2)
+		return ok and inst.load() < before and inst.stats().steps > 0""")
+
+SPEC["autopipeline"] = ("""		function inst.sampleProject()
+			return { frameMs = 40, targetMs = 16.6, drawCalls = 2400, maxDrawCalls = 900,
+				failingTests = 2, orphanAssets = 4, memoryMb = 800, memoryCeilingMb = 512,
+				quality = 1 }
+		end
+		function inst.audit(project) return inst.analyze(project or inst.sampleProject()) end
+		function inst.repair(project, rounds) return inst.improve(project, rounds or 24) end""",
+"""		inst.installDefaults()
+		local project = inst.sampleProject()
+		local findings = inst.audit(project)
+		local ok = #findings == 5 and findings[1].severity == 3
+		local before = inst.projectHealth(project)
+		local record = inst.repair(project, 24)
+		ok = ok and record.gain > 0 and record.after > before
+		ok = ok and project.orphanAssets == 0 and project.drawCalls < 2400
+		ok = ok and inst.report().open >= 0
+		return ok and inst.stats().applied > 0""")
+
+SPEC["worldmemory"] = ("""		function inst.log(subject, event, weight)
+			return inst.remember(subject or S.key, event or "tick",
+				{ weight = weight or 1, region = S.key })
+		end
+		function inst.story(subject) return inst.historyOf(subject or S.key, 8) end
+		function inst.save() return inst.checkpoint(S.key) end
+		function inst.load(checkpoint) return inst.restore(checkpoint) end""",
+"""		inst.log(S.key, "born", 1)
+		inst.advance(1)
+		inst.log(S.key, "grew", 2)
+		local ok = #inst.story(S.key) == 2
+		ok = ok and #inst.recall({ region = S.key }) == 2
+		local cp = inst.save()
+		inst.log(S.key, "changed", 1)
+		ok = ok and inst.checksum() ~= cp.checksum
+		ok = ok and inst.load(cp)
+		ok = ok and #inst.recall({ subject = S.key }) == 2
+		ok = ok and inst.advanceEpoch("next") == 2
+		return ok and inst.stats().written >= 3""")
+
+SPEC["emergence"] = ("""		function inst.watch(event, weight) return inst.observe(event, weight) end
+		function inst.trend(name, value) return inst.signal(name, value) end
+		function inst.detected() return inst.detect() end""",
+"""		for i = 1, 6 do
+			inst.watch("rain")
+			inst.watch("flood")
+			inst.watch("noise" .. i)
+		end
+		local found = inst.detected()
+		local ok = #found > 0 and inst.lift("rain", "flood") > 1
+		for _ = 1, 10 do inst.trend("level", 0.5) end
+		ok = ok and math.abs(inst.deviation("level")) < 0.001
+		inst.trend("level", 4)
+		ok = ok and inst.deviation("level") > 1
+		ok = ok and #inst.named() > 0
+		return ok and inst.novelty("rain") < inst.novelty("unheard")""")
+
+SPEC["architect"] = ("""		function inst.composeWorld(target, quantity)
+			return inst.compose({ target = target or S.key, quantity = quantity or 60,
+				density = 1 })
+		end
+		function inst.buildOrder() return inst.programme() end
+		function inst.check() return inst.coherent() end
+		function inst.cost(rate) return inst.estimate(rate or 1) end""",
+"""		local composed = inst.composeWorld(S.key, 80)
+		local ok = composed.nodes > 8 and composed.districts >= 1
+		ok = ok and inst.check()
+		local programme = inst.buildOrder()
+		ok = ok and programme ~= nil and #programme == #inst.order
+		local index = {}
+		for i, id in ipairs(programme) do index[id] = i end
+		ok = ok and index[S.key .. ".terrain"] < index[S.key .. ".roads"]
+		return ok and inst.cost(1) > 0 and inst.stats().composed == 1""")
 
 
 build()

@@ -1103,6 +1103,15 @@ return function(A)
 	local Play = A:import("arkher/runtime/kits_play")
 	for _, name in ipairs(Play.NAMES) do Kits[name] = Play[name] end
 
+	local Ai = A:import("arkher/runtime/kits_ai")
+	for _, name in ipairs(Ai.NAMES) do Kits[name] = Ai[name] end
+
+	local Prod = A:import("arkher/runtime/kits_prod")
+	for _, name in ipairs(Prod.NAMES) do Kits[name] = Prod[name] end
+
+	local Origin = A:import("arkher/runtime/kits_origin")
+	for _, name in ipairs(Origin.NAMES) do Kits[name] = Origin[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
@@ -1118,7 +1127,11 @@ return function(A)
 		"vehicle", "skeleton", "clip", "animator", "ik", "ragdoll",
 		"emitter", "particles", "forcefield", "ribbon", "dsp", "mixer", "spatialaudio", "sequencer",
 		"stats", "inventory", "quest", "combat", "flex", "inputmap", "tween",
-		"replicator", "netclock", "prediction" }
+		"replicator", "netclock", "prediction",
+		"intent", "knowledge", "workflow", "critic",
+		"importer", "bundler", "timeline", "camerarig", "grade",
+		"reality", "complexity", "fabric", "autopipeline", "worldmemory",
+		"emergence", "architect" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]

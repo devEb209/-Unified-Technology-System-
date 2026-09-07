@@ -12,7 +12,8 @@
     "test:motion": "node tools/harness.js tests/motion_spec.lua",
     "test:life": "node tools/harness.js tests/life_spec.lua",
     "test:experience": "node tools/harness.js tests/experience_spec.lua",
-    "test:engine": "node tools/harness.js tests/engine_spec.lua",
+    "test:intelligence": "node tools/harness.js tests/intelligence_spec.lua",
+    "test:engine": "node --stack-size=4000 --max-old-space-size=3072 tools/harness.js tests/engine_spec.lua",
     "build": "python3 tools/generate_catalog.py && python3 tools/build_rbxmx.py && python3 tools/validate_release.py"
   },
   "dependencies": {

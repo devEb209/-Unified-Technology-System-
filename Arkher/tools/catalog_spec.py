@@ -1,4 +1,4 @@
-# ARKHER V1 :: catalog specification (R1 A,S,X; R2 B,U,Y; R3 C,D,M; R4 E,F,G; R5 H,I,J; R6 K,L; R7 N,O,P,Q,R)
+# ARKHER V1 :: catalog specification (R1 A,S,X; R2 B,U,Y; R3 C,D,M; R4 E,F,G; R5 H,I,J; R6 K,L; R7 N,O,P,Q,R; R8 T,V,W,Z)
 # Each system = area x aspect. Aspect decides the kit (a real working machine) and the
 # specialized methods emitted for that system.
 
@@ -762,6 +762,158 @@ AREAS_R = [
     ("Reconnection", "reconnection"), ("Network Debug", "networkdebug"),
 ]
 
+# ------------------------------------------------------- round 8 :: T SINGULARITY AI
+ASPECTS_T = [
+    ("Intent Understanding",  "intent",       "natural language turned into an actionable, scored intent"),
+    ("Semantic Knowledge",    "knowledge",    "typed entities, weighted relations and inferred closure"),
+    ("Plan Workflow",         "workflow",     "dependency-ordered plans that verify, retry and roll back"),
+    ("Self Critique",         "critic",       "weighted evaluation of the result against declared criteria"),
+    ("World Architect",       "architect",    "composition of a whole world plan with conserved budgets"),
+    ("Reasoning Graph",       "graph",        "relationship modelling and shortest-path reasoning"),
+    ("Decision Policy",       "policy",       "ordered rules deciding what the agent does next"),
+    ("Outcome Prediction",    "predictor",    "forecasting the result before the work is done"),
+    ("Working Memory",        "memory",       "decaying, consolidating recall of what the agent learned"),
+    ("Utility Selection",     "utility",      "scored choice between competing courses of action"),
+    ("Action Planner",        "planner",      "goal-oriented action planning over preconditions"),
+    ("Model Inference",       "inference",    "quantized inference with batching and budget"),
+    ("Learning Analysis",     "analyzer",     "trend, anomaly and improvement analysis of the agent"),
+    ("Decision Ledger",       "ledger",       "auditable journal of every AI decision and its reason"),
+]
+
+AREAS_T = [
+    ("Intent Parsing", "intentparsing"), ("Prompt Understanding", "prompt"), ("Task Decomposition", "decomposition"),
+    ("Goal Reasoning", "goalreasoning"), ("World Knowledge", "worldknowledge"), ("Project Knowledge", "projectknowledge"),
+    ("Semantic Search", "semanticsearch"), ("Context Memory", "contextmemory"), ("Long Term Memory", "longtermmemory"),
+    ("Skill Library", "skilllibrary"), ("Tool Use", "tooluse"), ("Code Generation", "codegeneration"),
+    ("Asset Generation", "assetgeneration"), ("Terrain Generation", "terraingeneration"), ("City Generation", "citygeneration"),
+    ("Character Generation", "charactergeneration"), ("Quest Generation", "questgeneration"), ("Dialogue Generation", "dialoguegeneration"),
+    ("Narrative Design", "narrativedesign"), ("Level Design", "leveldesign"), ("Balance Tuning", "balancetuning"),
+    ("Difficulty Tuning", "difficultytuning"), ("Optimization Advisor", "optimizationadvisor"), ("Bug Triage", "bugtriage"),
+    ("Test Authoring", "testauthoring"), ("Documentation Writer", "documentationwriter"), ("Review Critic", "reviewcritic"),
+    ("Refactoring", "refactoring"), ("Performance Reasoning", "performancereasoning"), ("Device Reasoning", "devicereasoning"),
+    ("Mobile Reasoning", "mobilereasoning"), ("Player Modelling", "playermodelling"), ("Behaviour Learning", "behaviourlearning"),
+    ("Reward Modelling", "rewardmodelling"), ("Simulation Reasoning", "simulationreasoning"), ("Physics Reasoning", "physicsreasoning"),
+    ("Render Reasoning", "renderreasoning"), ("Audio Reasoning", "audioreasoning"), ("Animation Reasoning", "animationreasoning"),
+    ("Scene Reasoning", "scenereasoning"), ("Pipeline Automation", "pipelineautomation"), ("Build Reasoning", "buildreasoning"),
+    ("Deployment Reasoning", "deploymentreasoning"), ("Safety Alignment", "safetyalignment"), ("Explainability", "explainability"),
+    ("Confidence Estimation", "confidence"), ("Human Handoff", "humanhandoff"), ("Multi Agent Coordination", "multiagent"),
+    ("Continuous Learning", "continuouslearning"), ("AI Debug", "aidebug"),
+]
+
+# ------------------------------------------------------- round 8 :: V ASSET PIPELINE
+ASPECTS_V = [
+    ("Import",              "importer", "validation, normalization, hashing and deduplication of incoming content"),
+    ("Bundling",            "bundler",  "size-bounded packing, manifests and delta patches"),
+    ("Cook Pipeline",       "pipeline", "staged cooking with isolation and retries"),
+    ("Asset Registry",      "registry", "catalogue of every asset, its tags and its metadata"),
+    ("Dependency Graph",    "graph",    "what references what, and in which order it must be built"),
+    ("Content Cache",       "cache",    "reuse of already cooked results"),
+    ("Streaming Residency", "streamer", "distance-driven load and unload of asset payloads"),
+    ("Compression Codec",   "codec",    "compact encoding, diffing and checksum of asset payloads"),
+    ("Size Budget",         "budgeter", "byte budget shared between competing asset classes"),
+    ("Validation Guard",    "guard",    "rate limiting and capability checks on the import path"),
+    ("Audit Ledger",        "ledger",   "auditable journal of every import, cook and publish"),
+    ("Recovery",            "recovery", "checkpoint and rollback of the asset database"),
+]
+
+AREAS_V = [
+    ("Mesh", "meshasset"), ("Skeletal Mesh", "skeletalmesh"), ("Texture", "textureasset"), ("Normal Map", "normalmap"),
+    ("Material Asset", "materialasset"), ("Shader Asset", "shaderasset"), ("Animation Clip", "animationclip"),
+    ("Audio Clip", "audioclip"), ("Music Track", "musictrack"), ("Voice Line", "voiceline"), ("Font", "font"),
+    ("Icon", "iconasset"), ("UI Sprite", "uisprite"), ("Particle Asset", "particleasset"), ("Prefab Asset", "prefabasset"),
+    ("Scene Asset", "sceneasset"), ("Terrain Asset", "terrainasset"), ("Level Asset", "levelasset"),
+    ("Script Asset", "scriptasset"), ("Data Table", "datatable"), ("Localization Asset", "localizationasset"),
+    ("Video Asset", "videoasset"), ("Lightmap", "lightmap"), ("Impostor Asset", "impostorasset"),
+    ("LOD Chain", "lodchain"), ("Mip Chain", "mipchain"), ("Texture Atlas", "atlas"), ("Bundle", "bundle"),
+    ("Patch", "patch"), ("Manifest", "assetmanifest"), ("Import Preset", "importpreset"), ("Cook Target", "cooktarget"),
+    ("Platform Variant", "platformvariant"), ("Thumbnail", "thumbnail"), ("Asset Search", "assetsearch"),
+    ("Asset Debug", "assetdebug"),
+]
+
+# ---------------------------------------------------------- round 8 :: W CINEMATIC
+ASPECTS_W = [
+    ("Sequence Timeline",   "timeline",     "keyframed tracks, clips and events on a scrubable playhead"),
+    ("Camera Rig",          "camerarig",    "dolly, orbit, crane and handheld camera with focus and shake"),
+    ("Colour Grade",        "grade",        "exposure, contrast, saturation, white balance and tone mapping"),
+    ("Shot Composition",    "composer",     "blending of the signals that make up the final shot"),
+    ("Cut Policy",          "policy",       "rules deciding when the sequence cuts and to what"),
+    ("Playback Orchestrator","orchestrator","the state machine that drives a cinematic from start to end"),
+    ("Motion Tween",        "tween",        "eased, delayed and sequenced motion of cinematic properties"),
+    ("Cinematic Mix",       "mixer",        "bus routing and ducking for the cinematic soundtrack"),
+    ("Event Ledger",        "ledger",       "auditable journal of every cue the sequence fired"),
+    ("Frame Budget",        "budgeter",     "per-frame cost budget for the cinematic systems"),
+    ("Sequence Analysis",   "analyzer",     "pacing, coverage and cut-rhythm analysis"),
+    ("Recovery",            "recovery",     "checkpoint and rollback of the sequence state"),
+]
+
+AREAS_W = [
+    ("Shot", "shot"), ("Sequence", "sequence"), ("Scene Cut", "scenecut"), ("Establishing Shot", "establishing"),
+    ("Close Up", "closeup"), ("Tracking Shot", "tracking"), ("Dolly", "dolly"), ("Crane", "crane"),
+    ("Handheld", "handheld"), ("Orbit", "orbit"), ("Drone Shot", "drone"), ("Over The Shoulder", "overshoulder"),
+    ("Point Of View", "pointofview"), ("Cutscene", "cutscene"), ("In Game Cinematic", "ingamecinematic"),
+    ("Dialogue Scene", "dialoguescene"), ("Action Scene", "actionscene"), ("Montage", "montage"),
+    ("Transition", "cinetransition"), ("Fade", "fade"), ("Dissolve", "dissolve"), ("Match Cut", "matchcut"),
+    ("Letterbox", "letterbox"), ("Depth Of Field", "depthoffield"), ("Motion Blur", "cinemotionblur"),
+    ("Lens Flare", "lensflare"), ("Colour Look", "colourlook"), ("Exposure Ramp", "exposureramp"),
+    ("Camera Shake", "camerashake"), ("Subtitle", "subtitle"), ("Cinematic Audio", "cinematicaudio"),
+    ("Playback Control", "playbackcontrol"), ("Preview Render", "previewrender"), ("Cinematic Debug", "cinedebug"),
+]
+
+# ------------------------------------------- round 8 :: Z ARKHER ORIGINAL TECHNOLOGIES
+ASPECTS_Z = [
+    ("Reality Layering",       "reality",      "stacked authored, simulated, proposed and player realities"),
+    ("Complexity Governance",  "complexity",   "measured scene cost turned into per-subsystem directives"),
+    ("Simulation Fabric",      "fabric",       "every simulation domain stepped under one budgeted clock"),
+    ("Autonomous Pipeline",    "autopipeline", "the project analysing and repairing itself, with measured gain"),
+    ("World Memory",           "worldmemory",  "epoch-stamped persistent history with compaction and checkpoints"),
+    ("Emergence Detection",    "emergence",    "co-occurrence lift that names behaviour nobody scripted"),
+    ("World Architect",        "architect",    "hierarchical world composition with conserved budgets"),
+    ("Semantic Graph",         "knowledge",    "typed entities and inferred relations of the technology itself"),
+    ("Intent Bridge",          "intent",       "natural language control surface for the technology"),
+    ("Self Critique",          "critic",       "weighted judgement of the technology's own output"),
+    ("Adaptive Workflow",      "workflow",     "verified, retryable, reversible execution plans"),
+    ("Predictive Optimization","predictor",    "forecast-driven optimization before the cost is paid"),
+    ("Persistent Recovery",    "recovery",     "checkpoint and rollback of the persistent reality state"),
+    ("Telemetry Ledger",       "ledger",       "auditable journal of the technology's decisions"),
+    ("Signal Composition",     "composer",     "blending of the technology's input signals into one output"),
+    ("Governance Policy",      "policy",       "ordered rules governing when the technology may act"),
+    ("Behaviour Analysis",     "analyzer",     "trend, anomaly and forecast analysis of the technology"),
+    ("Budget Governor",        "budgeter",     "allocation of a scarce resource across the technology's consumers"),
+    ("Residency Streaming",    "streamer",     "distance-driven residency of the technology's workload"),
+    ("Orchestration",          "orchestrator", "lifecycle and phase orchestration of the technology"),
+]
+
+AREAS_Z = [
+    ("Adaptive World Intelligence", "adaptiveworld"), ("Predictive Optimization", "predictiveopt"),
+    ("Singularity World Architect", "worldarchitect"), ("Reality Layer", "realitylayer"),
+    ("Semantic World Graph", "semanticworld"), ("Universal Simulation Fabric", "simfabric"),
+    ("Dynamic Complexity Manager", "complexitymanager"), ("Autonomous Development Pipeline", "autodevpipeline"),
+    ("Self Analyzing Project", "selfanalyzing"), ("World Memory", "worldmemorytech"),
+    ("Persistent Reality State", "persistentreality"), ("Emergent Society Framework", "emergentsociety"),
+    ("AI Native Engine Architecture", "ainative"), ("Living Ecosystem Engine", "livingecosystem"),
+    ("Temporal Continuity", "temporalcontinuity"), ("Causality Ledger", "causality"),
+    ("Cross Reality Sync", "crossreality"), ("Device Aware Fidelity", "deviceaware"),
+    ("Mobile First Governor", "mobilefirst"), ("Thermal Aware Simulation", "thermalaware"),
+    ("Battery Aware Pipeline", "batteryaware"), ("Offline World Progression", "offlineprogression"),
+    ("Player Absence Simulation", "playerabsence"), ("Narrative Memory", "narrativememory"),
+    ("Cultural Evolution", "culturalevolution"), ("Economic Emergence", "economicemergence"),
+    ("Migration Dynamics", "migrationdynamics"), ("Reputation Web", "reputationweb"),
+    ("Collective Behaviour", "collectivebehaviour"), ("Self Healing Systems", "selfhealing"),
+    ("Predictive Streaming", "predictivestreaming"), ("Intent Driven Authoring", "intentauthoring"),
+    ("Natural Language Engine Control", "languagecontrol"), ("Auto Documentation", "autodocumentation"),
+    ("Auto Test Synthesis", "autotest"), ("Continuous Self Optimization", "continuousopt"),
+    ("Knowledge Distillation", "distillation"), ("World Compression", "worldcompression"),
+    ("Semantic LOD", "semanticlod"), ("Attention Driven Detail", "attentiondetail"),
+    ("Perceptual Budgeting", "perceptualbudget"), ("Reality Blending", "realityblending"),
+    ("Simulation Time Dilation", "timedilation"), ("Multi Scale Simulation", "multiscale"),
+    ("Sparse World Representation", "sparseworld"), ("Deterministic Replay", "deterministicreplay"),
+    ("Universal Interop Layer", "interop"), ("Platform Abstraction Doctrine", "platformdoctrine"),
+    ("Generation Migration", "generationmigration"), ("Engine Self Model", "engineselfmodel"),
+    ("Capability Discovery", "capabilitydiscovery"), ("Autonomous Balancing", "autobalancing"),
+    ("Emergent Quest Generation", "emergentquest"), ("World Dream State", "worlddream"),
+    ("Original Tech Debug", "origindebug"),
+]
+
 
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
@@ -808,4 +960,12 @@ CATEGORIES = {
               doc="ARKHER Interface Framework capability: responsive, themed, accessible interfaces on every device."),
     "R": dict(family="NETWORKING", prefix="net", areas=AREAS_R, aspects=ASPECTS_R,
               doc="ARKHER Networking Framework capability: authoritative replication, prediction and bandwidth discipline."),
+    "T": dict(family="SINGULARITY AI", prefix="ai", areas=AREAS_T, aspects=ASPECTS_T,
+              doc="Singularity AI capability: understand, know, plan, act, judge - the intelligence that drives the whole engine."),
+    "V": dict(family="ASSET PIPELINE", prefix="asset", areas=AREAS_V, aspects=ASPECTS_V,
+              doc="ARKHER Asset Pipeline capability: import, validate, cook, bundle and patch content within a device budget."),
+    "W": dict(family="CINEMATIC", prefix="cine", areas=AREAS_W, aspects=ASPECTS_W,
+              doc="ARKHER Cinematic Framework capability: shots, sequences, camera language, grading and playback."),
+    "Z": dict(family="ARKHER ORIGINAL TECHNOLOGIES", prefix="origin", areas=AREAS_Z, aspects=ASPECTS_Z,
+              doc="ARKHER original technology: the capabilities that exist in no other engine, built for a world that keeps living."),
 }

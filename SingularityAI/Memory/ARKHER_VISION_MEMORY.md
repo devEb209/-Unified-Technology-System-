@@ -270,3 +270,40 @@ gamepad and keyboard, tweening, theming, and accessibility audits that fail the 
 target is under 44pt or a colour pair misses WCAG AA. Native font shaping, OS-level gesture
 recognisers and UI shaders are not exposed; ARKHER recognises its own gestures and themes with
 tokens the adapter can honour. Status: **substituted**.
+
+## VISION-037 — A large language model running inside the engine
+**Memory note:** Round 8 gives Singularity AI a real, deterministic language front end: a lexicon of
+verbs, targets, qualifiers, numbers and device constraints; keyword patterns that recover the intent
+when no verb is spoken ("the map is slow on phones" → optimize, mobile); a confidence score with an
+explicit refusal when nothing was understood; a semantic graph with transitive inference and
+similarity search; a planner that topologically orders work, verifies each step and rolls back on
+failure; and a critic that scores the result against weighted criteria. Transformer weights cannot
+run in a Roblox session — no tensor runtime, no compute shaders, no room for billions of parameters.
+Free-form generative language is recorded here; what ships never hallucinates a build step.
+Status: **substituted**.
+
+## VISION-038 — A native asset cooking toolchain with GPU block compression
+**Memory note:** the asset pipeline validates typed imports, normalizes units, hashes content and
+deduplicates, resolves dependencies, derives LOD chains from real triangle counts and mip chains
+from real texture dimensions, cooks against mobile/PC/console/VR budgets, packs size-bounded
+bundles, and emits manifests plus delta patches. Parsing FBX or PNG binaries and emitting BCn/ASTC
+blocks is owned by the platform's ingestion service. ARKHER cooks the *decisions* — budgets,
+residency, patches — and hands the bytes to the adapter. Status: **substituted**.
+
+## VISION-039 — Film-grade cinematic post processing on the GPU
+**Memory note:** shots, sequences, a scrubable timeline with eased keys and once-only events, camera
+rigs (dolly, orbit, crane, follow) with smoothing, decaying shake, focus tracking, circle-of-confusion
+and subject framing, and a grade built from arithmetic — exposure stops, contrast about a pivot,
+luma-correct saturation, lift/gamma/gain, white balance, filmic and Reinhard curves, named looks and
+auto-exposure. Per-pixel depth of field, motion blur and 3D LUTs need a post-process hook the
+platform does not expose; ARKHER computes the signals and the adapter applies what it can.
+Status: **substituted**.
+
+## VISION-040 — A world that keeps simulating while every player is away
+**Memory note:** Adaptive World Intelligence delivers Modo Vida Real inside a session: observation
+tiers per region, a simulation fabric stepping ecology, economy, society and weather under one
+budgeted clock, coarse statistical mode with accumulated debt for unobserved regions, one-pass
+reconciliation on return, epoch-stamped world memory that compacts into summaries, and checksummed
+checkpoints. There is no always-on process on Roblox; the substitute is to persist the checkpoint
+and advance the world by the elapsed wall-clock through the same coarse model on the next boot.
+Status: **substituted**.

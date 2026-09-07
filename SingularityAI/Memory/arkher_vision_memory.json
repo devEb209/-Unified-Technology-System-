@@ -343,10 +343,51 @@
     "native_text_shaping_and_ui_shaders": "recorded as a platform capability"
    },
    "status": "substituted"
+  },
+  {
+   "id": "VISION-037",
+   "topic": "A large language model running inside the engine",
+   "interpretation": "The spec asks for Singularity AI to accept any human sentence and drive the whole engine from it. ARKHER Round 8 ships a real, deterministic language front end: a lexicon of verbs, targets, qualifiers, numbers and device constraints, keyword patterns that recover an intent when no verb is spoken, a confidence score with an explicit 'not understood' refusal, a semantic knowledge graph with transitive inference, hashed embeddings with similarity search, a dependency-ordered planner that verifies and rolls back, and a critic that scores the result. What it cannot do is run transformer weights on the client: there is no tensor runtime, no GPU compute and no room for billions of parameters in a Roblox session. Generative free-form language stays here; the deterministic pipeline is what actually ships and it never hallucinates a build step.",
+   "adopted_target": {
+    "intent_parsing_knowledge_planning_and_critique": "shipped in Round 8",
+    "on_device_transformer_inference": "recorded, depends on a tensor runtime the platform does not expose",
+    "server_side_model_calls": "recorded, an adapter concern for a future generation"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-038",
+   "topic": "A native asset cooking toolchain with GPU block compression",
+   "interpretation": "The asset pipeline in Round 8 is real: typed import with required-field validation, unit normalization, content hashing with deduplication, dependency resolution, LOD chains derived from actual triangle counts, mip chains derived from actual texture dimensions, per-platform cooking against mobile/PC/console/VR budgets, size-bounded bundling, manifests and delta patches against a previous manifest. What it cannot do is parse FBX or PNG binaries and emit BCn/ASTC blocks: Roblox owns ingestion and gives no access to raw texture memory. ARKHER therefore cooks descriptors, budgets and residency plans - the decisions - and hands the bytes to the platform adapter.",
+   "adopted_target": {
+    "validation_dedup_lod_mip_cook_bundle_and_patch": "shipped in Round 8",
+    "binary_format_parsing_and_block_compression": "recorded, owned by the platform ingestion service"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-039",
+   "topic": "Film-grade cinematic post processing on the GPU",
+   "interpretation": "The cinematic framework ships shots, sequences, a scrubable timeline with eased keyframes, clips and once-only events, camera rigs with dolly/orbit/crane/follow modes, smoothing, shake with decay, focus tracking, circle-of-confusion computation and subject framing, plus a colour grade that is arithmetic rather than a lookup blob: exposure stops, contrast about a pivot, luma-correct saturation, lift/gamma/gain, white balance, filmic and Reinhard tone curves, named looks and auto-exposure. What it cannot do is write per-pixel depth of field, motion blur or a 3D LUT: no post-process shader hook exists. ARKHER computes the signals a renderer would need and the adapter applies whatever the platform exposes.",
+   "adopted_target": {
+    "timeline_camera_language_grading_math_and_coverage_analysis": "shipped in Round 8",
+    "per_pixel_dof_motion_blur_and_lut_application": "recorded, needs a post-process hook the platform does not expose"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-040",
+   "topic": "A world that keeps simulating on a dedicated host while every player is away",
+   "interpretation": "Adaptive World Intelligence ships the Modo Vida Real contract inside a session: regions carry an observation tier, the simulation fabric steps ecology, economy, society and weather at the rate that tier earns, unobserved regions run in coarse statistical mode and accumulate debt, returning to a region reconciles that debt in one pass instead of rewinding, world memory keeps an epoch-stamped history that compacts into summaries, and checkpoints with checksums restore an exact state. What it cannot do is keep running when no Roblox server holds the place: there is no always-on process. The substitute is honest - persist the checkpoint, and on the next boot advance the world by the elapsed wall-clock through the same coarse model, so the world the player returns to is the world that would have existed.",
+   "adopted_target": {
+    "observation_tiers_coarse_mode_debt_reconciliation_memory_and_checkpoints": "shipped in Round 8",
+    "always_on_dedicated_world_process": "recorded, replaced by elapsed-time catch-up on boot"
+   },
+   "status": "substituted"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
  "verification_command": "node tools/harness.js tests/engine_spec.lua",
  "updated": "2026-09-07",
- "rounds_recorded": 7
+ "rounds_recorded": 8
 }

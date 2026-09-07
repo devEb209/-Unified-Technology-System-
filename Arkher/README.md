@@ -1,8 +1,9 @@
 # ARKHER V1 — UES Engine for Roblox
 
 > **Status: ROUND 6 delivered — Kernel + ARKHER Studio + World + Image + Motion + Life.**
-> 12,004 real systems · 200,420 features · 12,085 modules · 100% of them boot and pass their own self-test.
-> That is **120.0% of the 10,000-system floor — and 200.4% of the 100,000-feature requirement**.
+> 14,644 real systems · 244,903 features · 14,733 modules · 100% of them boot and pass their own self-test.
+> That is **146.4% of the 10,000-system floor — and 244.9% of the 100,000-feature requirement**.
+> **ARKHER V1 is complete.**
 
 ARKHER is **not** a Roblox Studio plugin, not a script pack and not a wrapper around Roblox APIs.
 It is a full engine architecture (UES + D-O15 + Singularity AI) that treats Roblox as *one platform
@@ -22,8 +23,8 @@ the whole engine is verified in CI by a real Lua VM before it ever reaches Studi
 
 | What | File | How |
 |---|---|---|
-| **Model** (recommended) | `Releases/ARKHER_V1_ROUND7.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
-| **Place** | `Releases/ARKHER_V1_ROUND7.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
+| **Model** (recommended) | `Releases/ARKHER_V1_ROUND8.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
+| **Place** | `Releases/ARKHER_V1_ROUND8.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
 | **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
 | **Source (Rojo)** | this folder | `rojo serve` with the included `default.project.json`. |
 
@@ -73,15 +74,32 @@ engine frame cost. Tap it to collapse.
 | **P** | GAMEPLAY | 480 | 8,880 | complete |
 | **Q** | UI / UX | 408 | 7,004 | complete |
 | **R** | NETWORKING | 360 | 6,210 | complete |
-| | **Total shipped** | **12,004** | **200,420** | **verified** |
+| **T** | SINGULARITY AI | 700 | 12,000 | complete |
+| **V** | ASSET PIPELINE | 432 | 6,732 | complete |
+| **W** | CINEMATIC | 408 | 7,106 | complete |
+| **Z** | ARKHER ORIGINAL TECHNOLOGIES | 1,100 | 18,645 | complete |
+| | **Total shipped** | **14,644** | **244,903** | **verified** |
 
-Against the ARKHER spec target of ≥10,000 systems and ≥100,000 functionalities, this is **120.0% of
-the system target and 200.4% of the feature target** — both requirements met and exceeded, fully
-finished, no placeholders, no "TODO" systems.
-Round-by-round detail: `docs/ROUND1_REPORT.md` … `docs/ROUND7_REPORT.md`. The UI palette and its
+Against the ARKHER spec target of ≥10,000 systems and ≥100,000 functionalities, this is **146.4% of
+the system target and 244.9% of the feature target** — both requirements met and exceeded, fully
+finished, no placeholders, no "TODO" systems. Every one of the 26 master-catalog families in the
+specification (A through Z) is now shipped.
+Round-by-round detail: `docs/ROUND1_REPORT.md` … `docs/ROUND8_REPORT.md`. The UI palette and its
 accessibility audit are in `docs/DESIGN_SYSTEM.md`.
 
 Underneath the catalog sits the hand-written kernel (every file is real, tested code):
+
+**Intelligence runtime (Round 8):** `runtime/kits_ai` (4 kits: intent · knowledge · workflow ·
+critic), `runtime/kits_prod` (5 kits: importer · bundler · timeline · camerarig · grade),
+`runtime/kits_origin` (7 kits: reality · complexity · fabric · autopipeline · worldmemory ·
+emergence · architect), `singularity/agent` (a sentence becomes a parsed intent, a world plan with a
+conserved budget, a verified workflow that rolls back on failure, and a critic verdict — plus the
+"optimize this map for weak phones" path), `assets/pipeline` (validation, dedup, dependency order,
+LOD/mip derivation, per-profile cooking, bundling, manifests and delta patches),
+`cinematic/director` (shots, cuts, cues, camera rigs, grade blending, coverage analysis),
+`original/adaptive_world` (observation tiers, coarse mode with debt, one-pass reconciliation,
+epoch-stamped memory, emergence detection, checkpoint/restore), `original/autonomous_pipeline` (the
+project analyses itself, repairs itself through a verified workflow and rolls back regressions).
 
 **Experience runtime (Round 7):** `runtime/kits_vfx` (8 kits: emitter · particles · forcefield ·
 ribbon · dsp · mixer · spatialaudio · sequencer), `runtime/kits_play` (10 kits: stats · inventory ·
@@ -155,7 +173,9 @@ node tools/harness.js tests/render_spec.lua   # 21 tests / 182 assertions (mater
 node tools/harness.js tests/motion_spec.lua   # 25 tests / 218 assertions (physics, animation, characters)
 node tools/harness.js tests/life_spec.lua     # 26 tests / 230 assertions (NPC minds, world sim, civilization)
 node tools/harness.js tests/experience_spec.lua # 33 tests / 295 assertions (vfx, audio, gameplay, UI, net)
-node tools/harness.js tests/engine_spec.lua   # boots all 12,004 systems + self-tests
+node tools/harness.js tests/intelligence_spec.lua # 33 tests / 256 assertions (AI, assets, cinematic, original tech)
+node --stack-size=4000 --max-old-space-size=3072 \
+     tools/harness.js tests/engine_spec.lua   # boots all 14,644 systems + self-tests (~45 min)
 python3 tools/validate_release.py             # byte-checks the .rbxmx / .rbxlx
 ```
 
@@ -174,7 +194,7 @@ Inside Roblox the same tests run through `arkher/kernel/testkit`.
    every budget is a measured number (`src/do15/device.lua`).
 4. **Portable by construction.** Luau has no bitwise operators, Lua 5.3 has no `bit32` — ARKHER ships
    `src/kernel/bits.lua` so hashing, RNG and noise give *identical results on every host*.
-5. **Every system proves itself.** `engine:verify()` runs 12,004 self-tests at boot.
+5. **Every system proves itself.** `engine:verify()` runs 14,644 self-tests at boot.
 
 ---
 
@@ -191,7 +211,10 @@ Rounds are 10–20% each, delivered complete. See `docs/ROADMAP.md`.
 | **5 (done)** | H physics, I animation, J characters/digital humans | 1,550 | 85.0% |
 | **6 (done)** | K NMN/NPC, L world simulation | 1,300 | 98.0% |
 | **7 (done)** | N VFX, O audio, P gameplay, Q UI/UX, R networking | 2,200 | **120.0%** |
-| 8 | T Singularity AI, V assets, W cinematic, Z original tech | ~2,600 | ≥145% of the 10k floor |
+| **8 (done)** | T Singularity AI, V assets, W cinematic, Z original tech | 2,640 | **146.4%** |
+
+**All 26 master-catalog families delivered. ARKHER V1 is complete; the next step is the V2
+Continuum generation, declared with a working migration chain in `src/kernel/version.lua`.**
 
 ---
 

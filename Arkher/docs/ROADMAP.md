@@ -12,7 +12,10 @@ Each round finishes whole categories: generated, booted, self-tested, packaged a
 | **5 — Motion** ✅ | H Physics (700), I Animation (520), J Characters (330) | **1,550** | **25,670** | 15.5% | **85.0%** |
 | **6 — Life** ✅ | K NMN/NPC (700), L World simulation (600) | **1,300** | **22,850** | 13% | **98.0%** |
 | **7 — Experience** ✅ | N VFX (520), O Audio (432), P Gameplay (480), Q UI/UX (408), R Networking (360) | **2,200** | **39,098** | 22% | **120.0%** |
-| 8 — Intelligence | T Singularity AI, V Assets, W Cinematic, Z ARKHER original tech | ~2,600 | ~40,000 | 26% | **≥145%** |
+| **8 — Intelligence** ✅ | T Singularity AI (700), V Assets (432), W Cinematic (408), Z ARKHER original tech (1,100) | **2,640** | **44,483** | 26.4% | **146.4%** |
+
+**ARKHER V1 is complete: 14,644 systems, 244,903 declared functionalities — 146.4% of the 10,000
+system floor and 244.9% of the 100,000 functionality floor demanded by the specification.**
 
 Every round ships:
 

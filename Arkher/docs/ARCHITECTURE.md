@@ -327,3 +327,52 @@ Four rules hold the experience layer together:
    corrected the moment the authoritative state disagrees beyond a threshold, replaying every
    unacknowledged input so the correction is not visible as a snap. Hits are validated against a
    rewound history rather than trusted, and input is rate-guarded before it is simulated.
+
+## 16. The intelligence layer (Round 8): the engine that drives itself
+
+Rounds 1–7 built an engine a human can drive. Round 8 builds the part that drives it back.
+
+**Singularity AI (category T, 700 systems).** `src/singularity/agent.lua` is the conductor and it
+runs the exact loop Part V of the specification asks for. A sentence enters `understand()`, where
+the `intent` kit tokenizes it, matches verbs, targets, qualifiers, numbers and device constraints,
+and returns a scored structure — or refuses. `planWorld()` hands the parsed brief to the `architect`
+kit, which composes a hierarchy (region → terrain → roads → districts → buildings/props → lighting →
+population), divides a budget down the tree by weight so the leaves sum exactly to the root, checks
+three coherence rules and emits a dependency-ordered build programme. `buildWorkflow()` turns that
+programme into `workflow` steps that each **mutate a world model and verify it by reading it back**;
+a step that fails is retried, and if it still fails everything already done is undone. `optimize`
+briefs skip straight to the `complexity` manager: measure the scene, lower quality, cut objects and
+effects, remeasure, repeat until the frame fits. Finally the `critic` scores the delivered world —
+frame time, districts, population, coverage, draw calls — and returns `pass`, `revise` or `reject`
+with the worst offender named. The `knowledge` graph knows that lighting depends on materials
+depends on buildings depends on roads depends on terrain, and derives the transitive closure itself.
+
+**Asset pipeline (category V, 432 systems).** `src/assets/pipeline.lua` walks content from disk to
+device: validation against typed schemas (required fields, numeric ranges, byte ceilings,
+power-of-two warnings), unit normalization, content hashing with deduplication, dependency-ordered
+resolution, LOD chains from real triangle counts, mip chains from real dimensions, per-profile
+cooking (mobile, PC, console, VR) that decimates, downscales, streams and compresses against a
+measured budget, size-bounded bundling by group and priority, a manifest with per-item hashes, and
+a delta patch against any previous manifest — added, changed, removed.
+
+**Cinematic (category W, 408 systems).** `src/cinematic/director.lua` owns shots on a timeline:
+eased keyframed tracks, clips, cues that fire exactly once when the playhead crosses them, camera
+rigs with dolly/orbit/crane/follow modes and analytic depth-of-field, grade blending across a
+transition, a beat sheet a human can read, and a coverage report that names the gaps.
+
+**Original technology (category Z, 1,100 systems).** The technologies that exist nowhere else:
+- **Reality Layer** — the world is a stack (authored, simulated, proposed, player) resolved by
+  priority; a proposal can be committed or discarded without touching the truth underneath, and
+  `divergence()` measures how far the simulation has pulled reality from what was authored.
+- **Dynamic Complexity Manager** — measured per-zone cost turned into per-subsystem directives that
+  add up to the frame budget, with important zones losing the least.
+- **Universal Simulation Fabric** — every domain registers its own rate and cost; one clock steps
+  them inside a budget, carries the debt of what it deferred, and never starves a domain forever.
+- **World Memory / Persistent Reality State** — epoch-stamped history, recall by time, region and
+  subject, compaction into summaries, checksummed checkpoints and exact restore.
+- **Emergent Society Framework** — co-occurrence lift against chance; a recurring pair becomes a
+  named phenomenon nobody scripted.
+- **Adaptive World Intelligence** — observation tiers, coarse mode with debt, one-pass reconciliation
+  on return: the Modo Vida Real contract, at the cost the device can pay.
+- **Autonomous Development Pipeline / Self-Analyzing Project** — the project samples its own metrics,
+  repairs itself through a verified workflow, and rolls back any change that made things worse.
