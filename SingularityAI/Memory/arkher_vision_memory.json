@@ -1,0 +1,64 @@
+{
+ "namespace": "singularity.memory.vision",
+ "owner": "Singularity AI",
+ "created": "2026-09-07",
+ "policy": "Aspirational or non-implemented statements are preserved as vision memory, never shipped as implemented features.",
+ "records": [
+  {
+   "id": "VISION-001",
+   "topic": "1B physical files",
+   "interpretation": "Granularity Doctrine: one responsibility per module; count systems/features, not files.",
+   "adopted_target": {
+    "roblox_modules": "10k-15k",
+    "software_modules": "60k-150k streamed",
+    "features": "100000+"
+   },
+   "status": "reinterpreted"
+  },
+  {
+   "id": "VISION-002",
+   "topic": "Surpass reality in quality",
+   "interpretation": "Perceptual Superiority Doctrine: highest perceived fidelity per millisecond and per watt on the same device.",
+   "status": "active-goal"
+  },
+  {
+   "id": "VISION-003",
+   "topic": "Infinite content and quality",
+   "interpretation": "Unbounded Architecture Rule: no artificial ceilings in registries, catalogs, LOD chains or generators.",
+   "status": "architectural-rule"
+  },
+  {
+   "id": "VISION-004",
+   "topic": "Legacy program numbers",
+   "claims": [
+    "138080 files",
+    "27.6M physical",
+    "278.9B functional",
+    "100K/100M evolution",
+    "620 folders 5580 files RBXM"
+   ],
+   "interpretation": "Historical ambition and packaging experiments; not engine features.",
+   "status": "archived-history"
+  },
+  {
+   "id": "VISION-005",
+   "topic": "Roblox hyperrealism",
+   "interpretation": "Concrete program: PBR discipline, probe GI, temporal reconstruction, geometry virtualization, micro-detail, motion quality, spatial audio, imperfection cues.",
+   "status": "scheduled-round-4-5"
+  },
+  {
+   "id": "VISION-006",
+   "topic": "AAA games in days with AI",
+   "interpretation": "Time-to-World Objective measured in hours from prompt to playable optimized world.",
+   "status": "scheduled-round-8"
+  },
+  {
+   "id": "VISION-007",
+   "topic": "Console and VR parity",
+   "interpretation": "Device tiers exist with real budgets; full runtime parity scheduled.",
+   "status": "partial-implemented"
+  }
+ ],
+ "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
+ "verification_command": "node tools/harness.js tests/engine_spec.lua"
+}

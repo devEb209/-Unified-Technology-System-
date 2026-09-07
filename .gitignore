@@ -24,3 +24,10 @@ Arkhe/Installer/*.zip
 # Allow our zips for UTS/DsOS small
 !UTS.zip
 !DsOS.zip
+
+# ARKHER build environment
+Arkher/node_modules/
+Arkher/package-lock.json
+# ARKHER releases ARE shipped (raw download links) - keep them
+!Arkher/Releases/*.rbxmx
+!Arkher/Releases/*.rbxlx
