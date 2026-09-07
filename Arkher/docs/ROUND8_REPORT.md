@@ -152,14 +152,44 @@ extra closures beyond their declared surface. At this scale the run needs a rais
 
 ## 4. Release artifacts (byte-validated)
 
-| File | Size | Contents |
-|---|---:|---|
-| `Releases/ARKHER_V1_ROUND8.rbxmx` | 56.3 MB | model — 14,733 modules, boots itself |
-| `Releases/ARKHER_V1_ROUND8.rbxlx` | 56.3 MB | place — ARKHER pre-installed |
-| `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | 56.3 MB | Studio plugin host |
+| File | Size | Format | Contents |
+|---|---:|---|---|
+| `Releases/ARKHER_V1_ROUND8.rbxm` | 3.11 MB | binary | model — 14,733 modules, boots itself |
+| `Releases/ARKHER_V1_ROUND8.rbxl` | 3.11 MB | binary | place — ARKHER pre-installed, streaming on, Future lighting |
+| `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxm` | 3.12 MB | binary | Studio plugin host |
+| `Releases/ARKHER_V1_ROUND8.rbxmx` | 56.3 MB | XML | same model, human-readable fallback |
+| `Releases/ARKHER_V1_ROUND8.rbxlx` | 56.3 MB | XML | same place |
+| `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | 56.3 MB | XML | same plugin |
 
-`tools/validate_release.py` → **RELEASE VALIDATION: PASS** (14,733/14,733 modules present in every
-artifact, 0 missing, 0 byte mismatches, boot + HUD scripts present, plugin host present).
+`tools/validate_release.py` → **RELEASE VALIDATION: PASS** on the XML artifacts (14,733/14,733
+modules present, 0 missing, 0 byte mismatches, boot + HUD scripts present, plugin host present).
+
+### 4.1 Binary artifacts (`tools/build_rbxm.py` + `tools/validate_rbxm.py`)
+
+XML models are text: `raw.githubusercontent.com` serves them as `text/plain`, so a browser renders
+56 MB instead of downloading it, and Studio has to parse XML. ARKHER therefore writes the **real
+Roblox binary format** itself — header, `META`/`INST`/`PROP`/`PRNT`/`END` chunks, delta+zigzag+
+interleaved referent arrays, bit-rotated interleaved floats, LZ4-block chunk payloads. No external
+Roblox tooling is involved: the writer is 250 lines of ARKHER's own build system.
+
+| Metric | Value |
+|---|---:|
+| Lua source embedded | 56,076,023 bytes |
+| Model file | 3,263,608 bytes (**17.2×** smaller) |
+| Instances in model | 14,791 (14,733 ModuleScripts + 56 Folders + 2 scripts) |
+| Chunks | 15 (model) / 25 (place) |
+| Build time | 2.5 s for all three artifacts |
+
+Validation is double-blind:
+
+1. `tools/validate_rbxm.py` is an independent from-scratch reader (it shares no code with the
+   writer) — it re-derives the header counts, decompresses every chunk, rebuilds the tree from
+   `PRNT`, and compares **every ModuleScript source byte-for-byte with the file on disk**:
+   `ALL BINARIES VALID`, 0 problems on all three files.
+2. Cross-checked against a third-party parser (`rbxm-parser`, an independent TypeScript
+   implementation of the format): it reads all three files and reports the same 14,791 / 14,794 /
+   14,792 instances, 14,733 ModuleScripts, `RunContext=Server` on the boot script,
+   `StreamingEnabled=true` on Workspace and `Technology=Future` on Lighting.
 
 ---
 

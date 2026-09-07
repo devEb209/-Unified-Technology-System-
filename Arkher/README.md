@@ -23,10 +23,17 @@ the whole engine is verified in CI by a real Lua VM before it ever reaches Studi
 
 | What | File | How |
 |---|---|---|
-| **Model** (recommended) | `Releases/ARKHER_V1_ROUND8.rbxmx` | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
-| **Place** | `Releases/ARKHER_V1_ROUND8.rbxlx` | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
-| **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx` | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
+| **Model** (recommended) | `Releases/ARKHER_V1_ROUND8.rbxm` — **3.1 MB, binary** | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
+| **Place** | `Releases/ARKHER_V1_ROUND8.rbxl` — **3.1 MB, binary** | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
+| **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxm` — **3.2 MB, binary** | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
 | **Source (Rojo)** | this folder | `rojo serve` with the included `default.project.json`. |
+
+The shipped files are the **real Roblox binary format** (`.rbxm` / `.rbxl`), written by
+`tools/build_rbxm.py`: 56.1 MB of Lua is LZ4-packed into **~3.1 MB**, so a browser downloads them
+instantly instead of rendering XML, and Studio opens them in seconds. The XML twins
+(`.rbxmx` / `.rbxlx`, 56 MB, produced by `tools/build_rbxmx.py`) stay in `Releases/` as a
+human-readable fallback. Both are byte-validated against the source tree before shipping —
+`tools/validate_rbxm.py` re-parses the binaries from scratch and compares every module.
 
 After insert, press **Play**. The Output window prints the live boot report:
 
@@ -176,7 +183,9 @@ node tools/harness.js tests/experience_spec.lua # 33 tests / 295 assertions (vfx
 node tools/harness.js tests/intelligence_spec.lua # 33 tests / 256 assertions (AI, assets, cinematic, original tech)
 node --stack-size=4000 --max-old-space-size=3072 \
      tools/harness.js tests/engine_spec.lua   # boots all 14,644 systems + self-tests (~45 min)
-python3 tools/validate_release.py             # byte-checks the .rbxmx / .rbxlx
+python3 tools/validate_release.py             # byte-checks the XML .rbxmx / .rbxlx
+python3 tools/build_rbxm.py                   # writes the binary .rbxm / .rbxl (LZ4)
+python3 tools/validate_rbxm.py                # re-parses the binaries and diffs them vs src/
 ```
 
 Inside Roblox the same tests run through `arkher/kernel/testkit`.
