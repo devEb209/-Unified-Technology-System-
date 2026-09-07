@@ -40,6 +40,17 @@ def kit_config(kit, key, seed, area_slug):
         "streamer":     '{ id = ID, radius = %d, chunkSize = %d, maxPerFrame = %d }' % (160 + (seed % 12) * 40, 32 * (1 + seed % 4), 1 + seed % 4),
         "composer":     '{ id = ID, mode = "%s" }' % (["alpha","add","max","overlay"][seed % 4]),
         "policy":       '{ id = ID, algorithm = "%s", starvationGuard = %d }' % (["roundrobin","edf","wfq","lottery"][seed % 4], 16 + seed % 48),
+        "document":     '{ id = ID, initial = { profile = { quality = %.2f }, meta = { revision = 0 } } }' % (0.5 + (seed % 50) / 100),
+        "commands":     '{ id = ID, limit = %d, coalesceWindow = %.2f }' % (64 + seed % 192, 0.2 + (seed % 40) / 100),
+        "selection":    '{ id = ID, maxItems = %d }' % (256 + seed % 3840),
+        "layout":       '{ id = ID, minRatio = %.2f }' % (0.05 + (seed % 15) / 100),
+        "widget":       '{ id = ID, theme = "%s", scale = %.2f }' % (["dark","light","highcontrast"][seed % 3], 0.75 + (seed % 50) / 100),
+        "inspector":    '{ id = ID }',
+        "nodegraph":    '{ id = ID }',
+        "source":       '{ id = ID, text = "" }',
+        "session":      '{ id = ID, maxOps = %d }' % (1024 + seed % 7168),
+        "merge":        '{ id = ID, strategy = "%s" }' % (["three-way","ours","theirs"][seed % 3]),
+        "taskgraph":    '{ id = ID, incremental = true }',
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -438,6 +449,418 @@ SPEC["policy"] = ("""	function inst.enqueue(id, weight, deadline) return inst.su
 		inst.dispatch(4)
 		return ok and type(inst.fairnessIndex()) == "number" """)
 
+
+# ---------------------------------------------------------------- round 2 kits
+SPEC["document"] = ("""		function inst.transact(label, fn)
+			inst.begin(label)
+			local ok, err = pcall(fn)
+			if not ok then inst.rollback() return false, err end
+			inst.commit()
+			return true
+		end
+		function inst.applyPatch(patch)
+			local n = 0
+			for path, value in pairs(patch) do
+				if inst.set(path, value) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.fieldNames()
+			local out = {}
+			for k in pairs(inst.data) do out[#out + 1] = tostring(k) end
+			table.sort(out)
+			return out
+		end
+		function inst.transactionLabels()
+			local out = {}
+			for i, h in ipairs(inst.history) do out[i] = h.label end
+			return out
+		end""",
+"""		local ok = inst.transact("probe", function()
+			inst.set("probe.alpha", 42)
+			inst.set("probe.beta", "on")
+		end)
+		ok = ok and inst.get("probe.alpha") == 42 and inst.get("probe.beta") == "on"
+		inst.begin("discard")
+		inst.set("probe.alpha", 7)
+		inst.rollback()
+		ok = ok and inst.get("probe.alpha") == 42
+		ok = ok and type(inst.checksum()) == "number" and #inst.fieldNames() >= 1
+		inst.markSaved()
+		return ok and inst.isDirty() == false""")
+
+SPEC["commands"] = ("""		function inst.push(label, doFn, undoFn, coalesceKey)
+			return inst.execute({ label = label, doFn = doFn, undoFn = undoFn, coalesceKey = coalesceKey })
+		end
+		function inst.undoAll()
+			local n = 0
+			while inst.canUndo() do
+				if not inst.undo() then break end
+				n = n + 1
+			end
+			return n
+		end
+		function inst.redoAll()
+			local n = 0
+			while inst.canRedo() do
+				if not inst.redo() then break end
+				n = n + 1
+			end
+			return n
+		end
+		function inst.depth() return #inst.undoStack, #inst.redoStack end""",
+"""		inst.clear()
+		local value = 0
+		for i = 1, 3 do
+			inst.push("probe." .. i, function() value = value + i end, function() value = value - i end)
+		end
+		local ok = value == 6
+		ok = ok and inst.undoAll() == 3 and value == 0
+		ok = ok and inst.redoAll() == 3 and value == 6
+		inst.undoAll()
+		inst.clear()
+		return ok and inst.canUndo() == false""")
+
+SPEC["selection"] = ("""		function inst.selectWhere(ids, predicate)
+			inst.clear()
+			local n = 0
+			for _, id in ipairs(ids) do
+				if predicate(id) and inst.add(id) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.invert(universe)
+			local current = {}
+			for _, id in ipairs(inst.all()) do current[id] = true end
+			inst.clear()
+			for _, id in ipairs(universe) do
+				if not current[id] then inst.add(id) end
+			end
+			return inst.count()
+		end
+		function inst.primaryOr(default) return inst.primary or default end
+		function inst.summary()
+			local filters = 0
+			for _ in pairs(inst.filters) do filters = filters + 1 end
+			return { count = inst.count(), primary = inst.primary, filters = filters, items = inst.all() }
+		end""",
+"""		inst.clear()
+		local universe = { "probe.a", "probe.b", "probe.c", "probe.d" }
+		local n = inst.selectWhere(universe, function(id) return id ~= "probe.c" end)
+		local ok = n == 3 and inst.contains("probe.a") and inst.contains("probe.c") == false
+		ok = ok and inst.invert(universe) == 1 and inst.contains("probe.c")
+		ok = ok and inst.summary().count == 1 and inst.primaryOr("none") ~= "none"
+		inst.clear()
+		return ok and inst.count() == 0""")
+
+SPEC["layout"] = ("""		function inst.installDefault()
+			local ids = { "main", "side", "bottom" }
+			for _, id in ipairs(ids) do
+				if not inst.panels[id] then inst.addPanel(id, { title = S.name .. " " .. id }) end
+			end
+			inst.focus("main")
+			return #ids
+		end
+		function inst.toggle(panelId)
+			local p = inst.panels[panelId]
+			if not p then return false end
+			return inst.setVisible(panelId, not p.visible)
+		end
+		function inst.panelIds()
+			local out = {}
+			for id in pairs(inst.panels) do out[#out + 1] = id end
+			table.sort(out)
+			return out
+		end
+		function inst.workspacePreset(name)
+			inst.installDefault()
+			local focus = (name == "focus")
+			inst.setVisible("side", not focus)
+			inst.setVisible("bottom", not focus)
+			return #inst.visiblePanels()
+		end""",
+"""		inst.installDefault()
+		local ok = #inst.panelIds() >= 3 and #inst.visiblePanels() >= 3
+		local blob = inst.save()
+		ok = ok and type(blob) == "string" and #blob > 2
+		ok = ok and inst.workspacePreset("focus") == 1
+		ok = ok and inst.toggle("side") and #inst.visiblePanels() == 2
+		ok = ok and inst.workspacePreset("full") == 3
+		return ok""")
+
+SPEC["widget"] = ("""		inst.model = { title = S.name, value = 0, status = "idle" }
+		function inst.buildSurface()
+			if inst.rootId then return inst.rootId end
+			inst.rootId = inst.create("Frame", { name = S.key, scale = inst.scale })
+			inst.titleId = inst.create("Label", { text = "" }, inst.rootId)
+			inst.valueId = inst.create("Label", { text = "" }, inst.rootId)
+			inst.bind(inst.titleId, "text", function() return inst.model.title end)
+			inst.bind(inst.valueId, "text", function()
+				return string.format("%s %.2f", tostring(inst.model.status), inst.model.value)
+			end)
+			return inst.rootId
+		end
+		function inst.setModel(key, value)
+			inst.model[key] = value
+			return inst.update()
+		end
+		function inst.repaint()
+			inst.update()
+			return inst.render()
+		end
+		function inst.tree()
+			local out = {}
+			for id, node in pairs(inst.nodes) do out[#out + 1] = { id = id, class = node.class } end
+			table.sort(out, function(a, b) return a.id < b.id end)
+			return out
+		end""",
+"""		inst.buildSurface()
+		local painted = inst.repaint()
+		local ok = painted >= 3 and #inst.tree() >= 3
+		ok = ok and inst.setModel("value", 12.5) >= 1
+		ok = ok and inst.repaint() >= 1
+		ok = ok and inst.repaint() == 0
+		return ok""")
+
+SPEC["inspector"] = ("""		function inst.ensureType()
+			local Reflection = A:import("arkher/kernel/reflection")
+			if not Reflection.getType(S.key) then
+				Reflection.defineType(S.key, { fields = {
+					intensity = { type = "number", default = S.params.baseWeight, min = 0, max = 1,
+						editor = { group = "Tuning", order = 1 } },
+					mode = { type = "string", default = "auto", editor = { group = "Tuning", order = 2 } },
+					enabled = { type = "boolean", default = true, editor = { group = "General", order = 3 } } } })
+			end
+			return S.key
+		end
+		function inst.attachDefault(target)
+			inst.ensureType()
+			target = target or { intensity = S.params.baseWeight, mode = "auto", enabled = true }
+			inst.attach(target, S.key)
+			return target
+		end
+		function inst.editMany(patch)
+			local applied, rejected = 0, 0
+			for field, value in pairs(patch) do
+				if inst.edit(field, value) then applied = applied + 1 else rejected = rejected + 1 end
+			end
+			return applied, rejected
+		end
+		function inst.pending()
+			local out = {}
+			for k, v in pairs(inst.edits) do out[#out + 1] = { field = k, value = v } end
+			table.sort(out, function(a, b) return a.field < b.field end)
+			return out
+		end""",
+"""		local target = inst.attachDefault({ intensity = 0.1, mode = "auto", enabled = true })
+		local applied, rejected = inst.editMany({ intensity = 9.0, mode = "manual" })
+		local ok = applied == 2 and rejected == 0 and #inst.pending() == 2
+		ok = ok and inst.apply() == 2 and target.intensity == 1 and target.mode == "manual"
+		ok = ok and #inst.fields() == 3
+		local common = inst.multiSelect({ { intensity = 0.2 }, { intensity = 0.9 } })
+		return ok and common.intensity == "<mixed>\"""")
+
+SPEC["nodegraph"] = ("""		function inst.installStdNodes()
+			if inst.types["Const"] then return inst end
+			inst.defineType("Const", { inputs = {}, outputs = { { name = "out", type = "number" } },
+				fn = function(_, props) return { out = props.value or 0 } end,
+				emit = function(id, args, props) return string.format("local v%d_out = %.6f", id, props.value or 0) end })
+			inst.defineType("Scale", { inputs = { { name = "a", type = "number", required = true } },
+				outputs = { { name = "out", type = "number" } },
+				fn = function(inputs, props) return { out = (inputs.a or 0) * (props.factor or 1) } end,
+				emit = function(id, args, props)
+					local src = "0"
+					for _, arg in ipairs(args) do src = string.match(arg, "=%s*(.+)$") or src end
+					return string.format("local v%d_out = (%s) * %.6f", id, src, props.factor or 1)
+				end })
+			inst.defineType("Sum", { inputs = { { name = "a", type = "number", required = true },
+					{ name = "b", type = "number", required = true } },
+				outputs = { { name = "out", type = "number" } },
+				fn = function(inputs) return { out = (inputs.a or 0) + (inputs.b or 0) } end,
+				emit = function(id, args)
+					local parts = {}
+					for _, arg in ipairs(args) do parts[#parts + 1] = string.match(arg, "=%s*(.+)$") or "0" end
+					if #parts == 0 then parts[1] = "0" end
+					return string.format("local v%d_out = %s", id, table.concat(parts, " + "))
+				end })
+			return inst
+		end
+		function inst.buildDefault()
+			if inst.defaultGraph then return inst.defaultGraph end
+			inst.installStdNodes()
+			local a = inst.addNode("Const", { value = S.params.baseWeight })
+			local b = inst.addNode("Const", { value = S.params.detailWeight })
+			local scaled = inst.addNode("Scale", { factor = S.params.scale })
+			local sum = inst.addNode("Sum", {})
+			inst.connect(a, "out", scaled, "a")
+			inst.connect(scaled, "out", sum, "a")
+			inst.connect(b, "out", sum, "b")
+			inst.defaultGraph = { a = a, b = b, scaled = scaled, sum = sum }
+			return inst.defaultGraph
+		end
+		function inst.evaluateDefault()
+			local ids = inst.buildDefault()
+			local values, err = inst.evaluate({})
+			if not values then return nil, err end
+			return values[ids.sum .. ":out"]
+		end
+		function inst.compileDefault(name)
+			inst.buildDefault()
+			return inst.compile(name or "arkherGraph")
+		end""",
+"""		local expected = S.params.baseWeight * S.params.scale + S.params.detailWeight
+		local value = inst.evaluateDefault()
+		local ok = type(value) == "number" and math.abs(value - expected) < 1e-6
+		local src = inst.compileDefault("probeGraph")
+		ok = ok and type(src) == "string" and string.find(src, "local v", 1, true) ~= nil
+		ok = ok and inst.validate() and #inst.topoOrder() == 4
+		return ok""")
+
+SPEC["source"] = ("""		function inst.loadSample()
+			inst.setText(table.concat({
+				"-- " .. S.name,
+				"local " .. S.tags[2] .. "Unit = {}",
+				"function " .. S.tags[2] .. "Unit.process(value)",
+				"\\tlocal scale = " .. string.format("%.3f", S.params.scale),
+				"\\tif value == nil then return 0 end",
+				"\\treturn value * scale",
+				"end",
+				"return " .. S.tags[2] .. "Unit",
+			}, "\\n"))
+			return #inst.text
+		end
+		function inst.diagnose()
+			if #inst.text == 0 then inst.loadSample() end
+			return inst.analyze()
+		end
+		function inst.symbolNames()
+			if #inst.symbols == 0 then inst.extractSymbols() end
+			local out = {}
+			for _, sym in ipairs(inst.symbols) do out[#out + 1] = sym.name end
+			table.sort(out)
+			return out
+		end
+		function inst.quality()
+			local m = inst.metrics()
+			local score = 1.0 - math.min(0.5, #inst.diagnostics * 0.05)
+			score = score - math.min(0.3, math.max(0, m.complexity - 5) * 0.02)
+			return math.max(0, score), m
+		end""",
+"""		inst.loadSample()
+		local ok = #inst.tokenize() > 10
+		ok = ok and #inst.symbolNames() >= 2
+		ok = ok and type(inst.diagnose()) == "table"
+		local score, m = inst.quality()
+		ok = ok and score > 0 and m.lines >= 6 and m.tokens > 10
+		ok = ok and type(inst.complete("pro")) == "table"
+		return ok""")
+
+SPEC["session"] = ("""		function inst.openWith(users)
+			for _, u in ipairs(users) do inst.join(u.id or u, u.role or "editor") end
+			return #inst.activeUsers()
+		end
+		function inst.editPath(userId, path, value)
+			return inst.submit(userId, { kind = "set", path = path, value = value })
+		end
+		function inst.lockedEdit(userId, path, value)
+			local ok, holder = inst.acquireLock(userId, path)
+			if not ok then return false, holder end
+			local applied = inst.editPath(userId, path, value)
+			inst.releaseLock(userId, path)
+			return applied
+		end
+		function inst.conflictRate()
+			local st = inst.stats()
+			return st.conflicts / math.max(1, st.ops + st.conflicts)
+		end""",
+"""		inst.openWith({ { id = "probe.a", role = "editor" }, { id = "probe.b", role = "editor" },
+			{ id = "probe.v", role = "viewer" } })
+		local ok = #inst.activeUsers() == 3
+		ok = ok and inst.acquireLock("probe.a", "probe.path")
+		ok = ok and inst.editPath("probe.a", "probe.path", 1)
+		ok = ok and inst.editPath("probe.b", "probe.path", 2) == false
+		ok = ok and inst.editPath("probe.v", "probe.other", 3) == false
+		inst.releaseLock("probe.a", "probe.path")
+		ok = ok and #inst.since(0) == 1
+		local rebased = inst.rebase({ kind = "set", path = "probe.path", value = 9 }, 0)
+		ok = ok and rebased ~= nil and rebased.conflict == true
+		ok = ok and inst.lockedEdit("probe.b", "probe.other", 4)
+		inst.leave("probe.a") inst.leave("probe.b") inst.leave("probe.v")
+		return ok and #inst.activeUsers() == 0""")
+
+SPEC["merge"] = ("""		function inst.mergeStates(base, ours, theirs) return inst.threeWay(base, ours, theirs) end
+		function inst.autoResolve(choice)
+			local paths = inst.conflictPaths()
+			local n = 0
+			for _, path in ipairs(paths) do
+				if inst.resolve(path, choice or "ours") then n = n + 1 end
+			end
+			return n
+		end
+		function inst.conflictReport()
+			local out = {}
+			for _, c in ipairs(inst.conflicts) do
+				out[#out + 1] = { path = c.path, base = c.base, ours = c.ours, theirs = c.theirs }
+			end
+			return out
+		end
+		function inst.divergence(a, b)
+			local d = inst.diff(a, b)
+			local n = 0
+			for _ in pairs(d or {}) do n = n + 1 end
+			return n
+		end""",
+"""		local base = { alpha = 1, beta = 2, nested = { gamma = 3 } }
+		local ours = { alpha = 5, beta = 2, nested = { gamma = 3 } }
+		local theirs = { alpha = 1, beta = 9, nested = { gamma = 7 } }
+		local merged, conflicts = inst.mergeStates(base, ours, theirs)
+		local ok = #conflicts == 0 and merged.alpha == 5 and merged.beta == 9 and merged.nested.gamma == 7
+		local _, conflicts2 = inst.mergeStates({ v = 1 }, { v = 2 }, { v = 3 })
+		ok = ok and #conflicts2 == 1 and #inst.conflictReport() == 1
+		ok = ok and inst.autoResolve("theirs") == 1 and inst.hasConflicts() == false
+		return ok""")
+
+SPEC["taskgraph"] = ("""		function inst.installPipeline()
+			if inst.pipeline then return inst.pipeline end
+			local counters = { collect = 0, transform = 0, emit = 0 }
+			inst.counters = counters
+			inst.addTask("collect", { inputs = { S.key }, fn = function()
+				counters.collect = counters.collect + 1
+				return { items = 8 + (S.params.horizon or 1) }
+			end })
+			inst.addTask("transform", { deps = { "collect" }, inputs = { S.params.scale }, fn = function(artifacts)
+				counters.transform = counters.transform + 1
+				local items = artifacts["collect"].value.items
+				return { items = items, weight = items * S.params.scale }
+			end })
+			inst.addTask("emit", { deps = { "transform" }, inputs = { S.params.ceiling }, fn = function(artifacts)
+				counters.emit = counters.emit + 1
+				return { payload = math.min(artifacts["transform"].value.weight, S.params.ceiling) }
+			end })
+			inst.pipeline = { "collect", "transform", "emit" }
+			return inst.pipeline
+		end
+		function inst.build()
+			inst.installPipeline()
+			return inst.run()
+		end
+		function inst.rebuild(taskId)
+			inst.installPipeline()
+			inst.invalidate(taskId or "collect")
+			return inst.run()
+		end
+		function inst.cacheEfficiency()
+			local st = inst.stats()
+			return st.cacheHits / math.max(1, st.cacheHits + st.artifacts)
+		end""",
+"""		local first = inst.build()
+		local ok = #first == 3 and inst.counters.collect == 1
+		ok = ok and #inst.build() == 0
+		local third = inst.rebuild("transform")
+		ok = ok and #third == 2 and inst.counters.collect == 1 and inst.counters.transform == 2
+		ok = ok and inst.artifact("emit") ~= nil and inst.cacheEfficiency() > 0
+		return ok""")
+
 def params_for(kit, seed):
     p = {
         "scale": round(1.0 + (seed % 30) / 10, 3),
@@ -550,7 +973,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 1, "categories": {}, "systems": [], "totals": {}}
+                "round": 2, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -661,6 +1084,17 @@ KIT_METHODS = {
     "composer": ["addLayer", "setWeight", "evaluate", "normalize", "layerNames", "stats"],
     "policy": ["submit", "next", "starved", "pending", "stats"],
     "synthesizer": ["addRule", "addConstraint", "expand", "generate", "reseed", "deterministicCheck", "stats"],
+    "document": ["get", "set", "begin", "commit", "rollback", "validate", "isDirty", "markSaved", "serialize", "deserialize", "checksum", "stats"],
+    "commands": ["execute", "beginGroup", "endGroup", "undo", "redo", "canUndo", "canRedo", "tick", "historyLabels", "clear", "stats"],
+    "selection": ["contains", "add", "remove", "toggle", "set", "clear", "all", "count", "addFilter", "filtered", "stats"],
+    "layout": ["addPanel", "split", "dock", "focus", "setVisible", "visiblePanels", "save", "restore", "stats"],
+    "widget": ["create", "setProp", "bind", "update", "render", "destroy", "count", "stats"],
+    "inspector": ["attach", "fields", "layout", "edit", "apply", "revert", "multiSelect", "applyToAll", "stats"],
+    "nodegraph": ["defineType", "addNode", "connect", "topoOrder", "evaluate", "compile", "validate", "stats"],
+    "source": ["setText", "tokenize", "extractSymbols", "addRule", "analyze", "complete", "metrics", "rename", "stats"],
+    "session": ["join", "leave", "acquireLock", "releaseLock", "submit", "rebase", "since", "updatePresence", "activeUsers", "stats"],
+    "merge": ["diff", "threeWay", "resolve", "hasConflicts", "conflictPaths", "stats"],
+    "taskgraph": ["addTask", "resolveOrder", "inputHash", "run", "invalidate", "artifact", "stats"],
 }
 
 build()

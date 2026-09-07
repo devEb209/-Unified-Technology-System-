@@ -80,3 +80,47 @@ call quotas, an audit log and trust scoring. AI agents are principals like every
 
 `bits.lua` (bit32 on Luau, arithmetic elsewhere) + `random.lua` (xoshiro128\*\*) + `noise.lua`
 guarantee that the same seed generates the same world on a phone, on a PC and in CI.
+
+---
+
+## 8. ARKHER Studio (Round 2)
+
+ARKHER Studio is ARKHER's **own** IDE. It is assembled from six kits plus the viewport, and it never
+depends on a Roblox editing API:
+
+```
+                      studio/editor.lua
+   document ──┐   (12 panels · 13 palette commands · 7 tools)
+   commands ──┤
+   selection ─┼──► editor core ──► studio/viewport.lua  (Universal Transform Framework)
+   layout ────┤                     screenToRay · BVH pick · region pick · snapping
+   widget ────┤                     axis-constrained gizmo drags · frame/orbit/dolly/pan
+   inspector ─┘
+```
+
+*Every* editing action is a `command` (undoable, groupable, coalescing) applied to a `document`
+(transactional, revisioned, checksummed). That is why undo works across tools, why autosave is a
+checksum comparison, and why a Studio session, a headless CI session and a future native ARKHER
+shell all behave identically.
+
+**Roblox Studio is an adapter.** `roblox/plugin.server.lua` (shipped as
+`Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx`) hosts that runtime inside Studio: it indexes the payload,
+boots the engine, and exposes ARKHER commands (verify · D-O15 optimize · import selection · grid
+snap through the Universal Transform Framework · whole-place code analysis · build pipeline ·
+project commit · runtime install). Delete the adapter and ARKHER Studio still runs.
+
+## 9. Code intelligence and visual scripting (Round 2)
+
+`source` kit = a real Luau-subset tokenizer → symbol extractor → rule engine. `code/intelligence`
+lifts that to project scope: index, lint, complete, go-to-definition, find-references, rename,
+dependency graph, unused symbols, docs and metrics. `code/visualscript` and the `nodegraph` kit are
+type-checked graphs that **execute** and **compile to Luau source that actually loads** — visual
+scripting with no interpreter tax at runtime.
+
+## 10. Collaboration, versioning and build (Round 2)
+
+`session` (presence · per-path locks · ordered op log · OT rebase) + `merge` (three-way with
+conflict records) + `collab/workspace` (commits · branches · checkout · history · common ancestor ·
+revert) give a project-level version control that is engine-native, not file-based. `taskgraph` +
+`collab/build` turn validation, analysis, tests, optimization, packaging and publishing into one
+content-hashed incremental graph with release gates: unchanged work is never redone.

@@ -13,4 +13,9 @@ The registry below is live in code (`src/platform/adapter.lua`, `Adapter.LIMITAT
 | Single-threaded script semantics | **ARKHER Job System** — cooperative coroutine pool with time slicing, dependencies and deterministic completion, mapped onto Actors where available | Round 1 |
 | Limited profiling surface | **ARKHER Profiler + Bottleneck Analyzer** — hierarchical scopes, percentile analysis, 9 detection signatures and an executable optimization plan | Round 1 |
 
+| No editable code surface for plugins | **ARKHER Source Model** — tokenizer, symbol extractor, rule-based diagnostics, completion, rename and metrics shipped as engine code; the drawing surface stays in the adapter | Round 2 (U) |
+| No peer-to-peer networking | **ARKHER Session Layer** — presence, per-path locks, ordered op log and operational-transform rebase, transport-agnostic by design | Round 2 (Y) |
+| No engine-level version control | **ARKHER Project VCS** — commits, branches, checkout, history, common-ancestor and three-way merge over the project tree | Round 2 (Y) |
+| No incremental build system | **ARKHER Task Graph** — dependency topology with content input hashing, artifact cache and invalidation cascade | Round 2 (B/U/Y) |
+
 Each substitute is a *design of our own*, not an emulation of the original vendor technology.

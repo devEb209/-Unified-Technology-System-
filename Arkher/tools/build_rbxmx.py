@@ -116,14 +116,43 @@ def count_modules():
         n += len([f for f in files if f.endswith(".lua")])
     return n
 
+def build_plugin(path):
+    """ARKHER STUDIO plugin payload.
+
+    The ROOT instance is the plugin Script itself (Roblox runs the root of a local
+    plugin model), and the whole ARKHER runtime hangs underneath it as children.
+    Studio is only the display adapter - the engine and the IDE are ARKHER's own.
+    """
+    out = [HEADER]
+    source = open(os.path.join(ROOT, "roblox/plugin.server.lua"), encoding="utf-8").read()
+    out.append('<Item class="Script" referent="%s">' % ref())
+    out.append('<Properties>')
+    out.append('<bool name="Disabled">false</bool>')
+    out.append('<string name="Name">ARKHER</string>')
+    out.append('<ProtectedString name="Source">%s</ProtectedString>' % esc(source))
+    out.append('</Properties>')
+    arkher_folder(out)
+    out.append('</Item>')
+    out.append("</roblox>")
+    data = "\n".join(out)
+    ET.fromstring(data)
+    open(path, "w", encoding="utf-8").write(data)
+    return len(data)
+
+
+ROUND = os.environ.get("ARKHER_ROUND", "ROUND2")
+
 if __name__ == "__main__":
-    mpath = os.path.join(REL, "ARKHER_V1_ROUND1.rbxmx")
-    ppath = os.path.join(REL, "ARKHER_V1_ROUND1.rbxlx")
+    mpath = os.path.join(REL, "ARKHER_V1_%s.rbxmx" % ROUND)
+    ppath = os.path.join(REL, "ARKHER_V1_%s.rbxlx" % ROUND)
+    gpath = os.path.join(REL, "ARKHER_V1_STUDIO_PLUGIN.rbxmx")
     a = build_model(mpath)
     b = build_place(ppath)
+    c = build_plugin(gpath)
     manifest = json.load(open(os.path.join(ROOT, "ARKHER_MANIFEST.json")))
     print("modules embedded : %d" % count_modules())
     print("systems          : %d" % manifest["totals"]["systems"])
     print("features         : %d" % manifest["totals"]["features"])
     print("model  %s  (%.1f MB)" % (mpath, a / 1048576))
     print("place  %s  (%.1f MB)" % (ppath, b / 1048576))
+    print("plugin %s  (%.1f MB)" % (gpath, c / 1048576))

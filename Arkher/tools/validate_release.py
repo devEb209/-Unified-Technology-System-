@@ -41,7 +41,7 @@ def validate(path, expect_place=False):
     normalized = {}
     for k, v in modules.items():
         parts = k.split("/")
-        if parts[0] == "ARKHER":
+        while parts and parts[0] == "ARKHER":
             parts = parts[1:]
         normalized["/".join(parts)] = v
     missing = [k for k in sources if k not in normalized]
@@ -53,13 +53,17 @@ def validate(path, expect_place=False):
     print("  byte mismatches : %d" % len(mismatched))
     print("  boot script     : %s" % ("yes" if found.get("!ARKHER_Boot") else "NO"))
     print("  hud script      : %s" % ("yes" if found.get("!ARKHER_HUD") else "NO"))
-    ok = not missing and not mismatched and found.get("!ARKHER_Boot") and found.get("!ARKHER_HUD")
+    print("  plugin host     : %s" % ("yes" if found.get("!ARKHER") else "-"))
+    scripts_ok = (found.get("!ARKHER_Boot") and found.get("!ARKHER_HUD")) or found.get("!ARKHER")
+    ok = not missing and not mismatched and scripts_ok
     if missing[:3]: print("  e.g. missing:", missing[:3])
     if mismatched[:3]: print("  e.g. mismatch:", mismatched[:3])
     return ok
 
+ROUND = os.environ.get("ARKHER_ROUND", "ROUND2")
 allok = True
-for f, place in (("ARKHER_V1_ROUND1.rbxmx", False), ("ARKHER_V1_ROUND1.rbxlx", True)):
+for f, place in (("ARKHER_V1_%s.rbxmx" % ROUND, False), ("ARKHER_V1_%s.rbxlx" % ROUND, True),
+                 ("ARKHER_V1_STUDIO_PLUGIN.rbxmx", False)):
     allok = validate(os.path.join(ROOT, "Releases", f), place) and allok
 print("RELEASE VALIDATION:", "PASS" if allok else "FAIL")
 sys.exit(0 if allok else 1)

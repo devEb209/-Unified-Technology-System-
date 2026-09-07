@@ -31,3 +31,4 @@ Arkher/package-lock.json
 # ARKHER releases ARE shipped (raw download links) - keep them
 !Arkher/Releases/*.rbxmx
 !Arkher/Releases/*.rbxlx
+__pycache__/

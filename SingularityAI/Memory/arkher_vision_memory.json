@@ -57,8 +57,59 @@
    "topic": "Console and VR parity",
    "interpretation": "Device tiers exist with real budgets; full runtime parity scheduled.",
    "status": "partial-implemented"
+  },
+  {
+   "id": "VISION-008",
+   "topic": "Native ARKHER text-editor surface (Round 2)",
+   "interpretation": "Roblox offers no editable code surface to a plugin. ARKHER implements the full model side (tokenizer, symbols, diagnostics, completion, rename, metrics) in arkher/runtime/kits_studio (source kit) and arkher/code/intelligence; the pixel-level editor surface is adapter work.",
+   "adopted_target": {
+    "model_layer": "shipped in Round 2",
+    "surface": "ARKHER V2 platform adapter"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-009",
+   "topic": "Peer-to-peer live collaboration transport",
+   "interpretation": "The session/OT layer (presence, locks, op log, rebase) is real and transport agnostic. Roblox networking is authoritative-server only, so true P2P transport is an adapter capability, not an engine claim.",
+   "adopted_target": {
+    "logic": "shipped in Round 2 (session kit + collab/workspace)",
+    "transport": "ARKHER V2 networking adapter"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-010",
+   "topic": "Binary asset diff/merge",
+   "interpretation": "Round 2 ships a complete three-way merge over structured project trees. Binary asset (mesh/texture) diffing needs a content-addressed asset pipeline, which lands with category V.",
+   "adopted_target": {
+    "tree_merge": "shipped in Round 2",
+    "binary_merge": "Round 8 (V Asset Pipeline)"
+   },
+   "status": "scheduled"
+  },
+  {
+   "id": "VISION-011",
+   "topic": "Distributed build farm",
+   "interpretation": "The taskgraph kit is incremental and content-hashed, which is the hard part. Distributing those tasks across machines is a platform capability, not an engine feature.",
+   "adopted_target": {
+    "incremental_local": "shipped in Round 2",
+    "distributed": "ARKHER V2"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-012",
+   "topic": "ARKHER Studio is not a Roblox Studio plugin",
+   "interpretation": "Standing architectural rule restated for Round 2: ARKHER Studio is ARKHER's own IDE (document/commands/selection/layout/widget/inspector/viewport). Releases/ARKHER_V1_STUDIO_PLUGIN.rbxmx is only a display adapter that lets that IDE drive a Roblox Studio session.",
+   "status": "architectural-rule"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
- "verification_command": "node tools/harness.js tests/engine_spec.lua"
+ "verification_command": "node tools/harness.js tests/engine_spec.lua",
+ "updated": "2026-09-07",
+ "rounds_recorded": [
+  1,
+  2
+ ]
 }

@@ -6,7 +6,7 @@ Each round finishes whole categories: generated, booted, self-tested, packaged a
 | Round | Categories delivered | Systems | Features (approx) | % of the 10k floor | Cumulative |
 |---|---|---:|---:|---:|---:|
 | **1 — Kernel** ✅ | A UES/Core (520), S D-O15 (620), X Security (410) | **1,550** | **23,612** | 15.5% | **15.5%** |
-| 2 — Studio & Code | B Editor/IDE, U Scripting, Y Collaboration | ~1,700 | ~26,000 | 17% | ~33% |
+| **2 — Studio & Code** ✅ | B Editor/IDE (700), U Scripting (600), Y Collaboration (400) | **1,700** | **27,900** | 17% | **32.5%** |
 | 3 — World | C Scene/World, D Terrain, M Procedural | ~1,900 | ~29,000 | 19% | ~52% |
 | 4 — Image | E Materials, F Rendering, G Neural reconstruction | ~1,800 | ~28,000 | 18% | ~70% |
 | 5 — Motion | H Physics, I Animation, J Characters | ~1,500 | ~23,000 | 15% | ~85% |

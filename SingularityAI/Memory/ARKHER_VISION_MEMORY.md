@@ -63,3 +63,34 @@ budgets. Full input/runtime parity is scheduled with Round 7 (P/Q/R).
 current round, it is written here as a VISION record with an interpretation and an adopted,
 measurable target — and then scheduled into `Arkher/docs/ROADMAP.md`. Nothing is faked, nothing is
 thrown away.
+
+---
+
+# ROUND 2 RECORDS (ARKHER Studio · Scripting · Collaboration)
+
+## VISION-008 — A native ARKHER text-editor surface
+**Memory note:** Roblox exposes no editable code surface to a plugin. ARKHER therefore ships the
+entire *model* side as running code — a real Luau-subset tokenizer, symbol extraction, diagnostics
+rules, completion, rename and metrics (`runtime/kits_studio` source kit + `code/intelligence`) — and
+records the pixel-level editing surface as V2 adapter work. Status: **partially implemented**.
+
+## VISION-009 — Peer-to-peer live collaboration
+**Memory note:** the collaboration *logic* is real (presence, per-path locks, ordered op log,
+operational-transform rebase, three-way merge, branches and commits). Roblox networking is
+authoritative-server only, so a genuine P2P transport is recorded as a V2 networking adapter rather
+than claimed today. Status: **partially implemented**.
+
+## VISION-010 — Binary asset diff and merge
+**Memory note:** structured-tree three-way merge ships in Round 2. Diffing meshes and textures needs
+the content-addressed asset pipeline from category V (Round 8). Status: **scheduled**.
+
+## VISION-011 — Distributed build farm
+**Memory note:** the incremental, content-hashed task graph is shipping (`collab/build`), which is
+the difficult half. Fanning those tasks out across machines is a platform capability for V2.
+Status: **partially implemented**.
+
+## VISION-012 — "ARKHER Studio is not a Roblox Studio plugin"
+**Memory note:** restated as a standing architectural rule. ARKHER Studio is ARKHER's own IDE
+(document · commands · selection · layout · widget · inspector · viewport). The shipped
+`ARKHER_V1_STUDIO_PLUGIN.rbxmx` is only a *display adapter* that lets that IDE drive a Roblox Studio
+session — every command it exposes is executed by ARKHER code. Status: **architectural rule**.

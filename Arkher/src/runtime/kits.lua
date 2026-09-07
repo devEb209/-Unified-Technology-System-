@@ -1081,9 +1081,15 @@ return function(A)
 		return self
 	end
 
+	-- Round 2 kits (studio / code / collaboration) are merged in from the extension module.
+	local Studio = A:import("arkher/runtime/kits_studio")
+	for _, name in ipairs(Studio.NAMES) do Kits[name] = Studio[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
-		"solver", "streamer", "composer", "policy", "synthesizer" }
+		"solver", "streamer", "composer", "policy", "synthesizer",
+		"document", "commands", "selection", "layout", "widget", "inspector",
+		"nodegraph", "source", "session", "merge", "taskgraph" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]
