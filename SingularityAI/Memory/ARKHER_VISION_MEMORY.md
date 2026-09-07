@@ -128,3 +128,35 @@ Reality Layer original technology (Round 8). Status: **partially implemented**.
 rule synthesiser, Poisson-disc scatter, A\* networks) precisely so results are reproducible,
 debuggable and identical on every device. A learned component that imitates a reference style is a
 Singularity AI capability (Round 8, category T), not a procedural one. Status: **scheduled**.
+
+---
+
+# ROUND 4 RECORDS (Materials · Rendering · Neural Reconstruction)
+
+## VISION-018 — Author-written GPU shaders
+**Memory note:** the platform exposes no shader authoring. ARKHER ships everything above that
+line as running code: a shading node graph with cycle rejection, constant folding and compilation
+to Luau, plus a layered material resolver. The adapter maps resolved parameters onto the surface
+types that do exist. Status: **partially implemented**.
+
+## VISION-019 — Hardware ray tracing / path-traced GI
+**Memory note:** no ray tracing API exists on the target platform. ARKHER substitutes irradiance
+probe volumes encoded in 9-coefficient spherical harmonics, trilinearly interpolated, with
+budgeted incremental relight — measurable, and cheap enough for a phone. Status: **substituted**.
+
+## VISION-020 — Convolutional / transformer models on device
+**Memory note:** the `inference` kit is dense-layer only, with real backpropagation and fixed-point
+quantization, because that is what a mobile frame budget honestly allows. Larger architectures are
+authoring-time tools that export quantized weights ARKHER loads at boot. Status: **partially
+implemented**.
+
+## VISION-021 — Framebuffer-level post processing
+**Memory note:** ARKHER owns exposure, ACES tonemapping, height fog and contrast-adaptive
+sharpening as parameter mathematics. A true fullscreen post chain needs a render target the
+platform does not expose to user code. Status: **substituted**.
+
+## VISION-022 — Variable rate shading and vendor upscaling hooks (DLSS/FSR/XeSS class)
+**Memory note:** standing rule from the specification — never bolt on a vendor technology. ARKHER's
+own Reconstruction Framework (resolution ladder with hysteresis, edge-aware reconstruction,
+temporal accumulation with variance clipping, and a *trained* scale policy) is the substitute, and
+it is fully implemented. Status: **substituted**.

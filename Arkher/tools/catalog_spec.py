@@ -305,6 +305,125 @@ AREAS_M = [
     ("Quest Graph", "questgraph"), ("Name Generator", "namegen"),
 ]
 
+
+# ---------------------------------------------------------------- round 4 :: E MATERIALS
+ASPECTS_E = [
+    ("Definition",          "material",   "layered PBR definition resolved into parameters"),
+    ("Layer Composition",   "composer",   "ordered layer composition with blend rules"),
+    ("Shading Graph",       "shadegraph", "node graph evaluated and compiled to Luau"),
+    ("Texture Sampling",    "sampler",    "atlas packing, mip chain and filtered sampling"),
+    ("Procedural Detail",   "field",      "coherent noise detail driving the surface"),
+    ("Variant Registry",    "registry",   "named variants and their lifecycle"),
+    ("Parameter Budget",    "budgeter",   "texel and layer budget allocation"),
+    ("Streaming",           "streamer",   "residency and demand-driven texture streaming"),
+    ("Compression Codec",   "codec",      "serialization and compression of material data"),
+    ("Quality Policy",      "policy",     "device tier rules for the surface"),
+    ("Instance Cache",      "cache",      "resolved-parameter cache keyed by context"),
+    ("Analysis",            "analyzer",   "cost, redundancy and outlier analysis"),
+    ("Authoring Pipeline",  "pipeline",   "ordered authoring and bake stages"),
+    ("Change Ledger",       "ledger",     "auditable history of material edits"),
+    ("Recovery",            "recovery",   "fallback surface when data is missing or invalid"),
+]
+
+AREAS_E = [
+    ("Material Library", "library"), ("Surface Definition", "surfacedef"), ("Albedo", "albedo"),
+    ("Roughness", "roughness"), ("Metalness", "metalness"), ("Normal Detail", "normaldetail"),
+    ("Height Displacement", "displacement"), ("Ambient Occlusion", "ao"), ("Emissive", "emissive"),
+    ("Opacity", "opacity"), ("Subsurface", "subsurface"), ("Clear Coat", "clearcoat"),
+    ("Anisotropy", "anisotropy"), ("Sheen", "sheen"), ("Iridescence", "iridescence"),
+    ("Layer Blending", "layerblend"), ("Triplanar Projection", "triplanar"), ("UV Mapping", "uvmap"),
+    ("Decal", "decal"), ("Wear And Tear", "wear"), ("Dust Accumulation", "dust"),
+    ("Moisture", "moisture"), ("Rust", "rust"), ("Snow Cover", "snowcover"),
+    ("Vertex Painting", "vertexpaint"), ("Terrain Splat", "splat"), ("Texture Atlas", "atlas"),
+    ("Mip Policy", "mippolicy"), ("Texture Streaming", "texstream"), ("Detail Tiling", "detailtile"),
+    ("Procedural Texture", "proctex"), ("Material Instance", "instance"),
+    ("Material Variant", "variant"), ("Shader Graph", "shadergraph"),
+    ("Parameter Animation", "paramanim"), ("Material LOD", "materiallod"),
+    ("Physical Response", "physicalresponse"), ("Material Preview", "preview"),
+    ("Material Validation", "validation"), ("Material Migration", "migration"),
+]
+
+# ---------------------------------------------------------------- round 4 :: F RENDERING
+ASPECTS_F = [
+    ("Frame Graph",         "framegraph", "declared passes, culling, ordering and aliasing"),
+    ("View And Culling",    "camera",     "view state, frustum culling and screen-size LOD"),
+    ("Visibility Set",      "visibility", "cell, portal and occluder visibility"),
+    ("Geometry Virtualization", "impostor", "impostor and HLOD synthesis under a budget"),
+    ("Lighting Rig",        "lightrig",   "light clustering, importance and cascades"),
+    ("Probe Volume",        "probe",      "irradiance probes encoded in spherical harmonics"),
+    ("Temporal Resolve",    "temporal",   "history reprojection with neighbourhood clamping"),
+    ("Adaptive Resolution", "upscaler",   "render-scale ladder and edge-aware reconstruction"),
+    ("Draw Budget",         "budgeter",   "draw call and triangle budget allocation"),
+    ("Render Policy",       "policy",     "device tier rules for the frame"),
+    ("Pass Cache",          "cache",      "reuse of pass results across frames"),
+    ("Frame Analysis",      "analyzer",   "per-pass cost analysis and outlier detection"),
+    ("Orchestration",       "orchestrator", "frame lifecycle orchestration"),
+    ("Fallback Recovery",   "recovery",   "safe frame when a pass fails or overruns"),
+]
+
+AREAS_F = [
+    ("Frame Pipeline", "framepipeline"), ("Depth Prepass", "depthprepass"),
+    ("Opaque Pass", "opaquepass"), ("Transparent Pass", "transparentpass"),
+    ("Shadow Pass", "shadowpass"), ("Cascade Shadows", "cascades"), ("Contact Shadows", "contact"),
+    ("Ambient Occlusion Pass", "aopass"), ("Screen Space Reflection", "ssr"),
+    ("Global Illumination", "gi"), ("Light Clustering", "lightcluster"),
+    ("Volumetric Light", "volumetric"), ("Atmosphere", "atmosphere"), ("Sky Model", "sky"),
+    ("Fog", "fog"), ("Cloud Rendering", "clouds"), ("Water Rendering", "water"),
+    ("Reflection Probe", "reflectionprobe"), ("Exposure", "exposure"), ("Tonemapping", "tonemap"),
+    ("Color Grading", "grading"), ("Bloom", "bloom"), ("Depth Of Field", "dof"),
+    ("Motion Blur", "motionblur"), ("Antialiasing", "antialiasing"),
+    ("Temporal Accumulation", "temporalaccum"), ("Render Scale", "renderscale"),
+    ("Sharpening", "sharpening"), ("Draw Call Batching", "batching"), ("Instanced Draw", "instanced"),
+    ("Occlusion Culling", "occlusion"), ("Portal Culling", "portal"), ("Frustum Culling", "frustum"),
+    ("Distance Culling", "distanceculling"), ("Impostor Rendering", "impostorrender"),
+    ("HLOD", "hlod"), ("Mesh LOD", "meshlod"), ("Geometry Streaming", "geostream"),
+    ("Decal Rendering", "decalrender"), ("Particle Rendering", "particlerender"),
+    ("UI Rendering", "uirender"), ("Debug Visualization", "debugvis"),
+    ("Wireframe Overlay", "wireframe"), ("Frame Capture", "framecapture"),
+    ("Render Target", "rendertarget"), ("Memory Aliasing", "memaliasing"),
+    ("Mobile Fast Path", "mobilepath"), ("VR Stereo Path", "vrpath"),
+    ("Console Path", "consolepath"), ("Frame Pacing", "framepacing"),
+]
+
+# ---------------------------------------------------------------- round 4 :: G NEURAL
+ASPECTS_G = [
+    ("Inference Core",      "inference",  "dense network forward pass and training"),
+    ("Feature Extraction",  "field",      "signal features feeding the model"),
+    ("Temporal History",    "temporal",   "history buffers reused across frames"),
+    ("Reconstruction",      "upscaler",   "resolution ladder and image reconstruction"),
+    ("Model Registry",      "registry",   "named models and their lifecycle"),
+    ("Weight Codec",        "codec",      "weight serialization and quantized transport"),
+    ("Quality Predictor",   "predictor",  "predicted quality and cost of a setting"),
+    ("Compute Budget",      "budgeter",   "inference time budget allocation"),
+    ("Result Cache",        "cache",      "cached inference results keyed by input"),
+    ("Heuristic Policy",    "policy",     "rule fallback when the model is unavailable"),
+    ("Error Analysis",      "analyzer",   "residual and drift analysis"),
+    ("Training Ledger",     "ledger",     "auditable record of training and deployment"),
+    ("Sampling Graph",      "graph",      "dependency graph of sampling stages"),
+    ("Fallback Recovery",   "recovery",   "deterministic fallback when inference fails"),
+]
+
+AREAS_G = [
+    ("Neural Upscaling", "neuralupscale"), ("Temporal Reconstruction", "temporalrecon"),
+    ("Spatial Reconstruction", "spatialrecon"), ("Frame Interpolation", "frameinterp"),
+    ("Motion Vector Estimation", "motionvector"), ("Disocclusion Handling", "disocclusion"),
+    ("Ghosting Suppression", "ghosting"), ("Adaptive Sharpening", "adaptivesharpen"),
+    ("Denoising", "denoise"), ("Detail Synthesis", "detailsynth"),
+    ("Texture Super Resolution", "texturesr"), ("Geometry Detail Prediction", "geodetail"),
+    ("Shading Approximation", "shadingapprox"), ("Light Transport Prediction", "lightpredict"),
+    ("Ambient Occlusion Prediction", "aopredict"), ("Reflection Prediction", "reflectpredict"),
+    ("Animation Compression", "animcompress"), ("Behaviour Prediction", "behaviorpredict"),
+    ("Performance Prediction", "perfpredict"), ("Quality Estimation", "qualityestimate"),
+    ("Perceptual Metric", "perceptual"), ("Model Registry", "modelregistry"),
+    ("Weight Quantization", "quantization"), ("Model Distillation", "distillation"),
+    ("Inference Scheduler", "inferencesched"), ("Batch Inference", "batchinference"),
+    ("Feature Cache", "featurecache"), ("Deterministic Seeding", "detseed"),
+    ("Fallback Heuristic", "fallbackheuristic"), ("Drift Detection", "drift"),
+    ("Confidence Gating", "confidence"), ("Model Versioning", "modelversion"),
+    ("On Device Budget", "ondevicebudget"), ("Training Data Synthesis", "datasynth"),
+    ("Evaluation Harness", "evalharness"), ("Neural Debug", "neuraldebug"),
+]
+
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
               doc="Kernel-level engine capability: the UES foundation every other ARKHER framework stands on."),
@@ -324,4 +443,10 @@ CATEGORIES = {
               doc="ARKHER Terrain Framework capability: sculpt, erode, paint, stream and mesh the ground itself."),
     "M": dict(family="PROCEDURAL", prefix="proc", areas=AREAS_M, aspects=ASPECTS_M,
               doc="Procedural capability: deterministic synthesis of worlds, cities, structures and detail from a seed."),
+    "E": dict(family="MATERIALS", prefix="material", areas=AREAS_E, aspects=ASPECTS_E,
+              doc="ARKHER Material Framework capability: how every surface in the world is defined, layered, worn and afforded."),
+    "F": dict(family="RENDERING", prefix="render", areas=AREAS_F, aspects=ASPECTS_F,
+              doc="Rendering capability: the frame itself - declared, culled, lit, budgeted, resolved and paced."),
+    "G": dict(family="NEURAL / RECONSTRUCTION", prefix="neural", areas=AREAS_G, aspects=ASPECTS_G,
+              doc="ARKHER Reconstruction and Neural Intelligence capability: predict, reconstruct and verify instead of brute force."),
 }

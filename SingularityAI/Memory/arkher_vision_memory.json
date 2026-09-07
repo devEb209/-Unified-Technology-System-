@@ -153,10 +153,60 @@
     "style_learning": "Round 8 (T Singularity AI)"
    },
    "status": "scheduled"
+  },
+  {
+   "id": "VISION-018",
+   "topic": "Author-written GPU shaders",
+   "interpretation": "The platform exposes no shader authoring. ARKHER ships the entire shading model above that line: a node graph with cycle rejection, constant folding and compilation to Luau, plus a layered material resolver. The adapter maps resolved parameters onto whatever surface types exist.",
+   "adopted_target": {
+    "shade_graph_and_resolver": "shipped in Round 4",
+    "gpu_shader_authoring": "platform capability, not claimed"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-019",
+   "topic": "Hardware ray tracing and path-traced global illumination",
+   "interpretation": "No ray tracing API exists on the target platform. ARKHER substitutes irradiance probe volumes encoded in SH9 with trilinear interpolation and budgeted incremental relight, which is measurable and runs on a phone.",
+   "adopted_target": {
+    "probe_gi": "shipped in Round 4",
+    "hardware_rt": "future generation / other platforms"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-020",
+   "topic": "Convolutional and transformer models on device",
+   "interpretation": "The inference kit is dense-layer only with real backpropagation and fixed-point quantization, which is what a mobile frame budget honestly allows. Larger architectures belong to server-side authoring tools that export quantized weights ARKHER loads at boot.",
+   "adopted_target": {
+    "dense_inference_on_device": "shipped in Round 4",
+    "large_models": "authoring-time, Round 8 (T Singularity AI)"
+   },
+   "status": "partially-implemented"
+  },
+  {
+   "id": "VISION-021",
+   "topic": "Framebuffer-level post processing",
+   "interpretation": "ARKHER owns exposure, ACES tonemapping, height fog and contrast-adaptive sharpening as parameter mathematics. A true fullscreen post chain requires a render target the platform does not expose to user code.",
+   "adopted_target": {
+    "parameter_post": "shipped in Round 4",
+    "fullscreen_post_chain": "adapter capability"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-022",
+   "topic": "Variable rate shading and vendor upscaling hooks (DLSS/FSR/XeSS class)",
+   "interpretation": "Standing rule from the specification: never bolt on a vendor technology. ARKHER's own Reconstruction Framework - resolution ladder with hysteresis, edge-aware reconstruction, temporal accumulation with variance clipping and a trained scale policy - is the substitute and is fully implemented.",
+   "adopted_target": {
+    "arkher_reconstruction": "shipped in Round 4",
+    "vendor_hooks": "explicitly rejected by the specification"
+   },
+   "status": "substituted"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
  "verification_command": "node tools/harness.js tests/engine_spec.lua",
  "updated": "2026-09-07",
- "rounds_recorded": 3
+ "rounds_recorded": 4
 }

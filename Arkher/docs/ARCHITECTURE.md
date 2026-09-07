@@ -156,3 +156,36 @@ goes through `kernel/random` (xoshiro128\*\*) and every noise sample through `ke
 statistical relative to the observer. Distant settlements keep accumulating state through a cheap
 aggregate function and reconcile exactly when the observer arrives — the "Modo Vida Real" rule from
 the specification, implemented under a per-tick entity budget instead of an unbounded update loop.
+
+---
+
+## 12. The image stack (Round 4)
+
+```
+   render/renderer.lua        8 declared passes inside one millisecond budget
+        |                     depth -> shadows -> GI -> opaque -> transparent
+        |                     -> temporal resolve -> post -> UI
+        +-- neural/reconstruction.lua   trained scale policy + temporal accumulation
+        +-- render/lighting.lua         day cycle, Kelvin sun, clustered lights, SH probe GI,
+        |                               height fog, auto exposure, ACES tonemap
+        +-- render/virtualization.lua   clusters -> HLOD proxies -> impostors, budget resolve
+        +-- materials/material_framework.lua  presets, layers, procedural wear, device tiers
+        |
+   runtime/kits_render.lua    material sampler shadegraph framegraph camera visibility
+                              impostor lightrig probe temporal upscaler inference
+```
+
+Three rules make this stack different from a pile of effects:
+
+1. **Everything is declared, then culled.** The frame graph knows which pass writes what, so a
+   pass nobody reads never runs, optional passes are shed by priority when the budget is tight,
+   and transient render targets with disjoint lifetimes share one allocation.
+2. **Quality is one dial, not twenty.** `Renderer:applyQuality(q)` moves triangle budget, draw
+   budget, impostor error threshold, active lights, shadow casters, cascade count, probe spacing,
+   material tier and render scale together — so degradation stays *coherent* instead of ugly.
+3. **The reconstruction policy is trained, not tuned.** A small dense network learns the
+   frame-time → render-scale relationship from a deterministic synthetic dataset, is quantized to
+   8 bits, and ships as weights; the device runs a forward pass, never a trainer.
+
+The design system (`src/ui/theme.lua`) sits beside this stack for the same reason: one source of
+truth for colour and metrics, audited against WCAG AA, scaled by D-O15 device tier.

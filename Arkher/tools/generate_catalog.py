@@ -64,6 +64,19 @@ def kit_config(kit, key, seed, area_slug):
         "scatter":      '{ id = ID, seed = %d, minDistance = %d, density = %.2f }' % (seed, 6 + seed % 14, 0.6 + (seed % 60) / 100),
         "network":      '{ id = ID }',
         "simulation":   '{ id = ID, fullRadius = %d, reducedRadius = %d, budget = %d }' % (120 + (seed % 6) * 40, 600 + (seed % 8) * 100, 32 + seed % 96),
+        "material":     '{ id = ID, texelBudget = %d }' % (262144 * (1 + seed % 8)),
+        "sampler":      '{ id = ID, atlasSize = %d, maxSide = 32 }' % (128 + (seed % 4) * 64),
+        "shadegraph":   '{ id = ID }',
+        "framegraph":   '{ id = ID, budgetMs = %.2f }' % (4 + (seed % 10)),
+        "camera":       '{ id = ID, width = %d, height = %d, fov = %.4f, far = %d }' % (
+                            828 + (seed % 5) * 128, 720 + (seed % 4) * 180, 0.9 + (seed % 40) / 100, 1200 + (seed % 6) * 200),
+        "visibility":   '{ id = ID, maxDepth = %d }' % (2 + seed % 3),
+        "impostor":     '{ id = ID, atlasSlots = %d, viewCount = 8, errorThreshold = %.2f }' % (32 + (seed % 6) * 16, 1.0 + (seed % 30) / 10),
+        "lightrig":     '{ id = ID, maxActive = %d }' % (4 + seed % 9),
+        "probe":        '{ id = ID, spacing = %d }' % (8 + (seed % 5) * 8),
+        "temporal":     '{ id = ID, feedback = %.2f, phase = 8 }' % (0.8 + (seed % 15) / 100),
+        "upscaler":     '{ id = ID, targetMs = %.2f, index = %d, sharpness = %.2f }' % (11.1 + (seed % 6), 3 + seed % 3, 0.2 + (seed % 40) / 100),
+        "inference":    '{ id = ID, seed = %d }' % seed,
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -1344,6 +1357,390 @@ SPEC["synthesizer"] = ("""		function inst.installGrammar()
 		ok = ok and inst.deterministicCheck("root") == true
 		return ok and inst.stats().generated > 0""")
 
+
+# ---------------------------------------------------------------- round 4 kits
+SPEC["material"] = ("""		function inst.buildSurface()
+			if inst.layers["base"] then return inst end
+			inst.addLayer("base", { albedo = 0x808080, roughness = 0.5 + S.params.detailWeight * 0.4,
+				metallic = (S.params.horizon % 2) * 0.5, weight = 1.0, texels = 65536 })
+			inst.addLayer("detail", { albedo = 0x6A6A66, roughness = 0.9, weight = 0.4,
+				texels = 16384, mask = function(ctx) return ctx.wear or 0 end })
+			return inst
+		end
+		function inst.surfaceAt(ctx)
+			inst.buildSurface()
+			return inst.resolve(ctx)
+		end
+		function inst.wearVariant(amount)
+			inst.buildSurface()
+			inst.defineVariant("worn", { detail = { weight = amount or 0.9 } })
+			inst.applyVariant("worn")
+			return inst.resolve({ wear = 1 })
+		end
+		function inst.distanceParams(distance)
+			inst.buildSurface()
+			return inst.lodParams(distance or S.params.baseRadius)
+		end""",
+"""		inst.buildSurface()
+		local clean = inst.surfaceAt({ wear = 0 })
+		local worn = inst.surfaceAt({ wear = 1 })
+		local ok = clean.layers == 1 and worn.layers == 2
+		ok = ok and worn.roughness >= clean.roughness - 0.001
+		ok = ok and inst.memoryBytes() > 0
+		ok = ok and inst.checksum() == inst.checksum()
+		local lod = inst.distanceParams(900)
+		ok = ok and lod.layers >= 1 and lod.level >= 0
+		ok = ok and inst.wearVariant(0.9) ~= nil
+		return ok and inst.describe().id ~= nil""")
+
+SPEC["sampler"] = ("""		function inst.ensureTexture()
+			if inst.get(S.key) then return S.key end
+			inst.defineTexture(S.key, 8, 8, function(u, v) return (u + v) * 0.5 end)
+			inst.pack(S.key)
+			return S.key
+		end
+		function inst.detail(u, v, lod)
+			inst.ensureTexture()
+			return inst.sampleLod(S.key, u, v, lod or 0)
+		end
+		function inst.footprint()
+			inst.ensureTexture()
+			return inst.residentBytes(), inst.occupancy()
+		end
+		function inst.lodForDistance(distance)
+			inst.ensureTexture()
+			return inst.lodFor(S.key, math.max(1, distance / 32))
+		end""",
+"""		inst.ensureTexture()
+		local ok = inst.get(S.key) ~= nil
+		ok = ok and math.abs(inst.sample(S.key, 0, 0) - 0) < 0.01
+		ok = ok and math.abs(inst.sample(S.key, 1, 1) - 1) < 0.01
+		ok = ok and inst.buildMips(S.key) == 4
+		ok = ok and inst.detail(0.5, 0.5, 1) >= 0
+		local bytes, occupancy = inst.footprint()
+		ok = ok and bytes > 0 and occupancy > 0
+		ok = ok and inst.lodForDistance(256) > 0
+		return ok and inst.stats().samples > 0""")
+
+SPEC["shadegraph"] = ("""		function inst.buildGraph()
+			if inst.nodes["out"] then return inst end
+			inst.addNode("k", "constant", { value = S.params.detailWeight })
+			inst.addNode("src", "input", { key = "value", default = 0.5 })
+			inst.addNode("sum", "add")
+			inst.addNode("sat", "saturate")
+			inst.addNode("out", "output", { channel = "value" })
+			inst.connect("k", "sum", 1)
+			inst.connect("src", "sum", 2)
+			inst.connect("sum", "sat", 1)
+			inst.connect("sat", "out", 1)
+			return inst
+		end
+		function inst.shade(value)
+			inst.buildGraph()
+			local out = inst.evaluate({ value = value or 0.5 })
+			return out.value
+		end
+		function inst.optimize()
+			inst.buildGraph()
+			return inst.fold()
+		end
+		function inst.source()
+			inst.buildGraph()
+			return inst.compile()
+		end""",
+"""		inst.buildGraph()
+		local ok = inst.stats().nodes == 5
+		local expected = math.min(1, S.params.detailWeight + 0.25)
+		ok = ok and math.abs(inst.shade(0.25) - expected) < 1e-9
+		ok = ok and inst.optimize() >= 0
+		local src = inst.source()
+		ok = ok and type(src) == "string" and #src > 40
+		ok = ok and inst.hasCycle() == false
+		return ok and inst.stats().evaluations > 0""")
+
+SPEC["framegraph"] = ("""		function inst.buildFrame()
+			if inst.passes["main"] then return inst end
+			inst.addPass("prepare", { writes = { "buffer" }, cost = 1.0 })
+			inst.addPass("extra", { reads = { "buffer" }, writes = { "aux" }, cost = 2.0,
+				optional = true, priority = 2 })
+			inst.addPass("main", { reads = { "buffer", "aux" }, writes = { "out" }, cost = 1.5,
+				final = true })
+			inst.addPass("orphan", { writes = { "unused" }, cost = 4.0 })
+			return inst
+		end
+		function inst.frameOrder()
+			inst.buildFrame()
+			return inst.compile()
+		end
+		function inst.runFrame(budget)
+			inst.buildFrame()
+			return inst.execute({}, budget)
+		end
+		function inst.memoryPlan()
+			inst.buildFrame()
+			return inst.alias()
+		end""",
+"""		local order = inst.frameOrder()
+		local ok = #order == 3 and inst.culled == 1
+		ok = ok and order[#order] == "main"
+		local tight = inst.runFrame(2.0)
+		ok = ok and #tight.skipped == 1
+		local loose = inst.runFrame(50)
+		ok = ok and #loose.skipped == 0
+		local plan = inst.memoryPlan()
+		ok = ok and plan.peakBytes > 0
+		return ok and inst.totalCost() > 0""")
+
+SPEC["camera"] = ("""		function inst.frame(target)
+			inst.setPosition(Vec.vec3(0, S.params.detailWeight * 20, 0))
+			inst.lookAt(target or Vec.vec3(0, 0, -100))
+			return inst.buildFrustum()
+		end
+		function inst.visible(items)
+			inst.frame()
+			return inst.cull(items)
+		end
+		function inst.detailLevel(distance, radius)
+			inst.frame()
+			return inst.lodFor(Vec.vec3(0, 0, -(distance or 100)), radius or 2)
+		end
+		function inst.subpixel(frameIndex)
+			return inst.jitter(frameIndex or 1)
+		end""",
+"""		inst.frame(Vec.vec3(0, 0, -100))
+		local ok = inst.visibleSphere(Vec.vec3(0, 0, -50), 5) == true
+		ok = ok and inst.visibleSphere(Vec.vec3(0, 0, 500), 5) == false
+		local p = inst.project(Vec.vec3(0, inst.position.y, -20))
+		ok = ok and p ~= nil and math.abs(p.x - inst.width / 2) < 2
+		ok = ok and inst.project(Vec.vec3(0, 0, 1000)) == nil
+		local nearLod = inst.detailLevel(10, 2)
+		local farLod = inst.detailLevel(900, 2)
+		ok = ok and nearLod <= farLod
+		local jx, jy = inst.subpixel(3)
+		ok = ok and math.abs(jx) <= 0.5 and math.abs(jy) <= 0.5
+		ok = ok and inst.autoExposure(0.18, 1 / 60) > 0
+		return ok and inst.stats().tested > 0""")
+
+SPEC["visibility"] = ("""		function inst.buildLevel(rooms)
+			if inst.cells["cell1"] then return inst end
+			local Spatial = A:import("arkher/kernel/spatial")
+			local n = rooms or 4
+			for i = 1, n do
+				inst.addCell("cell" .. i, Spatial.aabb(Vec.vec3(i * 20, 0, 0), Vec.vec3(i * 20 + 18, 10, 18)))
+				inst.addItem("cell" .. i, "item" .. i)
+			end
+			for i = 1, n - 1 do inst.addPortal("cell" .. i, "cell" .. (i + 1)) end
+			return inst
+		end
+		function inst.setFrom(cell, depth)
+			inst.buildLevel()
+			return inst.computePVS(cell or "cell1", depth)
+		end
+		function inst.itemsFrom(cell, depth)
+			inst.buildLevel()
+			return inst.visibleItems(cell or "cell1", depth)
+		end
+		function inst.blockLine(from, to)
+			inst.buildLevel()
+			return inst.occluded(from, to)
+		end""",
+"""		inst.buildLevel(4)
+		local pvs = inst.setFrom("cell1", 1)
+		local ok = #pvs == 2
+		ok = ok and #inst.setFrom("cell1", 3) == 4
+		ok = ok and #inst.itemsFrom("cell1", 1) == 2
+		ok = ok and inst.cellAt(Vec.vec3(25, 1, 1)) == "cell1"
+		local Spatial = A:import("arkher/kernel/spatial")
+		inst.addOccluder(Spatial.aabb(Vec.vec3(-1, -1, 4), Vec.vec3(1, 5, 6)))
+		ok = ok and inst.blockLine(Vec.vec3(0, 1, 0), Vec.vec3(0, 1, 10)) == true
+		ok = ok and inst.blockLine(Vec.vec3(0, 1, 0), Vec.vec3(10, 1, 0)) == false
+		return ok and inst.coverage("cell1") > 0""")
+
+SPEC["impostor"] = ("""		function inst.ensureEntry()
+			if inst.entries[S.key] then return S.key end
+			inst.register(S.key, { triangles = 2000 + S.params.horizon % 8000,
+				radius = 2 + S.params.detailWeight * 8 })
+			inst.captureViews(S.key, 8)
+			return S.key
+		end
+		function inst.representation(distance)
+			inst.ensureEntry()
+			return inst.select(S.key, distance or 50, 720, 1.22)
+		end
+		function inst.pixelError(distance)
+			inst.ensureEntry()
+			return inst.screenError(S.key, distance or 50, 720, 1.22)
+		end
+		function inst.spend(budget)
+			inst.ensureEntry()
+			return inst.budgetPass({ { id = S.key, distance = 10 } }, budget or 4000)
+		end""",
+"""		inst.ensureEntry()
+		local ok = inst.entries[S.key].views ~= nil
+		local nearMode = inst.representation(5)
+		local farMode = inst.representation(5000)
+		ok = ok and nearMode == "mesh"
+		ok = ok and (farMode == "impostor" or farMode == "culled")
+		ok = ok and inst.pixelError(5) > inst.pixelError(500)
+		local view = inst.nearestView(S.key, Vec.vec3(1, 0, 0))
+		ok = ok and view ~= nil
+		local spent = inst.spend(100000)
+		ok = ok and spent.meshes == 1
+		return ok and inst.stats().slots > 0""")
+
+SPEC["lightrig"] = ("""		function inst.buildRig(count)
+			if inst.lights["key"] then return inst end
+			inst.addLight("key", { type = "directional", intensity = 2.5, shadows = true })
+			for i = 1, (count or 4) do
+				inst.addLight("fill" .. i, { position = Vec.vec3(i * 10, 3, 0),
+					range = 10 + S.params.detailWeight * 20, intensity = 1 + i * 0.1 })
+			end
+			return inst
+		end
+		function inst.activeAt(point)
+			inst.buildRig()
+			return inst.importance(point or Vec.vec3(0, 0, 0))
+		end
+		function inst.shadowPlan(near, far)
+			inst.buildRig()
+			return inst.cascadeSplits(near or 1, far or 400, 3, 0.75)
+		end
+		function inst.daylight(elevation)
+			inst.buildRig()
+			return inst.setSunAngle(elevation or (math.pi / 3))
+		end""",
+"""		inst.buildRig(4)
+		local Spatial = A:import("arkher/kernel/spatial")
+		local clusters = inst.cluster(Spatial.aabb(Vec.vec3(-20, -10, -20), Vec.vec3(80, 20, 20)), 3)
+		local ok = clusters ~= nil and inst.stats().assignments > 0
+		local active = inst.activeAt(Vec.vec3(10, 2, 0))
+		ok = ok and #active >= 1 and #active <= inst.maxActive
+		ok = ok and active[1].id == "key"
+		local splits = inst.shadowPlan(1, 400)
+		ok = ok and #splits == 3 and splits[1] < splits[3]
+		local intensity, ambient = inst.daylight(math.pi / 2)
+		ok = ok and intensity > 0 and ambient > 0
+		ok = ok and #inst.shadowCasters(1) <= 1
+		return ok and #inst.lightsAt(Vec.vec3(10, 2, 0)) >= 1""")
+
+SPEC["probe"] = ("""		function inst.buildVolume()
+			if #inst.probes > 0 then return #inst.probes end
+			local Spatial = A:import("arkher/kernel/spatial")
+			local span = inst.spacing
+			inst.place(Spatial.aabb(Vec.vec3(0, 0, 0), Vec.vec3(span, span, span)), span)
+			inst.bake(function(_, dir) return dir.y > 0 and 1.0 or 0.15 end, 8)
+			return #inst.probes
+		end
+		function inst.irradiance(point, normal)
+			inst.buildVolume()
+			return inst.sampleAt(point or Vec.vec3(1, 1, 1), normal or Vec.vec3(0, 1, 0))
+		end
+		function inst.refresh(budget)
+			inst.buildVolume()
+			return inst.rebake(function() return 0.5 end, budget or 2)
+		end
+		function inst.footprint()
+			inst.buildVolume()
+			return inst.memoryBytes()
+		end""",
+"""		local count = inst.buildVolume()
+		local ok = count == 8
+		local up = inst.irradiance(Vec.vec3(1, 1, 1), Vec.vec3(0, 1, 0))
+		local down = inst.irradiance(Vec.vec3(1, 1, 1), Vec.vec3(0, -1, 0))
+		ok = ok and up > down
+		ok = ok and inst.footprint() > 0
+		local Spatial = A:import("arkher/kernel/spatial")
+		local dirty = inst.invalidate(Spatial.aabb(Vec.vec3(-1, -1, -1), Vec.vec3(1, 1, 1)))
+		ok = ok and dirty > 0 and inst.dirtyCount() == dirty
+		ok = ok and inst.refresh(1) == 1
+		return ok and inst.stats().bakes > 0""")
+
+SPEC["temporal"] = ("""		function inst.frameJitter(index)
+			return inst.jitter(index or inst.frame)
+		end
+		function inst.accumulate(key, value, motion)
+			inst.advance()
+			return inst.resolve(key or S.key, value or 1, { motion = motion or 0 })
+		end
+		function inst.stabilize(value, neighbors)
+			return inst.clamp(value, neighbors or { 0.2, 0.25, 0.3 })
+		end
+		function inst.samplesFor(key)
+			return inst.effectiveSamples(key or S.key)
+		end""",
+"""		local jx, jy = inst.frameJitter(1)
+		local jx2 = inst.frameJitter(2)
+		local ok = jx ~= jx2 and math.abs(jy) <= 0.5
+		local first = inst.accumulate(S.key, 0, 0)
+		ok = ok and first == 0
+		local second = inst.accumulate(S.key, 1, 0)
+		ok = ok and second > 0 and second < 1
+		ok = ok and inst.accumulationOf(S.key) == 2
+		ok = ok and inst.samplesFor(S.key) >= 1
+		local clamped, wasClamped = inst.stabilize(9.0)
+		ok = ok and wasClamped == true and clamped < 1
+		local reset = inst.accumulate(S.key, 0.5, 9999)
+		ok = ok and reset == 0.5
+		inst.reset()
+		return ok and inst.stats().tracked == 0""")
+
+SPEC["upscaler"] = ("""		function inst.adapt(frameMs)
+			return inst.evaluate(frameMs or inst.targetMs)
+		end
+		function inst.settle(frameMs, iterations)
+			for _ = 1, (iterations or 6) do inst.evaluate(frameMs) end
+			return inst.scale()
+		end
+		function inst.resolveLine(samples, target)
+			return inst.reconstruct(samples or { 0, 0.5, 1 }, target or 6)
+		end
+		function inst.crispen(samples, amount)
+			return inst.sharpen(samples or { 0.2, 0.5, 0.2 }, amount)
+		end""",
+"""		local heavy = inst.settle(60, 8)
+		local ok = heavy <= inst.ladder[1] + 1e-9
+		local light = inst.settle(1, 12)
+		ok = ok and light >= inst.ladder[#inst.ladder] - 1e-9
+		local line = inst.resolveLine({ 0, 0, 1, 1 }, 8)
+		ok = ok and #line == 8 and line[1] <= 0.05 and line[8] >= 0.95
+		local crisp = inst.crispen({ 0.2, 0.5, 0.2 }, 0.4)
+		ok = ok and #crisp == 3
+		ok = ok and inst.quality() > 0 and inst.quality() <= 1
+		ok = ok and inst.savings(1000, 1000) >= 0
+		return ok and inst.stats().evaluations > 0""")
+
+SPEC["inference"] = ("""		function inst.buildModel(hidden)
+			if #inst.layers > 0 then return inst end
+			inst.addLayer(3, hidden or 4, "tanh")
+			inst.addLayer(hidden or 4, 1, "sigmoid")
+			return inst
+		end
+		function inst.predict(features)
+			inst.buildModel()
+			return inst.forward(features or { 0.5, 0.5, 0.5 })[1]
+		end
+		function inst.fit(samples, epochs, lr)
+			inst.buildModel()
+			return inst.train(samples, epochs or 4, lr or 0.2)
+		end
+		function inst.compress(bits)
+			inst.buildModel()
+			return inst.quantize(bits or 8)
+		end""",
+"""		inst.buildModel(4)
+		local ok = inst.parameters() == 3 * 4 + 4 + 4 + 1
+		local first = inst.predict({ 0.5, 0.25, 0.75 })
+		local second = inst.predict({ 0.5, 0.25, 0.75 })
+		ok = ok and first == second and first > 0 and first < 1
+		ok = ok and inst.flops() > 0
+		local weights = inst.exportWeights()
+		ok = ok and #weights == inst.parameters()
+		ok = ok and inst.importWeights(weights) == inst.parameters()
+		local err = inst.compress(8)
+		ok = ok and err >= 0 and err < 0.1
+		ok = ok and inst.memoryBytes() < inst.parameters() * 4
+		return ok and inst.stats().forwards >= 2""")
+
 def params_for(kit, seed):
     p = {
         "scale": round(1.0 + (seed % 30) / 10, 3),
@@ -1456,7 +1853,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 3, "categories": {}, "systems": [], "totals": {}}
+                "round": 4, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -1590,6 +1987,18 @@ KIT_METHODS = {
     "scatter": ["addMask", "generate", "filterBySlope", "cluster", "minimumSpacing", "stats"],
     "network": ["addNode", "addEdge", "route", "junctions", "deadEnds", "totalLength", "nearestNode", "connected", "stats"],
     "simulation": ["spawn", "despawn", "setObserver", "classify", "tick", "catchUp", "query", "aggregateState", "stats"],
+    "material": ["addLayer", "removeLayer", "setParam", "setEnabled", "resolve", "defineVariant", "applyVariant", "memoryBytes", "withinBudget", "lodParams", "checksum", "describe", "stats"],
+    "sampler": ["defineTexture", "get", "pack", "packAll", "occupancy", "buildMips", "sample", "sampleLevel", "sampleLod", "lodFor", "evict", "residentBytes", "stats"],
+    "shadegraph": ["addNode", "connect", "hasCycle", "topoOrder", "evaluate", "fold", "compile", "stats"],
+    "framegraph": ["addResource", "addPass", "cull", "compile", "alias", "totalCost", "execute", "describe", "stats"],
+    "camera": ["setPosition", "lookAt", "setFov", "setViewport", "forward", "buildFrustum", "visibleSphere", "cull", "project", "screenRadius", "lodFor", "jitter", "autoExposure", "advance", "stats"],
+    "visibility": ["addCell", "addPortal", "addItem", "cellAt", "computePVS", "visibleItems", "addOccluder", "occluded", "cullList", "coverage", "stats"],
+    "impostor": ["register", "captureViews", "nearestView", "screenError", "select", "buildHLOD", "budgetPass", "stats"],
+    "lightrig": ["addLight", "remove", "cluster", "lightsAt", "importance", "cascadeSplits", "shadowCasters", "setSunAngle", "stats"],
+    "probe": ["place", "bake", "evalSH", "probeAt", "sampleAt", "invalidate", "dirtyCount", "rebake", "memoryBytes", "stats"],
+    "temporal": ["jitter", "advance", "reproject", "clamp", "resolve", "accumulationOf", "effectiveSamples", "purge", "reset", "stats"],
+    "upscaler": ["scale", "evaluate", "pixelsFor", "savings", "reconstruct", "sharpen", "quality", "describe", "stats"],
+    "inference": ["addLayer", "forward", "loss", "train", "parameters", "flops", "quantize", "exportWeights", "importWeights", "memoryBytes", "stats"],
 }
 
 build()

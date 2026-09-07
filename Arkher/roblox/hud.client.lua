@@ -36,7 +36,7 @@ corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = panel
 
 local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(90, 160, 255)
+stroke.Color = Color3.fromRGB(96, 176, 255) -- theme.accent (arkher/ui/theme)
 stroke.Thickness = 1.5
 stroke.Transparency = 0.3
 stroke.Parent = panel

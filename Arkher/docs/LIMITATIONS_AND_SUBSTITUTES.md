@@ -24,4 +24,11 @@ The registry below is live in code (`src/platform/adapter.lua`, `Adapter.LIMITAT
 | No world simulation when unobserved | **ARKHER Living Simulation ("Modo Vida Real")** — full / reduced / statistical tiers with catch-up reconciliation, driven by D-O15 | Round 3 (C/M) |
 | No engine-side procedural generation | **ARKHER Procedural Intelligence** — WFC constraint solving, L-system grammars, Poisson-disc scatter, A\* road networks and a deterministic 8-step world pipeline with checksums | Round 3 (M) |
 
+| No shader authoring | **ARKHER Shade Graph** — 15-op node graph with cycle rejection, constant folding and compilation to Luau, feeding a layered material resolver | Round 4 (E) — *shipped* |
+| No realtime GI | **ARKHER Probe GI** — SH9 irradiance volumes, trilinear interpolation, budgeted incremental relight | Round 4 (F) — *shipped* |
+| No ray tracing | **ARKHER Light Transport Approximation** — probe GI + clustered lights + contact-scale fog and occlusion | Round 4 (F) — *shipped* |
+| No DLSS/FSR/XeSS hooks | **ARKHER Reconstruction Framework** — resolution ladder with hysteresis, edge-aware reconstruction, temporal variance clipping, trained scale policy | Round 4 (G) — *shipped* |
+| No fullscreen post chain | **ARKHER Image Maths** — exposure, ACES tonemap, height fog, contrast-adaptive sharpening as parameters | Round 4 (F) — *shipped* |
+| Hard draw/instance ceiling | **ARKHER Geometry Virtualization** — spatial clusters, HLOD proxies, octahedral impostors, triangle+draw budget resolve | Round 4 (F) — *shipped* |
+
 Each substitute is a *design of our own*, not an emulation of the original vendor technology.

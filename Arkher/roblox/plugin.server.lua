@@ -87,10 +87,11 @@ local widget = plugin:CreateDockWidgetPluginGui("ARKHER_STUDIO_V1",
 widget.Title = "ARKHER V1"
 widget.Name = "ARKHER_STUDIO_V1"
 
+-- Colours below mirror arkher/ui/theme ("arkher-dark"), the single source of truth.
 local BG = Color3.fromRGB(18, 20, 26)
 local PANEL = Color3.fromRGB(26, 29, 38)
 local ACCENT = Color3.fromRGB(96, 176, 255)
-local TEXT = Color3.fromRGB(226, 232, 240)
+local TEXT = Color3.fromRGB(215, 225, 240)  -- theme.text
 local MUTED = Color3.fromRGB(148, 163, 184)
 
 local root = Instance.new("Frame")
