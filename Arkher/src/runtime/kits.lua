@@ -1097,6 +1097,12 @@ return function(A)
 	local Life = A:import("arkher/runtime/kits_life")
 	for _, name in ipairs(Life.NAMES) do Kits[name] = Life[name] end
 
+	local Vfx = A:import("arkher/runtime/kits_vfx")
+	for _, name in ipairs(Vfx.NAMES) do Kits[name] = Vfx[name] end
+
+	local Play = A:import("arkher/runtime/kits_play")
+	for _, name in ipairs(Play.NAMES) do Kits[name] = Play[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
@@ -1109,7 +1115,10 @@ return function(A)
 		"mindnet", "memory", "need", "emotion", "perception", "behaviortree",
 		"utility", "planner", "navgraph", "crowd", "society", "economy", "schedule", "ecology",
 		"rigidbody", "collider", "contact", "constraint", "raycaster", "charmotor",
-		"vehicle", "skeleton", "clip", "animator", "ik", "ragdoll" }
+		"vehicle", "skeleton", "clip", "animator", "ik", "ragdoll",
+		"emitter", "particles", "forcefield", "ribbon", "dsp", "mixer", "spatialaudio", "sequencer",
+		"stats", "inventory", "quest", "combat", "flex", "inputmap", "tween",
+		"replicator", "netclock", "prediction" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]

@@ -1,4 +1,4 @@
-# ARKHER V1 :: catalog specification (R1 A,S,X; R2 B,U,Y; R3 C,D,M; R4 E,F,G; R5 H,I,J; R6 K,L)
+# ARKHER V1 :: catalog specification (R1 A,S,X; R2 B,U,Y; R3 C,D,M; R4 E,F,G; R5 H,I,J; R6 K,L; R7 N,O,P,Q,R)
 # Each system = area x aspect. Aspect decides the kit (a real working machine) and the
 # specialized methods emitted for that system.
 
@@ -607,6 +607,161 @@ AREAS_L = [
     ("World History", "worldhistory"), ("World Persistence", "worldpersistence"),
 ]
 
+# ------------------------------------------------------------------ round 7 :: N VFX
+ASPECTS_N = [
+    ("Emission",           "emitter",     "shaped, rate and burst emission of new particles"),
+    ("Particle Simulation","particles",   "pooled integration of position, velocity, colour and life"),
+    ("Force Field",        "forcefield",  "wind, attraction, vortex, drag and curl turbulence"),
+    ("Ribbon And Trail",   "ribbon",      "trail points, tapering, beams and decimation"),
+    ("Curve Authoring",    "spline",      "authored curves driving the effect over its life"),
+    ("Effect Graph",       "shadegraph",  "node graph describing how the effect is shaded"),
+    ("Effect Composition", "composer",    "blending of several effect signals into one output"),
+    ("Spawn Budget",       "budgeter",    "global particle budget shared by every live effect"),
+    ("Result Cache",       "cache",       "reuse of expensive effect evaluations"),
+    ("Quality Policy",     "policy",      "distance and device driven fidelity bands"),
+    ("Spatial Index",      "index",       "spatial acceleration of effect queries and culling"),
+    ("Analysis",           "analyzer",    "cost, overdraw and stability analysis of the effect"),
+    ("Recovery",           "recovery",    "checkpoint and rollback of the effect state"),
+]
+
+AREAS_N = [
+    ("Spark", "spark"), ("Smoke", "smoke"), ("Fire", "fire"), ("Explosion", "explosion"),
+    ("Dust", "dust"), ("Debris", "debris"), ("Impact", "impact"), ("Muzzle Flash", "muzzleflash"),
+    ("Blood", "blood"), ("Water Splash", "splash"), ("Waterfall Mist", "mist"), ("Rain", "rain"),
+    ("Snow", "snow"), ("Hail", "hail"), ("Fog Volume", "fogvolume"), ("Cloud", "cloud"),
+    ("Lightning", "lightning"), ("Magic Aura", "magicaura"), ("Spell Cast", "spellcast"),
+    ("Portal", "portal"), ("Shield Effect", "shieldfx"), ("Heal Effect", "healfx"),
+    ("Buff Effect", "bufffx"), ("Status Effect", "statusfx"), ("Trail", "trail"),
+    ("Ribbon", "ribbonfx"), ("Beam", "beam"), ("Laser", "laser"), ("Projectile", "projectile"),
+    ("Decal", "decal"), ("Footprint", "footprint"), ("Wind Gust", "windgust"),
+    ("Foliage Motion", "foliagemotion"), ("Cloth Wind", "clothwind"), ("Screen Effect", "screenfx"),
+    ("Camera Shake", "camerashake"), ("Distortion", "distortion"), ("Glow", "glow"),
+    ("Environment Ambience", "envambience"), ("Effect Debug", "fxdebug"),
+]
+
+# ---------------------------------------------------------------- round 7 :: O AUDIO
+ASPECTS_O = [
+    ("DSP Chain",          "dsp",          "biquad filtering, delay, envelope and soft clipping"),
+    ("Mixer Bus",          "mixer",        "hierarchical buses, gain, mute, solo, ducking and voice stealing"),
+    ("Spatialization",     "spatialaudio", "distance attenuation, panning, occlusion and doppler"),
+    ("Music Sequencer",    "sequencer",    "musical time, sections, stems, cues and quantized transitions"),
+    ("Voice Budget",       "budgeter",     "voice slots allocated by priority and audibility"),
+    ("Streaming",          "streamer",     "distance-driven residency of audio assets"),
+    ("Asset Registry",     "registry",     "catalogue of sounds, variations and metadata"),
+    ("Compression Codec",  "codec",        "payload encoding of audio state and events"),
+    ("Playback Policy",    "policy",       "rules choosing what may be heard right now"),
+    ("Analysis",           "analyzer",     "loudness, headroom and masking analysis"),
+    ("Event Ledger",       "ledger",       "auditable journal of everything that played"),
+    ("Recovery",           "recovery",     "checkpoint and rollback of the audio state"),
+]
+
+AREAS_O = [
+    ("Footstep", "footstep"), ("Foley", "foley"), ("Weapon Sound", "weaponsound"),
+    ("Impact Sound", "impactsound"), ("Explosion Sound", "explosionsound"), ("Voice Line", "voiceline"),
+    ("Dialogue", "dialogue"), ("Narration", "narration"), ("Crowd", "crowd"), ("Ambience Bed", "ambiencebed"),
+    ("Wind Audio", "windaudio"), ("Rain Audio", "rainaudio"), ("Water Audio", "wateraudio"),
+    ("Forest Audio", "forestaudio"), ("City Audio", "cityaudio"), ("Interior Audio", "interioraudio"),
+    ("Reverb Zone", "reverbzone"), ("Occlusion Zone", "occlusionzone"), ("Music Bed", "musicbed"),
+    ("Adaptive Music", "adaptivemusic"), ("Combat Music", "combatmusic"), ("Exploration Music", "explorationmusic"),
+    ("Stinger", "stinger"), ("Transition", "audiotransition"), ("UI Sound", "uisound"),
+    ("Notification", "notification"), ("Vehicle Audio", "vehicleaudio"), ("Engine Audio", "engineaudio"),
+    ("Animal Audio", "animalaudio"), ("Creature Audio", "creatureaudio"), ("Magic Audio", "magicaudio"),
+    ("Mix Snapshot", "mixsnapshot"), ("Accessibility Audio", "audioaccessibility"),
+    ("Mobile Audio", "mobileaudio"), ("Audio Debug", "audiodebug"), ("Audio Profiling", "audioprofiling"),
+]
+
+# ------------------------------------------------------------- round 7 :: P GAMEPLAY
+ASPECTS_P = [
+    ("Attributes",           "stats",        "base values, layered modifiers and derived statistics"),
+    ("Inventory",            "inventory",    "slots, stacking, weight, equipment and crafting"),
+    ("Objectives",           "quest",        "objectives, prerequisites, progress and rewards"),
+    ("Combat Resolution",    "combat",       "accuracy, mitigation, criticals, statuses and death"),
+    ("State Machine",        "orchestrator", "the phase machine that drives this gameplay loop"),
+    ("Rule Pipeline",        "pipeline",     "ordered rules applied to every gameplay event"),
+    ("Event Ledger",         "ledger",       "auditable journal of gameplay events"),
+    ("Balance Analysis",     "analyzer",     "distribution, outlier and pacing analysis"),
+    ("Difficulty Controller","controller",   "closed-loop tuning toward a target challenge"),
+    ("Content Registry",     "registry",     "catalogue of the definitions this loop instantiates"),
+    ("Save Codec",           "codec",        "persistence, diffing and checksum of gameplay state"),
+    ("Recovery",             "recovery",     "checkpoint and rollback of the gameplay state"),
+]
+
+AREAS_P = [
+    ("Player Character", "playercharacter"), ("Attribute", "attribute"), ("Skill", "skill"),
+    ("Ability", "ability"), ("Talent Tree", "talenttree"), ("Progression", "progression"),
+    ("Experience", "experience"), ("Level Up", "levelup"), ("Inventory", "inventorysys"),
+    ("Equipment", "equipment"), ("Loot", "loot"), ("Rarity", "rarity"), ("Crafting", "crafting"),
+    ("Gathering", "gathering"), ("Building", "buildingsys"), ("Economy", "playereconomy"),
+    ("Shop", "shop"), ("Trading", "trading"), ("Currency", "currency"), ("Quest", "questsys"),
+    ("Objective", "objective"), ("Dialogue Choice", "dialoguechoice"), ("Reputation", "playerreputation"),
+    ("Combat", "combatsys"), ("Melee", "melee"), ("Ranged", "ranged"), ("Damage", "damage"),
+    ("Status Effect", "statuseffect"), ("Cooldown", "cooldown"), ("Threat", "threat"),
+    ("Death And Respawn", "deathrespawn"), ("Checkpoint", "checkpoint"), ("Score", "score"),
+    ("Match", "match"), ("Team", "team"), ("Party", "party"), ("Matchmaking", "matchmaking"),
+    ("Difficulty", "difficulty"), ("Tutorial", "tutorial"), ("Gameplay Debug", "gameplaydebug"),
+]
+
+# ---------------------------------------------------------------- round 7 :: Q UI/UX
+ASPECTS_Q = [
+    ("Responsive Layout",     "flex",     "flex solving with safe areas, weights and breakpoints"),
+    ("Widget Tree",           "widget",   "retained widget nodes, properties, bindings and rendering"),
+    ("Input Mapping",         "inputmap", "one action bound to touch, gamepad, keyboard and mouse"),
+    ("Transition",            "tween",    "eased, delayed, looped and sequenced motion"),
+    ("Navigation Graph",      "graph",    "screens, routes and shortest path between them"),
+    ("Theme Composition",     "composer", "blending of theme signals into the final appearance"),
+    ("Localization Registry", "registry", "catalogue of strings, plurals and locale metadata"),
+    ("Interaction Ledger",    "ledger",   "auditable journal of what the player actually touched"),
+    ("Accessibility Policy",  "policy",   "rules enforcing contrast, target size and motion limits"),
+    ("Frame Budget",          "budgeter", "per-frame layout and draw budget for the interface"),
+    ("Usability Analysis",    "analyzer", "reachability, latency and abandonment analysis"),
+    ("Recovery",              "recovery", "checkpoint and rollback of the interface state"),
+]
+
+AREAS_Q = [
+    ("Screen", "screen"), ("Panel", "panel"), ("Button", "button"), ("Label", "label"),
+    ("Icon", "icon"), ("List", "list"), ("Grid", "grid"), ("Scroll View", "scrollview"),
+    ("Modal", "modal"), ("Toast", "toast"), ("Tooltip", "tooltip"), ("Menu", "menu"),
+    ("Tab Bar", "tabbar"), ("Navigation", "navigation"), ("Head Up Display", "hud"),
+    ("Health Bar", "healthbar"), ("Minimap", "minimap"), ("Compass", "compass"),
+    ("Inventory Screen", "inventoryscreen"), ("Quest Log", "questlog"), ("Map Screen", "mapscreen"),
+    ("Settings Screen", "settingsscreen"), ("Virtual Joystick", "virtualjoystick"),
+    ("Touch Button", "touchbutton"), ("Gesture", "gesture"), ("Haptics", "haptics"),
+    ("Gamepad Focus", "gamepadfocus"), ("Keyboard Focus", "keyboardfocus"), ("Safe Area", "safearea"),
+    ("Responsive Breakpoint", "breakpoint"), ("Theme", "uitheme"), ("Localization", "localization"),
+    ("Accessibility", "uiaccessibility"), ("UI Debug", "uidebug"),
+]
+
+# ------------------------------------------------------------ round 7 :: R NETWORKING
+ASPECTS_R = [
+    ("Replication",                "replicator", "authoritative entity state, interest and delta snapshots"),
+    ("Time Sync",                  "netclock",   "offset estimation, outlier rejection and jitter buffering"),
+    ("Prediction And Reconciliation","prediction","client simulation, correction and input replay"),
+    ("Transport Graph",            "network",    "topology, capacity and routing between endpoints"),
+    ("Bandwidth Budget",           "budgeter",   "bytes per second shared between competing streams"),
+    ("Serialization Codec",        "codec",      "compact encoding, diffing and checksum of payloads"),
+    ("Interest Streaming",         "streamer",   "distance-driven residency of replicated content"),
+    ("Rate Guard",                 "guard",      "token-bucket protection against floods and abuse"),
+    ("Session Registry",           "registry",   "catalogue of sessions, players and their metadata"),
+    ("Audit Ledger",               "ledger",     "auditable journal of the traffic and its decisions"),
+    ("Latency Analysis",           "analyzer",   "round trip, jitter and loss analysis"),
+    ("Recovery",                   "recovery",   "reconnection, resynchronization and rollback"),
+]
+
+AREAS_R = [
+    ("Session", "session"), ("Connection", "connection"), ("Handshake", "handshake"),
+    ("Authentication", "netauth"), ("Player State", "playerstate"), ("Entity Replication", "entityreplication"),
+    ("Transform Replication", "transformreplication"), ("Property Replication", "propertyreplication"),
+    ("Remote Event", "remoteevent"), ("Remote Function", "remotefunction"), ("Reliable Channel", "reliablechannel"),
+    ("Unreliable Channel", "unreliablechannel"), ("Delta Compression", "deltacompression"),
+    ("Snapshot", "snapshot"), ("Interpolation", "interpolation"), ("Extrapolation", "extrapolation"),
+    ("Client Prediction", "clientprediction"), ("Server Reconciliation", "serverreconciliation"),
+    ("Lag Compensation", "lagcompensation"), ("Interest Management", "interestmanagement"),
+    ("Area Of Interest", "areaofinterest"), ("Bandwidth", "bandwidth"), ("Rate Limiting", "ratelimiting"),
+    ("Anti Cheat", "anticheat"), ("Server Authority", "serverauthority"), ("Cross Server", "crossserver"),
+    ("Data Persistence", "netpersistence"), ("Matchmaking Transport", "matchmakingtransport"),
+    ("Reconnection", "reconnection"), ("Network Debug", "networkdebug"),
+]
+
 
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
@@ -643,4 +798,14 @@ CATEGORIES = {
               doc="ARKHER NMN capability: minds that perceive, remember, feel, plan, move and live together."),
     "L": dict(family="WORLD SIMULATION", prefix="sim", areas=AREAS_L, aspects=ASPECTS_L,
               doc="ARKHER Living World capability: a world that keeps living, at the fidelity the observer deserves."),
+    "N": dict(family="VFX", prefix="vfx", areas=AREAS_N, aspects=ASPECTS_N,
+              doc="ARKHER VFX Framework capability: emission, simulation, forces and trails inside one shared budget."),
+    "O": dict(family="AUDIO", prefix="audio", areas=AREAS_O, aspects=ASPECTS_O,
+              doc="ARKHER Audio Framework capability: buses, DSP, spatialization and music that reacts to the world."),
+    "P": dict(family="GAMEPLAY", prefix="play", areas=AREAS_P, aspects=ASPECTS_P,
+              doc="ARKHER Gameplay Framework capability: attributes, items, objectives, combat and progression."),
+    "Q": dict(family="UI / UX", prefix="ui", areas=AREAS_Q, aspects=ASPECTS_Q,
+              doc="ARKHER Interface Framework capability: responsive, themed, accessible interfaces on every device."),
+    "R": dict(family="NETWORKING", prefix="net", areas=AREAS_R, aspects=ASPECTS_R,
+              doc="ARKHER Networking Framework capability: authoritative replication, prediction and bandwidth discipline."),
 }

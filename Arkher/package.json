@@ -4,13 +4,14 @@
   "description": "ARKHER V1 - UES engine for Roblox. Headless verification harness.",
   "private": true,
   "scripts": {
-    "test": "node tools/harness.js tests/kernel_spec.lua && node tools/harness.js tests/studio_spec.lua && node tools/harness.js tests/world_spec.lua && node tools/harness.js tests/render_spec.lua && node tools/harness.js tests/motion_spec.lua && node tools/harness.js tests/life_spec.lua && node tools/harness.js tests/engine_spec.lua",
+    "test": "node tools/harness.js tests/kernel_spec.lua && node tools/harness.js tests/studio_spec.lua && node tools/harness.js tests/world_spec.lua && node tools/harness.js tests/render_spec.lua && node tools/harness.js tests/motion_spec.lua && node tools/harness.js tests/life_spec.lua && node tools/harness.js tests/experience_spec.lua && node tools/harness.js tests/engine_spec.lua",
     "test:kernel": "node tools/harness.js tests/kernel_spec.lua",
     "test:studio": "node tools/harness.js tests/studio_spec.lua",
     "test:world": "node tools/harness.js tests/world_spec.lua",
     "test:render": "node tools/harness.js tests/render_spec.lua",
     "test:motion": "node tools/harness.js tests/motion_spec.lua",
     "test:life": "node tools/harness.js tests/life_spec.lua",
+    "test:experience": "node tools/harness.js tests/experience_spec.lua",
     "test:engine": "node tools/harness.js tests/engine_spec.lua",
     "build": "python3 tools/generate_catalog.py && python3 tools/build_rbxmx.py && python3 tools/validate_release.py"
   },

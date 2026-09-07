@@ -303,10 +303,50 @@
     "per_individual_ledger": "scoped to the observed region"
    },
    "status": "substituted"
+  },
+  {
+   "id": "VISION-033",
+   "topic": "Real-time convolution reverb, HRTF binaural audio and hardware DSP",
+   "interpretation": "ARKHER ships a real DSP chain (biquad filtering, delay, envelope following, soft clipping), a hierarchical mixer with ducking and priority voice stealing, and spatialisation with distance attenuation, panning, occlusion and doppler. Per-sample convolution against measured impulse responses and head-related transfer functions needs a DSP callback the platform does not expose. The substitute is parametric: filter-and-delay reverb per zone, occlusion filtering, and a panning law - the perceptual result at a fraction of the cost.",
+   "adopted_target": {
+    "parametric_dsp_and_spatialisation": "shipped in Round 7",
+    "convolution_and_hrtf": "recorded, requires an audio callback the platform does not provide"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-034",
+   "topic": "GPU particle simulation with millions of particles",
+   "interpretation": "The VFX framework simulates pooled particles on the CPU with shaped emission, analytic force fields, curl turbulence, ground collision and trails, all inside one shared global budget with four distance LOD bands. Compute-shader particle systems are not reachable from the platform, so the substitute is budget-first: quality bands that cut spawn rate and capacity with distance, a priority allocator that starves background effects before hero effects, and per-frame stepping that never exceeds the frame budget.",
+   "adopted_target": {
+    "budgeted_cpu_vfx_with_lod": "shipped in Round 7",
+    "gpu_compute_particles": "recorded as a platform capability"
+   },
+   "status": "substituted"
+  },
+  {
+   "id": "VISION-035",
+   "topic": "Dedicated authoritative servers with rollback netcode",
+   "interpretation": "ARKHER ships authoritative replication with interest management, delta snapshots under an MTU, a synchronised clock with jitter buffering, client prediction with reconciliation and input replay, rate guarding and lag-compensated hit validation against a recorded position history. Full rollback netcode - re-simulating the whole world several frames back every time an input arrives late - assumes a deterministic lockstep simulation and a dedicated host process. ARKHER rewinds transforms for hit validation instead, which is what a player perceives, and records full rollback here.",
+   "adopted_target": {
+    "authoritative_replication_prediction_and_lag_compensation": "shipped in Round 7",
+    "world_rollback_netcode": "recorded, depends on a dedicated deterministic host"
+   },
+   "status": "partially implemented"
+  },
+  {
+   "id": "VISION-036",
+   "topic": "Native platform UI with system fonts, native gestures and per-pixel effects",
+   "interpretation": "The interface framework ships a real responsive layout solver (flex with safe areas, weights, breakpoints), a retained widget tree with property bindings, a unified input map where one action is bound to touch, gamepad and keyboard at once, tweening, theming and enforced accessibility audits (44pt targets, WCAG AA contrast). Native text shaping, OS gesture recognisers and per-pixel UI shaders are not exposed; ARKHER models gestures itself and themes with token colours the adapter can honour.",
+   "adopted_target": {
+    "responsive_accessible_ui_framework": "shipped in Round 7",
+    "native_text_shaping_and_ui_shaders": "recorded as a platform capability"
+   },
+   "status": "substituted"
   }
  ],
  "implemented_reference": "Arkher/ARKHER_MANIFEST.json",
  "verification_command": "node tools/harness.js tests/engine_spec.lua",
  "updated": "2026-09-07",
- "rounds_recorded": 6
+ "rounds_recorded": 7
 }

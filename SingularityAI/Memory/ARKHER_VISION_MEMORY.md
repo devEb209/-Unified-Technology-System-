@@ -237,3 +237,36 @@ discovery, and trades that move both goods and money — at market and settlemen
 into trade routes, taxation, laws, prosperity and migration. Tracking every coin of every person
 scales with population rather than with observation, so it is preserved here and enabled only
 inside the region the player currently occupies. Status: **substituted**.
+
+## VISION-033 — Convolution reverb, HRTF binaural audio and hardware DSP
+**Memory note:** ARKHER's audio engine is real signal processing — biquad filters, delay lines,
+envelope followers and soft clipping, on a hierarchical bus tree with ducking and priority voice
+stealing, plus distance attenuation, panning, occlusion and doppler. What it cannot do is run a
+per-sample convolution against measured impulse responses, or an HRTF pair per voice: that needs an
+audio callback the platform does not hand out. The substitute is parametric — filter-and-delay
+reverb per zone, low-pass occlusion, and an equal-power panning law. Status: **substituted**.
+
+## VISION-034 — GPU particle simulation with millions of particles
+**Memory note:** the VFX framework simulates pooled particles with shaped emission, analytic force
+fields, curl turbulence, ground collision and trails. Compute shaders are not reachable, so ARKHER
+answers with discipline instead of raw throughput: one global particle budget shared by every live
+effect, a priority allocator that starves background smoke before it touches a hero explosion, and
+four distance bands (full, reduced, minimal, culled) that cut spawn rate, capacity and step rate as
+the camera walks away. A phone gets the same effect, smaller. Status: **substituted**.
+
+## VISION-035 — Dedicated authoritative servers with rollback netcode
+**Memory note:** shipped in Round 7 — server-owned entity state, interest management, delta
+snapshots split under the MTU, a synchronised clock with outlier rejection and a jitter buffer,
+client prediction with reconciliation and deterministic input replay, token-bucket rate guarding,
+and lag compensation that rewinds a recorded position history to validate a hit. Full rollback
+netcode — re-simulating the entire world backwards whenever a late input arrives — assumes a
+deterministic lockstep world on a dedicated host. ARKHER rewinds what the player actually perceives
+and records the rest here. Status: **partially implemented**.
+
+## VISION-036 — Native platform UI, system text shaping and per-pixel UI effects
+**Memory note:** the interface framework is a real one — a flex solver with safe areas, weights and
+breakpoints, a retained widget tree with bindings, one action bound simultaneously to touch,
+gamepad and keyboard, tweening, theming, and accessibility audits that fail the build when a touch
+target is under 44pt or a colour pair misses WCAG AA. Native font shaping, OS-level gesture
+recognisers and UI shaders are not exposed; ARKHER recognises its own gestures and themes with
+tokens the adapter can honour. Status: **substituted**.

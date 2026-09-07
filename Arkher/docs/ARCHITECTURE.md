@@ -272,3 +272,58 @@ Four rules hold this stack together:
    prosperity feeds migration and unrest, unrest feeds revolt and law. Every step is numeric, every
    step is written to a chronicle, and `checksum()` over the whole world proves that the same seed
    produces the same history — which is what makes a persistent world testable.
+
+---
+
+## 15. The experience layer (Round 7): what the player actually feels
+
+Rounds 1–6 built a world that exists and keeps living. Round 7 builds the part of the engine the
+player touches: the effects they see, the sound they hear, the rules they play by, the interface
+they press, and the wire that carries all of it to everyone else.
+
+```
+   src/vfx/effect_system.lua        templates -> instances -> 4 distance LOD bands
+        |                           one global particle budget, priority allocation
+        +-- kits: emitter particles forcefield ribbon
+        |
+   src/audio/audio_engine.lua       6-bus tree (master sfx music voice ambience ui)
+        |                           spatial voices, ducking, adaptive music, quality scaling
+        +-- kits: dsp mixer spatialaudio sequencer
+        |
+   src/gameplay/gameplay_framework.lua  entity = stats + inventory, bridged into a combat actor
+        |                               equipment -> attributes -> derived power, xp curve,
+        |                               quests, loot, PID difficulty, checksummed save/load
+        +-- kits: stats inventory quest combat
+        |
+   src/ui/ui_framework.lua          screen stack -> flex solve -> widget tree -> bindings
+        |                           tap -> hit test -> input action, 44pt + WCAG AA audits
+        +-- kits: flex inputmap tween (+ widget from Round 2)
+        |
+   src/net/replication.lua          authoritative world, interest sets, delta snapshots under MTU,
+                                    clock sync, prediction + reconciliation, lag-compensated hits
+        +-- kits: replicator netclock prediction guard ledger
+```
+
+Four rules hold the experience layer together:
+
+1. **Everything shares one budget, and the budget wins.** A particle budget is claimed by priority
+   and released every frame, so a screen full of effects degrades the background before it touches
+   the explosion in front of the player. A voice budget steals the least important voice instead of
+   dropping the dialogue. A bandwidth budget cuts interest radius before it cuts tick rate. Nothing
+   in this layer is allowed to be unbounded, because a phone is where the frame is decided.
+
+2. **Fidelity is a distance function, not a setting.** Effects resolve into four bands (full 40 m,
+   reduced 110 m, minimal 260 m, culled beyond) with separate rate, capacity and step-rate scales;
+   voices attenuate, occlude and cull; replication only sends what a client can perceive.
+   `applyQuality(q)` walks the same knobs from one number, which is what D-O15 drives.
+
+3. **Numbers connect end to end.** An item's stat tag moves an attribute, the attribute moves the
+   derived power, the power moves the damage the combat resolver computes, the kill moves the quest
+   objective and the xp curve, the level-up moves the attributes back. There is no display-only
+   number in this layer: `checksum()` over the whole gameplay state proves a save round-trips
+   exactly.
+
+4. **The client may guess, but the server decides.** The client predicts from its own inputs and is
+   corrected the moment the authoritative state disagrees beyond a threshold, replaying every
+   unacknowledged input so the correction is not visible as a snap. Hits are validated against a
+   rewound history rather than trusted, and input is rate-guarded before it is simulated.

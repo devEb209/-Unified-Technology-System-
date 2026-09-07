@@ -113,6 +113,36 @@ def kit_config(kit, key, seed, area_slug):
                         % (0.005 + (seed % 10) / 1000, 2 + seed % 4),
         "economy":      '{ id = ID, elasticity = %.2f }' % (0.15 + (seed % 30) / 100),
         "schedule":     '{ id = ID, startHour = %d }' % (6 + seed % 6),
+        "emitter":      '{ id = ID, shape = "%s", rate = %d, speed = %.2f, life = %.2f, budget = %d, seed = %d }'
+                        % (["cone", "sphere", "box", "point"][seed % 4], 20 + seed % 60, 3 + (seed % 40) / 10, 0.8 + (seed % 30) / 10, 128 + (seed % 8) * 64, seed),
+        "particles":    '{ id = ID, capacity = %d, drag = %.2f, bounce = %.2f, groundY = 0 }'
+                        % (128 + (seed % 8) * 64, 0.05 + (seed % 20) / 100, (seed % 50) / 100),
+        "forcefield":   '{ id = ID, seed = %d }' % seed,
+        "ribbon":       '{ id = ID, maxPoints = %d, lifetime = %.2f, minDistance = %.2f, width = %.2f }'
+                        % (16 + (seed % 6) * 8, 0.5 + (seed % 20) / 10, 0.1 + (seed % 10) / 20, 0.2 + (seed % 12) / 10),
+        "dsp":          '{ id = ID, sampleRate = %d, filter = "%s", cutoff = %d, q = %.3f }'
+                        % (22050, ["lowpass", "highpass", "bandpass", "notch"][seed % 4], 300 + (seed % 20) * 300, 0.5 + (seed % 40) / 100),
+        "mixer":        '{ id = ID, maxVoices = %d }' % (16 + (seed % 6) * 8),
+        "spatialaudio": '{ id = ID, model = "%s", refDistance = %d, maxDistance = %d, rolloff = %.2f, maxVoices = %d }'
+                        % (["inverse", "linear", "exponential"][seed % 3], 3 + seed % 6, 80 + (seed % 10) * 20, 0.8 + (seed % 40) / 100, 12 + (seed % 6) * 4),
+        "sequencer":    '{ id = ID, bpm = %d, beatsPerBar = 4, intensity = %.2f }'
+                        % (90 + (seed % 8) * 10, 0.3 + (seed % 40) / 100),
+        "stats":        '{ id = ID }',
+        "inventory":    '{ id = ID, slots = %d, maxWeight = %d }' % (12 + (seed % 8) * 4, 40 + (seed % 12) * 10),
+        "quest":        '{ id = ID }',
+        "combat":       '{ id = ID, seed = %d, armourK = %d, critMultiplier = %.2f }'
+                        % (seed, 80 + (seed % 8) * 10, 1.5 + (seed % 12) / 10),
+        "flex":         '{ id = ID, width = %d, height = %d, scale = %.2f }'
+                        % (390 + (seed % 6) * 60, 844 + (seed % 5) * 60, 0.9 + (seed % 25) / 100),
+        "inputmap":     '{ id = ID, device = "%s", holdTime = %.2f, deadzone = %.2f }'
+                        % (["touch", "gamepad", "keyboard"][seed % 3], 0.25 + (seed % 20) / 100, 0.1 + (seed % 15) / 100),
+        "tween":        '{ id = ID, timeScale = %.2f }' % (0.9 + (seed % 25) / 100),
+        "replicator":   '{ id = ID, mtu = %d, interestRadius = %d, fullEvery = %d }'
+                        % (600 + (seed % 8) * 150, 120 + (seed % 10) * 40, 30 + (seed % 6) * 15),
+        "netclock":     '{ id = ID, tickRate = %d, bufferDelay = %.3f, maxSamples = %d }'
+                        % (20 + (seed % 4) * 10, 0.06 + (seed % 10) / 100, 8 + seed % 16),
+        "prediction":   '{ id = ID, errorThreshold = %.3f, smoothing = %.1f, maxInputs = %d }'
+                        % (0.03 + (seed % 10) / 200, 8 + seed % 10, 60 + (seed % 6) * 20),
         "ecology":      '{ id = ID }',
     }[kit].replace("ID", '"%s"' % key)
 
@@ -2313,7 +2343,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 6, "categories": {}, "systems": [], "totals": {}}
+                "round": 7, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -2485,6 +2515,24 @@ KIT_METHODS = {
     "economy": ["defineGood", "addMarket", "setStock", "setProduction", "setDemand", "totalStock", "totalDemand", "updatePrices", "priceOf", "tick", "trade", "balance", "stats"],
     "schedule": ["addSlot", "activeAt", "interrupt", "advance", "isNight", "nextActivity", "locationFor", "stats"],
     "ecology": ["addSpecies", "link", "populationOf", "step", "harvest", "seed", "biomass", "stable", "stats"],
+    "emitter": ["setRate", "setShape", "setBudget", "burst", "samplePosition", "sampleVelocity", "sampleSpec", "emit", "prewarm", "pause", "resume", "applyQuality", "stats"],
+    "particles": ["spawn", "spawnMany", "kill", "killAll", "applyForce", "step", "aliveCount", "particleAt", "aliveList", "bounds", "occupancy", "applyQuality", "stats"],
+    "forcefield": ["addField", "removeField", "setEnabled", "fieldForce", "evaluate", "strengthAt", "applyTo", "dominant", "fieldCount", "stats"],
+    "ribbon": ["push", "update", "setWidth", "widthAt", "vertices", "length", "beam", "simplify", "clear", "stats"],
+    "dsp": ["setFilter", "setDelay", "setGain", "processSample", "process", "rms", "peak", "tone", "reset", "stats"],
+    "mixer": ["addBus", "route", "setGain", "setMute", "setSolo", "effectiveGain", "duck", "tick", "play", "stop", "voiceGain", "snapshot", "restore", "applyQuality", "stats"],
+    "spatialaudio": ["setListener", "addSource", "removeSource", "moveSource", "attenuation", "pan", "doppler", "setOcclusion", "gainOf", "audible", "cullVoices", "mixSnapshot", "applyQuality", "stats"],
+    "sequencer": ["setTempo", "beatDuration", "addSection", "addCue", "addLayer", "setIntensity", "play", "stop", "bar", "beatInBar", "quantize", "transitionTo", "advance", "layerGain", "activeLayers", "reset", "stats"],
+    "stats": ["define", "setBase", "addModifier", "removeModifier", "get", "defineDerived", "getDerived", "tick", "modifiersFor", "snapshot", "compare", "stats"],
+    "inventory": ["defineItem", "weight", "countOf", "freeSlots", "add", "remove", "has", "moveTo", "equip", "unequip", "addRecipe", "canCraft", "craft", "totalValue", "serialize", "deserialize", "stats"],
+    "quest": ["define", "addObjective", "start", "canStart", "unlockAvailable", "notify", "isComplete", "complete", "fail", "progress", "active", "stateOf", "recent", "stats"],
+    "combat": ["addActor", "hitChance", "mitigate", "attack", "heal", "applyStatus", "hasStatus", "setCooldown", "ready", "tick", "teamAlive", "recent", "dps", "stats"],
+    "flex": ["addNode", "setVisible", "setViewport", "breakpoint", "solve", "rectOf", "hitTest", "touchTargetsBelow", "depthOf", "stats"],
+    "inputmap": ["bind", "press", "release", "isDown", "wasTapped", "isHeld", "chordActive", "setAxis", "axis", "thumbstick", "touchAt", "tick", "setDevice", "bindingsFor", "stats"],
+    "tween": ["create", "remove", "pause", "resume", "valueOf", "ease", "update", "sequence", "activeCount", "clear", "stats"],
+    "replicator": ["spawn", "despawn", "set", "move", "addClient", "moveClient", "interestSet", "snapshotFor", "flush", "apply", "overMTU", "split", "bandwidth", "applyQuality", "stats"],
+    "netclock": ["tickDuration", "sample", "recompute", "serverTime", "advance", "push", "pop", "dropStale", "interpolationTime", "setBufferDelay", "adaptBuffer", "stats"],
+    "prediction": ["simulate", "pushInput", "pending", "reconcile", "smooth", "predictionError", "reset", "applyQuality", "stats"],
 }
 
 # ---------------------------------------------------------------- round 6 :: life kits
@@ -3015,6 +3063,829 @@ SPEC["ecology"] = ("""		function inst.buildFoodChain()
 		ok = ok and inst.pressureOn("deer") > 0 and inst.cull("deer", 0.1) > 0
 		inst.seed("deer", 10)
 		return ok and inst.populationOf("deer") > 0 and inst.stats().ticks >= 24""")
+
+# ---------------------------------------------------------------- round 7 :: vfx kits
+SPEC["emitter"] = ("""		function inst.configureShape(kind)
+			inst.setShape(kind or "cone", { radius = 2, angle = 0.5 })
+			return inst.shape
+		end
+		function inst.emitFor(seconds, live)
+			local total = 0
+			local steps = math.max(1, math.floor((seconds or 0.2) / 0.05))
+			for _ = 1, steps do total = total + #inst.emit(0.05, live or 0) end
+			return total
+		end
+		function inst.burstNow(count)
+			inst.burst(count or 8, 0)
+			return #inst.emit(1 / 60, 0)
+		end
+		function inst.dropRate()
+			local s = inst.stats()
+			local total = s.emitted + s.dropped
+			if total <= 0 then return 0 end
+			return s.dropped / total
+		end
+		function inst.headroom(live)
+			return math.max(0, inst.budget - (live or 0))
+		end
+		function inst.sampleCloud(count)
+			local out = {}
+			for i = 1, (count or 4) do out[i] = inst.sampleSpec() end
+			return out
+		end""",
+"""		inst.configureShape("sphere")
+		local emitted = inst.emitFor(0.2, 0)
+		local burst = inst.burstNow(6)
+		local cloud = inst.sampleCloud(3)
+		inst.emit(1, inst.budget)
+		local ok = emitted >= 0 and burst >= 0 and #cloud == 3
+		ok = ok and cloud[1].velocity ~= nil and cloud[1].life > 0
+		ok = ok and inst.headroom(0) == inst.budget and inst.dropRate() >= 0
+		inst.pause()
+		ok = ok and #inst.emit(1, 0) == 0
+		inst.resume()
+		return ok and inst.stats().emitted >= emitted""")
+
+SPEC["particles"] = ("""		function inst.burstSpawn(count)
+			local n = 0
+			for i = 1, (count or 8) do
+				if inst.spawn({ position = Vec.vec3(0, 1, 0),
+					velocity = Vec.vec3(0.4 * i, 3, 0), life = 0.4, size = 0.3 }) then
+					n = n + 1
+				end
+			end
+			return n
+		end
+		function inst.simulate(seconds, dt)
+			local step = dt or 1 / 30
+			local steps = math.max(1, math.floor((seconds or 0.3) / step))
+			for _ = 1, steps do inst.step(step) end
+			return inst.aliveCount()
+		end
+		function inst.centroid()
+			local list = inst.aliveList()
+			if #list == 0 then return Vec.vec3() end
+			local sum = Vec.vec3()
+			for _, p in ipairs(list) do sum = sum + p.position end
+			return sum * (1 / #list)
+		end
+		function inst.impulse(force)
+			return inst.applyForce(force or Vec.vec3(0, 12, 0), 1 / 30)
+		end
+		function inst.pressure()
+			return inst.occupancy()
+		end
+		function inst.settle()
+			inst.simulate(1.0, 1 / 30)
+			return inst.aliveCount()
+		end""",
+"""		local spawned = inst.burstSpawn(6)
+		local ok = spawned > 0 and inst.aliveCount() == spawned
+		inst.impulse(Vec.vec3(0, 5, 0))
+		inst.simulate(0.2, 1 / 30)
+		ok = ok and inst.bounds() ~= nil and inst.pressure() > 0
+		ok = ok and inst.centroid() ~= nil
+		ok = ok and inst.settle() == 0
+		inst.burstSpawn(3)
+		inst.killAll()
+		return ok and inst.aliveCount() == 0 and inst.stats().killed > 0""")
+
+SPEC["forcefield"] = ("""		function inst.installWeather()
+			if inst.fieldCount() > 0 then return inst.fieldCount() end
+			inst.addField("wind", "wind", { direction = Vec.vec3(1, 0, 0.2), strength = 4 })
+			inst.addField("gust", "turbulence", { strength = 2, frequency = 0.2 })
+			inst.addField("drag", "drag", { strength = 0.8 })
+			return inst.fieldCount()
+		end
+		function inst.netForce(position, velocity)
+			inst.installWeather()
+			return inst.evaluate(position or Vec.vec3(), velocity or Vec.vec3())
+		end
+		function inst.averageStrength(samples)
+			inst.installWeather()
+			local total, n = 0, samples or 4
+			for i = 1, n do
+				total = total + inst.strengthAt(Vec.vec3(i * 2, 0, i), Vec.vec3())
+			end
+			return total / n
+		end
+		function inst.attractTo(position, strength, radius)
+			return inst.addField("attract", "radial",
+				{ position = position or Vec.vec3(), strength = -(strength or 6),
+					radius = radius or 20 })
+		end
+		function inst.disableAll()
+			local n = 0
+			for _, id in ipairs(inst.order) do
+				if inst.setEnabled(id, false) ~= nil then n = n + 1 end
+			end
+			return n
+		end
+		function inst.enableAll()
+			for _, id in ipairs(inst.order) do inst.setEnabled(id, true) end
+			return inst.fieldCount()
+		end""",
+"""		local ok = inst.installWeather() == 3
+		local force = inst.netForce(Vec.vec3(1, 0, 1), Vec.vec3(0, 0, 1))
+		ok = ok and force ~= nil and inst.averageStrength(3) >= 0
+		ok = ok and inst.dominant(Vec.vec3(1, 0, 1)) ~= nil
+		ok = ok and inst.attractTo(Vec.vec3(6, 0, 0), 5, 15) ~= nil
+		ok = ok and inst.disableAll() == 4
+		local quiet = inst.evaluate(Vec.vec3(), Vec.vec3())
+		ok = ok and quiet:length() < 1e-6
+		inst.enableAll()
+		return ok and inst.stats().evaluations > 0 and inst.removeField("drag")""")
+
+SPEC["ribbon"] = ("""		function inst.traceLine(from, to, steps)
+			from = from or Vec.vec3()
+			to = to or Vec.vec3(8, 0, 0)
+			local n = steps or 6
+			local pushed = 0
+			for i = 0, n do
+				if inst.push(from:lerp(to, i / n)) then pushed = pushed + 1 end
+			end
+			return pushed
+		end
+		function inst.follow(points)
+			local pushed = 0
+			for _, p in ipairs(points) do
+				if inst.push(p) then pushed = pushed + 1 end
+			end
+			return pushed
+		end
+		function inst.stripCount(cameraPosition)
+			return #inst.vertices(cameraPosition or Vec.vec3(0, 6, -6))
+		end
+		function inst.fade(seconds, dt)
+			local step = dt or 1 / 30
+			local steps = math.max(1, math.floor((seconds or 0.5) / step))
+			for _ = 1, steps do inst.update(step) end
+			return #inst.points
+		end
+		function inst.beamTo(target, segments)
+			return inst.beam(Vec.vec3(), target or Vec.vec3(10, 0, 0), segments or 6, 1)
+		end
+		function inst.taperProfile()
+			local out = {}
+			for i = 1, #inst.points do out[i] = inst.widthAt(i) end
+			return out
+		end""",
+"""		local pushed = inst.traceLine(Vec.vec3(), Vec.vec3(6, 0, 0), 5)
+		local ok = pushed > 0 and inst.length() > 0
+		ok = ok and inst.stripCount() == #inst.points * 2
+		ok = ok and #inst.taperProfile() == #inst.points
+		ok = ok and inst.simplify(0.001) <= #inst.points + 1
+		ok = ok and inst.fade(inst.lifetime + 0.2, 1 / 20) == 0
+		ok = ok and inst.beamTo(Vec.vec3(9, 1, 0), 5) >= 2
+		inst.clear()
+		return ok and inst.stats().points == 0 and inst.stats().pushes > 0""")
+
+SPEC["dsp"] = ("""		function inst.configure(kind, cutoff)
+			inst.setFilter(kind or inst.filterType, cutoff or inst.cutoff, inst.q)
+			return inst.filterType
+		end
+		function inst.renderTone(frequency, samples)
+			return inst.tone(frequency or 220, samples or 64, 0.8)
+		end
+		function inst.loudness(frequency, samples)
+			inst.reset()
+			return inst.rms(inst.process(inst.renderTone(frequency, samples)))
+		end
+		function inst.headroom(buffer)
+			return 1 - inst.peak(buffer)
+		end
+		function inst.bandRatio(lowHz, highHz, samples)
+			local low = inst.loudness(lowHz or 120, samples or 64)
+			local high = inst.loudness(highHz or 4000, samples or 64)
+			if high <= 1e-9 then return math.huge end
+			return low / high
+		end
+		function inst.echo(seconds, feedback)
+			return inst.setDelay(seconds or 0.02, feedback or 0.35, 0.4)
+		end""",
+"""		inst.configure(inst.filterType, inst.cutoff)
+		local buffer = inst.renderTone(300, 48)
+		local out = inst.process(buffer)
+		local ok = #out == #buffer and inst.rms(out) >= 0
+		ok = ok and inst.headroom(out) <= 1.0 and inst.peak(out) <= 1.01
+		ok = ok and inst.bandRatio(120, 4000, 48) >= 0
+		ok = ok and inst.echo(0.01, 0.3) > 0
+		inst.reset()
+		return ok and inst.stats().processed > 0 and inst.stats().sampleRate > 0""")
+
+SPEC["mixer"] = ("""		function inst.installTree()
+			if #inst.order > 0 then return #inst.order end
+			inst.addBus("master", { gainDb = 0 })
+			inst.addBus("sfx", { parent = "master", gainDb = -2 })
+			inst.addBus("music", { parent = "master", gainDb = -6 })
+			inst.addBus("ui", { parent = "master", gainDb = -4 })
+			return #inst.order
+		end
+		function inst.gainOfBus(id)
+			inst.installTree()
+			return inst.effectiveGain(id or "sfx")
+		end
+		function inst.duckFor(busId, amount, seconds)
+			inst.installTree()
+			inst.duck(busId or "music", amount or 0.7)
+			inst.tick(seconds or 0.2)
+			return inst.effectiveGain(busId or "music")
+		end
+		function inst.playVoices(count, busId, priority)
+			inst.installTree()
+			local n = 0
+			for i = 1, (count or 4) do
+				if inst.play("voice" .. i, busId or "sfx", priority or 1) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.silence()
+			inst.installTree()
+			for _, id in ipairs(inst.order) do inst.stop(id) end
+			return inst.setMute("master", true)
+		end
+		function inst.unsilence()
+			return inst.setMute("master", false)
+		end""",
+"""		local ok = inst.installTree() == 4
+		ok = ok and inst.gainOfBus("sfx") > 0 and inst.gainOfBus("music") > 0
+		local ducked = inst.duckFor("music", 0.8, 0.3)
+		ok = ok and ducked < inst.gainOfBus("sfx")
+		inst.duck("music", 0)
+		inst.tick(1.0)
+		ok = ok and inst.playVoices(2, "sfx", 1) >= 1
+		local snap = inst.snapshot()
+		inst.setGain("master", -12)
+		inst.restore(snap)
+		ok = ok and inst.buses.master.gainDb == 0
+		inst.silence()
+		ok = ok and inst.effectiveGain("sfx") == 0
+		inst.unsilence()
+		return ok and inst.stats().buses == 4""")
+
+SPEC["spatialaudio"] = ("""		function inst.installField(count)
+			if #inst.order > 0 then return #inst.order end
+			local n = count or 4
+			for i = 1, n do
+				inst.addSource("src" .. i,
+					Vec.vec3(math.cos(i) * 8 * i, 0, math.sin(i) * 8 * i),
+					{ volume = 1, priority = i })
+			end
+			return #inst.order
+		end
+		function inst.moveListener(position, forward)
+			return inst.setListener(position or Vec.vec3(),
+				forward or Vec.vec3(0, 0, -1), Vec.vec3(0, 1, 0))
+		end
+		function inst.loudestSource()
+			local best, bestGain = nil, -1
+			for _, id in ipairs(inst.order) do
+				local g = inst.gainOf(id)
+				if g > bestGain then bestGain = g best = id end
+			end
+			return best, bestGain
+		end
+		function inst.audibleCount(threshold)
+			local n = 0
+			for _, id in ipairs(inst.order) do
+				if inst.audible(id, threshold or 0.01) then n = n + 1 end
+			end
+			return n
+		end
+		function inst.occludeAll(amount)
+			for _, id in ipairs(inst.order) do inst.setOcclusion(id, amount or 1) end
+			return #inst.order
+		end
+		function inst.panField()
+			local out = {}
+			for _, id in ipairs(inst.order) do
+				out[id] = inst.pan(inst.sources[id].position)
+			end
+			return out
+		end""",
+"""		local ok = inst.installField(4) == 4
+		inst.moveListener(Vec.vec3(), Vec.vec3(0, 0, -1))
+		local loudest, gain = inst.loudestSource()
+		ok = ok and loudest ~= nil and gain > 0
+		ok = ok and inst.audibleCount(0.001) >= 1
+		local pans = inst.panField()
+		ok = ok and pans[loudest] ~= nil and math.abs(pans[loudest]) <= 1.0001
+		ok = ok and inst.attenuation(inst.maxDistance * 2) == 0
+		inst.occludeAll(1)
+		ok = ok and inst.gainOf(loudest) < gain
+		inst.occludeAll(0)
+		ok = ok and #inst.cullVoices() <= inst.maxVoices
+		return ok and #inst.mixSnapshot() >= 1 and inst.stats().sources == 4""")
+
+SPEC["sequencer"] = ("""		function inst.installScore()
+			if #inst.sectionOrder > 0 then return #inst.sectionOrder end
+			inst.addSection("calm", 4)
+			inst.addSection("tense", 4)
+			inst.addLayer("pad", { threshold = 0, fade = 0.25 })
+			inst.addLayer("drums", { threshold = 0.55, fade = 0.25 })
+			inst.addCue("downbeat", 1)
+			inst.addCue("swell", 3)
+			return #inst.sectionOrder
+		end
+		function inst.runBeats(beats)
+			inst.installScore()
+			inst.play()
+			local fired = inst.advance(inst.beatDuration() * (beats or 4))
+			return #fired
+		end
+		function inst.intensityTo(value)
+			inst.installScore()
+			inst.setIntensity(value or 0.8)
+			return inst.intensity
+		end
+		function inst.stemMix()
+			inst.installScore()
+			local out = {}
+			for _, name in ipairs(inst.layerOrder) do out[name] = inst.layerGain(name) end
+			return out
+		end
+		function inst.switchTo(section, grid)
+			inst.installScore()
+			return inst.transitionTo(section or "tense", grid or 4)
+		end
+		function inst.position()
+			return inst.bar(), inst.beatInBar()
+		end""",
+"""		local ok = inst.installScore() == 2
+		local fired = inst.runBeats(4)
+		ok = ok and fired >= 1 and inst.stats().current ~= nil
+		ok = ok and inst.intensityTo(0.9) == 0.9
+		local mix = inst.stemMix()
+		ok = ok and mix.pad ~= nil and mix.drums ~= nil
+		ok = ok and inst.switchTo("tense", 4) >= 0
+		inst.advance(inst.beatDuration() * 8)
+		local bar, beat = inst.position()
+		ok = ok and bar >= 1 and beat >= 0
+		ok = ok and inst.quantize(1.3, 1) >= 1
+		inst.stop()
+		return ok and inst.stats().fired >= 1""")
+
+# ----------------------------------------------------------- round 7 :: gameplay kits
+SPEC["stats"] = ("""		function inst.installProfile()
+			if #inst.order > 0 then return #inst.order end
+			inst.define("vitality", 10, { min = 0, max = 999 })
+			inst.define("strength", 10, { min = 0, max = 999 })
+			inst.define("agility", 10, { min = 0, max = 999 })
+			inst.defineDerived("maxHealth", function(s) return 20 + s.get("vitality") * 8 end)
+			inst.defineDerived("power", function(s) return s.get("strength") * 2 end)
+			return #inst.order
+		end
+		function inst.buff(name, id, amount, duration)
+			inst.installProfile()
+			return inst.addModifier(name or "strength", id or "buff",
+				{ flat = amount or 5, duration = duration })
+		end
+		function inst.debuff(name, id, percent, duration)
+			inst.installProfile()
+			return inst.addModifier(name or "agility", id or "debuff",
+				{ percent = -(percent or 0.25), duration = duration })
+		end
+		function inst.power()
+			inst.installProfile()
+			return inst.getDerived("power")
+		end
+		function inst.expire(seconds)
+			inst.installProfile()
+			inst.tick(seconds or 1)
+			return inst.stats().expired
+		end
+		function inst.deltaFrom(other)
+			inst.installProfile()
+			return inst.compare(other)
+		end""",
+"""		local ok = inst.installProfile() == 3
+		local base = inst.power()
+		inst.buff("strength", "sword", 6)
+		ok = ok and inst.power() > base
+		inst.buff("strength", "rage", 4, 0.5)
+		local peak = inst.power()
+		inst.expire(1.0)
+		ok = ok and inst.power() < peak and inst.power() > base
+		ok = ok and inst.removeModifier("sword") == 1
+		ok = ok and inst.getDerived("maxHealth") > 20
+		ok = ok and #inst.modifiersFor("strength") == 0
+		local snap = inst.snapshot()
+		return ok and snap.vitality ~= nil and inst.stats().recomputes > 0""")
+
+SPEC["inventory"] = ("""		function inst.installCatalog()
+			if inst.defs.fibre then return true end
+			inst.defineItem("fibre", { stack = 20, weight = 0.2, value = 1 })
+			inst.defineItem("ingot", { stack = 10, weight = 1.5, value = 8 })
+			inst.defineItem("blade", { stack = 1, weight = 3, slot = "hand", value = 40 })
+			inst.addRecipe("forgeBlade", { fibre = 4, ingot = 2 }, { blade = 1 })
+			return true
+		end
+		function inst.stock(item, count)
+			inst.installCatalog()
+			return inst.add(item or "fibre", count or 5)
+		end
+		function inst.load()
+			return inst.weight() / math.max(1e-6, inst.maxWeight)
+		end
+		function inst.forge()
+			inst.installCatalog()
+			if not inst.canCraft("forgeBlade") then return false end
+			return inst.craft("forgeBlade")
+		end
+		function inst.gearUp()
+			if inst.countOf("blade") < 1 then return false end
+			return inst.equip("blade")
+		end
+		function inst.roundTrip()
+			local blob = inst.serialize()
+			local before = inst.totalValue()
+			inst.deserialize(blob)
+			return before == inst.totalValue()
+		end""",
+"""		inst.installCatalog()
+		local ok = inst.stock("fibre", 6) == 6 and inst.stock("ingot", 3) == 3
+		ok = ok and inst.load() > 0 and inst.load() <= 1
+		ok = ok and inst.forge() and inst.countOf("blade") == 1
+		ok = ok and inst.gearUp() and inst.equipment.hand == "blade"
+		ok = ok and inst.countOf("fibre") == 2 and inst.has("ingot", 1)
+		ok = ok and inst.roundTrip()
+		ok = ok and inst.remove("ingot", 1) >= 1
+		return ok and inst.freeSlots() >= 0 and inst.stats().crafted == 1""")
+
+SPEC["quest"] = ("""		function inst.installChain()
+			if #inst.order > 0 then return #inst.order end
+			inst.define("scout", { rewards = { xp = 40 } })
+			inst.addObjective("scout", "markers", { required = 2, event = "reach.marker" })
+			inst.define("secure", { requires = { "scout" }, rewards = { xp = 90 } })
+			inst.addObjective("secure", "threats", { required = 1, event = "clear.threat" })
+			return #inst.order
+		end
+		function inst.begin(name)
+			inst.installChain()
+			return inst.start(name or "scout")
+		end
+		function inst.report(event, amount)
+			inst.installChain()
+			return inst.notify(event or "reach.marker", amount or 1)
+		end
+		function inst.completion()
+			inst.installChain()
+			local total = 0
+			for _, name in ipairs(inst.order) do total = total + inst.progress(name) end
+			return total / math.max(1, #inst.order)
+		end
+		function inst.openQuests()
+			inst.installChain()
+			local out = {}
+			for _, name in ipairs(inst.order) do
+				if inst.stateOf(name) == "available" then out[#out + 1] = name end
+			end
+			return out
+		end
+		function inst.abandon(name)
+			inst.installChain()
+			return inst.fail(name or "scout")
+		end""",
+"""		local ok = inst.installChain() == 2
+		ok = ok and #inst.openQuests() == 1
+		ok = ok and inst.begin("scout")
+		inst.report("reach.marker", 1)
+		ok = ok and inst.progress("scout") > 0 and inst.progress("scout") < 1
+		inst.report("reach.marker", 1)
+		ok = ok and inst.stateOf("scout") == "completed"
+		ok = ok and inst.stateOf("secure") == "available"
+		ok = ok and inst.begin("secure")
+		inst.report("clear.threat", 1)
+		ok = ok and inst.isComplete("secure")
+		return ok and inst.completion() > 0.9 and inst.stats().completed == 2""")
+
+SPEC["combat"] = ("""		function inst.installDuel()
+			if #inst.order > 0 then return #inst.order end
+			inst.addActor("champion", { health = 220, armour = 60, power = 26,
+				accuracy = 0.95, critChance = 0.1, team = "player" })
+			inst.addActor("challenger", { health = 180, armour = 30, power = 20,
+				accuracy = 0.9, critChance = 0.05, team = "enemy",
+				resistances = { fire = 0.25 } })
+			return #inst.order
+		end
+		function inst.exchange()
+			inst.installDuel()
+			local a = inst.attack("champion", "challenger", {})
+			local b = inst.attack("challenger", "champion", {})
+			return a, b
+		end
+		function inst.resolveRounds(rounds)
+			inst.installDuel()
+			for _ = 1, (rounds or 3) do
+				inst.exchange()
+				inst.tick(0.5)
+			end
+			return inst.stats().attacks
+		end
+		function inst.burn(id, seconds, damage)
+			inst.installDuel()
+			return inst.applyStatus(id or "challenger", "burn",
+				{ duration = seconds or 2, tickDamage = damage or 4 })
+		end
+		function inst.survivors()
+			inst.installDuel()
+			return inst.teamAlive("player"), inst.teamAlive("enemy")
+		end
+		function inst.effectiveDamage(power, armour)
+			return inst.mitigate(power or 40, armour or 60, 0)
+		end""",
+"""		local ok = inst.installDuel() == 2
+		local a = inst.exchange()
+		ok = ok and (a == nil or a.damage >= 0)
+		ok = ok and inst.resolveRounds(2) >= 4
+		ok = ok and inst.burn("challenger", 1, 4)
+		ok = ok and inst.hasStatus("challenger", "burn")
+		inst.tick(1.5)
+		ok = ok and not inst.hasStatus("challenger", "burn")
+		inst.setCooldown("champion", "smash", 1)
+		ok = ok and not inst.ready("champion", "smash")
+		inst.tick(1.2)
+		ok = ok and inst.ready("champion", "smash")
+		local friends, foes = inst.survivors()
+		ok = ok and friends >= 0 and foes >= 0
+		ok = ok and inst.effectiveDamage(40, 60) < 40
+		return ok and inst.hitChance("champion", "challenger") > 0""")
+
+# ------------------------------------------------------------- round 7 :: ui/net kits
+SPEC["flex"] = ("""		function inst.installScreen()
+			if inst.root then return #inst.order end
+			inst.addNode("root", { direction = "column", padding = 8, gap = 8 })
+			inst.addNode("header", { parent = "root", height = 56 })
+			inst.addNode("body", { parent = "root", weight = 1 })
+			inst.addNode("footer", { parent = "root", height = 72 })
+			inst.solve()
+			return #inst.order
+		end
+		function inst.layoutFor(width, height)
+			inst.installScreen()
+			inst.setViewport(width or inst.width, height or inst.height)
+			inst.solve()
+			return inst.breakpoint()
+		end
+		function inst.regionOf(id)
+			inst.installScreen()
+			return inst.rectOf(id or "body")
+		end
+		function inst.smallTargets(minSize)
+			inst.installScreen()
+			return inst.touchTargetsBelow(minSize or 44)
+		end
+		function inst.collapse(id)
+			inst.installScreen()
+			inst.setVisible(id or "header", false)
+			inst.solve()
+			return inst.rectOf("body")
+		end
+		function inst.pick(x, y)
+			inst.installScreen()
+			return inst.hitTest(x or inst.width * 0.5, y or inst.height * 0.5)
+		end""",
+"""		local ok = inst.installScreen() == 4
+		local body = inst.regionOf("body")
+		ok = ok and body ~= nil and body.height > 0 and body.width > 0
+		ok = ok and inst.rectOf("root").y >= inst.safeArea.top
+		ok = ok and inst.layoutFor(inst.width, inst.height) ~= nil
+		ok = ok and inst.pick(inst.width * 0.5, inst.safeArea.top + 10) ~= nil
+		local grown = inst.collapse("header")
+		ok = ok and grown.height >= body.height
+		ok = ok and type(inst.smallTargets(44)) == "table"
+		return ok and inst.depthOf("body") == 1 and inst.stats().solves > 0""")
+
+SPEC["inputmap"] = ("""		function inst.installActions()
+			if #inst.order > 0 then return #inst.order end
+			inst.bind("jump", { keys = { "Space" }, buttons = { "A" },
+				touchZone = { x = 0, y = 0, width = 96, height = 96 } })
+			inst.bind("crouch", { keys = { "C" }, buttons = { "B" } })
+			inst.bind("slide", { chord = { "jump", "crouch" } })
+			return #inst.order
+		end
+		function inst.tap(action)
+			inst.installActions()
+			inst.press(action or "jump")
+			inst.tick(0.05)
+			inst.release(action or "jump")
+			return inst.wasTapped(action or "jump")
+		end
+		function inst.holdFor(action, seconds)
+			inst.installActions()
+			inst.press(action or "jump")
+			inst.tick(seconds or (inst.holdTime + 0.1))
+			return inst.isHeld(action or "jump")
+		end
+		function inst.move(x, y)
+			inst.installActions()
+			return inst.setAxis("move", x or 1, y or 0)
+		end
+		function inst.releaseAll()
+			for _, name in ipairs(inst.order) do inst.release(name) end
+			return true
+		end
+		function inst.deviceBindings(device)
+			inst.installActions()
+			return inst.bindingsFor(device or inst.device)
+		end""",
+"""		local ok = inst.installActions() == 3
+		ok = ok and inst.tap("jump")
+		ok = ok and not inst.wasTapped("jump")
+		ok = ok and inst.holdFor("jump", inst.holdTime + 0.1)
+		inst.press("crouch")
+		ok = ok and inst.chordActive("slide")
+		inst.releaseAll()
+		ok = ok and not inst.isDown("jump")
+		local axis = inst.move(inst.deadzone * 0.5, 0)
+		ok = ok and axis.magnitude == 0
+		axis = inst.move(1, 0)
+		ok = ok and axis.magnitude > 0.9
+		ok = ok and #inst.deviceBindings("keyboard") >= 2
+		return ok and inst.stats().presses > 0""")
+
+SPEC["tween"] = ("""		function inst.installIntro()
+			if #inst.order > 0 then return #inst.order end
+			inst.create("fade", { from = 0, to = 1, duration = 0.3, easing = "quadOut" })
+			inst.create("slide", { from = -40, to = 0, duration = 0.4, easing = "cubicOut" })
+			return #inst.order
+		end
+		function inst.advanceBy(seconds, dt)
+			local step = dt or 1 / 60
+			local steps = math.max(1, math.floor((seconds or 0.5) / step))
+			local finished = 0
+			for _ = 1, steps do finished = finished + #inst.update(step) end
+			return finished
+		end
+		function inst.valuesOf()
+			local out = {}
+			for _, id in ipairs(inst.order) do out[id] = inst.valueOf(id) end
+			return out
+		end
+		function inst.curveSamples(name, count)
+			local out = {}
+			local n = count or 5
+			for i = 0, n do out[#out + 1] = inst.ease(name or "quadOut", i / n) end
+			return out
+		end
+		function inst.chain(prefix, steps)
+			return inst.sequence(prefix or "chain", steps or {
+				{ from = 0, to = 1, duration = 0.15 },
+				{ from = 1, to = 0, duration = 0.15 } })
+		end
+		function inst.holdAll()
+			for _, id in ipairs(inst.order) do inst.pause(id) end
+			return #inst.order
+		end""",
+"""		local ok = inst.installIntro() == 2
+		inst.advanceBy(0.15, 1 / 60)
+		local mid = inst.valuesOf()
+		ok = ok and mid.fade > 0 and mid.fade < 1
+		local finished = inst.advanceBy(0.6, 1 / 60)
+		ok = ok and finished >= 2 and inst.valueOf("fade") == 1
+		local curve = inst.curveSamples("quadOut", 4)
+		ok = ok and #curve == 5 and curve[1] <= curve[#curve]
+		ok = ok and math.abs(inst.ease("linear", 0.5) - 0.5) < 1e-6
+		local ids, total = inst.chain("intro")
+		ok = ok and #ids == 2 and total > 0
+		ok = ok and inst.holdAll() >= 2
+		inst.clear()
+		return ok and inst.activeCount() == 0 and inst.stats().completed >= 2""")
+
+SPEC["replicator"] = ("""		function inst.installWorld(count)
+			if #inst.order > 0 then return #inst.order end
+			for i = 1, (count or 4) do
+				inst.spawn("ent" .. i, { hp = 100, tier = i },
+					Vec.vec3(i * 12, 0, i * 6))
+			end
+			return #inst.order
+		end
+		function inst.connectViewer(clientId, position)
+			inst.installWorld()
+			return inst.addClient(clientId or "viewer", position or Vec.vec3())
+		end
+		function inst.pump(steps)
+			inst.connectViewer("viewer", Vec.vec3())
+			local packets = 0
+			for i = 1, (steps or 2) do
+				inst.set("ent1", "hp", 100 - i)
+				local sent = inst.flush()
+				for _ in pairs(sent) do packets = packets + 1 end
+			end
+			return packets
+		end
+		function inst.mirror(clientId)
+			inst.connectViewer(clientId or "viewer", Vec.vec3())
+			local packet = inst.snapshotFor(clientId or "viewer")
+			local target = {}
+			inst.apply(packet, target)
+			return target
+		end
+		function inst.fragments(clientId)
+			inst.connectViewer(clientId or "viewer", Vec.vec3())
+			return inst.split(inst.snapshotFor(clientId or "viewer"))
+		end
+		function inst.visibleTo(clientId)
+			inst.connectViewer(clientId or "viewer", Vec.vec3())
+			return #inst.interestSet(clientId or "viewer")
+		end""",
+"""		local ok = inst.installWorld(4) == 4
+		ok = ok and inst.connectViewer("viewer", Vec.vec3()) ~= nil
+		ok = ok and inst.visibleTo("viewer") >= 1
+		local mirrored = inst.mirror("viewer")
+		ok = ok and mirrored.ent1 ~= nil and mirrored.ent1.hp == 100
+		inst.flush()
+		ok = ok and inst.pump(2) >= 1
+		local parts = inst.fragments("viewer")
+		ok = ok and #parts >= 0
+		for _, part in ipairs(parts) do ok = ok and part.bytes <= inst.mtu * 2 end
+		inst.move("ent1", Vec.vec3(4, 0, 0))
+		ok = ok and inst.despawn("ent4")
+		return ok and inst.bandwidth() >= 0 and inst.stats().entities == 3""")
+
+SPEC["netclock"] = ("""		function inst.syncFor(samples, latency, offset)
+			local n = samples or 6
+			local rtt = latency or 0.05
+			local skew = offset or 1.0
+			for i = 1, n do
+				local sent = i * 0.1
+				inst.sample(sent, sent + rtt * 0.5 + skew, sent + rtt)
+			end
+			return inst.offset
+		end
+		function inst.runTicks(seconds)
+			return inst.advance(seconds or 1)
+		end
+		function inst.bufferSnapshot(count)
+			local pushed = 0
+			for i = 1, (count or 3) do
+				if inst.push({ tick = i }, inst.localTime) then pushed = pushed + 1 end
+			end
+			return pushed
+		end
+		function inst.drain(seconds)
+			inst.advance(seconds or (inst.bufferDelay + 0.05))
+			return #inst.pop()
+		end
+		function inst.clockHealth()
+			return { rtt = inst.rtt, jitter = inst.jitter, offset = inst.offset,
+				buffered = #inst.buffer }
+		end
+		function inst.retune()
+			return inst.adaptBuffer()
+		end""",
+"""		local offset = inst.syncFor(6, 0.05, 1.0)
+		local ok = math.abs(offset - 1.0) < 0.1
+		ok = ok and inst.rtt > 0 and inst.jitter >= 0
+		ok = ok and inst.runTicks(1) >= 1
+		ok = ok and inst.tickDuration() > 0
+		ok = ok and inst.bufferSnapshot(3) == 3
+		ok = ok and #inst.pop() == 0
+		ok = ok and inst.drain(inst.bufferDelay + 0.05) >= 1
+		local h = inst.clockHealth()
+		ok = ok and h.rtt > 0
+		ok = ok and inst.retune() >= 0.016
+		inst.setBufferDelay(0.1)
+		return ok and inst.serverTime() > 0 and inst.stats().tick >= 1""")
+
+SPEC["prediction"] = ("""		function inst.driveForward(steps, dt)
+			local input = { move = Vec.vec3(1, 0, 0), speed = 8 }
+			local step = dt or 1 / 30
+			for _ = 1, (steps or 6) do inst.pushInput(input, step) end
+			return inst.sequence
+		end
+		function inst.confirm(sequence)
+			return inst.reconcile({ position = inst.state.position,
+				velocity = inst.state.velocity }, sequence or inst.sequence)
+		end
+		function inst.correctTo(position, sequence)
+			return inst.reconcile({ position = position or Vec.vec3(),
+				velocity = Vec.vec3() }, sequence or math.max(0, inst.sequence - 2))
+		end
+		function inst.errorNow()
+			return inst.predictionError()
+		end
+		function inst.renderPose(dt)
+			return inst.smooth({ position = inst.serverState.position,
+				velocity = inst.serverState.velocity }, dt or 1 / 60)
+		end
+		function inst.rewind()
+			inst.reset({ position = Vec.vec3(), velocity = Vec.vec3() })
+			return inst.pending()
+		end""",
+"""		local ok = inst.driveForward(6, 1 / 30) == 6
+		ok = ok and inst.state.position.x > 0 and inst.pending() == 6
+		local corrected = inst.confirm(inst.sequence)
+		ok = ok and not corrected and inst.pending() == 0
+		inst.driveForward(4, 1 / 30)
+		local far = Vec.vec3(inst.state.position.x - 5, 0, 0)
+		local fixed, err = inst.correctTo(far)
+		ok = ok and fixed and err > inst.errorThreshold
+		ok = ok and inst.stats().replays > 0
+		ok = ok and inst.errorNow() >= 0
+		local pose = inst.renderPose(1 / 60)
+		ok = ok and pose.position ~= nil
+		return ok and inst.rewind() == 0 and inst.stats().mispredictions >= 1""")
 
 
 build()
