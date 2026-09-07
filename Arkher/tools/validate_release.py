@@ -60,7 +60,7 @@ def validate(path, expect_place=False):
     if mismatched[:3]: print("  e.g. mismatch:", mismatched[:3])
     return ok
 
-ROUND = os.environ.get("ARKHER_ROUND", "ROUND4")
+ROUND = os.environ.get("ARKHER_ROUND", "ROUND5")
 allok = True
 for f, place in (("ARKHER_V1_%s.rbxmx" % ROUND, False), ("ARKHER_V1_%s.rbxlx" % ROUND, True),
                  ("ARKHER_V1_STUDIO_PLUGIN.rbxmx", False)):

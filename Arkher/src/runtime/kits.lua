@@ -1091,6 +1091,9 @@ return function(A)
 	local Render = A:import("arkher/runtime/kits_render")
 	for _, name in ipairs(Render.NAMES) do Kits[name] = Render[name] end
 
+	local Motion = A:import("arkher/runtime/kits_motion")
+	for _, name in ipairs(Motion.NAMES) do Kits[name] = Motion[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
@@ -1099,7 +1102,9 @@ return function(A)
 		"scenegraph", "prefab", "heightfield", "voxel", "spline", "mesh",
 		"chunker", "wfc", "lsystem", "scatter", "network", "simulation",
 		"material", "sampler", "shadegraph", "framegraph", "camera", "visibility",
-		"impostor", "lightrig", "probe", "temporal", "upscaler", "inference" }
+		"impostor", "lightrig", "probe", "temporal", "upscaler", "inference",
+		"rigidbody", "collider", "contact", "constraint", "raycaster", "charmotor",
+		"vehicle", "skeleton", "clip", "animator", "ik", "ragdoll" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]

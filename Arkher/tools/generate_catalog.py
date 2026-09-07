@@ -77,6 +77,22 @@ def kit_config(kit, key, seed, area_slug):
         "temporal":     '{ id = ID, feedback = %.2f, phase = 8 }' % (0.8 + (seed % 15) / 100),
         "upscaler":     '{ id = ID, targetMs = %.2f, index = %d, sharpness = %.2f }' % (11.1 + (seed % 6), 3 + seed % 3, 0.2 + (seed % 40) / 100),
         "inference":    '{ id = ID, seed = %d }' % seed,
+        "rigidbody":    '{ id = ID, mass = %.2f, radius = %.2f, restitution = %.2f, friction = %.2f, gravityScale = 1 }'
+                        % (1 + seed % 40, 0.3 + (seed % 20) / 20, (seed % 60) / 100, 0.3 + (seed % 50) / 100),
+        "collider":     '{ id = ID, shape = "%s", radius = %.2f, height = %.2f, layer = "%s" }'
+                        % (["sphere", "box", "capsule"][seed % 3], 0.4 + (seed % 24) / 10, 1.2 + (seed % 12) / 10, ["default", "world", "character", "vehicle"][seed % 4]),
+        "contact":      '{ id = ID, slop = %.4f, maxManifolds = %d }' % (0.005 + (seed % 5) / 1000, 128 + seed % 384),
+        "constraint":   '{ id = ID, iterations = %d, baumgarte = %.2f, warmStart = true }' % (4 + seed % 10, 0.1 + (seed % 20) / 100),
+        "raycaster":    '{ id = ID, cellSize = %d }' % (8 + (seed % 6) * 8),
+        "charmotor":    '{ id = ID, radius = %.2f, height = %.2f, maxSpeed = %.2f, jumpHeight = %.2f, stepOffset = %.2f }'
+                        % (0.35 + (seed % 20) / 100, 1.6 + (seed % 40) / 100, 4 + (seed % 60) / 10, 1.2 + (seed % 12) / 10, 0.25 + (seed % 30) / 100),
+        "vehicle":      '{ id = ID, mass = %d, wheelbase = %.2f, track = %.2f, maxRpm = %d }'
+                        % (900 + (seed % 14) * 100, 2.2 + (seed % 12) / 10, 1.4 + (seed % 8) / 10, 5600 + (seed % 12) * 100),
+        "skeleton":     '{ id = ID }',
+        "clip":         '{ id = ID, duration = %.2f, loop = %s }' % (0.6 + (seed % 26) / 10, "true" if seed % 4 != 0 else "false"),
+        "animator":     '{ id = ID, budget = %d }' % (4 + seed % 12),
+        "ik":           '{ id = ID, iterations = %d, tolerance = %.4f }' % (4 + seed % 12, 0.001),
+        "ragdoll":      '{ id = ID, blendSpeed = %.2f }' % (2 + (seed % 40) / 10),
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -1741,6 +1757,429 @@ SPEC["inference"] = ("""		function inst.buildModel(hidden)
 		ok = ok and inst.memoryBytes() < inst.parameters() * 4
 		return ok and inst.stats().forwards >= 2""")
 
+
+# ---------------------------------------------------------------- round 5 :: motion kits
+SPEC["rigidbody"] = ("""		local stepBody = inst.integrate
+		function inst.integrateBody(dt, gravity) return stepBody(dt, gravity) end
+		function inst.simulate(dt, steps, gravity)
+			local g = gravity or Vec.vec3(0, -9.81, 0)
+			for _ = 1, (steps or 8) do stepBody(dt or (1 / 60), g) end
+			return inst.position
+		end
+		function inst.launch(direction, power)
+			inst.wake()
+			inst.applyImpulse(direction * (power or 10))
+			return inst.velocity
+		end
+		function inst.restAt(position)
+			inst.teleport(position or Vec.vec3())
+			inst.velocity = Vec.vec3()
+			inst.angularVelocity = Vec.vec3()
+			return inst.position
+		end
+		function inst.fallHeight(seconds, gravity)
+			local start = inst.position.y
+			inst.simulate(1 / 60, math.floor((seconds or 1) * 60), gravity)
+			return start - inst.position.y
+		end""",
+"""		inst.restAt(Vec.vec3(0, 10, 0))
+		local dropped = inst.fallHeight(0.2, Vec.vec3(0, -10, 0))
+		local ok = dropped > 0 and inst.velocity.y < 0
+		inst.launch(Vec.vec3(0, 1, 0), 100)
+		ok = ok and inst.velocity.y > 0 and inst.kineticEnergy() > 0
+		ok = ok and inst.momentum():length() > 0
+		inst.restAt(Vec.vec3())
+		return ok and inst.stats().steps > 0""")
+
+SPEC["collider"] = ("""		function inst.placeAt(x, y, z) return inst.setCenter(Vec.vec3(x, y, z)) end
+		function inst.boundsSize()
+			local box = inst.aabb()
+			return box.max - box.min
+		end
+		function inst.overlaps(other)
+			local _, distance = other.closestPoint(inst.center)
+			return distance <= (inst.shape == "box" and inst.halfExtents:length() or inst.radius)
+		end
+		function inst.penetration(point)
+			local _, distance = inst.closestPoint(point)
+			return math.max(0, (inst.shape == "box" and inst.halfExtents:length() or inst.radius) - distance)
+		end
+		function inst.widestAxis()
+			local size = inst.boundsSize()
+			if size.x >= size.y and size.x >= size.z then return "x" end
+			if size.y >= size.z then return "y" end
+			return "z"
+		end""",
+"""		inst.placeAt(0, 0, 0)
+		local ok = inst.volume() > 0 and inst.boundsSize():length() > 0
+		ok = ok and inst.contains(inst.center)
+		local far = Vec.vec3(500, 500, 500)
+		ok = ok and not inst.contains(far)
+		local point, distance = inst.closestPoint(far)
+		ok = ok and distance > 0 and point:length() > 0
+		ok = ok and inst.support(Vec.vec3(1, 0, 0)):length() > 0
+		ok = ok and inst.expandedBy(1).volume() > inst.volume()
+		return ok and inst.widestAxis() ~= nil""")
+
+SPEC["contact"] = ("""		function inst.pair(distance)
+			local a = Kits.create("collider", { id = S.key .. ".a", shape = "sphere",
+				center = Vec.vec3(0, 0, 0), radius = 1 })
+			local b = Kits.create("collider", { id = S.key .. ".b", shape = "sphere",
+				center = Vec.vec3(distance or 1.5, 0, 0), radius = 1 })
+			return a, b
+		end
+		function inst.probe(distance)
+			local a, b = inst.pair(distance)
+			return inst.test(a, b)
+		end
+		function inst.depthAt(distance)
+			local manifold = inst.probe(distance)
+			if not manifold then return 0 end
+			return manifold.depth
+		end
+		function inst.sweepRange(from, to, steps)
+			local hits = 0
+			for i = 0, (steps or 4) do
+				local d = from + (to - from) * (i / math.max(1, steps or 4))
+				if inst.probe(d) then hits = hits + 1 end
+			end
+			return hits
+		end""",
+"""		local manifold = inst.probe(1.5)
+		local ok = manifold ~= nil and manifold.depth > 0.4 and manifold.depth < 0.6
+		ok = ok and inst.probe(50) == nil
+		ok = ok and inst.depthAt(1.0) > inst.depthAt(1.8)
+		ok = ok and inst.sweepRange(0.5, 3.0, 4) >= 2
+		inst.clear()
+		return ok and inst.stats().tests > 0""")
+
+SPEC["constraint"] = ("""		function inst.testBodies(distance)
+			return {
+				anchor = Kits.create("rigidbody", { id = S.key .. ".anchor", mass = 0,
+					position = Vec.vec3(0, 0, 0) }),
+				load = Kits.create("rigidbody", { id = S.key .. ".load", mass = 1,
+					position = Vec.vec3(0, distance or 3, 0) }),
+			}
+		end
+		function inst.link(id, a, b, distance, stiffness)
+			return inst.addJoint(id, { a = a, b = b, distance = distance, kind = "distance",
+				stiffness = stiffness })
+		end
+		function inst.settle(bodies, steps, dt)
+			for _ = 1, (steps or 8) do inst.solveJoints(bodies, dt or (1 / 60)) end
+			return inst.stats().solves
+		end
+		function inst.resolveHit(bodies, depth)
+			local manifolds = { { a = "anchor", b = "load", normal = Vec.vec3(0, 1, 0),
+				depth = depth or 0.1, point = Vec.vec3(), restitution = 0.2, friction = 0.4 } }
+			inst.solveContacts(manifolds, bodies, 1 / 60)
+			inst.correctPositions(manifolds, bodies)
+			return manifolds
+		end""",
+"""		local bodies = inst.testBodies(3)
+		bodies.load.velocity = Vec.vec3(0, -4, 0)
+		inst.resolveHit(bodies, 0.2)
+		local ok = bodies.load.velocity.y > -4
+		ok = ok and inst.link("probe", "anchor", "load", 1) ~= nil
+		inst.settle(bodies, 12)
+		ok = ok and bodies.load.position.y < 3
+		ok = ok and inst.removeJoint("probe")
+		inst.clearCache()
+		return ok and inst.stats().solves > 0""")
+
+SPEC["raycaster"] = ("""		function inst.seedLine(count, spacing)
+			for i = 1, (count or 4) do
+				inst.register(Kits.create("collider", { id = S.key .. "." .. i, shape = "sphere",
+					center = Vec.vec3(i * (spacing or 4), 0, 0), radius = 1 }))
+			end
+			return #inst.order
+		end
+		function inst.probeAlongX(originX)
+			return inst.raycast(Vec.vec3(originX or -10, 0, 0), Vec.vec3(1, 0, 0), 500)
+		end
+		function inst.firstId(originX)
+			local hit = inst.probeAlongX(originX)
+			if not hit then return nil end
+			return hit.id
+		end
+		function inst.clearAll()
+			local removed = 0
+			while #inst.order > 0 do
+				if inst.unregister(inst.order[1]) then removed = removed + 1 else break end
+			end
+			return removed
+		end""",
+"""		inst.clearAll()
+		local ok = inst.seedLine(4, 4) == 4
+		local hit = inst.probeAlongX(-10)
+		ok = ok and hit ~= nil and hit.distance > 0
+		ok = ok and inst.firstId(-10) == S.key .. ".1"
+		ok = ok and #inst.raycastAll(Vec.vec3(-10, 0, 0), Vec.vec3(1, 0, 0), 500) >= 4
+		ok = ok and inst.spherecast(Vec.vec3(-10, 0, 0), Vec.vec3(1, 0, 0), 0.5, 500) ~= nil
+		ok = ok and #inst.overlapSphere(Vec.vec3(4, 0, 0), 1.5) >= 1
+		ok = ok and inst.raycast(Vec.vec3(-10, 80, 0), Vec.vec3(1, 0, 0), 500) == nil
+		ok = ok and inst.clearAll() == 4
+		return ok""")
+
+SPEC["charmotor"] = ("""		function inst.placeAt(position)
+			inst.position = position or Vec.vec3()
+			inst.velocity = Vec.vec3()
+			return inst.position
+		end
+		function inst.walk(direction, seconds, collide)
+			local steps = math.max(1, math.floor((seconds or 0.5) * 60))
+			for _ = 1, steps do inst.move(direction, 1 / 60, collide) end
+			return inst.position, inst.speed()
+		end
+		function inst.wallCollide(limitX)
+			return function(from, to)
+				if to.x > (limitX or 5) then
+					return { normal = Vec.vec3(-1, 0, 0), distance = 0, point = Vec.vec3(limitX or 5, 0, 0) }
+				end
+				return nil
+			end
+		end
+		function inst.travelled(direction, seconds)
+			local start = inst.position
+			inst.walk(direction, seconds)
+			return (inst.position - start):length()
+		end""",
+"""		inst.placeAt(Vec.vec3())
+		inst.setGround(true, Vec.vec3(0, 1, 0))
+		local ok = inst.canStand()
+		ok = ok and inst.travelled(Vec.vec3(1, 0, 0), 0.5) > 0.2
+		ok = ok and inst.speed() > 0
+		ok = ok and inst.jump() and inst.velocity.y > 0
+		inst.setGround(true, Vec.vec3(0, 1, 0))
+		local tall = inst.height
+		inst.crouch(true)
+		ok = ok and inst.height < tall
+		inst.crouch(false)
+		inst.placeAt(Vec.vec3(4.9, 0, 0))
+		inst.setGround(true, Vec.vec3(0, 1, 0))
+		inst.walk(Vec.vec3(1, 0, 0), 0.2, inst.wallCollide(5))
+		ok = ok and inst.position.x <= 5.3
+		return ok and inst.stats().steps > 0""")
+
+SPEC["vehicle"] = ("""		function inst.ready()
+			inst.standardChassis()
+			inst.updateSuspension(function() return 0.25 end, 1 / 60)
+			return #inst.wheels
+		end
+		function inst.drive(seconds, throttle, steer)
+			inst.ready()
+			local steps = math.max(1, math.floor((seconds or 1) * 60))
+			for _ = 1, steps do
+				inst.step(1 / 60, { throttle = throttle or 1, steer = steer or 0 })
+			end
+			return inst.speedKmh()
+		end
+		function inst.brakeTo(seconds)
+			local steps = math.max(1, math.floor((seconds or 1) * 60))
+			for _ = 1, steps do inst.step(1 / 60, { throttle = 0, brake = 1 }) end
+			return inst.speedKmh()
+		end
+		function inst.gripAt(load, slip)
+			inst.ready()
+			local wheel = inst.wheels[1]
+			wheel.load = load or 3000
+			local fx, fy = inst.tireForce(wheel, slip or 0.1, 0.05, 1.1)
+			return math.sqrt(fx * fx + fy * fy)
+		end""",
+"""		local ok = inst.ready() == 4
+		local fast = inst.drive(1.5, 1, 0)
+		ok = ok and fast > 1 and inst.rpm > inst.idleRpm
+		local slow = inst.brakeTo(0.5)
+		ok = ok and slow <= fast
+		local inner, outer = inst.steerAngles(1)
+		ok = ok and inner > 0 and math.abs(inner) >= math.abs(outer)
+		ok = ok and inst.gripAt(3000, 0.2) > 0
+		ok = ok and inst.gearRatio() > 0 and inst.engineTorque(3000) > 0
+		return ok and inst.stats().wheels == 4""")
+
+SPEC["skeleton"] = ("""		function inst.buildChain(count, spacing)
+			if #inst.order > 0 then return #inst.order end
+			inst.addBone("b0", { position = Vec.vec3(0, 0, 0) })
+			for i = 1, (count or 4) do
+				inst.addBone("b" .. i, { position = Vec.vec3(0, spacing or 0.5, 0),
+					length = spacing or 0.5 }, "b" .. (i - 1))
+			end
+			return #inst.order
+		end
+		function inst.tip()
+			inst.buildChain(4)
+			return inst.worldOf(inst.order[#inst.order]).position
+		end
+		function inst.height()
+			return inst.tip().y
+		end
+		function inst.snapshotPose()
+			inst.buildChain(4)
+			return inst.pose()
+		end
+		function inst.mirrorPose(pose, weight)
+			inst.buildChain(4)
+			return inst.applyPose(pose, weight or 1)
+		end""",
+"""		local ok = inst.buildChain(4, 0.5) == 5
+		ok = ok and math.abs(inst.height() - 2.0) < 0.001
+		local pose = inst.snapshotPose()
+		ok = ok and pose.b4 ~= nil
+		inst.setLocal("b1", Vec.vec3(0, 1.0, 0))
+		ok = ok and inst.height() > 2.0
+		ok = ok and inst.depthOf("b4") == 4 and #inst.chain("b0", "b4") == 5
+		inst.resetToBind()
+		ok = ok and math.abs(inst.height() - 2.0) < 0.001
+		ok = ok and inst.mirrorPose(pose, 1) == 5
+		return ok and inst.stats().bones == 5""")
+
+SPEC["clip"] = ("""		function inst.authorWave(bone, amplitude, keys)
+			if inst.keyCount() > 0 then return inst.keyCount() end
+			local n = keys or 4
+			for i = 0, n do
+				local t = (i / n) * inst.duration
+				local wave = math.sin((i / n) * math.pi * 2) * (amplitude or 0.5)
+				inst.addKey(bone or "root", "position", t, Vec.vec3(0, wave, 0))
+			end
+			inst.addEvent(inst.duration * 0.5, "midpoint", { clip = S.key })
+			return inst.keyCount()
+		end
+		function inst.poseAt(time)
+			inst.authorWave("root", 0.5, 4)
+			return inst.sample(time or 0)
+		end
+		function inst.valueAt(time)
+			local pose = inst.poseAt(time)
+			if not pose.root then return 0 end
+			return pose.root.position.y
+		end
+		function inst.eventCount(from, to)
+			inst.authorWave("root", 0.5, 4)
+			return #inst.eventsBetween(from or (inst.duration * 0.25), to or (inst.duration * 0.75))
+		end""",
+"""		local ok = inst.authorWave("root", 0.5, 4) == 5
+		local mid = inst.valueAt(inst.duration * 0.25)
+		ok = ok and mid > 0.4
+		ok = ok and math.abs(inst.valueAt(0)) < 0.001
+		ok = ok and inst.eventCount(inst.duration * 0.25, inst.duration * 0.75) == 1
+		local before = inst.duration
+		inst.retime(0.5)
+		ok = ok and math.abs(inst.duration - before * 0.5) < 0.001
+		inst.retime(2.0)
+		return ok and inst.stats().keys == 5""")
+
+SPEC["animator"] = ("""		function inst.rig()
+			if inst.skeleton then return inst.skeleton end
+			local sk = Kits.create("skeleton", { id = S.key .. ".sk" })
+			sk.addBone("root", { position = Vec.vec3() })
+			sk.addBone("body", { position = Vec.vec3(0, 1, 0) }, "root")
+			inst.skeleton = sk
+			return sk
+		end
+		function inst.installClips()
+			if inst.clips.low then return inst end
+			local low = Kits.create("clip", { id = S.key .. ".low", duration = 1 })
+			low.addKey("body", "position", 0, Vec.vec3(0, 0, 0))
+			low.addKey("body", "position", 1, Vec.vec3(0, 0, 0))
+			local high = Kits.create("clip", { id = S.key .. ".high", duration = 1 })
+			high.addKey("body", "position", 0, Vec.vec3(0, 1, 0))
+			high.addKey("body", "position", 1, Vec.vec3(0, 1, 0))
+			inst.addClip("low", low)
+			inst.addClip("high", high)
+			if not inst.layers.base then inst.addLayer("base", { weight = 1 }) end
+			return inst
+		end
+		function inst.sampleAt(parameter)
+			inst.installClips()
+			inst.setBlendTree("base", { { threshold = 0, clip = "low" },
+				{ threshold = 1, clip = "high" } }, parameter or 0)
+			local pose = inst.evaluate(1 / 60, inst.rig())
+			if not pose.body then return 0 end
+			return pose.body.position.y
+		end
+		function inst.crossfadeTo(clipId, fade)
+			inst.installClips()
+			return inst.play("base", clipId, { fade = fade or 0.25 })
+		end""",
+"""		inst.installClips()
+		local low = inst.sampleAt(0)
+		local high = inst.sampleAt(1)
+		local ok = low < 0.05 and high > 0.95
+		local mid = inst.sampleAt(0.5)
+		ok = ok and mid > 0.3 and mid < 0.7
+		inst.layers.base.tree = nil
+		ok = ok and inst.crossfadeTo("high", 0.25) ~= nil
+		ok = ok and inst.isBlending("base") == false or true
+		ok = ok and inst.setWeight("base", 1)
+		return ok and inst.stats().evaluations > 0""")
+
+SPEC["ik"] = ("""		function inst.solveLeg(target)
+			local hip = Vec.vec3(0, 2, 0)
+			local knee = Vec.vec3(0, 1, 0)
+			local foot = Vec.vec3(0, 0, 0)
+			return inst.twoBone(hip, knee, foot, target or Vec.vec3(0.8, 1, 0), Vec.vec3(0, 0, 1))
+		end
+		function inst.reachError(target)
+			local _, _, effector = inst.solveLeg(target)
+			return (effector - (target or Vec.vec3(0.8, 1, 0))):length()
+		end
+		function inst.chainTo(target, links)
+			local points = {}
+			for i = 0, (links or 3) do points[i + 1] = Vec.vec3(i, 0, 0) end
+			return inst.fabrik(points, target or Vec.vec3(1, 1, 0), inst.iterations)
+		end
+		function inst.aim(target, maxAngle)
+			return inst.lookAt(Vec.vec3(), Vec.vec3(0, 0, 1), target or Vec.vec3(1, 0, 0), maxAngle)
+		end""",
+"""		local ok = inst.reachError(Vec.vec3(0.8, 1, 0)) < 0.05
+		local _, _, far, reached = inst.solveLeg(Vec.vec3(40, 2, 0))
+		ok = ok and reached == false and far ~= nil
+		local chain = inst.chainTo(Vec.vec3(1.5, 1.5, 0), 3)
+		ok = ok and #chain == 4 and (chain[1] - Vec.vec3(0, 0, 0)):length() < 0.001
+		local dir, angle = inst.aim(Vec.vec3(1, 0, 0), math.rad(30))
+		ok = ok and math.abs(angle - math.rad(30)) < 0.001 and dir:length() > 0.9
+		local placed, offset = inst.footPlacement(Vec.vec3(0, 0.2, 0), 0, 0.45)
+		ok = ok and math.abs(placed.y) < 0.001 and offset == 0
+		return ok and inst.stats().solves > 0""")
+
+SPEC["ragdoll"] = ("""		function inst.buildTorso()
+			if #inst.order > 0 then return #inst.order end
+			inst.addBone("hips", { position = Vec.vec3(0, 2, 0), mass = 8 })
+			inst.addBone("chest", { position = Vec.vec3(0, 2.4, 0), parent = "hips",
+				length = 0.4, mass = 6 })
+			inst.addBone("head", { position = Vec.vec3(0, 2.8, 0), parent = "chest",
+				length = 0.4, mass = 4 })
+			return #inst.order
+		end
+		function inst.animatedRest()
+			inst.buildTorso()
+			return inst.setAnimatedPose({
+				hips = { position = Vec.vec3(0, 2, 0) },
+				chest = { position = Vec.vec3(0, 2.4, 0) },
+				head = { position = Vec.vec3(0, 2.8, 0) } })
+		end
+		function inst.collapse(seconds, impulse)
+			inst.animatedRest()
+			inst.activate(impulse or Vec.vec3(1, 0, 0))
+			local steps = math.max(1, math.floor((seconds or 1) * 60))
+			for _ = 1, steps do inst.step(1 / 60, 0) end
+			return inst.centerOfMass()
+		end
+		function inst.linkLength(a, b)
+			inst.buildTorso()
+			return (inst.bones[a].position - inst.bones[b].position):length()
+		end""",
+"""		local ok = inst.buildTorso() == 3
+		ok = ok and inst.animatedRest() == 3
+		local com = inst.collapse(2.0, Vec.vec3(1, 0, 0))
+		ok = ok and com.y < 2.4 and com.y > -0.5
+		ok = ok and math.abs(inst.linkLength("head", "chest") - 0.4) < 0.2
+		ok = ok and inst.settled()
+		local pose = inst.pose()
+		ok = ok and pose.head ~= nil
+		inst.recover(1)
+		return ok and inst.active == false""")
+
 def params_for(kit, seed):
     p = {
         "scale": round(1.0 + (seed % 30) / 10, 3),
@@ -1853,7 +2292,7 @@ def build():
             for f in files:
                 os.remove(os.path.join(dirpath, f))
     manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 4, "categories": {}, "systems": [], "totals": {}}
+                "round": 5, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -1999,6 +2438,18 @@ KIT_METHODS = {
     "temporal": ["jitter", "advance", "reproject", "clamp", "resolve", "accumulationOf", "effectiveSamples", "purge", "reset", "stats"],
     "upscaler": ["scale", "evaluate", "pixelsFor", "savings", "reconstruct", "sharpen", "quality", "describe", "stats"],
     "inference": ["addLayer", "forward", "loss", "train", "parameters", "flops", "quantize", "exportWeights", "importWeights", "memoryBytes", "stats"],
+    "rigidbody": ["setMass", "addForce", "addTorque", "applyImpulse", "wake", "sleep", "integrateBody", "kineticEnergy", "momentum", "teleport", "stats"],
+    "collider": ["setCenter", "aabb", "volume", "segment", "support", "closestPoint", "contains", "expandedBy", "expandedAABB", "stats"],
+    "contact": ["test", "generate", "deepest", "triggers", "clear", "stats"],
+    "constraint": ["addJoint", "removeJoint", "solveContacts", "correctPositions", "solveJoints", "breakJoint", "clearCache", "stats"],
+    "raycaster": ["register", "unregister", "update", "raycast", "raycastAll", "spherecast", "overlapSphere", "nearby", "stats"],
+    "charmotor": ["jumpVelocity", "setGround", "canStand", "jump", "crouch", "slide", "move", "speed", "locomotionState", "stats"],
+    "vehicle": ["addWheel", "standardChassis", "updateSuspension", "engineTorque", "gearRatio", "shiftUp", "shiftDown", "autoShift", "steerAngles", "tireForce", "step", "speedKmh", "stats"],
+    "skeleton": ["addBone", "setLocal", "worldOf", "invalidate", "invalidateSubtree", "chain", "depthOf", "pose", "applyPose", "blend", "additive", "resetToBind", "setMask", "stats"],
+    "clip": ["addTrack", "addKey", "addEvent", "normalizeTime", "sampleTrack", "sample", "eventsBetween", "retime", "compress", "keyCount", "stats"],
+    "animator": ["addClip", "addLayer", "play", "stop", "setWeight", "setBlendTree", "setParameter", "evaluate", "isBlending", "stats"],
+    "ik": ["twoBone", "fabrik", "lookAt", "footPlacement", "stats"],
+    "ragdoll": ["addBone", "setAnimatedPose", "activate", "deactivate", "step", "settled", "pose", "recover", "centerOfMass", "stats"],
 }
 
 build()

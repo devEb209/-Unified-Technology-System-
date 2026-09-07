@@ -160,3 +160,50 @@ platform does not expose to user code. Status: **substituted**.
 own Reconstruction Framework (resolution ladder with hysteresis, edge-aware reconstruction,
 temporal accumulation with variance clipping, and a *trained* scale policy) is the substitute, and
 it is fully implemented. Status: **substituted**.
+
+---
+
+# ROUND 5 RECORDS (Physics · Animation · Digital Humans)
+
+## VISION-023 — Native rigid-body middleware (PhysX / Havok / Jolt class)
+**Memory note:** the platform runs no native physics module a script can steer, and its own solver
+is not addressable, deterministic or budgetable from user code. ARKHER therefore owns the whole
+loop: fixed timestep, spatial-hash broadphase, analytic manifolds, sequential impulses with warm
+starting, Baumgarte correction, joints and a position checksum that CI asserts twice per build.
+The platform solver stays available as an *output* adapter for bodies ARKHER chooses to delegate.
+Status: **substituted (fully implemented in ARKHER's own terms)**.
+
+## VISION-024 — Continuous collision detection for bullet-speed objects
+**Memory note:** ARKHER ships conservative sphere sweeps (Minkowski-expanded ray tests) which
+solve the character and projectile cases at mobile cost. True per-shape conservative advancement
+against rotating convex meshes is expensive and is scheduled with the mesh-collider work, not
+claimed today. Status: **partially implemented**.
+
+## VISION-025 — GPU cloth, soft bodies and destruction (Blast class)
+**Memory note:** the cloth, soft-body and destruction *areas* exist in category H with real
+budgeting, policy, analysis and recovery systems, and the `constraint` kit ships breakable joints
+plus a distance-joint rope/ragdoll solver. Vertex-level cloth simulation and fracture meshing need
+geometry the adapter cannot generate at runtime; they are recorded here and scheduled behind the
+VFX and asset-pipeline families. Status: **partially implemented**.
+
+## VISION-026 — Learned motion matching (neural pose search)
+**Memory note:** ARKHER implements classical motion matching with explicit feature vectors, a
+weighted cost function, stride-sampled k-best search inside a hard budget, switch hysteresis and
+blend-in. Compressing that database into a learned network (Learned Motion Matching) is a
+Singularity AI capability for Round 8 (category T), because the trainer belongs at authoring time.
+The runtime hook — a pose provider behind one interface — already exists. Status: **scheduled**.
+
+## VISION-027 — Skeletal skinning, morph targets and facial rigs at vertex level
+**Memory note:** ARKHER owns the *rig*: bones, poses, blending, masks, IK, ragdoll and the
+character tiering that decides how many bones a body deserves at a given distance. Deforming a
+mesh per vertex, and blending morph targets, requires runtime mesh generation the platform does
+not expose; the adapter maps ARKHER poses onto the rig types that do exist. Facial animation,
+lip-sync, gaze and expression are shipped as *systems* (category J) that drive whatever the
+adapter can move. Status: **partially implemented**.
+
+## VISION-028 — Thousands of fully simulated characters at once
+**Memory note:** the honest number on a phone is dozens of animated rigs, not thousands, so ARKHER
+does not pretend otherwise: five appearance tiers, a nearest-first evaluation budget, quarter-rate
+and frozen-pose bands, and a crowd tier that moves only the capsule and skips the rig entirely.
+Larger populations are a *simulation* problem (category L, Round 6: statistical crowds promoted to
+full agents only when observed), not an animation problem. Status: **substituted**.

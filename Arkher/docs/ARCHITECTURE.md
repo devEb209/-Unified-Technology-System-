@@ -189,3 +189,47 @@ Three rules make this stack different from a pile of effects:
 
 The design system (`src/ui/theme.lua`) sits beside this stack for the same reason: one source of
 truth for colour and metrics, audited against WCAG AA, scaled by D-O15 device tier.
+
+---
+
+## 13. The motion stack (Round 5)
+
+```
+   character/digital_human.lua   motor + rig + state machine + IK + ragdoll + appearance + LOD
+        |                        9 locomotion states, 5 appearance tiers, crowd path
+        +-- physics/character_controller.lua   capsule sweeps, ground probe, step-up,
+        |        |                             depenetration, moving platforms, jump buffer
+        |        +-- physics/world.lua         fixed step -> broadphase -> narrow phase ->
+        |                                      sequential impulses -> position correction ->
+        |                                      joints -> signals -> checksum
+        +-- animation/animation_system.lua     humanoid builder, layered playback, foot/look IK,
+        |        |                             ragdoll blend, 4-band LOD, frame budget
+        |        +-- animation/motion_matching.lua   trajectory feature search under a budget
+        |
+   runtime/kits_motion.lua   rigidbody collider contact constraint raycaster charmotor vehicle
+                             skeleton clip animator ik ragdoll
+```
+
+Four rules hold this stack together:
+
+1. **One clock, one order.** The world runs on a fixed timestep with a bounded number of substeps;
+   integration, broadphase, narrow phase, solving, correction and joints always happen in the same
+   order. That is what makes `PhysicsWorld:checksum()` reproducible, and reproducibility is what
+   makes replays, rollback netcode and CI regression testing possible at all.
+
+2. **Kinematic characters do not fight the solver.** A `charmotor` is swept, not simulated: it
+   slides along contact normals, steps up ledges, is pushed out of overlaps, and only *then*
+   writes its position back into the rigid body the rest of the world sees. Fighting between an
+   animated capsule and an impulse solver is the classic source of jitter; ARKHER removes the
+   fight instead of tuning it.
+
+3. **Animation is budgeted like rendering.** Rigs are sorted by distance and evaluated nearest
+   first, at full/half/quarter rate or not at all, until the per-frame budget is spent. The same
+   `applyQuality(q)` call that moves triangle budgets moves animation budgets, IK iterations,
+   motion-matching search size and character tier distances — so the whole engine degrades as one
+   coherent picture.
+
+4. **Physical response is a blend, never a switch.** A ragdoll starts from the animated pose,
+   integrates as physical bones with distance joints, detects when it has settled, and blends back
+   toward animation on recovery. A character can be hit, fall, settle and stand up without ever
+   teleporting or popping.

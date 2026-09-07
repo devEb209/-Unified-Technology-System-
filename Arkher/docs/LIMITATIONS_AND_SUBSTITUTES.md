@@ -32,3 +32,17 @@ The registry below is live in code (`src/platform/adapter.lua`, `Adapter.LIMITAT
 | Hard draw/instance ceiling | **ARKHER Geometry Virtualization** — spatial clusters, HLOD proxies, octahedral impostors, triangle+draw budget resolve | Round 4 (F) — *shipped* |
 
 Each substitute is a *design of our own*, not an emulation of the original vendor technology.
+
+---
+
+## Round 5 additions — motion
+
+| External capability | Why it cannot be used as-is | The ARKHER system that replaces it |
+|---|---|---|
+| PhysX / Havok / Jolt rigid-body engines | Native engines, not available inside the Roblox VM; Roblox's own solver is not addressable, steerable or deterministic from a script. | **ARKHER Physics Abstraction** (`src/physics/world.lua` + kits 56–60): its own fixed-step loop, spatial-hash broadphase, manifold generation, sequential-impulse solver with warm starting, joints and a determinism checksum. Roblox physics remains one possible *output* adapter, never the brain. |
+| Unreal `CharacterMovementComponent` / Unity `CharacterController` | Engine-bound C++ components. | **ARKHER Character Motion** (`charmotor` kit + `src/physics/character_controller.lua`): capsule move-and-slide, slope limits, step-up, depenetration, coyote-time jump, platform riding, input buffering. |
+| Unreal Chaos Vehicles / NVIDIA vehicle SDK | Native modules. | **ARKHER Vehicle Framework** (`vehicle` kit): raycast suspension, torque curve, gearbox with auto-shift, Ackermann steering, friction-circle tire model. |
+| Unreal Animation Blueprint / Unity Mecanim | Editor-bound proprietary graph runtimes. | **ARKHER Animation Framework** (`skeleton`/`clip`/`animator`/`ik`/`ragdoll` kits + `src/animation/animation_system.lua`): layers, masks, crossfades, blend trees, events, IK and physical blending, all scriptable and headless-testable. |
+| Ubisoft/EA-style motion matching (Motorica, Learned Motion Matching) | Proprietary datasets and runtimes; a learned model of that size cannot ship inside a Roblox place. | **ARKHER Motion Matching** (`src/animation/motion_matching.lua`): explicit feature vectors, weighted cost with continuity bonus, stride-sampled k-best search inside a hard budget, blend-in and hysteresis — the same idea, sized for a phone. |
+| MetaHuman / Character Creator pipelines | Closed asset pipelines and licences. | **ARKHER Digital Human** (`src/character/digital_human.lua` + category J): rig definition, motion set, blend controller, look-and-reach, physical response, appearance composition, variants, per-crowd budget, streaming and recovery — 330 systems, all authored inside ARKHER. |
+| NVIDIA Blast / destruction middleware | Native. | Preserved as **Singularity AI memory**: the intent (structured destruction with breakable constraints) is recorded, and the shipped substitute is the breakable-joint path in the `constraint` kit plus the ragdoll solver. Full destruction is scheduled, not claimed. |

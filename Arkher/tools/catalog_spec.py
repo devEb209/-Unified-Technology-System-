@@ -424,6 +424,110 @@ AREAS_G = [
     ("Evaluation Harness", "evalharness"), ("Neural Debug", "neuraldebug"),
 ]
 
+# ---------------------------------------------------------------- round 5 :: H PHYSICS
+ASPECTS_H = [
+    ("Body Dynamics",       "rigidbody",  "integration, impulses, damping and sleeping of a body"),
+    ("Collision Shape",     "collider",   "shape bounds, support mapping and closest points"),
+    ("Contact Generation",  "contact",    "narrow-phase manifolds with normal, depth and point"),
+    ("Constraint Solver",   "constraint", "sequential impulses, friction, joints and warm starting"),
+    ("Query",               "raycaster",  "rays, sweeps and overlaps against the simulation"),
+    ("Character Motion",    "charmotor",  "capsule move-and-slide with slopes, steps and jumps"),
+    ("Vehicle",             "vehicle",    "suspension, drivetrain, steering and tire friction"),
+    ("Broadphase Index",    "index",      "spatial acceleration of candidate pair finding"),
+    ("Budget Governor",     "budgeter",   "simulation time budget allocation across islands"),
+    ("Simulation Policy",   "policy",     "device tier rules for substeps, iterations and sleep"),
+    ("Result Cache",        "cache",      "reuse of expensive simulation and query results"),
+    ("Analysis",            "analyzer",   "energy, jitter and cost analysis of the simulation"),
+    ("Determinism Ledger",  "ledger",     "auditable journal proving reproducible simulation"),
+    ("Recovery",            "recovery",   "checkpointing and rollback when the solver diverges"),
+]
+
+AREAS_H = [
+    ("Rigid Body", "rigidbody"), ("Static Body", "staticbody"), ("Kinematic Body", "kinematicbody"),
+    ("Mass Properties", "massproperties"), ("Inertia Tensor", "inertia"), ("Center Of Mass", "centerofmass"),
+    ("Gravity Field", "gravityfield"), ("Force Accumulator", "force"), ("Impulse", "impulse"),
+    ("Torque", "torque"), ("Linear Damping", "lineardamping"), ("Angular Damping", "angulardamping"),
+    ("Sleeping", "sleeping"), ("Island Solver", "island"), ("Substepping", "substepping"),
+    ("Fixed Timestep", "fixedstep"), ("Continuous Detection", "ccd"), ("Broadphase", "broadphase"),
+    ("Narrowphase", "narrowphase"), ("Sphere Collider", "spherecollider"), ("Box Collider", "boxcollider"),
+    ("Capsule Collider", "capsulecollider"), ("Mesh Collider", "meshcollider"),
+    ("Heightfield Collider", "heightfieldcollider"), ("Compound Collider", "compoundcollider"),
+    ("Trigger Volume", "trigger"), ("Collision Layer", "collisionlayer"), ("Collision Filter", "collisionfilter"),
+    ("Contact Manifold", "manifold"), ("Restitution", "restitution"), ("Friction Model", "friction"),
+    ("Penetration Recovery", "penetration"), ("Distance Joint", "distancejoint"), ("Hinge Joint", "hingejoint"),
+    ("Ball Joint", "balljoint"), ("Slider Joint", "sliderjoint"), ("Motorized Joint", "motorjoint"),
+    ("Breakable Joint", "breakjoint"), ("Rope Simulation", "rope"), ("Cloth Simulation", "cloth"),
+    ("Soft Body", "softbody"), ("Buoyancy", "buoyancy"), ("Wind Force", "wind"),
+    ("Explosion Force", "explosion"), ("Character Controller", "charactercontroller"),
+    ("Vehicle Chassis", "vehiclechassis"), ("Wheel Suspension", "suspension"),
+    ("Raycast Query", "raycast"), ("Shapecast Query", "shapecast"), ("Overlap Query", "overlap"),
+]
+
+# ---------------------------------------------------------------- round 5 :: I ANIMATION
+ASPECTS_I = [
+    ("Skeleton",            "skeleton",  "bone hierarchy, bind pose and world resolution"),
+    ("Clip Sampling",       "clip",      "keyframe tracks sampled, retimed and evented"),
+    ("Layered Blending",    "animator",  "layers, crossfades, masks and blend trees"),
+    ("Inverse Kinematics",  "ik",        "two-bone, FABRIK and constrained look-at solving"),
+    ("Physical Blend",      "ragdoll",   "physical bones blended against the animated pose"),
+    ("Retarget Graph",      "graph",     "bone mapping and retarget path resolution"),
+    ("Compression Codec",   "codec",     "curve compression and quantized transport"),
+    ("Event Ledger",        "ledger",    "auditable journal of animation events fired"),
+    ("Playback Pipeline",   "pipeline",  "ordered sample, blend, ik and output stages"),
+    ("Pose Cache",          "cache",     "reuse of sampled poses across frames and instances"),
+    ("Quality Policy",      "policy",    "device tier rules for rate, bones and solvers"),
+    ("Analysis",            "analyzer",  "pop, drift and cost analysis of playback"),
+    ("Recovery",            "recovery",  "fallback pose when data or solving fails"),
+]
+
+AREAS_I = [
+    ("Skeleton Rig", "skeletonrig"), ("Bone Hierarchy", "bonehierarchy"), ("Bind Pose", "bindpose"),
+    ("Pose Buffer", "posebuffer"), ("Animation Clip", "animclip"), ("Keyframe Track", "keytrack"),
+    ("Curve Interpolation", "curveinterp"), ("Clip Looping", "cliploop"), ("Clip Events", "clipevents"),
+    ("Playback Speed", "playbackspeed"), ("Animation Layer", "animlayer"), ("Layer Mask", "layermask"),
+    ("Additive Layer", "additivelayer"), ("Crossfade", "crossfade"), ("Blend Tree", "blendtree"),
+    ("State Machine", "animstate"), ("Transition Rule", "transitionrule"), ("Root Motion", "rootmotion"),
+    ("Locomotion Blend", "locomotionblend"), ("Turn In Place", "turninplace"),
+    ("Foot Placement IK", "footik"), ("Hand Placement IK", "handik"), ("Look At IK", "lookatik"),
+    ("Aim Offset", "aimoffset"), ("Spine Bend", "spinebend"), ("Ragdoll Blend", "ragdollblend"),
+    ("Physical Animation", "physanim"), ("Hit Reaction", "hitreaction"), ("Retargeting", "retargeting"),
+    ("Bone Mapping", "bonemapping"), ("Animation Compression", "animcompression"),
+    ("Animation Streaming", "animstreaming"), ("Animation LOD", "animlod"),
+    ("Crowd Animation", "crowdanim"), ("Motion Matching", "motionmatching"),
+    ("Procedural Animation", "proceduralanim"), ("Facial Animation", "facialanim"),
+    ("Morph Target", "morphtarget"), ("Cloth Animation", "clothanim"), ("Animation Debug", "animdebug"),
+]
+
+# ---------------------------------------------------------------- round 5 :: J CHARACTERS
+ASPECTS_J = [
+    ("Rig Definition",      "skeleton",  "character rig definition and bone budget"),
+    ("Motion Set",          "clip",      "the clips a character owns and how they sample"),
+    ("Blend Controller",    "animator",  "layered playback driving the character"),
+    ("Look And Reach",      "ik",        "look-at, reach and foot placement for the character"),
+    ("Physical Response",   "ragdoll",   "physical reaction, ragdoll and recovery"),
+    ("Locomotion",          "charmotor", "capsule locomotion driving the character"),
+    ("Appearance Composer", "composer",  "composition of appearance slots into a look"),
+    ("Variant Registry",    "registry",  "named character variants and their lifecycle"),
+    ("Budget Governor",     "budgeter",  "per-character cost allocation in a crowd"),
+    ("Streaming",           "streamer",  "distance-driven residency of character data"),
+    ("Recovery",            "recovery",  "fallback character state when data is missing"),
+]
+
+AREAS_J = [
+    ("Digital Human", "digitalhuman"), ("Character Rig", "characterrig"), ("Body Proportions", "proportions"),
+    ("Skin Definition", "skindef"), ("Hair", "hair"), ("Eyes", "eyes"), ("Teeth", "teeth"),
+    ("Facial Rig", "facialrig"), ("Expression Set", "expression"), ("Lip Sync", "lipsync"),
+    ("Gaze Behaviour", "gaze"), ("Breathing", "breathing"), ("Blinking", "blinking"),
+    ("Posture", "posture"), ("Gesture", "gesture"), ("Clothing", "clothing"), ("Accessory", "accessory"),
+    ("Armor", "armor"), ("Equipment Slot", "equipslot"), ("Outfit Composition", "outfit"),
+    ("Character Variant", "charvariant"), ("Body Type", "bodytype"), ("Aging", "aging"),
+    ("Damage State", "damagestate"), ("Wetness Response", "wetnessresponse"),
+    ("Character Physics", "characterphysics"), ("Character LOD", "characterlod"),
+    ("Crowd Instance", "crowdinstance"), ("Character Streaming", "characterstreaming"),
+    ("Character Debug", "characterdebug"),
+]
+
+
 CATEGORIES = {
     "A": dict(family="UES / CORE", prefix="core", areas=AREAS_A, aspects=ASPECTS_A,
               doc="Kernel-level engine capability: the UES foundation every other ARKHER framework stands on."),
@@ -449,4 +553,10 @@ CATEGORIES = {
               doc="Rendering capability: the frame itself - declared, culled, lit, budgeted, resolved and paced."),
     "G": dict(family="NEURAL / RECONSTRUCTION", prefix="neural", areas=AREAS_G, aspects=ASPECTS_G,
               doc="ARKHER Reconstruction and Neural Intelligence capability: predict, reconstruct and verify instead of brute force."),
+    "H": dict(family="PHYSICS", prefix="physics", areas=AREAS_H, aspects=ASPECTS_H,
+              doc="ARKHER Physics Abstraction capability: mass, contact, constraint and motion, deterministic and budgeted."),
+    "I": dict(family="ANIMATION", prefix="anim", areas=AREAS_I, aspects=ASPECTS_I,
+              doc="ARKHER Animation Framework capability: skeletons, clips, layers, IK and physical blending."),
+    "J": dict(family="CHARACTERS / DIGITAL HUMANS", prefix="character", areas=AREAS_J, aspects=ASPECTS_J,
+              doc="ARKHER Digital Human capability: a body that moves, reacts, dresses, ages and scales to a crowd."),
 }
