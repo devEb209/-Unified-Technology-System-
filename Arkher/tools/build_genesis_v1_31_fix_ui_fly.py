@@ -359,7 +359,6 @@ def patch31(roots):
                                     c.props["Position"]=(T_UDIM2, udim2(0,0,1,0))
                             # Viewport grid central simulando 1ª print (céu + grid)
                             vp=mk("Frame","Viewport",{"BackgroundColor3":(T_COLOR3, col(0x87CEEB)),"Position":(T_UDIM2, udim2(0,280,0,72)),"Size":(T_UDIM2, udim2(1,-560,1,-92)),"BorderSizePixel":(T_INT,0)})
-                            vp.add(mk("UIGradient","G",{"Color":(T_COLOR3, col(0x87CEEB)),"Rotation":(T_FLOAT32,90)}))
                             # grid chão
                             grid=mk("Frame","Grid",{"BackgroundColor3":(T_COLOR3, col(0x6A7A8A)),"Position":(T_UDIM2, udim2(0,0,0.6,0)),"Size":(T_UDIM2, udim2(1,0,0.4,0)),"BorderSizePixel":(T_INT,0)})
                             # linhas grid
