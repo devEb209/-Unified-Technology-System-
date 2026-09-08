@@ -92,9 +92,32 @@ return function(A)
 		return Version.GENERATIONS[1]
 	end
 
-	Version.CURRENT = "1.0.1" -- 1.0.1: boot fix - Roblox host globals are behind the env metatable, rawget(_G, ...) could not see them (headless zombie boot + arithmetic bit backend inside Roblox)
+	Version.CURRENT = "2.0.0" -- 2.0.0 Continuum: full world continuum, persistent simulation, neural reconstruction continuum across devices
 	Version.ENGINE = "ARKHER"
 	Version.BUILD_CHANNEL = "release"
+
+	-- V1 -> V2 continuum migration: re-anchors world origin to continuum cell, upgrades
+	-- sparse pages to multiscale manifest, and carries D-O15 budgets forward without loss.
+	function Version.continuumMigrationChain()
+		local m = Version.migrator()
+		m:add("1.0.0", "1.0.1", function(data) data.version = "1.0.1" return data end, "V1 1.0 boot fix (host globals behind env metatable)")
+		m:add("1.0.1", "2.0.0", function(data)
+			data.version = "2.0.0"
+			data.generation = "ARKHER V2"
+			data.continuum = data.continuum or { anchored = true, sparseVersion = 2, budgetCarried = true }
+			if data.world and data.world.origin then
+				local o = data.world.origin
+				data.world.continuumCell = { x = math.floor((o.x or 0) / 512), z = math.floor((o.z or 0) / 512) }
+			end
+			if data.assets then data.assets.manifestVersion = 2 end
+			if data.do15 and data.do15.budgets then
+				data.do15.budgets.continuum = true
+				data.do15.budgets.sparsePages = math.ceil((data.do15.budgets.memoryMB or 512) / 4)
+			end
+			return data
+		end, "V2 Continuum: origin->cell anchoring, sparse->multiscale manifest, budget carry, generation lift to 2.0")
+		return m
+	end
 
 	return Version
 

@@ -969,3 +969,62 @@ CATEGORIES = {
     "Z": dict(family="ARKHER ORIGINAL TECHNOLOGIES", prefix="origin", areas=AREAS_Z, aspects=ASPECTS_Z,
               doc="ARKHER original technology: the capabilities that exist in no other engine, built for a world that keeps living."),
 }
+
+# ---------------------------------------------------------------- V2 CONTINUUM (VA, VB, VC, VD) — 2.0.0
+# Each continuum category = 53 areas x 12 aspects = 636 systems; 4 categories = 2544 new systems.
+# Total V2 = 14644 + 2544 = 17188 systems.
+ASPECTS_VA = [
+    ("Infinite Grid",         "continuum",    "seamless paging of the infinite world grid"),
+    ("Epoch Clock",           "epoch",        "deterministic epoch timeline with catch-up"),
+    ("Sparse Residency",      "sparse",       "sparse page residency with eviction and compression"),
+    ("Multi-Scale Fidelity",  "multiscale",   "distance-driven multi-scale level selection"),
+    ("Persistent State",      "persistent",   "epoch-stamped persistent history and rollback"),
+    ("Coherence Guard",       "coherence",    "seam coherence and drift supervision"),
+    ("Neural Field",          "neuralfield",  "neural field encoding and reconstruction"),
+    ("World Memory Stream",   "worldmemory",  "world memory continuum over epochs"),
+    ("Complexity Budget",     "complexity",   "complexity budgeting for the continuum"),
+    ("Simulation Fabric",     "fabric",       "fabric stepping the continuum domains"),
+    ("Reality Continuum",     "reality",      "stacked reality layers of the continuum"),
+    ("Emergence Continuum",   "emergence",    "emergence detection over the continuum"),
+]
+ASPECTS_VB = ASPECTS_VA
+ASPECTS_VC = ASPECTS_VA
+ASPECTS_VD = ASPECTS_VA
+
+AREAS_CONT = [
+    ("World Grid Cell", "worldcell"), ("Region Tile", "regiontile"), ("Zone Chunk", "zonechunk"),
+    ("Continuum Stream", "continuumstream"), ("Epoch Frame", "epochframe"), ("Sparse Page", "sparsepage"),
+    ("LOD Cascade", "lodcascade"), ("Residency Window", "residencywindow"), ("Memory Shard", "memoryshard"),
+    ("Temporal Slice", "temporalslice"), ("Spatial Slice", "spatialslice"), ("Fidelity Band", "fidelityband"),
+    ("Persistence Segment", "persistsegment"), ("Coherence Seam", "coherenceseam"), ("Neural Patch", "neuralpatch"),
+    ("Simulation Domain", "simdomain"), ("Architect District", "architectdistrict"), ("Biome Continuum", "biomecont"),
+    ("Terrain Continuum", "terraincont"), ("City Continuum", "citycont"), ("Vegetation Field", "vegfield"),
+    ("Road Continuum", "roadcont"), ("Bridge Continuum", "bridgecont"), ("Water Continuum", "watercont"),
+    ("Climate Continuum", "climatecont"), ("Weather Continuum", "weathercont"), ("Ecology Continuum", "ecologycont"),
+    ("Economy Continuum", "economycont"), ("Society Continuum", "societycont"), ("Narrative Continuum", "narrativecont"),
+    ("Quest Continuum", "questcont"), ("Dialogue Continuum", "dialoguecont"), ("Memory Continuum", "memorycont"),
+    ("Perception Continuum", "perceptioncont"), ("Behaviour Continuum", "behaviourcont"), ("Navigation Continuum", "navcont"),
+    ("Physics Continuum", "physicscont"), ("Animation Continuum", "animcont"), ("Audio Continuum", "audiocont"),
+    ("VFX Continuum", "vfxcont"), ("Lighting Continuum", "lightcont"), ("Rendering Continuum", "rendercont"),
+    ("Material Continuum", "materialcont"), ("Asset Continuum", "assetcont"), ("Pipeline Continuum", "pipelinecont"),
+    ("World Fabric", "worldfabric"), ("Device Continuum", "devicecont"), ("Mobile Continuum", "mobilecont"),
+    ("Thermal Continuum", "thermalcont"), ("Horizon Span", "horizonspan"), ("Seam Lattice", "seamlattice"),
+    ("Occupancy Map", "occupancymap"), ("Interest Field", "interestfield"),
+]
+
+AREAS_VA = AREAS_CONT
+AREAS_VB = AREAS_CONT
+AREAS_VC = AREAS_CONT
+AREAS_VD = AREAS_CONT
+
+# Extend CATEGORIES after initial declaration — appended so generate_catalog picks them up
+CATEGORIES.update({
+    "VA": dict(family="CONTINUUM — WORLD", prefix="contworld", areas=AREAS_VA, aspects=ASPECTS_VA,
+               doc="Continuum World capability: infinite, seamless world built on continuum, sparse and multiscale."),
+    "VB": dict(family="CONTINUUM — TEMPORAL", prefix="conttime", areas=AREAS_VB, aspects=ASPECTS_VB,
+               doc="Continuum Temporal capability: deterministic epoch timeline keeping every domain in sync."),
+    "VC": dict(family="CONTINUUM — NEURAL", prefix="contneural", areas=AREAS_VC, aspects=ASPECTS_VC,
+               doc="Continuum Neural capability: neural fields, temporal upscaling and coherence over the continuum."),
+    "VD": dict(family="CONTINUUM — SIMULATION", prefix="contsim", areas=AREAS_VD, aspects=ASPECTS_VD,
+               doc="Continuum Simulation capability: ecology, economy, society and weather stepped through the continuum."),
+})

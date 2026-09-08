@@ -1112,6 +1112,9 @@ return function(A)
 	local Origin = A:import("arkher/runtime/kits_origin")
 	for _, name in ipairs(Origin.NAMES) do Kits[name] = Origin[name] end
 
+	local Continuum = A:import("arkher/runtime/kits_continuum")
+	for _, name in ipairs(Continuum.NAMES) do Kits[name] = Continuum[name] end
+
 	Kits.NAMES = { "registry", "pipeline", "cache", "controller", "analyzer", "budgeter", "guard",
 		"index", "codec", "graph", "field", "predictor", "ledger", "recovery", "orchestrator",
 		"solver", "streamer", "composer", "policy", "synthesizer",
@@ -1131,7 +1134,8 @@ return function(A)
 		"intent", "knowledge", "workflow", "critic",
 		"importer", "bundler", "timeline", "camerarig", "grade",
 		"reality", "complexity", "fabric", "autopipeline", "worldmemory",
-		"emergence", "architect" }
+		"emergence", "architect",
+		"continuum", "epoch", "sparse", "multiscale", "persistent", "coherence", "neuralfield" }
 
 	function Kits.create(name, cfg)
 		local factory = Kits[name]

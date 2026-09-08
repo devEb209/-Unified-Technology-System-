@@ -1,0 +1,105 @@
+-- ARKHER SYSTEM VA.0068 :: Sparse Page World Memory Stream
+-- Category VA - CONTINUUM — WORLD
+-- Continuum World capability: infinite, seamless world built on continuum, sparse and multiscale.
+-- Kit: worldmemory (world memory continuum over epochs)
+--@arkher-module
+return function(A)
+	local Kits = A:import("arkher/runtime/kits")
+	local Vec = A:import("arkher/kernel/vec")
+
+	local S = {}
+	S.id = "VA.0068"
+	S.key = "arkher.contworld.sparsepage.world_memory_stream"
+	S.name = "Sparse Page World Memory Stream"
+	S.category = "VA"
+	S.family = "CONTINUUM — WORLD"
+	S.area = "Sparse Page"
+	S.aspect = "World Memory Stream"
+	S.kit = "worldmemory"
+	S.version = "1.0.0"
+	S.deps = { "arkher.contworld.sparsepage.neural_field" }
+	S.tags = { "va", "sparsepage", "worldmemory", "contworld" }
+	S.description = "Sparse Page World Memory Stream: world memory continuum over epochs for the Sparse Page subsystem."
+	S.params = {
+		backlogLimit = 11,
+		baseRadius = 280,
+		baseWeight = 0.63,
+		bias = 0.03,
+		biasWeight = 0.08,
+		ceiling = 483,
+		detailWeight = 0.23,
+		failureTolerance = 3,
+		horizon = 4,
+		integrator = "verlet",
+		minConfidence = 0.43,
+		minThrottle = 0.115,
+		regressionSlope = 0.065,
+		saturation = 0.83,
+		scale = 1.3
+	}
+	S.features = { "advanceEpoch", "remember", "advance", "recall", "historyOf", "compact", "summaryOf", "checksum", "checkpoint", "restore", "stats", "log", "story", "save", "load", "describe", "health", "integrate", "selfTest" }
+
+	function S.create(ctx)
+		ctx = ctx or {}
+		local inst = Kits.create("worldmemory", { id = "arkher.contworld.sparsepage.world_memory_stream", capacity = 160 })
+		inst.system = S
+		inst.ctx = ctx
+
+		function inst.log(subject, event, weight)
+			return inst.remember(subject or S.key, event or "tick",
+				{ weight = weight or 1, region = S.key })
+		end
+		function inst.story(subject) return inst.historyOf(subject or S.key, 8) end
+		function inst.save() return inst.checkpoint(S.key) end
+		function inst.load(checkpoint) return inst.restore(checkpoint) end
+
+		function inst.describe()
+			return { id = S.id, key = S.key, name = S.name, category = S.category, family = S.family,
+				area = S.area, aspect = S.aspect, kit = S.kit, features = S.features,
+				params = S.params, stats = inst.stats() }
+		end
+
+		function inst.health()
+			local st = inst.stats()
+			local status = "ok"
+			for k, v in pairs(st) do
+				if k == "failures" and type(v) == "number" and v > 0 then status = "degraded" end
+				if k == "blocked" and type(v) == "number" and v > 0 and status == "ok" then status = "throttled" end
+			end
+			return { system = S.key, status = status, stats = st }
+		end
+
+		function inst.integrate(engine)
+			if not engine then return false end
+			inst.engine = engine
+			if engine.bus then
+				engine.bus:subscribe("arkher.contworld.sparsepage.*", function(payload) inst.lastSignal = payload end)
+			end
+			if engine.registry then engine.registry[S.key] = inst end
+			return true
+		end
+
+		function inst.selfTest()
+			local ok, err = pcall(function()
+		inst.log(S.key, "born", 1)
+		inst.advance(1)
+		inst.log(S.key, "grew", 2)
+		local ok = #inst.story(S.key) == 2
+		ok = ok and #inst.recall({ region = S.key }) == 2
+		local cp = inst.save()
+		inst.log(S.key, "changed", 1)
+		ok = ok and inst.checksum() ~= cp.checksum
+		ok = ok and inst.load(cp)
+		ok = ok and #inst.recall({ subject = S.key }) == 2
+		ok = ok and inst.advanceEpoch("next") == 2
+		return ok and inst.stats().written >= 3
+			end)
+			if not ok then return false, tostring(err) end
+			return err == true or err == nil, err
+		end
+
+		return inst
+	end
+
+	return S
+end

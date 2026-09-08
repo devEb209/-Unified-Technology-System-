@@ -82,14 +82,14 @@ return function(A)
 		function inst.selfTest()
 			local ok, err = pcall(function()
 		local composed = inst.composeWorld(S.key, 80)
-		local ok = composed.nodes > 8 and composed.districts >= 1
-		ok = ok and inst.check()
-		local programme = inst.buildOrder()
-		ok = ok and programme ~= nil and #programme == #inst.order
-		local index = {}
-		for i, id in ipairs(programme) do index[id] = i end
-		ok = ok and index[S.key .. ".terrain"] < index[S.key .. ".roads"]
-		return ok and inst.cost(1) > 0 and inst.stats().composed == 1
+	local ok = composed.nodes > 8 and composed.districts >= 1
+	ok = ok and inst.check()
+	local programme = inst.buildOrder()
+	ok = ok and programme ~= nil and #programme == #inst.order
+	local index = {}
+	for i, id in ipairs(programme) do index[id] = i end
+	ok = ok and index[S.key .. ".terrain"] < index[S.key .. ".roads"]
+	return ok and inst.cost(1) > 0 and inst.stats().composed == 1
 			end)
 			if not ok then return false, tostring(err) end
 			return err == true or err == nil, err

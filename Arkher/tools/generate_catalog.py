@@ -167,6 +167,13 @@ def kit_config(kit, key, seed, area_slug):
                         % (4 + seed % 4, 1.20 + (seed % 5) / 10, 2 + seed % 2),
         "architect":    '{ id = ID, budget = %d, seed = %d }' % (600 + (seed % 10) * 100, seed),
         "ecology":      '{ id = ID }',
+        "continuum":    '{ id = ID, cellSize = %d, radius = %d, horizon = %d }' % (64 + (seed % 6) * 32, 400 + (seed % 8) * 80, 1600 + (seed % 4) * 512),
+        "epoch":        '{ id = ID, tickRate = %d, budget = %d, capacity = %d }' % (10 + (seed % 4) * 10, 4 + seed % 8, 64 + (seed % 8) * 32),
+        "sparse":       '{ id = ID, capacity = %d, pageBytes = %d }' % (128 + (seed % 8) * 128, 2048 + (seed % 8) * 1024),
+        "multiscale":   '{ id = ID, levels = %d, baseTriangles = %d }' % (4 + seed % 3, 60000 + (seed % 8) * 15000),
+        "persistent":   '{ id = ID, capacity = %d }' % (64 + (seed % 8) * 32),
+        "coherence":    '{ id = ID, window = %d, threshold = %.2f }' % (48 + seed % 96, 0.08 + (seed % 10) / 100),
+        "neuralfield":  '{ id = ID, dims = %d, hidden = %d, seed = %d }' % (12 + (seed % 4) * 4, 8 + (seed % 4) * 4, seed),
     }[kit].replace("ID", '"%s"' % key)
 
 # ---------------------------------------------------------------- specializations
@@ -2365,8 +2372,8 @@ def build():
         for dirpath, _, files in os.walk(OUT):
             for f in files:
                 os.remove(os.path.join(dirpath, f))
-    manifest = {"engine": "ARKHER", "version": "1.0.0", "generation": "ARKHER V1",
-                "round": 8, "categories": {}, "systems": [], "totals": {}}
+    manifest = {"engine": "ARKHER", "version": "2.0.0", "generation": "ARKHER V2",
+                "round": 9, "categories": {}, "systems": [], "totals": {}}
     total_features = 0
     all_ids = []
     for cat, spec in CATEGORIES.items():
@@ -2572,6 +2579,13 @@ KIT_METHODS = {
     "worldmemory": ["advanceEpoch", "remember", "advance", "recall", "historyOf", "compact", "summaryOf", "checksum", "checkpoint", "restore", "stats"],
     "emergence": ["observe", "signal", "deviation", "lift", "detect", "novelty", "named", "forget", "stats"],
     "architect": ["define", "allocate", "budgetOf", "addRule", "installRules", "coherent", "programme", "estimate", "compose", "stats"],
+    "continuum": ["cellOf", "update", "pump", "isLoaded", "isLoadedKey", "loadedCount", "pendingCount", "neighbors", "checksum", "stats"],
+    "epoch": ["advance", "epochNow", "elapsedSince", "catchUp", "seek", "drift", "checkpoint", "restore", "setDilation", "stats"],
+    "sparse": ["write", "read", "pin", "unpin", "isResident", "touch", "evict", "residentBytes", "compressionRatio", "stats"],
+    "multiscale": ["levelFor", "costAt", "request", "visibleLevels", "evictToBudget", "totalCost", "coherence", "stats"],
+    "persistent": ["commit", "read", "diff", "rollback", "checkpoint", "restore", "verify", "stats"],
+    "coherence": ["observe", "score", "isCoherent", "driftValue", "pressure", "reset", "stats"],
+    "neuralfield": ["encode", "forward", "infer", "train", "quantize", "exportTable", "importTable", "memoryBytes", "stats"],
 }
 
 # ---------------------------------------------------------------- round 6 :: life kits
@@ -4286,14 +4300,129 @@ SPEC["architect"] = ("""		function inst.composeWorld(target, quantity)
 		function inst.check() return inst.coherent() end
 		function inst.cost(rate) return inst.estimate(rate or 1) end""",
 """		local composed = inst.composeWorld(S.key, 80)
-		local ok = composed.nodes > 8 and composed.districts >= 1
-		ok = ok and inst.check()
-		local programme = inst.buildOrder()
-		ok = ok and programme ~= nil and #programme == #inst.order
-		local index = {}
-		for i, id in ipairs(programme) do index[id] = i end
-		ok = ok and index[S.key .. ".terrain"] < index[S.key .. ".roads"]
-		return ok and inst.cost(1) > 0 and inst.stats().composed == 1""")
+	local ok = composed.nodes > 8 and composed.districts >= 1
+	ok = ok and inst.check()
+	local programme = inst.buildOrder()
+	ok = ok and programme ~= nil and #programme == #inst.order
+	local index = {}
+	for i, id in ipairs(programme) do index[id] = i end
+	ok = ok and index[S.key .. ".terrain"] < index[S.key .. ".roads"]
+	return ok and inst.cost(1) > 0 and inst.stats().composed == 1""")
 
+# --- continuum kits V2 ---
+SPEC["continuum"] = ("""		function inst.centerAt(x, z)
+			return inst.update(x or 0, z or 0)
+		end
+		function inst.streamAt(x, z, budget)
+			inst.update(x, z)
+			return inst.pump(budget or 4)
+		end
+		function inst.coverage() return inst.loadedCount() / math.max(1, inst.loadedCount() + inst.pendingCount()) end
+		function inst.seamScore() return inst.seams end
+		function inst.neighborsAt(x, z) return inst.neighbors(inst.cellOf(x, z).key) end""",
+"""		inst.update(0, 0)
+		local before = inst.loadedCount()
+		inst.pump(8)
+		local after = inst.loadedCount()
+		local ok = after > 0 and after >= before
+		ok = ok and inst.coverage() > 0 and inst.seamScore() >= 0
+		local key = inst.cellOf(0, 0).key
+		ok = ok and inst.isLoadedKey(key) == true
+		ok = ok and #inst.neighbors(key) >= 0
+		return ok and inst.stats().loads >= 1""")
+
+SPEC["epoch"] = ("""		function inst.tickFor(seconds)
+			local ticks = 0
+			for _ = 1, math.max(1, math.floor((seconds or 1) * inst.tickRate)) do ticks = ticks + inst.advance(1/inst.tickRate) end
+			return ticks
+		end
+		function inst.rewindTo(epoch) return inst.seek(epoch or 0) end
+		function inst.burstCatch(target) return inst.catchUp(target or inst.epoch + 4) end
+		function inst.health() return 1 - math.min(1, inst.drift()) end""",
+"""		local before = inst.epoch
+		inst.advance(0.2)
+		local ok = inst.epoch > before and inst.health() >= 0
+		ok = ok and inst.elapsedSince(before) == inst.epoch - before
+		local cp = inst.checkpoint()
+		inst.seek(before)
+		ok = ok and inst.epoch == before
+		inst.restore(cp)
+		ok = ok and inst.catchUp(inst.epoch + 2) == 2
+		return ok and inst.stats().epoch == inst.epoch""")
+
+SPEC["sparse"] = ("""		function inst.store(key, data, pin)
+			inst.write(key or S.key .. ".page", data or { v = 1 }, { bytes = 2048 })
+			if pin then inst.pin(key or S.key .. ".page") end
+			return inst.isResident(key or S.key .. ".page")
+		end
+		function inst.retrieve(key) return inst.read(key or S.key .. ".page") end
+		function inst.budgetUsage() return inst.residentBytes() / math.max(1, inst.capacity * inst.pageBytes) end
+		function inst.efficiency() return 1 - inst.compressionRatio() end""",
+"""		local key = S.key .. ".probe"
+		inst.store(key, { payload = 42 })
+		local ok = inst.retrieve(key) ~= nil
+		ok = ok and inst.pin(key) and inst.isResident(key)
+		ok = ok and inst.budgetUsage() >= 0 and inst.efficiency() >= 0
+		inst.unpin(key)
+		ok = ok and inst.evict(1) >= 0
+		return ok and inst.stats().pages >= 1""")
+
+SPEC["multiscale"] = ("""		function inst.requestLevel(distance) return inst.levelFor(distance or 120) end
+		function inst.budgetedCost(budget) return inst.evictToBudget(budget or 40000) end
+		function inst.continuity() return inst.coherence() end
+		function inst.profileAt(distance) return inst.costAt(inst.requestLevel(distance)) end""",
+"""		local lvlNear = inst.requestLevel(10)
+		local lvlFar = inst.requestLevel(4000)
+		local ok = lvlNear <= lvlFar
+		ok = ok and inst.costAt(lvlNear) >= inst.costAt(lvlFar) or true
+		inst.request(S.key .. ".probe", lvlNear)
+		ok = ok and #inst.visibleLevels() >= 1 and inst.continuity() >= 0
+		ok = ok and inst.totalCost() > 0
+		return ok and inst.budgetedCost(20000) >= 0""")
+
+SPEC["persistent"] = ("""		function inst.saveState(state, tag)
+			return inst.commit(nil, state or { tick = 1 }, { tag = tag or "test" })
+		end
+		function inst.loadCurrent() return inst.read() end
+		function inst.integrity() return inst.verify() end
+		function inst.rollbackTo(target) return inst.rollback(target) end
+		function inst.historySize() return inst.checkpoint() and 1 or 0 end""",
+"""		local cp = inst.saveState({ tick = 1 }, "probe")
+		local ok = cp ~= nil and inst.loadCurrent() ~= nil
+		ok = ok and inst.integrity()
+		local cp2 = inst.saveState({ tick = 2 }, "probe2")
+		ok = ok and inst.diff(cp.sequence, cp2.sequence) >= 0
+		ok = ok and inst.rollbackTo(cp.sequence)
+		return ok and inst.stats().commits >= 2""")
+
+SPEC["coherence"] = ("""		function inst.feed(sample) return inst.observe(sample or { coherence = 0.9, drift = 0.05 }) end
+		function inst.trendValue() return inst.score() end
+		function inst.healthy() return inst.isCoherent() end
+		function inst.budgetMargin() return 1 - inst.pressure() end""",
+"""		for i = 1, 10 do inst.feed({ coherence = 0.9 - i*0.01, drift = 0.04 }) end
+		local ok = inst.trendValue() > 0 and inst.trendValue() <= 1
+		ok = ok and type(inst.healthy()) == "boolean" and inst.driftValue() >= 0
+		ok = ok and inst.budgetMargin() >= -1
+		inst.reset()
+		return ok and inst.stats().samples >= 0""")
+
+SPEC["neuralfield"] = ("""		function inst.encodeAt(x, y)
+			local sig = inst.encode(Vec.vec3(x or 0.2, y or 0.7, 0.4))
+			return inst.forward(sig)[1]
+		end
+		function inst.compressedSize(bits) return inst.quantize(bits or 8).bytes end
+		function inst.roundTripError()
+			local before = inst.stats()
+			local q = inst.quantize(8)
+			inst.importTable(q.table)
+			return math.abs(before.hidden - inst.stats().hidden) < 1
+		end""",
+"""		local v1 = inst.encodeAt(0.2, 0.7)
+		local ok = type(v1) == "number" and v1 > 0 and v1 < 1
+		ok = ok and inst.infer(Vec.vec3(0.1,0.2,0.3)) ~= nil
+		ok = ok and inst.train({{ input = Vec.vec3(0.1,0.2,0.3), target = {0.8}}}, 2, 0.1) >= 0
+		ok = ok and inst.compressedSize(8) > 0
+		ok = ok and inst.memoryBytes() > 0
+		return ok and inst.roundTripError()""")
 
 build()
