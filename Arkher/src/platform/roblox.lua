@@ -8,7 +8,9 @@ return function(A)
 	RobloxAdapter.__index = RobloxAdapter
 
 	local function svc(name)
-		local g = _G.game or (rawget(_G, "game"))
+		-- Normal global access only: Roblox host globals live behind the script
+		-- environment metatable, so rawget(_G, "game") is nil on the real runtime.
+		local g = _G.game or game or rawget(_G, "game")
 		if not g then return nil end
 		local ok, s = pcall(function() return g:GetService(name) end)
 		if ok then return s end
@@ -16,7 +18,15 @@ return function(A)
 	end
 
 	function RobloxAdapter.available()
-		return (rawget(_G, "game") ~= nil) or (rawget(_G, "Instance") ~= nil)
+		-- Roblox host globals (game, Instance) are only reachable through the script
+		-- environment metatable: rawget(_G, ...) returns nil for them inside Roblox,
+		-- which made V1.0.0 bind the HEADLESS adapter there and boot a zombie engine
+		-- (frozen clock, no services, no real device profile). Probe with a normal
+		-- global access instead - it resolves through the metatable on Roblox and
+		-- still returns nil on a plain Lua host.
+		local g = _G.game or game
+		local inst = _G.Instance or Instance
+		return (g ~= nil and g.GetService ~= nil) or (inst ~= nil and inst.new ~= nil)
 	end
 
 	function RobloxAdapter.new(opts)
@@ -48,8 +58,7 @@ return function(A)
 	end
 
 	function RobloxAdapter:ensureRoot(parent)
-		if self.rootFolder then return self.rootFolder end
-		local Instance_ = rawget(_G, "Instance")
+		local Instance_ = _G.Instance or Instance or rawget(_G, "Instance")
 		local folder = Instance_.new("Folder")
 		folder.Name = "ARKHER"
 		folder.Parent = parent or self.services.ReplicatedStorage
@@ -58,19 +67,20 @@ return function(A)
 	end
 
 	function RobloxAdapter:now()
-		local os_ = rawget(_G, "os")
+		-- os is a Roblox global too: read it with a normal access, never rawget.
+		local os_ = os or _G.os or rawget(_G, "os")
 		if os_ and os_.clock then return os_.clock() end
 		return 0
 	end
 
 	function RobloxAdapter:wait(seconds, fn)
-		local task_ = rawget(_G, "task")
+		local task_ = _G.task or task or rawget(_G, "task")
 		if task_ and task_.delay then return task_.delay(seconds, fn or function() end) end
 		return nil
 	end
 
 	function RobloxAdapter:spawn(fn, ...)
-		local task_ = rawget(_G, "task")
+		local task_ = _G.task or task or rawget(_G, "task")
 		if task_ and task_.spawn then return task_.spawn(fn, ...) end
 		local co = coroutine.create(fn)
 		coroutine.resume(co, ...)
@@ -82,7 +92,7 @@ return function(A)
 	function RobloxAdapter:isStudio() return self.services.RunService and self.services.RunService:IsStudio() or false end
 
 	function RobloxAdapter:createNode(className, name, parentId)
-		local Instance_ = rawget(_G, "Instance")
+		local Instance_ = _G.Instance or Instance or rawget(_G, "Instance")
 		local inst = Instance_.new(className)
 		inst.Name = name or className
 		local id = self.nextId

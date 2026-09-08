@@ -1,6 +1,6 @@
 # ARKHER V1 — UES Engine for Roblox
 
-> **Status: ROUND 6 delivered — Kernel + ARKHER Studio + World + Image + Motion + Life.**
+> **Status: V1 complete (Rounds 1–8) · 1.0.1 boot fix — the engine now really boots inside Roblox.**
 > 14,644 real systems · 244,903 features · 14,733 modules · 100% of them boot and pass their own self-test.
 > That is **146.4% of the 10,000-system floor — and 244.9% of the 100,000-feature requirement**.
 > **ARKHER V1 is complete.**
@@ -23,10 +23,34 @@ the whole engine is verified in CI by a real Lua VM before it ever reaches Studi
 
 | What | File | How |
 |---|---|---|
-| **Model** (recommended) | `Releases/ARKHER_V1_ROUND8.rbxm` — **3.1 MB, binary** | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
-| **Place** | `Releases/ARKHER_V1_ROUND8.rbxl` — **3.1 MB, binary** | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
-| **Studio plugin** | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxm` — **3.2 MB, binary** | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
+| **Model** (recommended) | `Releases/ARKHER_V1_1.0.1.rbxm` — **3.1 MB, binary** | Roblox Studio → right-click `ReplicatedStorage` → **Insert from File** → pick the file. The engine boots itself. |
+| **Place** | `Releases/ARKHER_V1_1.0.1.rbxl` — **3.1 MB, binary** | Double-click / File → Open. A place with ARKHER already installed, streaming on, Future lighting. |
+| **Studio plugin** (optional) | `Releases/ARKHER_V1_STUDIO_PLUGIN.rbxm` — **3.2 MB, binary** | Explorer → right-click → **Save as Local Plugin** (or drop it in your Plugins folder). Opens the ARKHER Studio surface. Studio is only the adapter — the IDE is ARKHER's own. |
 | **Source (Rojo)** | this folder | `rojo serve` with the included `default.project.json`. |
+
+### 1.0.1 — boot fix (the V1 correction)
+
+On the real Roblox runtime the host globals (`game`, `Instance`, `task`, `bit32`, `os`) are **not
+entries of `_G`** — they resolve through the script environment metatable, so
+`rawget(_G, "game")` returns `nil` inside Roblox. V1.0.0 probed the host with `rawget` in three
+places, and the engine paid for all three:
+
+1. `platform/roblox.lua` → `RobloxAdapter.available()` returned **false** inside Roblox, so
+   `Engine.boot` silently bound the **headless** adapter: a zombie engine — frozen clock
+   (`now()` returned `0` forever), no Roblox services, no real device profile, D-O15 never
+   adapting — while the boot report still printed normally.
+2. `kernel/bits.lua` → the `bit32` backend was never selected; every bit operation ran the slow
+   arithmetic fallback.
+3. `RobloxAdapter:now()` → `rawget(_G, "os")` is `nil`, so the adapter clock was pinned at `0`.
+
+**The fix (1.0.1):** host globals are read with normal global access (which resolves through the
+environment metatable) with `rawget` kept only as a last-resort fallback; `roblox/boot.server.lua`
+now carries a **boot guard** that refuses loudly (`BOOT REFUSED`) if the engine ever binds a
+non-Roblox adapter inside Roblox — a zombie boot can never hide again; and `tests/boot_spec.lua`
+simulates the Roblox environment (metatable on `_G`, host globals reachable only through
+`__index`) and proves host detection, adapter binding, live clock, bit32 backend parity and a full
+category-A boot with self-tests. `ARKHER_V1_ROUND8.rbxm` was rebuilt from the fixed sources and is
+byte-identical to `ARKHER_V1_1.0.1.rbxm`.
 
 The shipped files are the **real Roblox binary format** (`.rbxm` / `.rbxl`), written by
 `tools/build_rbxm.py`: 56.1 MB of Lua is LZ4-packed into **~3.1 MB**, so a browser downloads them
@@ -39,7 +63,7 @@ After insert, press **Play**. The Output window prints the live boot report:
 
 ```
 ====================================================================
-ARKHER 1.0.0  (ARKHER V1)  platform=roblox
+ARKHER 1.0.1  (ARKHER V1)  platform=roblox
   modules registered : 8573
   systems online     : 8504  (A=520 S=620 X=410 B=700 U=600 Y=400 C=644 D=640 M=616 E=600 F=700 G=504
                               H=700 I=520 J=330)
@@ -174,6 +198,7 @@ do15/device · do15/budget · do15/controller · do15/bottleneck · do15/lod · 
 cd Arkher
 npm install fengari          # a real Lua VM in Node
 node tools/harness.js tests/kernel_spec.lua   # 80 tests / 272 assertions
+node tools/harness.js tests/boot_spec.lua     # 10 tests / 45 assertions (Roblox env metatable: the 1.0.1 boot-fix guard)
 node tools/harness.js tests/studio_spec.lua   # 30 tests / 121 assertions (Studio, code, collab)
 node tools/harness.js tests/world_spec.lua    # 28 tests / 275 assertions (world, terrain, procedural)
 node tools/harness.js tests/render_spec.lua   # 21 tests / 182 assertions (materials, rendering, neural)
