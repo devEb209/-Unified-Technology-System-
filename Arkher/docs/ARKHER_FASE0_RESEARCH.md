@@ -99,7 +99,37 @@
 
 ---
 
-## 8) Síntese ARKHER — Como vamos usar (inspirado, não copiado)
+## 8) SUBSTANCE 3D PAINTER — Layers / Shelf / Viewport
+
+- **Layout:** centro `3D+2D view`, topo `File/Edit` + tools `Brush/Eraser/Masking`, esquerda `texture size / viewer settings` [1](https://conceptartempire.com/what-is-substance-painter/)
+- **Shelf (baixo):** `Brushes, Alphas, Materials, Smart Materials, Particle Effects` [1](https://conceptartempire.com/what-is-substance-painter/) — renomeado `All libraries` na v7 [3](https://experienceleague.adobe.com/en/docs/substance-3d-painter/using/release-notes/all-changes)
+- **Layers (top-right):** como Photoshop — `Paint Layer / Fill Layer / Folder`, cada layer é **multi-channel** (BaseColor/Height/Rough/Metallic/Normal) com `blending mode + opacity per channel` [4](https://experienceleague.adobe.com/en/docs/substance-3d-painter/using/interface/layer-stack/layer-stack)
+- **Ações:** `Create New Paint Layer / Fill Layer / Smart Material / Folder / Delete`, `Add white/black/bitmap mask`, viewmode dropdown por canal [5](https://helpx.adobe.com/substance-3d-painter/interface/layer-stack.html)
+- **Inspira ARKHER_Painter:** dock direito com `Layers` + `Properties (scale/rotation/offset + height/roughness sliders)` + shelf inferior grid de `Alphas` — mas com canais `PBR` reais ligados em `MaterialService`.
+
+## 9) NUKE (Foundry) — Node Graph / Viewer / Timeline
+
+- **Environments:** `Compositing` (Node Graph + Properties right + Viewer), `Timeline` (Bin View + Viewer + timeline + Spreadsheet) [1](https://learn.foundry.com/nuke/content/getting_started/using_interface/nuke_studio_environments.html)
+- **Workspaces:** `Compositing / Large Node Graph / Large Viewer / Scripting / Animation / Floating` via `Shift+F1..F6` [2](https://learn.foundry.com/nuke/13.2/content/getting_started/using_interface/nuke_studio_environments.html)
+- **Viewer Controls:** `gain/gamma` pós-viewer process, `A/B` wipe `Onion Skin/Difference`, `Guides (title/action safe)`, `clipping (over/under exposure blue/red)` [10](https://learn.foundry.com/nuke/11.1/content/timeline_environment/usingviewer/viewer_tools.html)
+- **Inspira ARKHER_VFX/Compositor:** `Node Graph` com `nodes` + `Properties` direita + `Viewer` com `A/B` e `Gain/Gamma` sliders reais.
+
+## 10) DAVINCI RESOLVE — 7 Pages
+
+- **Pages (barra inferior):** `Media, Cut, Edit, Fusion, Color, Fairlight, Deliver` — um workspace por etapa pós-produção [1](https://en.wikipedia.org/wiki/DaVinci_Resolve)
+- **Cut** = cortes rápidos, `Edit` = timeline detalhado com `Edit Index`, `Fusion` = node compositing [3](https://2pop.calarts.edu/technicalsupport/davinci-resolve-interface/)
+- **Color** = thumbnails horizontais + `primary sliders (contrast/temp/sat)` + `PowerWindows/qualifiers/tracking` [4](https://www.blackmagicdesign.com/products/davinciresolve/)
+- **Fairlight** = DAW com até `2000 tracks`, EQ/dynamics, FairlightFX [4](https://www.blackmagicdesign.com/products/davinciresolve/)
+- **Inspira ARKHER_Sequencer/Cut:** bottom `Page Bar` com 7 ícones para trocar `Timeline / Fusion Nodes / Color Grade / Fairlight Audio / Deliver Render` no mesmo projeto.
+
+## 11) ZBRUSH — SubTools / Polypaint / Tool palette
+
+- **SubTools** = lista de meshes, ícones `Remesh Add/Sub/Intersect, Polypaint on/off (paintbrush)` [3](https://help.maxon.net/zbr/en-us/Content/html/reference-guide/tool/polymesh/subtool/subtool.html)
+- **Polypaint** = vertex painting sem UV, `Tool > Polypaint > Colorize`, `RGB` + `Fill Object`, `X` symmetry, `RGB intensity = opacity` [1](https://www.vcad.ca/about/spotlights/how-to-color-in-zbrush/)
+- **Tool palette** = contexto: só aparece `Initialize` com primitive, `Polygroups` com mesh — esconde o que não se aplica [7](https://www.reddit.com/r/ZBrush/comments/yyt203/my_take_on_how_to_get_started_with_zbrush/)
+- **Inspira ARKHER_Sculpt:** sidebar `SubTools` com `paintbrush N` toggle + `Divide (Ctrl+D)`, viewport com `Dynamesh` indicator, sem copiar `Lightbox` modal bloqueante.
+
+## 12) Síntese ARKHER — Como vamos usar (inspirado, não copiado)
 
 **Não vamos clonar 1:1.** Vamos criar **próprio 100% custom native** (voxel terrain etc) mas com **padrões comprovados:**
 
