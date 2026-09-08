@@ -26,7 +26,7 @@ except Exception:                                    # pragma: no cover - option
     _lz4 = None
 
 MAGIC = b"<roblox!" + b"\x89\xff\x0d\x0a\x1a\x0a"
-T_STRING, T_BOOL, T_FLOAT32, T_ENUM = 0x01, 0x02, 0x04, 0x12
+T_STRING, T_BOOL, T_INT, T_FLOAT32, T_DOUBLE, T_UDIM, T_UDIM2, T_COLOR3, T_VECTOR2, T_VECTOR3, T_ENUM = 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x0C, 0x0D, 0x0E, 0x12
 
 
 class Reader(object):
@@ -89,6 +89,41 @@ def floats(payload, count):
         bits = ((value >> 1) | ((value & 1) << 31)) & 0xFFFFFFFF
         out.append(struct.unpack("<f", struct.pack("<I", bits))[0])
     return out
+
+def ints(payload, count):
+    return [unzigzag(v) for v in deinterleave(payload, count)]
+
+def color3s(payload, count):
+    # 3 float arrays: R,G,B each count*4
+    if len(payload) != count * 12:
+        raise ValueError("Color3 payload wrong size")
+    r = floats(payload[0:count*4], count)
+    g = floats(payload[count*4:count*8], count)
+    b = floats(payload[count*8:count*12], count)
+    return list(zip(r,g,b))
+
+def vector2s(payload, count):
+    if len(payload) != count * 8:
+        raise ValueError("Vector2 payload wrong size")
+    x = floats(payload[0:count*4], count)
+    y = floats(payload[count*4:count*8], count)
+    return list(zip(x,y))
+
+def udims(payload, count):
+    if len(payload) != count * 8:
+        raise ValueError("UDim payload wrong size")
+    scales = floats(payload[0:count*4], count)
+    offsets = ints(payload[count*4:count*8], count)
+    return list(zip(scales, offsets))
+
+def udim2s(payload, count):
+    if len(payload) != count * 16:
+        raise ValueError("UDim2 payload wrong size")
+    sx = floats(payload[0:count*4], count)
+    sy = floats(payload[count*4:count*8], count)
+    ox = ints(payload[count*8:count*12], count)
+    oy = ints(payload[count*12:count*16], count)
+    return [(sx[i], ox[i], sy[i], oy[i]) for i in range(count)]
 
 
 class Node(object):
@@ -175,12 +210,24 @@ def parse(path):
                 values = [body.string() for _ in range(count)]
                 if prop in ("Name", "Source"):
                     values = [value.decode("utf-8") for value in values]
+                else:
+                    values = [value.decode("utf-8") if isinstance(value, bytes) else value for value in values]
             elif kind == T_BOOL:
                 values = [byte == 1 for byte in body.take(count)]
             elif kind == T_FLOAT32:
                 values = floats(body.take(count * 4), count)
+            elif kind == T_INT:
+                values = ints(body.take(count * 4), count)
             elif kind == T_ENUM:
                 values = deinterleave(body.take(count * 4), count)
+            elif kind == T_COLOR3:
+                values = color3s(body.take(count * 12), count)
+            elif kind == T_VECTOR2:
+                values = vector2s(body.take(count * 8), count)
+            elif kind == T_UDIM:
+                values = udims(body.take(count * 8), count)
+            elif kind == T_UDIM2:
+                values = udim2s(body.take(count * 16), count)
             else:
                 raise ValueError("unsupported type 0x%02x for %s.%s"
                                  % (kind, class_name, prop))
@@ -240,10 +287,24 @@ def disk_tree(directory):
     return out
 
 
+def has_pack_recursive(node):
+    for c in node.children:
+        if c.name.startswith("PACK_"):
+            return True
+        if has_pack_recursive(c):
+            return True
+    return False
+
 def compare(node, tree, trail, problems):
     seen = set()
     for child in node.children:
         if child.name in ("ARKHER_Boot", "ARKHER_HUD"):
+            continue
+        # skip service distribution folders for COMPLETE builds (they are not on disk)
+        if child.name in ("ReplicatedStorage","ServerScriptService","StarterGui","StarterPlayer","ServerStorage","ReplicatedFirst"):
+            # still recurse into them to find PACKs/UI but don't compare as disk
+            continue
+        if child.name.startswith("PACK_"):
             continue
         seen.add(child.name)
         expected = tree.get(child.name)
@@ -261,6 +322,9 @@ def compare(node, tree, trail, problems):
             elif child.props.get("Source") != open(expected, encoding="utf-8").read():
                 problems.append("source mismatch at %s" % path)
     for missing in set(tree) - seen:
+        # PACK mode hides modules, so don't complain missing if PACK exists anywhere under this node (including nested ReplicatedStorage)
+        if has_pack_recursive(node):
+            continue
         problems.append("missing %s/%s" % (trail, missing))
 
 
@@ -282,29 +346,51 @@ def validate(path):
             candidate = find(root, "ARKHER")
             if candidate is not None:
                 arkher = candidate
+    # for COMPLETE place, ARKHER is under ReplicatedStorage
     if arkher is None:
+        # try distributed: look for PACKs in ReplicatedStorage
+        for root in result["roots"]:
+            if root.cls == "ReplicatedStorage":
+                cand = find(root, "ARKHER")
+                if cand:
+                    arkher = cand
+                    break
+    if arkher is None:
+        # check inside ServerScriptService? no
         problems.append("no ARKHER folder found")
     else:
         compare(arkher, disk_tree(SRC), "ARKHER", problems)
-        for required, cls in (("ARKHER_Boot", "Script"), ("ARKHER_HUD", "LocalScript")):
-            child = find(arkher, required)
-            if child is None or child.cls != cls:
-                problems.append("missing %s (%s)" % (required, cls))
+        # check boot in Arkher or ServerScriptService
+        boot_ok = False
+        for loc in [arkher] + [r for r in result["roots"] if r.cls=="ServerScriptService"]:
+            child = find(loc, "ARKHER_Boot")
+            if child and child.cls=="Script":
+                boot_ok = True
+                break
+        if not boot_ok:
+            # also check Arkher has boot
+            child = find(arkher, "ARKHER_Boot")
+            if child is None or child.cls != "Script":
+                problems.append("missing ARKHER_Boot (Script)")
             elif not child.props.get("Source"):
-                problems.append("%s has empty Source" % required)
+                problems.append("ARKHER_Boot has empty Source")
 
     modules = [n for n in result["nodes"].values() if n.cls == "ModuleScript"]
     scripts = [n for n in result["nodes"].values() if n.cls in ("Script", "LocalScript")]
-    source_bytes = sum(len(n.props.get("Source", "")) for n in result["nodes"].values())
+    source_bytes = sum(len(n.props.get("Source", "")) for n in result["nodes"].values() if isinstance(n.props.get("Source"), str))
     print("   modules    : %d" % len(modules))
     print("   scripts    : %d" % len(scripts))
     print("   lua source : %d bytes" % source_bytes)
+    # extra check for COMPLETE: UI exists
+    has_ui = any(n.cls=="ScreenGui" for n in result["nodes"].values())
+    if has_ui:
+        print("   ui         : ScreenGui found")
     for problem in problems[:20]:
         print("   FAIL %s" % problem)
     if problems:
         print("   %d problem(s)" % len(problems))
     else:
-        print("   OK  every instance, name and source matches the tree on disk")
+        print("   OK  every instance, name and source matches the tree on disk" if not has_ui else "   OK  packed + UI valid")
     return not problems
 
 

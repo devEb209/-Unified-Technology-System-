@@ -5,7 +5,7 @@ The XML builder (tools/build_rbxmx.py) produces .rbxmx/.rbxlx, which are text fi
 browser opens them instead of downloading them, and Studio has to parse megabytes of XML.
 This builder writes the real binary Roblox format instead:
 
-    header    "<roblox!" + \\x89\\xff\\r\\n\\x1a\\n + version + class/instance counts
+    header    "<roblox!" + \x89\xff\r\n\x1a\n + version + class/instance counts
     META      metadata chunk
     INST      one chunk per class, with the referents of every instance of that class
     PROP      one chunk per (class, property), values in the INST referent order
@@ -37,8 +37,21 @@ MAGIC = b"<roblox!" + b"\x89\xff\x0d\x0a\x1a\x0a"
 # ---------------------------------------------------------------- value types
 T_STRING = 0x01
 T_BOOL = 0x02
+T_INT = 0x03
 T_FLOAT32 = 0x04
+T_DOUBLE = 0x05
+T_UDIM = 0x06
+T_UDIM2 = 0x07
+T_RAY = 0x08
+T_FACES = 0x09
+T_AXIS = 0x0A
+T_BRICKCOLOR = 0x0B
+T_COLOR3 = 0x0C
+T_VECTOR2 = 0x0D
+T_VECTOR3 = 0x0E
+T_CFRAME = 0x10
 T_ENUM = 0x12
+T_COLOR3UINT8 = 0x1A
 
 
 class Inst(object):
@@ -104,6 +117,36 @@ def float_array(values):
         out.append(((bits << 1) | (bits >> 31)) & 0xFFFFFFFF)
     return interleave(out)
 
+def int_array(values):
+    return interleave([zigzag(int(v)) for v in values])
+
+def color3_array(values):
+    # values: list of (r,g,b) 0-1 floats
+    rs, gs, bs = [], [], []
+    for r,g,b in values:
+        rs.append(float(r)); gs.append(float(g)); bs.append(float(b))
+    return float_array(rs) + float_array(gs) + float_array(bs)
+
+def vector2_array(values):
+    xs, ys = [], []
+    for x,y in values:
+        xs.append(float(x)); ys.append(float(y))
+    return float_array(xs) + float_array(ys)
+
+def udim_array(values):
+    # values: list of (scale, offset)
+    scales, offsets = [], []
+    for s,o in values:
+        scales.append(float(s)); offsets.append(int(o))
+    return float_array(scales) + int_array(offsets)
+
+def udim2_array(values):
+    # values: list of (scaleX, offsetX, scaleY, offsetY) per spec order ScaleX,ScaleY,OffsetX,OffsetY
+    sx, sy, ox, oy = [], [], [], []
+    for scx, ocx, scy, ocy in values:
+        sx.append(float(scx)); sy.append(float(scy)); ox.append(int(ocx)); oy.append(int(ocy))
+    return float_array(sx) + float_array(sy) + int_array(ox) + int_array(oy)
+
 
 def chunk(name, payload, compress=True):
     assert len(name) == 4
@@ -113,6 +156,77 @@ def chunk(name, payload, compress=True):
         if len(packed) < len(payload):
             return name + u32(len(packed)) + u32(len(payload)) + u32(0) + packed
     return name + u32(0) + u32(len(payload)) + u32(0) + payload
+
+
+# ---------------------------------------------------------------- helpers for UI types
+def rgb(hex_color):
+    r = (hex_color >> 16) & 0xFF
+    g = (hex_color >> 8) & 0xFF
+    b = hex_color & 0xFF
+    return (r/255.0, g/255.0, b/255.0)
+
+def col(hex_color):
+    return rgb(hex_color)
+
+def vec2(x,y):
+    return (float(x), float(y))
+
+def udim(scale, offset):
+    return (float(scale), int(offset))
+
+def udim2(sx, ox, sy, oy):
+    return (float(sx), int(ox), float(sy), int(oy))
+
+# property defaults, used when one instance of a class sets a property and another does not
+DEFAULTS = {
+    "Source": (T_STRING, ""),
+    "RunContext": (T_ENUM, 0),
+    "Disabled": (T_BOOL, False),
+    "StreamingEnabled": (T_BOOL, False),
+    "StreamingTargetRadius": (T_FLOAT32, 1024.0),
+    "Technology": (T_ENUM, 2),
+    "Brightness": (T_FLOAT32, 1.0),
+    # UI defaults
+    "BackgroundColor3": (T_COLOR3, (0,0,0)),
+    "BackgroundTransparency": (T_FLOAT32, 0.0),
+    "BorderColor3": (T_COLOR3, (0,0,0)),
+    "BorderSizePixel": (T_INT, 0),
+    "Size": (T_UDIM2, (0,0,0,0)),
+    "Position": (T_UDIM2, (0,0,0,0)),
+    "AnchorPoint": (T_VECTOR2, (0,0)),
+    "ClipsDescendants": (T_BOOL, False),
+    "Visible": (T_BOOL, True),
+    "ZIndex": (T_INT, 1),
+    "LayoutOrder": (T_INT, 0),
+    "AutoButtonColor": (T_BOOL, True),
+    "Text": (T_STRING, ""),
+    "TextColor3": (T_COLOR3, (0,0,0)),
+    "TextSize": (T_FLOAT32, 14.0),
+    "TextScaled": (T_BOOL, False),
+    "TextXAlignment": (T_ENUM, 0),
+    "TextYAlignment": (T_ENUM, 0),
+    "Font": (T_ENUM, 3),
+    "RichText": (T_BOOL, False),
+    "TextWrapped": (T_BOOL, False),
+    "TextTruncate": (T_ENUM, 0),
+    "CornerRadius": (T_UDIM, (0,0)),
+    "Thickness": (T_FLOAT32, 1.0),
+    "Color": (T_COLOR3, (0,0,0)),
+    "Transparency": (T_FLOAT32, 0.0),
+    "ApplyStrokeMode": (T_ENUM, 0),
+    "LineJoinMode": (T_ENUM, 0),
+    "Enabled": (T_BOOL, True),
+    "ResetOnSpawn": (T_BOOL, True),
+    "IgnoreGuiInset": (T_BOOL, False),
+    "ZIndexBehavior": (T_ENUM, 0),
+    "DisplayOrder": (T_INT, 0),
+    "Archivable": (T_BOOL, True),
+    "Image": (T_STRING, ""),
+    "ImageColor3": (T_COLOR3, (1,1,1)),
+    "ImageTransparency": (T_FLOAT32, 0.0),
+    "ScaleType": (T_ENUM, 0),
+    "SliceCenter": (T_RAY, None), # not used, placeholder
+}
 
 
 # ---------------------------------------------------------------- serializer
@@ -192,10 +306,20 @@ def serialize(roots, metadata=None):
                 payload += bytes([1 if value else 0 for value in values])
             elif kind == T_FLOAT32:
                 payload += float_array(values)
+            elif kind == T_INT:
+                payload += int_array(values)
             elif kind == T_ENUM:
                 payload += interleave([int(value) for value in values])
+            elif kind == T_COLOR3:
+                payload += color3_array(values)
+            elif kind == T_VECTOR2:
+                payload += vector2_array(values)
+            elif kind == T_UDIM:
+                payload += udim_array(values)
+            elif kind == T_UDIM2:
+                payload += udim2_array(values)
             else:
-                raise ValueError("unsupported property type %s" % kind)
+                raise ValueError("unsupported property type %s for %s" % (kind, prop))
             out += chunk(b"PROP", bytes(payload))
 
     children, parents = [], []
@@ -215,18 +339,6 @@ def serialize(roots, metadata=None):
 
     out += chunk(b"END\x00", b"</roblox>", compress=False)
     return bytes(out)
-
-
-# property defaults, used when one instance of a class sets a property and another does not
-DEFAULTS = {
-    "Source": (T_STRING, ""),
-    "RunContext": (T_ENUM, 0),
-    "Disabled": (T_BOOL, False),
-    "StreamingEnabled": (T_BOOL, False),
-    "StreamingTargetRadius": (T_FLOAT32, 1024.0),
-    "Technology": (T_ENUM, 2),
-    "Brightness": (T_FLOAT32, 1.0),
-}
 
 
 # ---------------------------------------------------------------- ARKHER tree
