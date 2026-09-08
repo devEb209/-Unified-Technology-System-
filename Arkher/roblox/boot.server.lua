@@ -46,6 +46,17 @@ end
 -- 3. boot the engine on the Roblox adapter
 local Engine = A:import("arkher/engine")
 local engine = Engine.boot(A, { logLevel = 30 })
+
+-- Boot guard: if the platform adapter ever fails to recognize the Roblox host, the
+-- engine silently binds the headless adapter instead (frozen clock, no services,
+-- no real device profile) - exactly the V1.0.0 boot bug. A zombie boot must die
+-- loudly, never quietly.
+if engine.platform ~= "roblox" then
+	warn("[ARKHER] BOOT REFUSED: inside Roblox the engine bound the '"
+		.. tostring(engine.platform) .. "' adapter instead of the Roblox one.")
+	error("ARKHER boot: Roblox host not detected by the platform adapter", 0)
+end
+
 local t0 = os.clock()
 local loaded, failed = engine:loadCatalog()
 local bootMs = (os.clock() - t0) * 1000

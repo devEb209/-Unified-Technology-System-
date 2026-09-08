@@ -6,7 +6,12 @@
 return function(A)
 	local Bits = {}
 
-	local b32 = rawget(_G, "bit32")
+	-- Host note: Roblox exposes bit32 (like every Roblox global) through the script
+	-- environment metatable, so rawget(_G, ...) cannot see it - a normal global
+	-- access can. On plain Lua 5.3 hosts bit32 does not exist and the arithmetic
+	-- backend below runs unchanged. (V1.0.0 got this wrong and silently ran the
+	-- slow path inside Roblox.)
+	local b32 = bit32 or _G.bit32 or rawget(_G, "bit32")
 	local MASK = 4294967295 -- 0xFFFFFFFF
 	local TWO32 = 4294967296
 

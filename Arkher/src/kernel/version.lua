@@ -92,7 +92,7 @@ return function(A)
 		return Version.GENERATIONS[1]
 	end
 
-	Version.CURRENT = "1.0.0"
+	Version.CURRENT = "1.0.1" -- 1.0.1: boot fix - Roblox host globals are behind the env metatable, rawget(_G, ...) could not see them (headless zombie boot + arithmetic bit backend inside Roblox)
 	Version.ENGINE = "ARKHER"
 	Version.BUILD_CHANNEL = "release"
 
