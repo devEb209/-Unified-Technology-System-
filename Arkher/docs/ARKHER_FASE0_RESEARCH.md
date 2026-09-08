@@ -129,7 +129,81 @@
 - **Tool palette** = contexto: só aparece `Initialize` com primitive, `Polygroups` com mesh — esconde o que não se aplica [7](https://www.reddit.com/r/ZBrush/comments/yyt203/my_take_on_how_to_get_started_with_zbrush/)
 - **Inspira ARKHER_Sculpt:** sidebar `SubTools` com `paintbrush N` toggle + `Divide (Ctrl+D)`, viewport com `Dynamesh` indicator, sem copiar `Lightbox` modal bloqueante.
 
-## 12) Síntese ARKHER — Como vamos usar (inspirado, não copiado)
+## 12) RAGE (Rockstar) — Sem editor separado, pipeline via 3ds Max + ImGui debug
+
+- **Não tem editor standalone** — usam `3ds Max / Maya como level editor` com scripts/plugins + pipeline massivamente complicado [3](https://www.reddit.com/r/gameenginedevs/comments/18a2ff2/question_about_rockstars_engine_rage/)
+- **Debug UI in-game com Dear ImGui** — tweaka tudo: pedal, glove box, steering height, física [3](https://www.reddit.com/r/gameenginedevs/comments/18a2ff2/question_about_rockstars_engine_rage/) + leak mostra RAGE dev tools com info completíssima [3](https://www.reddit.com/r/gameenginedevs/comments/18a2ff2/question_about_rockstars_engine_rage/)
+- **Streaming + HLOD:** mundo em `cells`, `hierarchical spatial + sparse virtual texture + async streaming` sem loading [8](https://www.neogaf.com/threads/why-rockstar-rage-engine-outclasses-commercial-tech.1699203/)
+- **Inspira ARKHER_OpenWorld:** `World Cells` + `HLOD` + `sparse virtual texture` + `ImGui-like debug overlay` nativo mas com UI ARKHER cyber-blue, não cópia ImGui.
+
+## 13) ANVIL (Ubisoft) — Procedural + Cluster Geometry
+
+- **Motor interno desde AC1 2007**, usado em todos estúdios Ubisoft (Siege, Riders etc) [2](https://gamejobs.co/Tools-programmer-Anvil-Pipeline-at-Ubisoft-8936)
+- **Evolução:** desde Unity já `GPU-driven pipelines + cluster-based geometry` [7](https://www.gamesmarket.global/under-the-hood-ubisofts-anvil-engine-in-assassins-creed-shadows/)
+- **Rendering:** `micropolygons` sem LoD popping + `PSODB` (curated PSO database) evoluindo via estatísticas de gameplay [7](https://www.gamesmarket.global/under-the-hood-ubisofts-anvil-engine-in-assassins-creed-shadows/)
+- **Procedural World Tools:** geram cidades/vegetação por regras, depois artistas refinam [8](https://vectree.io/c/ubisoft-anvil) + `Crowd NPC 1000s` + `IK cloth/rope` [8](https://vectree.io/c/ubisoft-anvil)
+- **Inspira ARKHER_CityGen:** `Procedural rules → City + Vegetation + Roads` com `Cluster geometry` como Anvil, mas com nosso `voxel terrain`.
+
+## 14) CRYENGINE 5 — Sandbox Editor Qt
+
+- **Main Editor:** `Menu Bar` + `Toolbars (EditMode/Object/Terrain/Dialogs)` + `Viewport Perspective` + `RollupBar` + `StatusBar (P4 RC GameFolder)` + `Selection Strip` + `Console` [4](https://www.cryengine.com/docs/static/engines/cryengine-3/categories/1114113/pages/1048817)
+- **Migração:** `MFC → Qt QWidgets` desde 5.0, arquitetura modular `EditorQt + EditorCommon + Plugins`, `Sandbox Editor open source no GitHub` [1](https://www.cryengine.com/docs/static/engines/cryengine-5/categories/23756813/pages/26875248) [9](https://www.phoronix.com/news/CRYENGINE-Sandbox-Open-Source)
+- **Customização:** layout drag/drop + custom toolbar + `todo botão = console command` → scripts Python [3](https://www.reddit.com/r/cryengine/comments/4dwi2w/sandbox_qa_highlights/)
+- **Inspira ARKHER_Level:** `RollupBar` vertical com `Objects/Terrain/Entities` + `Qt-like docking` com `UIGridLayout`.
+
+## 15) FROSTBITE (DICE/EA) — Frostbite Editor + Frosty ToolSuite
+
+- **Frostbite Editor:** level design + asset creation + prototyping, integrado com `Perforce`, cross-studio tools para `squad commands + environmental physics` [2](https://grokipedia.com/page/Frostbite_(game_engine))
+- **Modding:** `FrostyToolsuite (FrostyEditor + FrostyModSupport + FrostySdk + SdkGenerator)` em `.NET 8 + Avalonia MVVM` [4](https://github.com/NM-20/FrostyToolsuite-V2) + `Frostbite Modding Tool (FMT)` desde 2019 para PC/PS4/PS5/Switch [6](https://github.com/FMTDev/FMT.Releases/blob/main/README.md)
+- **Inspira ARKHER_Frost:** `Profile system` por jogo + `Asset import .fbmod/.fifamod` + `Data Explorer`.
+
+## 16) DECIMA (Guerrilla/Kojima) + RE ENGINE (Capcom) — Editors reais
+
+- **Decima:** `Decima Workshop` — `Browse/edit core objects com type info + preview models/textures/shaders + export glTF + repack archives` [4](https://github.com/ShadelessFox/decima) — `Navigator + Core Editor + Model Viewer + Texture Viewer + Shader Viewer` [3](https://github.com/ShadelessFox/decima/releases)
+- **RE Engine:** `REE Content Editor` — `ImGui + 3D view pra .mesh/.scn/.pfb, animation preview, collider editor, load direto do .pak, file search, partial patching com bundles JSON, undo/redo` [6](https://github.com/kagenocookie/REE-Content-Editor) + Blender addons `RE Mesh Editor (import/export .mesh .mdf2, MDF material inside Blender, preset, LOD, GPU BC7)` [10](https://github.com/NSACloud/RE-Mesh-Editor) e `RE Chain Editor (physics bone .chain/.chain2)` [1](https://github.com/NSACloud/RE-Chain-Editor)
+- **Inspira ARKHER_RE:** `Pak file browser` + `Live 3D preview + collider gizmo` + `Blender-like mesh chain editor`.
+
+## 17) AUTODESK MAYA — Menu Sets + Shelves + Channel Box
+
+- **Layout:** `Menu Sets (Modeling/Rigging/Animation/FX/Rendering)` no dropdown [6](https://help.autodesk.com/view/MAYAUL/2024/ENU/?guid=GUID-F4FCE554-1FA5-447A-8835-63EB43D2690B), `Shelves (Polygons/Sculpting/Animation)` + `Toolbox (Q Select, W Move, E Rotate, R Scale)` [4](https://vagon.io/blog/a-beginners-complete-guide-to-autodesk-maya), `Viewport center (Alt+LMB rotate, Alt+MMB pan, Alt+RMB zoom)` [8](https://saltlady.medium.com/maya-guide-01-navigating-the-interface-99496e499230), `Outliner left`, `Channel Box/Attribute Editor right`, `Timeline bottom` [1](https://www.pose-by-pose.com/post/intro-to-maya-interface-for-animation)
+- **Workspaces:** `Maya Classic / Modeling Standard / Animation` customizáveis [4](https://vagon.io/blog/a-beginners-complete-guide-to-autodesk-maya)
+- **Inspira ARKHER_Maya:** `Menu Sets dropdown F2-F6` + `Shelf tabs` + `QWER gizmos` já temos mas agora com `Channel Box real` + `Hotbox Spacebar radial`.
+
+## 18) 3DS MAX — Modifier Stack
+
+- **Modifier Stack:** histórico acumulado `objeto base embaixo + modifiers em ordem bottom→top` [1](https://help.autodesk.com/cloudhelp/2023/ENU/3DSMax-Basics/files/GUID-80209C3A-C2E4-4541-8738-D1E5ECE16E9C.htm), `light-bulb on/off`, `+/- gizmo/center`, `Pin Stack + Show End Result` [5](https://download.autodesk.com/us/3dsmax/2012help/files/GUID-911C535D-9003-4925-A064-52835C581DA-339.htm), `Cut/Copy/Paste Instanced, Collapse To Editable Mesh/Poly` [3](https://download.autodesk.com/us/3dsmax/2012help/files/GUID-3B752392-7B10-4D03-B624-51044BF9410-3059.htm)
+- **4 Viewports** `T Top, B Bottom, F Front, L Left, P Perspective, U Ortho` + `Alt+W maximize` [9](https://catalogimages.wiley.com/images/db/pdf/9781118575147.excerpt.pdf)
+- **Inspira ARKHER_Modeler:** `Modifier Stack real` com `Bend/Taper/Bevel/MeshSmooth` reordenável via drag e `Collapse`.
+
+## 19) TERRAIN — Gaea / WorldMachine / Terragen
+
+- **Gaea (QuadSpinner):** `Engine + UI separados`, `180+ nodes`, `Graph / Layers / Sculpt workflows`, `Erosion strokes pintáveis`, `Tiled Builds`, `PBR viewport`, `Gaea2Houdini` [7](https://blog.quadspinner.com/terrain-app1/) [6](https://beforesandafters.com/2019/06/17/a-new-tool-to-build-worlds-and-erode-them/) — `procedural + layers, mountain drawing, primitive construction` [6](https://beforesandafters.com/2019/06/17/a-new-tool-to-build-worlds-and-erode-them/)
+- **WorldMachine:** `node graph 100+ devices (fractal/erosion/river/mask)`, `non-destructive, macro reuse`, `Tiled builds continentes`, export `heightfield/VDM/mesh/r16 + PBR masks` [5](https://www.world-machine.com/) — `simulate, don't sculpt, erosion corta gullies/ridges/sediment` [5](https://www.world-machine.com/)
+- **Terragen:** importa `Gaea/WorldMachine` heightmaps, plugin `Kamperov erosion` [4](https://planetside.co.uk/forums/index.php?topic=27572.0)
+- **Inspira ARKHER_Terrain:** `Node Graph erosion + Erosion brush` + `Layers` + `Tiled export`.
+
+## 20) ASSETS — Quixel Megascans / PolyHaven / SpeedTree
+
+- **Megascans:** Bridge app importa `3D Assets + Surfaces` em Mixer [2](https://docs.quixel.com/mixer/1/en/topic/importing.html), packs `UDIM, ID maps, multi-res 2K-8K, LODs 3+` [3](https://www.artivoxa.com/quixel-megascans-vs-polyhaven-which-free-library-wins-for-photorealism/), integração `Houdini megaH` com `Mega Load HDA + Library panel com categorias biotopes + packed disk primitives + Mantra/Redshift shader` [4](https://jurajtomori.wordpress.com/2019/04/23/megah-megascans-to-houdini-integration-2/)
+- **PolyHaven:** `CC0 sem fricção legal`, single 4K pack [3](https://www.artivoxa.com/quixel-megascans-vs-polyhaven-which-free-library-wins-for-photorealism/)
+- **SpeedTree 8.2+:** `merge photogrammetry mesh + Stitch + LOD + Atlases multi-cutout` [6](https://magazine.artstation.com/2019/11/creating-beautifully-merged-photogrammetry-trees-with-speedtree/) + `procedural branches + gizmo` [6](https://magazine.artstation.com/2019/11/creating-beautifully-merged-photogrammetry-trees-with-speedtree/)
+- **Inspira ARKHER_Assets:** `Bridge-like browser` com `CC0 + Megascans-style LOD/UDIM` + `SpeedTree merge` mas nativo Roblox.
+
+## 21) MAPS / GPS / BIOMES — Mapbox / OSM / ESA WorldCover / OpenLandMap
+
+- **Mapbox GL JS:** base `OSM + proprietary`, `vector maps interativas`, SDKs `JS/Android/iOS/macOS/Qt/Unity` [2](https://wiki.openstreetmap.org/wiki/Mapbox_GL), features `3D extrusion, DEM terrain, GeoJSON, offline` [2](https://wiki.openstreetmap.org/wiki/Mapbox_GL) — pricing `$5/1k loads após 50k free, geocode $0.75/1k` [3](https://www.woosmap.com/blog/alternative-to-mapbox)
+- **Google Maps vs Mapbox vs OSM:** Google `99% coverage, $7/1k loads após 28.5k` [3](https://www.woosmap.com/blog/alternative-to-mapbox), OSM `ODbL attribution, self-host/MMapLibre fork sem billing` [6](https://api7.ai/learning-center/api-101/mapping-and-geolocation-apis)
+- **ESA WorldCover:** `10m resolução global 2020/2021 Sentinel-1/2`, 11 classes `Tree10 #006400, Shrub20 #ffbb22, Grass30 #ffff4c, Crop40 #f096ff, Built50 #fa0000, Bare60 #b4b4b4, Snow70 #f0f0f0, Water80 #0064c8, Wetland90 #0096a0, Mangrove95 #00cf75, Moss100 #fae6a0` [2](https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v200), tiles `3x3° 2651 GeoTIFF COG EPSG:4326 ~117GB` [7](https://worldcover2020.esa.int/data/docs/WorldCover_PUM_V1.1.pdf)
+- **OpenLandMap Biomes:** `Potential distribution 32 biomas 1km, palette 20 cores` [9](https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_PNV_PNV_BIOME-TYPE_BIOME00K_C_v01)
+- **Inspira ARKHER_Maps:** `Mapa Mundi GPS real + Biome overlay ESA 11 + 32 biomas + Elevation 30m DEM` integrados via `HttpService` e já mandando dados pra IA analisar estrutura/ideias/melhor local.
+
+## 22) PUTER.JS + SINGULARITY CORE — IA AAAA Automática
+
+- **Puter.js:** `single script tag` dá `auth + fs + kv + AI (500+ models GPT/Claude/Gemini/Grok/Llama/DALL-E) sem API keys (User-Pays)` [2](https://medium.com/@atul4u/puter-js-streamline-your-backend-with-the-ultimate-serverless-framework-a982227dcb26) — `puter.ai.chat({model,stream,reasoning_effort,tools:web_search})`, `txt2img, img2txt, txt2speech, speech2speech, txt2vid (Sora)` [1](https://docs.puter.com/AI/) — `listModels/listModelProviders` [7](https://docs.puter.com/AI/listModels/)
+- **Singularity (repo):** `AGI Unaware` roteia cada tarefa pro modelo-especialista (`geração 3D → modelo 3D, textura → img, animação → motion`), memória/contexto, verificação/fallback, multimodal, frontend independente — **agora só 1 botão TopBar → chat arrastável canto** (draggable, minimizável, não atrapalha viewport) + `modo automático` que vê jogo/padrão/estrutura/ideias e constrói sozinho dias/semanas cri-nado modelos complexos com `referências web + textura/profundidade/dobras/física` perfeitas, Dev interfere quando quiser.
+- **Inspira ARKHER_IA:** `Singularity Core` no `StarterPlayer` com `puter.ai.*` + `web_search` tool + `reference scraper`.
+
+## 23) Síntese ARKHER — Como vamos usar (inspirado, não copiado)
 
 **Não vamos clonar 1:1.** Vamos criar **próprio 100% custom native** (voxel terrain etc) mas com **padrões comprovados:**
 
