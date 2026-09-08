@@ -349,7 +349,7 @@ def arkher_complete_place_roots():
     sp.add(scs)
 
     # Workspace / Lighting como antes
-    ws = Inst("Workspace", "Workspace", {"StreamingEnabled": (T_BOOL, True), "StreamingTargetRadius": (T_FLOAT32, 512.0)}, is_service=True)
+    ws = Inst("Workspace", "Workspace", {"StreamingEnabled": (T_BOOL, True), "StreamingTargetRadius": (T_INT, 350)}, is_service=True)
     lighting = Inst("Lighting", "Lighting", {"Technology": (T_ENUM, 4), "Brightness": (T_FLOAT32, 2.0)}, is_service=True)
     # ReplicatedFirst / ServerStorage vazios mas como services
     rf = Inst("ReplicatedFirst", "ReplicatedFirst", is_service=True)

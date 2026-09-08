@@ -18,7 +18,7 @@ try:
 except:
     _lz4 = None
 
-from build_rbxm import Inst, serialize, read, write, DEFAULTS, chunk, u32, string, T_STRING, T_BOOL, T_ENUM, T_FLOAT32
+from build_rbxm import Inst, serialize, read, write, DEFAULTS, chunk, u32, string, T_STRING, T_BOOL, T_INT, T_ENUM, T_FLOAT32, T_COLOR3, T_VECTOR2, T_UDIM, T_UDIM2, col, vec2, udim, udim2
 
 def collect_groups():
     groups = {}
@@ -109,7 +109,7 @@ def build_model_fast(path):
 def build_place_fast(path):
     replicated = Inst("ReplicatedStorage", "ReplicatedStorage", is_service=True)
     replicated.add(arkher_folder_fast())
-    workspace = Inst("Workspace", "Workspace", {"StreamingEnabled": (T_BOOL, True), "StreamingTargetRadius": (T_FLOAT32, 512.0)}, is_service=True)
+    workspace = Inst("Workspace", "Workspace", {"StreamingEnabled": (T_BOOL, True), "StreamingTargetRadius": (T_INT, 350)}, is_service=True)
     lighting = Inst("Lighting", "Lighting", {"Technology": (T_ENUM, 4), "Brightness": (T_FLOAT32, 2.0)}, is_service=True)
     return write(path, serialize([replicated, workspace, lighting]))
 

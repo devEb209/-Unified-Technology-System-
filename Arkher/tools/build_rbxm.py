@@ -183,7 +183,7 @@ DEFAULTS = {
     "RunContext": (T_ENUM, 0),
     "Disabled": (T_BOOL, False),
     "StreamingEnabled": (T_BOOL, False),
-    "StreamingTargetRadius": (T_FLOAT32, 1024.0),
+    "StreamingTargetRadius": (T_INT, 350),
     "Technology": (T_ENUM, 2),
     "Brightness": (T_FLOAT32, 1.0),
     # UI defaults
@@ -383,7 +383,7 @@ def build_place(path):
     replicated.add(arkher_folder())
     workspace = Inst("Workspace", "Workspace",
                      {"StreamingEnabled": (T_BOOL, True),
-                      "StreamingTargetRadius": (T_FLOAT32, 512.0)}, is_service=True)
+                      "StreamingTargetRadius": (T_INT, 350)}, is_service=True)
     lighting = Inst("Lighting", "Lighting",
                     {"Technology": (T_ENUM, 4), "Brightness": (T_FLOAT32, 2.0)},
                     is_service=True)
