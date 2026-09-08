@@ -226,6 +226,18 @@ DEFAULTS = {
     "ImageTransparency": (T_FLOAT32, 0.0),
     "ScaleType": (T_ENUM, 0),
     "SliceCenter": (T_RAY, None), # not used, placeholder
+    "Rotation": (T_FLOAT32, 0.0),
+    "CanvasSize": (T_UDIM2, (0,0,0,0)),
+    "ScrollBarThickness": (T_INT, 4),
+    "ScrollingDirection": (T_ENUM, 0),
+    "ElasticBehavior": (T_ENUM, 0),
+    "VerticalScrollBarInset": (T_ENUM, 0),
+    "HorizontalScrollBarInset": (T_ENUM, 0),
+    "FillDirection": (T_ENUM, 0),
+    "SortOrder": (T_ENUM, 0),
+    "Padding": (T_UDIM, (0,0)),
+    "CellPadding": (T_UDIM2, (0,0,0,0)),
+    "CellSize": (T_UDIM2, (0,100,0,100)),
 }
 
 
