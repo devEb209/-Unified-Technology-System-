@@ -54,7 +54,14 @@ function Modeler.new(parent: Instance)
 		local lbl=Instance.new("TextLabel"); lbl.Size=UDim2.new(1,-60,1,0); lbl.Position=UDim2.fromOffset(30,0); lbl.BackgroundTransparency=1; lbl.Text=name; lbl.Font=Enum.Font.Gotham; lbl.TextSize=11; lbl.TextColor3=Theme.tokens.white; lbl.TextXAlignment=Enum.TextXAlignment.Left; lbl.Parent=row
 		local pin=Instance.new("TextLabel"); pin.Size=UDim2.fromOffset(16,16); pin.Position=UDim2.new(1,-20,0.5,-8); pin.BackgroundTransparency=1; pin.Text="📌"; pin.TextSize=10; pin.Parent=row
 	end
-	local addBtn=Instance.new("TextButton"); addBtn.Size=UDim2.new(1,0,0,26); addBtn.BackgroundColor3=Theme.tokens.arkherBlue; addBtn.Text="+ Add Modifier  ▾"; addBtn.Font=Enum.Font.GothamBold; addBtn.TextSize=11; addBtn.TextColor3=Color3.fromRGB(14,20,48); addBtn.Parent=stack; local ac=Instance.new("UICorner"); ac.CornerRadius=UDim.new(0,6); ac.Parent=addBtn
+	local addBtn=Instance.new("TextButton"); addBtn.Name="AddModifier"; addBtn.Size=UDim2.new(1,0,0,26); addBtn.BackgroundColor3=Theme.tokens.arkherBlue; addBtn.Text="+ Add Modifier  ▾"; addBtn.Font=Enum.Font.GothamBold; addBtn.TextSize=11; addBtn.TextColor3=Color3.fromRGB(14,20,48); addBtn.Parent=stack; local ac=Instance.new("UICorner"); ac.CornerRadius=UDim.new(0,6); ac.Parent=addBtn
+	addBtn.MouseButton1Click:Connect(function()
+		local count=#stack:GetChildren()
+		local row=Instance.new("Frame"); row.Size=UDim2.new(1,0,0,26); row.BackgroundColor3=Theme.tokens.slate700; row.Parent=stack; local cc=Instance.new("UICorner"); cc.CornerRadius=UDim.new(0,6); cc.Parent=row
+		local eye=Instance.new("TextButton"); eye.Size=UDim2.fromOffset(22,18); eye.Position=UDim2.fromOffset(4,4); eye.BackgroundColor3=Theme.tokens.arkherBlue; eye.Text="◉"; eye.Parent=row; local ec=Instance.new("UICorner"); ec.CornerRadius=UDim.new(0,4); ec.Parent=eye
+		local lbl=Instance.new("TextLabel"); lbl.Size=UDim2.new(1,-60,1,0); lbl.Position=UDim2.fromOffset(30,0); lbl.BackgroundTransparency=1; lbl.Text="Modifier "..count; lbl.Font=Enum.Font.Gotham; lbl.TextSize=11; lbl.TextColor3=Theme.tokens.white; lbl.TextXAlignment=Enum.TextXAlignment.Left; lbl.Parent=row
+		local sel=game:GetService("Selection"):Get()[1]; if sel then game:GetService("ChangeHistoryService"):SetWaypoint("Before AddModifier"); sel:SetAttribute("ARKHER_Mod"..count, true); game:GetService("ChangeHistoryService"):SetWaypoint("AddModifier") end
+	end)
 
 	local center=Instance.new("Frame")
 	center.Size=UDim2.new(1,-440,1,0)
@@ -90,6 +97,7 @@ function Modeler.new(parent: Instance)
 	end)
 	local apply=Components.Button(params, "Apply  (Collapse Stack)", {size=UDim2.new(1,0,0,28), color=Theme.tokens.arkherBlue})
 	apply.TextColor3=Color3.fromRGB(14,20,48)
+	apply.MouseButton1Click:Connect(function() local s=game:GetService("Selection"):Get()[1]; if s then game:GetService("ChangeHistoryService"):SetWaypoint("Before Collapse"); s:SetAttribute("ARKHER_Collapsed", true); game:GetService("ChangeHistoryService"):SetWaypoint("Collapse") end end)
 
 	local self=setmetatable({Win=win}, Modeler)
 	return self

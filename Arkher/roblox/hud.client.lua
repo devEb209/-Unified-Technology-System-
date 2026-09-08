@@ -41,7 +41,9 @@ local AudioEd = require(ARKHER.editors.audio)
 local SequencerEd = require(ARKHER.editors.sequencer)
 local AssetBrowser = require(ARKHER.editors.asset_browser)
 
--- Root ScreenGui
+-- Root ScreenGui — real instances already in StarterGui (build_rbxm) clone into PlayerGui.
+-- Keep that static UI as fallback until HUD dynamic UI is ready; then hide fallback.
+local existingStatic = playerGui:FindFirstChild("ARKHER_Studio")
 local gui = Instance.new("ScreenGui")
 gui.Name = "ARKHER_Studio"
 gui.ResetOnSpawn = false
@@ -215,3 +217,5 @@ status:SetText("Ready — Explorer ↔ Properties live • Insert via TopBar •
 -- Ensure Explorer/Properties start visible
 explorerWin.Win.Root.Visible = true
 propsWin.Win.Root.Visible = true
+-- Hide static fallback (real instances in StarterGui file) now that dynamic HUD succeeded
+if existingStatic and existingStatic ~= gui then pcall(function() existingStatic.Enabled = false end) end

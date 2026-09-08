@@ -15,10 +15,12 @@ function AssetBrowser.new(parent: Instance)
 	local grid=Instance.new("ScrollingFrame"); grid.Size=UDim2.new(1,0,1,-32); grid.Position=UDim2.fromOffset(0,32); grid.BackgroundColor3=Color3.fromRGB(14,20,48); grid.BorderSizePixel=0; grid.ScrollBarThickness=6; grid.CanvasSize=UDim2.new(0,0,0,0); grid.AutomaticCanvasSize=Enum.AutomaticSize.Y; grid.Parent=content
 	local gl=Instance.new("UIGridLayout"); gl.CellSize=UDim2.fromOffset(140,110); gl.CellPadding=UDim2.fromOffset(8,8); gl.Parent=grid; Instance.new("UIPadding", grid).PaddingLeft=UDim.new(0,8)
 	for i=1,12 do
-		local card=Instance.new("Frame"); card.BackgroundColor3=Theme.tokens.slate800; card.BorderSizePixel=0; card.Parent=grid; local cc=Instance.new("UICorner"); cc.CornerRadius=UDim.new(0,8); cc.Parent=card
-		local thumb=Instance.new("Frame"); thumb.Size=UDim2.new(1,0,0,70); thumb.BackgroundColor3=Theme.categoryColor("asset"..i); thumb.BorderSizePixel=0; thumb.Parent=card; local tc=Instance.new("UICorner"); tc.CornerRadius=UDim.new(0,8); tc.Parent=thumb
+		local card=Instance.new("Frame"); card.Name="Asset_"..i; card.BackgroundColor3=Theme.tokens.slate800; card.BorderSizePixel=0; card.Parent=grid; local cc=Instance.new("UICorner"); cc.CornerRadius=UDim.new(0,8); cc.Parent=card
+		local thumb=Instance.new("ImageLabel"); thumb.Name="Thumb_"..i; thumb.Size=UDim2.new(1,0,0,70); thumb.BackgroundColor3=Theme.categoryColor("asset"..i); thumb.Image="rbxassetid://0"; thumb.ScaleType=Enum.ScaleType.Crop; thumb.BorderSizePixel=0; thumb.Parent=card; local tc=Instance.new("UICorner"); tc.CornerRadius=UDim.new(0,8); tc.Parent=thumb
+		-- ID overlay
+		local idLbl=Instance.new("TextLabel"); idLbl.Size=UDim2.new(1,0,0,12); idLbl.Position=UDim2.new(0,0,1,-12); idLbl.BackgroundColor3=Color3.fromRGB(14,20,48); idLbl.BackgroundTransparency=0.3; idLbl.Text="ID "..(1000000+i*137); idLbl.Font=Enum.Font.Code; idLbl.TextSize=8; idLbl.TextColor3=Theme.tokens.slate400; idLbl.Parent=thumb
 		local lbl=Instance.new("TextLabel"); lbl.Size=UDim2.new(1,-8,0,14); lbl.Position=UDim2.fromOffset(4,74); lbl.BackgroundTransparency=1; lbl.Text="Asset "..i.."  •  4K LOD0-2"; lbl.Font=Enum.Font.Gotham; lbl.TextSize=9; lbl.TextColor3=Theme.tokens.slate200; lbl.TextXAlignment=Enum.TextXAlignment.Left; lbl.Parent=card
-		local imp=Instance.new("TextButton"); imp.Size=UDim2.new(1,-8,0,16); imp.Position=UDim2.fromOffset(4,90); imp.BackgroundColor3=Theme.tokens.arkherBlue; imp.Text="Import"; imp.Font=Enum.Font.GothamBold; imp.TextSize=9; imp.TextColor3=Color3.fromRGB(14,20,48); imp.Parent=card; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,4); ic.Parent=imp
+		local imp=Instance.new("TextButton"); imp.Name="Import_"..i; imp.Size=UDim2.new(1,-8,0,16); imp.Position=UDim2.fromOffset(4,90); imp.BackgroundColor3=Theme.tokens.arkherBlue; imp.Text="Import"; imp.Font=Enum.Font.GothamBold; imp.TextSize=9; imp.TextColor3=Color3.fromRGB(14,20,48); imp.Parent=card; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,4); ic.Parent=imp
 	end
 	return setmetatable({Win=win}, AssetBrowser)
 end

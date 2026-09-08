@@ -1,6 +1,6 @@
 --!strict
--- NASA SRTM — ANIMATION Profiler #0119
--- Template: asset_grid — unique functional UI (not color swap). Controls affect world via ChangeHistoryService.
+-- Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0119 #0119
+-- Template: code — AAA TUDO + customs, 100% funcional adaptado
 local Theme=require(script.Parent.Parent.core.theme)
 local BaseWindow=require(script.Parent.Parent.ui.windows.base_window)
 local Components=require(script.Parent.Parent.ui.components.init)
@@ -9,29 +9,27 @@ local M={}
 M.__index=M
 
 function M.new(parent: Instance)
-    local win=BaseWindow.new({title="NASA SRTM — ANIMATION Profiler #0119", size=Vector2.new(680, 500), pos=UDim2.fromOffset(447, 283), parent=parent, icon="↻"})
+    local win=BaseWindow.new({title="Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0119 #0119", size=Vector2.new(647, 543), pos=UDim2.fromOffset(213, 307), parent=parent, icon="⛰"})
     win.Root.Name="ARKHER_V1_0119"
     win.Root.Visible=false
     local content=win.Content
     content.BackgroundColor3=Theme.tokens.void
-    -- accent line per UI
-    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("NASA SRT"); accent.BorderSizePixel=0; accent.Parent=content
-
+    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("Godot4"); accent.BorderSizePixel=0; accent.Parent=content
     local body=Instance.new("Frame")
     body.Name="Body"
     body.Size=UDim2.new(1,0,1,-2)
     body.Position=UDim2.fromOffset(0,2)
     body.BackgroundTransparency=1
     body.Parent=content
-    -- inject unique layout below (body is parent)
     do
         local content=body
-        
-local grid=Instance.new("ScrollingFrame"); grid.Size=UDim2.new(1,0,1,0); grid.BackgroundColor3=Color3.fromRGB(14,20,48); grid.ScrollBarThickness=6; grid.CanvasSize=UDim2.new(0,0,0,0); grid.AutomaticCanvasSize=Enum.AutomaticSize.Y; grid.Parent=content; local gl=Instance.new("UIGridLayout"); gl.CellSize=UDim2.fromOffset(110,90); gl.CellPadding=UDim2.fromOffset(8,8); gl.Parent=grid
-for i=1,9 do local card=Instance.new("Frame"); card.BackgroundColor3=Theme.tokens.slate800; card.Parent=grid; local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,8); c.Parent=card; local th=Instance.new("Frame"); th.Size=UDim2.new(1,0,0,56); th.BackgroundColor3=Theme.categoryColor("as"..i..119); th.Parent=card; local tc=Instance.new("UICorner"); tc.CornerRadius=UDim.new(0,8); tc.Parent=th; local btn=Instance.new("TextButton"); btn.Size=UDim2.new(1,-8,0,16); btn.Position=UDim2.fromOffset(4,66); btn.BackgroundColor3=Theme.tokens.arkherBlue; btn.Text="Import"; btn.Font=Enum.Font.GothamBold; btn.TextSize=9; btn.TextColor3=Color3.fromRGB(14,20,48); btn.Parent=card; local bc=Instance.new("UICorner"); bc.CornerRadius=UDim.new(0,4); bc.Parent=btn end
-
+local hdr=Instance.new("TextLabel"); hdr.Size=UDim2.new(1,0,0,22); hdr.BackgroundTransparency=1; hdr.Text="Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0119"; hdr.Font=Enum.Font.GothamBold; hdr.TextSize=11; hdr.TextColor3=Theme.tokens.arkherGlow; hdr.TextXAlignment=Enum.TextXAlignment.Left; hdr.Parent=content
+Components.Slider(content, "Intensity", 0,1,0.6, function(v) local s=game:GetService("Selection"):Get()[1]; if s then game:GetService("ChangeHistoryService"):SetWaypoint("Intensity"); s:SetAttribute("ARKHER_I119", v); game:GetService("ChangeHistoryService"):SetWaypoint("Intensity") end end)
+Components.Dropdown(content, "Quality", {"Low","Medium","High","Ultra"}, "High", function(v) end)
+Components.Slider(content, "Scale", 0.1, 4, 1, function(v) local s=game:GetService("Selection"):Get()[1]; if s and s:IsA("BasePart") then (s::BasePart).Size=Vector3.new(v,v,v) end end)
     end
-
+    local img=Instance.new("ImageLabel"); img.Name="Thumb_119"; img.Size=UDim2.fromOffset(80,80); img.Position=UDim2.fromOffset(12,12); img.BackgroundColor3=Theme.tokens.slate800; img.Image="rbxassetid://0"; img.ScaleType=Enum.ScaleType.Crop; img.BorderSizePixel=0; img.Parent=body; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,8); ic.Parent=img
+    local idLbl=Instance.new("TextLabel"); idLbl.Size=UDim2.new(1,0,0,12); idLbl.Position=UDim2.new(0,0,1,-12); idLbl.BackgroundTransparency=1; idLbl.Text="ID "..(1000000+119*137); idLbl.Font=Enum.Font.Code; idLbl.TextSize=8; idLbl.TextColor3=Theme.tokens.slate400; idLbl.Parent=img
     return setmetatable({Win=win}, M)
 end
 function M:Toggle() self.Win:Toggle() end

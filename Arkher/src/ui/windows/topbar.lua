@@ -86,7 +86,7 @@ function TopBar.new(parent: Instance, cb: Callbacks)
 	row1.Parent=bar
 	local l1=Instance.new("UIListLayout")
 	l1.FillDirection=Enum.FillDirection.Horizontal
-	l1.Padding=UDim.new(0,10)
+	l1.Padding=UDim.new(0,12)
 	l1.VerticalAlignment=Enum.VerticalAlignment.Center
 	l1.Parent=row1
 
@@ -156,7 +156,7 @@ function TopBar.new(parent: Instance, cb: Callbacks)
 	local pad2=Instance.new("UIPadding"); pad2.PaddingLeft=UDim.new(0,8); pad2.PaddingRight=UDim.new(0,8); pad2.PaddingTop=UDim.new(0,2); pad2.PaddingBottom=UDim.new(0,2); pad2.Parent=row2
 	local l2=Instance.new("UIListLayout")
 	l2.FillDirection=Enum.FillDirection.Horizontal
-	l2.Padding=UDim.new(0,8)
+	l2.Padding=UDim.new(0,12)
 	l2.VerticalAlignment=Enum.VerticalAlignment.Center
 	l2.Parent=row2
 

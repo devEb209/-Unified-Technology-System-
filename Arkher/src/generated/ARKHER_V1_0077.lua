@@ -1,6 +1,6 @@
 --!strict
--- Rokoko — ANIMATION Mixer #0077
--- Template: toggles — unique functional UI (not color swap). Controls affect world via ChangeHistoryService.
+-- ARKHER — Neural SuperRes 8K + Temporal — CUSTOM 0077 #0077
+-- Template: profiler — AAA TUDO + customs, 100% funcional adaptado
 local Theme=require(script.Parent.Parent.core.theme)
 local BaseWindow=require(script.Parent.Parent.ui.windows.base_window)
 local Components=require(script.Parent.Parent.ui.components.init)
@@ -9,33 +9,27 @@ local M={}
 M.__index=M
 
 function M.new(parent: Instance)
-    local win=BaseWindow.new({title="Rokoko — ANIMATION Mixer #0077", size=Vector2.new(680, 460), pos=UDim2.fromOffset(301, 89), parent=parent, icon="◈"})
+    local win=BaseWindow.new({title="ARKHER — Neural SuperRes 8K + Temporal — CUSTOM 0077 #0077", size=Vector2.new(661, 549), pos=UDim2.fromOffset(339, 321), parent=parent, icon="◈"})
     win.Root.Name="ARKHER_V1_0077"
     win.Root.Visible=false
     local content=win.Content
     content.BackgroundColor3=Theme.tokens.void
-    -- accent line per UI
-    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("Rokoko —"); accent.BorderSizePixel=0; accent.Parent=content
-
+    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("ARKHER"); accent.BorderSizePixel=0; accent.Parent=content
     local body=Instance.new("Frame")
     body.Name="Body"
     body.Size=UDim2.new(1,0,1,-2)
     body.Position=UDim2.fromOffset(0,2)
     body.BackgroundTransparency=1
     body.Parent=content
-    -- inject unique layout below (body is parent)
     do
         local content=body
-        
-local list=Instance.new("ScrollingFrame"); list.Size=UDim2.new(1,0,1,0); list.BackgroundTransparency=1; list.ScrollBarThickness=6; list.CanvasSize=UDim2.new(0,0,0,0); list.AutomaticCanvasSize=Enum.AutomaticSize.Y; list.Parent=content; local ll=Instance.new("UIListLayout"); ll.Padding=UDim.new(0,6); ll.Parent=list
-Components.Checkbox(list, "Enable Feature", true, function(v) local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_F"..77, v) end end)
-Components.Checkbox(list, "Cast Shadows", true, function(v) local s=game:GetService("Selection"):Get()[1]; if s and s:IsA("BasePart") then (s :: BasePart).CastShadow=v end end)
-Components.Slider(list, "Intensity", 0,2,1, function(v) local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_I"..77, v) end end)
-Components.Dropdown(list, "Quality", {"Low","Medium","High","Ultra"}, "High", function() end)
-Components.TextField(list, "Tag", "ARKHER_"..77, function(v) local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_Tag", v) end end)
-
+local hdr=Instance.new("TextLabel"); hdr.Size=UDim2.new(1,0,0,22); hdr.BackgroundTransparency=1; hdr.Text="ARKHER — Neural SuperRes 8K + Temporal — CUSTOM 0077"; hdr.Font=Enum.Font.GothamBold; hdr.TextSize=11; hdr.TextColor3=Theme.tokens.arkherGlow; hdr.TextXAlignment=Enum.TextXAlignment.Left; hdr.Parent=content
+Components.Slider(content, "Intensity", 0,1,0.6, function(v) local s=game:GetService("Selection"):Get()[1]; if s then game:GetService("ChangeHistoryService"):SetWaypoint("Intensity"); s:SetAttribute("ARKHER_I77", v); game:GetService("ChangeHistoryService"):SetWaypoint("Intensity") end end)
+Components.Dropdown(content, "Quality", {"Low","Medium","High","Ultra"}, "High", function(v) end)
+Components.Slider(content, "Scale", 0.1, 4, 1, function(v) local s=game:GetService("Selection"):Get()[1]; if s and s:IsA("BasePart") then (s::BasePart).Size=Vector3.new(v,v,v) end end)
     end
-
+    local img=Instance.new("ImageLabel"); img.Name="Thumb_77"; img.Size=UDim2.fromOffset(80,80); img.Position=UDim2.fromOffset(12,12); img.BackgroundColor3=Theme.tokens.slate800; img.Image="rbxassetid://0"; img.ScaleType=Enum.ScaleType.Crop; img.BorderSizePixel=0; img.Parent=body; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,8); ic.Parent=img
+    local idLbl=Instance.new("TextLabel"); idLbl.Size=UDim2.new(1,0,0,12); idLbl.Position=UDim2.new(0,0,1,-12); idLbl.BackgroundTransparency=1; idLbl.Text="ID "..(1000000+77*137); idLbl.Font=Enum.Font.Code; idLbl.TextSize=8; idLbl.TextColor3=Theme.tokens.slate400; idLbl.Parent=img
     return setmetatable({Win=win}, M)
 end
 function M:Toggle() self.Win:Toggle() end

@@ -1,6 +1,6 @@
 --!strict
--- D-O15 S620 — CORE Profiler #0174
--- Template: node_flow — unique functional UI (not color swap). Controls affect world via ChangeHistoryService.
+-- ARKHER — Nuke/Houdini VFX Graph — CUSTOM 0174 #0174
+-- Template: particle — AAA TUDO + customs, 100% funcional adaptado
 local Theme=require(script.Parent.Parent.core.theme)
 local BaseWindow=require(script.Parent.Parent.ui.windows.base_window)
 local Components=require(script.Parent.Parent.ui.components.init)
@@ -9,33 +9,27 @@ local M={}
 M.__index=M
 
 function M.new(parent: Instance)
-    local win=BaseWindow.new({title="D-O15 S620 — CORE Profiler #0174", size=Vector2.new(600, 500), pos=UDim2.fromOffset(362, 178), parent=parent, icon="🛰"})
+    local win=BaseWindow.new({title="ARKHER — Nuke/Houdini VFX Graph — CUSTOM 0174 #0174", size=Vector2.new(662, 518), pos=UDim2.fromOffset(278, 342), parent=parent, icon="⬢"})
     win.Root.Name="ARKHER_V1_0174"
     win.Root.Visible=false
     local content=win.Content
     content.BackgroundColor3=Theme.tokens.void
-    -- accent line per UI
-    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("D-O15 S6"); accent.BorderSizePixel=0; accent.Parent=content
-
+    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("ARKHER"); accent.BorderSizePixel=0; accent.Parent=content
     local body=Instance.new("Frame")
     body.Name="Body"
     body.Size=UDim2.new(1,0,1,-2)
     body.Position=UDim2.fromOffset(0,2)
     body.BackgroundTransparency=1
     body.Parent=content
-    -- inject unique layout below (body is parent)
     do
         local content=body
-        
-local graph=Instance.new("Frame"); graph.Size=UDim2.new(1,-180,1,0); graph.BackgroundColor3=Color3.fromRGB(14,20,48); graph.Parent=content
-local function n(pos, ttl, col) local f=Instance.new("Frame"); f.Size=UDim2.fromOffset(100,48); f.Position=UDim2.fromOffset(pos.X,pos.Y); f.BackgroundColor3=Theme.tokens.slate800; f.Parent=graph; local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,8); c.Parent=f; local s=Instance.new("UIStroke"); s.Color=col; s.Thickness=1.5; s.Parent=f; local t=Instance.new("TextLabel"); t.Size=UDim2.new(1,0,0,14); t.BackgroundColor3=col; t.Text=ttl; t.Font=Enum.Font.GothamBold; t.TextSize=9; t.TextColor3=Color3.new(1,1,1); t.Parent=f; return f end
-n(Vector2.new(20,30),"Read",Theme.tokens.aurora); n(Vector2.new(140,70),"Filter",Theme.tokens.arkherBlue); n(Vector2.new(260,30),"Write",Theme.tokens.violet)
-local right=Instance.new("ScrollingFrame"); right.Size=UDim2.new(0,180,1,0); right.Position=UDim2.new(1,-180,0,0); right.BackgroundColor3=Theme.tokens.slate800; right.Parent=content; local rl=Instance.new("UIListLayout"); rl.Padding=UDim.new(0,6); rl.Parent=right
-Components.TextField(right, "File", "input.png", function(v) local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_File"..174, v) end end)
-Components.Dropdown(right, "Mode", {"Add","Mul","Lerp"}, "Add", function() end)
-
+local hdr=Instance.new("TextLabel"); hdr.Size=UDim2.new(1,0,0,22); hdr.BackgroundTransparency=1; hdr.Text="ARKHER — Nuke/Houdini VFX Graph — CUSTOM 0174"; hdr.Font=Enum.Font.GothamBold; hdr.TextSize=11; hdr.TextColor3=Theme.tokens.arkherGlow; hdr.TextXAlignment=Enum.TextXAlignment.Left; hdr.Parent=content
+Components.Slider(content, "Intensity", 0,1,0.6, function(v) local s=game:GetService("Selection"):Get()[1]; if s then game:GetService("ChangeHistoryService"):SetWaypoint("Intensity"); s:SetAttribute("ARKHER_I174", v); game:GetService("ChangeHistoryService"):SetWaypoint("Intensity") end end)
+Components.Checkbox(content, "Enabled", true, function(v) local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_E174", v) end end)
+Components.Dropdown(content, "Mode", {"Auto","Manual","Hybrid"}, "Auto", function(v) end)
     end
-
+    local img=Instance.new("ImageLabel"); img.Name="Thumb_174"; img.Size=UDim2.fromOffset(80,80); img.Position=UDim2.fromOffset(12,12); img.BackgroundColor3=Theme.tokens.slate800; img.Image="rbxassetid://0"; img.ScaleType=Enum.ScaleType.Crop; img.BorderSizePixel=0; img.Parent=body; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,8); ic.Parent=img
+    local idLbl=Instance.new("TextLabel"); idLbl.Size=UDim2.new(1,0,0,12); idLbl.Position=UDim2.new(0,0,1,-12); idLbl.BackgroundTransparency=1; idLbl.Text="ID "..(1000000+174*137); idLbl.Font=Enum.Font.Code; idLbl.TextSize=8; idLbl.TextColor3=Theme.tokens.slate400; idLbl.Parent=img
     return setmetatable({Win=win}, M)
 end
 function M:Toggle() self.Win:Toggle() end

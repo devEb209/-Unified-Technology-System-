@@ -66,6 +66,7 @@ function Terrain.new(parent: Instance)
 	Components.Slider(props, "Sediment", 0,1,0.3, function() end)
 	Components.Dropdown(props, "Output", {"Heightmap","Splat","Mesh","Tiled Build 4K"}, "Tiled Build 4K", function() end)
 	local build=Components.Button(props, "▶  Build Tiles", {size=UDim2.new(1,0,0,30), color=Theme.tokens.arkherBlue}); build.TextColor3=Color3.fromRGB(14,20,48)
+	build.MouseButton1Click:Connect(function() local s=game:GetService("Selection"):Get()[1]; if s then s:SetAttribute("ARKHER_TerrainBuilt", true) end end)
 
 	-- Bottom bar: Tiled Builds
 	local bottom=Instance.new("Frame"); bottom.Size=UDim2.new(1,0,0,32); bottom.Position=UDim2.new(0,0,1,-32); bottom.BackgroundColor3=Theme.tokens.slate900; bottom.BorderSizePixel=0; bottom.Parent=content

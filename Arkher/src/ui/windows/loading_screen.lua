@@ -75,19 +75,52 @@ function Loading.new(parent: Instance)
 	pct.TextColor3=Theme.tokens.slate400
 	pct.Parent=center
 
-	-- interactive dots (click to pulse)
+	-- interactive dots (click to pulse) + 3D trademark depth
 	for i=1,3 do
-		local d=Instance.new("Frame")
-		d.Size=UDim2.fromOffset(8,8)
-		d.Position=UDim2.new(0.5, -20 + (i-1)*20, 0, 150)
+		local d=Instance.new("TextButton")
+		d.Name="Dot_"..i
+		d.Size=UDim2.fromOffset(10,10)
+		d.Position=UDim2.new(0.5, -22 + (i-1)*22, 0, 150)
 		d.AnchorPoint=Vector2.new(0.5,0)
 		d.BackgroundColor3=Theme.tokens.arkherBlue
-		d.BorderSizePixel=0
+		d.Text=""
+		d.AutoButtonColor=true
 		d.Parent=center
 		local cc=Instance.new("UICorner"); cc.CornerRadius=UDim.new(1,0); cc.Parent=d
+		d.MouseButton1Click:Connect(function()
+			game:GetService("TweenService"):Create(d, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Size=UDim2.fromOffset(16,16)}):Play()
+			task.delay(0.2, function() game:GetService("TweenService"):Create(d, TweenInfo.new(0.3), {Size=UDim2.fromOffset(10,10)}):Play() end)
+		end)
+		-- pulse loop
+		task.spawn(function()
+			while d.Parent do
+				game:GetService("TweenService"):Create(d, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 0, true), {BackgroundTransparency=0.3}):Play()
+				task.wait(0.6 + i*0.2)
+			end
+		end)
 	end
+	-- logo 3D depth shadow + subtle float
+	local shadow=Instance.new("TextLabel")
+	shadow.Size=UDim2.new(1,0,0,64)
+	shadow.Position=UDim2.fromOffset(2,2)
+	shadow.BackgroundTransparency=1
+	shadow.Text="ARKHER™"
+	shadow.Font=Enum.Font.GothamBlack
+	shadow.TextSize=52
+	shadow.TextColor3=Color3.fromRGB(0,212,255)
+	shadow.TextTransparency=0.7
+	shadow.ZIndex=0
+	shadow.Parent=center
+	logo.ZIndex=1
+	-- float tween
+	task.spawn(function()
+		while logo.Parent do
+			game:GetService("TweenService"):Create(logo, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 0, true), {Position=UDim2.fromOffset(0,-4)}):Play()
+			task.wait(2.4)
+		end
+	end)
 
-	local self=setmetatable({Root=root, Fill=fill, Pct=pct}, Loading)
+	local self=setmetatable({Root=root, Fill=fill, Pct=pct, Logo=logo}, Loading)
 	return self
 end
 function Loading:SetProgress(p:number, text:string?)

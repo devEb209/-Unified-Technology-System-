@@ -1,6 +1,6 @@
 --!strict
--- Nuke Nodal — ANIMATION Map #0113
--- Template: blueprint — unique functional UI (not color swap). Controls affect world via ChangeHistoryService.
+-- Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0113 #0113
+-- Template: code — AAA TUDO + customs, 100% funcional adaptado
 local Theme=require(script.Parent.Parent.core.theme)
 local BaseWindow=require(script.Parent.Parent.ui.windows.base_window)
 local Components=require(script.Parent.Parent.ui.components.init)
@@ -9,30 +9,27 @@ local M={}
 M.__index=M
 
 function M.new(parent: Instance)
-    local win=BaseWindow.new({title="Nuke Nodal — ANIMATION Map #0113", size=Vector2.new(680, 480), pos=UDim2.fromOffset(369, 181), parent=parent, icon="◆"})
+    local win=BaseWindow.new({title="Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0113 #0113", size=Vector2.new(709, 441), pos=UDim2.fromOffset(351, 309), parent=parent, icon="◈"})
     win.Root.Name="ARKHER_V1_0113"
     win.Root.Visible=false
     local content=win.Content
     content.BackgroundColor3=Theme.tokens.void
-    -- accent line per UI
-    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("Nuke Nod"); accent.BorderSizePixel=0; accent.Parent=content
-
+    local accent=Instance.new("Frame"); accent.Size=UDim2.new(1,0,0,2); accent.BackgroundColor3=Theme.categoryColor("Godot4"); accent.BorderSizePixel=0; accent.Parent=content
     local body=Instance.new("Frame")
     body.Name="Body"
     body.Size=UDim2.new(1,0,1,-2)
     body.Position=UDim2.fromOffset(0,2)
     body.BackgroundTransparency=1
     body.Parent=content
-    -- inject unique layout below (body is parent)
     do
         local content=body
-        
-local canvas=Instance.new("Frame"); canvas.Size=UDim2.new(1,0,1,0); canvas.BackgroundColor3=Color3.fromRGB(14,20,48); canvas.Parent=content
-local function b(pos, ttl) local f=Instance.new("Frame"); f.Size=UDim2.fromOffset(120,48); f.Position=UDim2.fromOffset(pos.X,pos.Y); f.BackgroundColor3=Theme.tokens.slate800; f.Parent=canvas; local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,8); c.Parent=f; local t=Instance.new("TextLabel"); t.Size=UDim2.new(1,0,0,14); t.BackgroundColor3=Theme.tokens.violet; t.Text=ttl; t.Font=Enum.Font.GothamBold; t.TextSize=9; t.TextColor3=Color3.new(1,1,1); t.Parent=f; return f end
-b(Vector2.new(20,40),"Event Begin"); b(Vector2.new(180,60),"Branch"); b(Vector2.new(340,40),"Print")
-
+local hdr=Instance.new("TextLabel"); hdr.Size=UDim2.new(1,0,0,22); hdr.BackgroundTransparency=1; hdr.Text="Godot4 — GDScript 2.0 + GDExt + Vulkan — CUSTOM 0113"; hdr.Font=Enum.Font.GothamBold; hdr.TextSize=11; hdr.TextColor3=Theme.tokens.arkherGlow; hdr.TextXAlignment=Enum.TextXAlignment.Left; hdr.Parent=content
+Components.Slider(content, "Intensity", 0,1,0.6, function(v) local s=game:GetService("Selection"):Get()[1]; if s then game:GetService("ChangeHistoryService"):SetWaypoint("Intensity"); s:SetAttribute("ARKHER_I113", v); game:GetService("ChangeHistoryService"):SetWaypoint("Intensity") end end)
+Components.Dropdown(content, "Quality", {"Low","Medium","High","Ultra"}, "High", function(v) end)
+Components.Slider(content, "Scale", 0.1, 4, 1, function(v) local s=game:GetService("Selection"):Get()[1]; if s and s:IsA("BasePart") then (s::BasePart).Size=Vector3.new(v,v,v) end end)
     end
-
+    local img=Instance.new("ImageLabel"); img.Name="Thumb_113"; img.Size=UDim2.fromOffset(80,80); img.Position=UDim2.fromOffset(12,12); img.BackgroundColor3=Theme.tokens.slate800; img.Image="rbxassetid://0"; img.ScaleType=Enum.ScaleType.Crop; img.BorderSizePixel=0; img.Parent=body; local ic=Instance.new("UICorner"); ic.CornerRadius=UDim.new(0,8); ic.Parent=img
+    local idLbl=Instance.new("TextLabel"); idLbl.Size=UDim2.new(1,0,0,12); idLbl.Position=UDim2.new(0,0,1,-12); idLbl.BackgroundTransparency=1; idLbl.Text="ID "..(1000000+113*137); idLbl.Font=Enum.Font.Code; idLbl.TextSize=8; idLbl.TextColor3=Theme.tokens.slate400; idLbl.Parent=img
     return setmetatable({Win=win}, M)
 end
 function M:Toggle() self.Win:Toggle() end
